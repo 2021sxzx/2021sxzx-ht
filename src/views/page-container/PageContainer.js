@@ -9,9 +9,8 @@ import TopHeader from '../../components/page-container/TopHeader/TopHeader.js'
 import './PageContainer.css'
 
 import Home from './home/Home'
-import UserList from './user-manage/UserList.js'
-import RoleList from './right-manage/RoleList.js'
-import RightList from './right-manage/RightList.js'
+import CommentManageList from './comment-manage/CommentManageList.js'
+import CommentManageReport from './comment-manage/CommentManageReport.js'
 import Nopermission from './nopermission/Nopermission.js'
 
 const { Content } = Layout
@@ -29,11 +28,9 @@ export default function PageContainer() {
           </Breadcrumb>
           <div className="site-layout-background" style={{ padding: 24, minHeight: 360, }}>
             <Switch>
-            <Route path="/home" component={Home} />
-              <Route path="/user-manage/list" component={UserList} />
-              <Route path="/right-manage/role/list" component={RoleList} />
-              <Route path="/right-manage/right/list" component={RightList} />
-
+              <Route path="/home" component={Home} />
+              <Route path="/comment-manage/list" component={CommentManageList} />
+              <Route path="/comment-manage/report" component={CommentManageReport} />
               <Redirect from="/" to="/home" exact />
               <Route path="*" component={Nopermission} />
             </Switch>
