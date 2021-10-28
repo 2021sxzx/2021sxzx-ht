@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function Nopermission() {
+export default function NoPermission() {
     return (
         <div>
            403  Nopermission

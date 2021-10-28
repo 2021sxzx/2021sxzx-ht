@@ -8,10 +8,10 @@ import TopHeader from '../../components/page-container/TopHeader/TopHeader.js'
 
 import './PageContainer.css'
 
-import Home from './home/Home'
-import CommentManageList from './comment-manage/CommentManageList.js'
-import CommentManageReport from './comment-manage/CommentManageReport.js'
-import Nopermission from './nopermission/Nopermission.js'
+import Home from './Home/Home'
+import CommentManageList from './ComponentManageList/CommentManageList.js'
+import CommentManageReport from './CommentManageReport/CommentManageReport.js'
+import NoPermission from './NoPermission/NoPermission.js'
 
 const { Content } = Layout
 
@@ -32,7 +32,7 @@ export default function PageContainer() {
               <Route path="/comment-manage/list" component={CommentManageList} />
               <Route path="/comment-manage/report" component={CommentManageReport} />
               <Redirect from="/" to="/home" exact />
-              <Route path="*" component={Nopermission} />
+              <Route path="*" component={NoPermission} />
             </Switch>
           </div>
         </Content>

@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 import * as echarts from 'echarts'
-import axios from 'axios';
-import style from './Charts.module.css'
+import api from '../../../../api/comment'
+import style from './Charts.module.scss'
 
 export default function Charts() {
   const chartsRef = useRef()
   const [data, setData] = useState({})
   useEffect(()=>{
     async function getComment(){
-      let {data:{data}} = await axios.get('/api/commentparam')
+      let {data:{data}} = await api.getCommentparams()
       let scoreInfo = [0,0,0,0,0]
       data.scoreInfo?.forEach((item)=>{
         scoreInfo[parseInt(item.score)-1]=item.count

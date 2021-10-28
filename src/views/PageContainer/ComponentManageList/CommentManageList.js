@@ -1,7 +1,7 @@
 import React,{useEffect,useState} from 'react'
 
 import { DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
-import {GetComment} from "../../../api/comment";
+import api from "../../../api/comment";
 
 import {
     CaretDownOutlined,
@@ -130,7 +130,7 @@ const DetailModal = (props) => {
 export default function CommentManageList() {
     const [tableData,setTableData]=useState([])
     const getComment=(data)=>{
-        GetComment().then(response=>{
+        api.GetComment().then(response=>{
             setTableData(response.data.data)
             console.log(response.data.data)
         }).catch(error=>{

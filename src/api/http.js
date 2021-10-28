@@ -1,13 +1,20 @@
 import axios from "axios";
-
-const BASEURL = process.env.NODE_ENV === "production" ? "" : "/api";
-const service = axios.create({
+let BASEURL
+if(process.env.NODE_ENV==="development"){
+    BASEURL='/api'
+}
+else if(process.env.NODE_ENV==="test"){
+    BASEURL='http://8.134.73.52:80/api'
+}
+else if(process.env.NODE_ENV==="production"){
+    BASEURL='http://8.134.73.52:80/api'
+}
+const instance = axios.create({
     baseURL: BASEURL,
     timeout: 100000,
-
 });
 // 添加请求拦截器
-service.interceptors.request.use(
+instance.interceptors.request.use(
     function (config) {
         console.log(config);
         return config;
@@ -19,7 +26,7 @@ service.interceptors.request.use(
 );
 
 // 添加响应拦截器
-service.interceptors.response.use(
+instance.interceptors.response.use(
     function (response) {
         // 对响应数据做点什么
         return response
@@ -30,5 +37,5 @@ service.interceptors.response.use(
     }
 );
 
-export default service;
+export default instance;
 
