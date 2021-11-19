@@ -5,7 +5,7 @@
 ### 1. 克隆仓库并进入项目文件夹
 
 ```shell
-git clone git@github.com:xxih/2021sxzx-ht.git
+git clone git@github.com:2021sxzx/2021sxzx-ht.git
 ```
 
 ### 2. 确保当前分支是dev分支
