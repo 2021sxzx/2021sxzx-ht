@@ -13,6 +13,13 @@ const api ={
     },
     async getCommentparams(){
         return service.get('/commentparam')
+    },
+    SearchComment(data){
+        return service.request({
+            method: "post",
+            url: "/searchComment/",
+            data, //data:data同名可以直接写 data
+        });
     }
 }
 

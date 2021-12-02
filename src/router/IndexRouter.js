@@ -1,6 +1,6 @@
 import React from 'react'
 import {HashRouter,Redirect,Route,Switch} from 'react-router-dom'
-import Login from '../views/Login/Login'
+import Login from '../views/login/Login'
 import PageContainer from '../views/PageContainer/PageContainer'
 
 export default function indexRouter() {
