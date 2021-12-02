@@ -77,7 +77,7 @@ const tableColumns = [
 
 const SelectForm=(props)=>{
     const [form] = Form.useForm();
-    const [createTime,setCreateTime]=useState('')
+    const [startTime,setStartTime]=useState('')
     const [endTime,setEndTime]=useState('')
     const [score,setScore]=useState('')
     const [type,setType]=useState('')
@@ -97,7 +97,7 @@ const SelectForm=(props)=>{
     const Search=()=>{
 
         const data={
-            createTime,
+            startTime,
             endTime,
             score,
             type,
@@ -108,12 +108,12 @@ const SelectForm=(props)=>{
     const handleDateChange=(value, dateString)=>{
         if (value){
 
-            setCreateTime(getTimeStamp(dateString[0]))
+            setStartTime(getTimeStamp(dateString[0]))
             setEndTime(getTimeStamp(dateString[1]))
         }
         else{
             setEndTime('')
-            setCreateTime('')
+            setStartTime('')
         }
 
     }
