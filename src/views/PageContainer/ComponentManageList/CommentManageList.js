@@ -11,7 +11,7 @@ const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const starList=['全部','1','2','3','4','5']
-const idList=['全部','证件号','事项指南编码','事项编码','事项规则']
+const idList=['全部','证件号','事项指南名称','事项指南编码','事项规则']
 const DropSelect =(props)=> {
     const {dataList,setData}=props
     const handleChange=(value)=>{
