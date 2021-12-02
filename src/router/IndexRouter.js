@@ -9,10 +9,9 @@ export default function indexRouter() {
       <Switch>
         <Route path='/login' component={Login}></Route>
         <Route path='/' render={()=>
-          localStorage.getItem("token")?
-          <PageContainer></PageContainer>:
-          <Redirect to="/login"></Redirect>
-        }></Route>
+          <PageContainer></PageContainer>
+        }>
+        </Route>
       </Switch>
     </HashRouter>
 
