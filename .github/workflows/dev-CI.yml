@@ -1,0 +1,26 @@
+name: dev CI
+
+on:
+  push:
+    branches: [ dev ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    # 这是 github 官方的一个 action，用于 clone 该仓库的源码到工作流中，
+    - uses: actions/checkout@v2
+    - name: build
+      run: npm install --registry=https://registry.npm.taobao.org && npm run build
+    - name: deploy
+      uses: cross-the-world/scp-pipeline@master
+      env:
+        WELCOME: "ssh scp ssh pipelines"
+        LASTSSH: "Doing something after copying"
+      with:
+        host: ${{ secrets.DEV_HOST }}
+        user: ${{ secrets.DEV_USER }}
+        pass: ${{ secrets.DEV_PASS }}
+        connect_timeout: 10s
+        local: './build/*'
+        remote: /www/wwwroot/http/sxzx-ht
