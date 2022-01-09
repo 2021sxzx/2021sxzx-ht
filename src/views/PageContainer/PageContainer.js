@@ -9,8 +9,15 @@ import TopHeader from '../../components/page-container/TopHeader/TopHeader.js'
 import './PageContainer.css'
 
 import Home from './Home/Home'
+// import Personal from './Personal/Personal.js'
+import Personal from './Personal/Personal'
+import ItemManageRule from './ItemManage/ItemManageRule/ItemManageRule'
+
+import ItemManageGuide from './ItemManage/ItemManageGuide/ItemManageGuide'
+import ItemManageProcess from './ItemManage/ItemManageProcess/ItemManageProcess'
 import CommentManageList from './ComponentManageList/CommentManageList.js'
 import CommentManageReport from './CommentManageReport/CommentManageReport.js'
+
 import NoPermission from './NoPermission/NoPermission.js'
 
 const { Content } = Layout
@@ -31,6 +38,10 @@ export default function PageContainer() {
               <Route path="/home" component={Home} />
               <Route path="/comment-manage/list" component={CommentManageList} />
               <Route path="/comment-manage/report" component={CommentManageReport} />
+              <Route path="/personal" component={Personal}/>
+              <Route path="/item-manage/process" component={ItemManageProcess}/>
+              <Route path="/item-manage/guide" component={ItemManageGuide}/>
+              <Route path="/item-manage/rule" component={ItemManageRule}/>
               <Redirect from="/" to="/home" exact />
               <Route path="*" component={NoPermission} />
             </Switch>

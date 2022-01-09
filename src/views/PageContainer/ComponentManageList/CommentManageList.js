@@ -42,13 +42,13 @@ const tableColumns = [
     },**/
     {
         title: '事项指南编码',
-        dataIndex: ['item_guide','item_guide_id'],
-        key: 'item_guide.item_guide_id',
+        dataIndex: ['task','task_code'],
+        key: 'task.task_code',
     },
     {
         title: '事项指南名称',
-        dataIndex: ['item_guide','item_guide_name'],
-        key: 'item_guide.item_guide_name',
+        dataIndex: ['task','task_name'],
+        key: 'task.task_name',
     },
     {
         title: '星级',
@@ -133,6 +133,7 @@ const SelectForm=(props)=>{
                     <DropSelect dataList={starList} setData={setScore}/>
                 </Form.Item>
                 <Form.Item label="编号排查">
+
                     <DropSelect dataList={idList} setData={setType}/>
 
                 </Form.Item>
@@ -153,16 +154,19 @@ const DetailModal = (props) => {
     const key2name={
         item_guide_name:'事项指南名称',
         item_guide_id:'事项指南编码',
+
         score:'星级',
         content:'评价内容',
         idc_type:'证件类型',
         idc:'证件号',
         rule_name:'事项规则',
+
         create_time: '创建时间'
     }
+
     const detailData={
-        item_guide_name:detail.item_guide.item_guide_name,
-        item_guide_id:detail.item_guide.item_guide_id,
+        item_guide_name:detail.task.task_name,
+        item_guide_id:detail.task.task_code,
         score:detail.score,
         content:detail.content,
         create_time:getYMD(detail.create_time),
@@ -189,6 +193,7 @@ const DetailModal = (props) => {
             <Button  onClick={showModal}>
                 查看详情
             </Button>
+
             <Modal title="事项详情" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
             <Descriptions>
                 {Object.keys(detailData).map((item,index)=>{
@@ -196,16 +201,18 @@ const DetailModal = (props) => {
                     return  <Descriptions.Item label={key2name[item]} key={item} span={3}>{detailData[item]}</Descriptions.Item>
                 })}
 
+
             </Descriptions>
             </Modal>
         </>
     );
+
 };
 
 export default function CommentManageList() {
     const [tableData,setTableData]=useState([])
     const getComment=(data)=>{
-        api.GetComment().then(response=>{
+        api.GetComment(data).then(response=>{
             setTableData(response.data.data)
             console.log('response.data.data=',response.data.data)
         }).catch(error=>{
@@ -213,6 +220,7 @@ export default function CommentManageList() {
     }
     const getSearchComment=(data)=>{
         console.log(data)
+
         api.SearchComment(data).then(response=>{
             console.log('searchData=',response.data.data)
             setTableData(response.data.data)

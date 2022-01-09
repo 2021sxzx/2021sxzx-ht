@@ -7,17 +7,17 @@ const api ={
     GetComment(data) {
         return service.request({
             method: "get",
-            url: "/allcomment/",
+            url: "/v1/comment/",
             data, //data:data同名可以直接写 data
         });
     },
     async getCommentparams(){
-        return service.get('/commentparam')
+        return service.get('/v1/commentparam')
     },
     SearchComment(data){
         return service.request({
             method: "post",
-            url: "/searchComment/",
+            url: "/v1/searchComment/",
             data, //data:data同名可以直接写 data
         });
     }

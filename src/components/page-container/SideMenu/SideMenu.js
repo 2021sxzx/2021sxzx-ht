@@ -20,9 +20,28 @@ const menuList = [
     icon:<DesktopOutlined />
   },
   {
-    key:'/mine',
+    key:'/personal',
     title:'个人中心',
     icon:<UserOutlined />
+  },
+  {
+    key:'/item-manage',
+    title:'事项管理',
+    icon:<FileOutlined />,
+    children:[
+      {
+        key:'/item-manage/process',
+        title:'事项过程管理',
+      },
+      {
+        key:'/item-manage/guide',
+        title:'事项指南管理',
+      },
+      {
+        key:'/item-manage/rule',
+        title:'事项规则管理',
+      },
+    ]
   },
   {
     key:'/comment-manage',
@@ -37,6 +56,30 @@ const menuList = [
         key:'/comment-manage/report',
         title:'评价报告'
       }
+    ]
+  },
+  {
+    key:'/user-manage',
+    title:'用户管理',
+    icon:<FileOutlined />,
+    children:[
+      {
+        key:'/user-manage/account',
+        title:'后台账号管理'
+      },
+      {
+        key:'/comment-manage/role',
+        title:'角色管理'
+      },
+      {
+        key:'/comment-manage/department',
+        title:'部门管理'
+      },
+      {
+        key:'/comment-manage/metaData',
+        title:'用户资料元数据管理'
+      },
+      
     ]
   },
 ]
