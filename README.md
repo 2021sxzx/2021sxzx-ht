@@ -1,6 +1,14 @@
 # sxzx-ht
 
-## 开始写代码前的准备
+## 知识储备
++ git 务必用熟，b站学习，不要找时长很短的视频。命令行学会后再使用图形化界面。
++ react 目前的风格是全部使用函数式组件，推荐资源：
+  + 入门视频
+  + 实战视频，使用函数式组件 hooks https://www.bilibili.com/video/BV1fw411d7R5?from=search&seid=10983113197955230788&spm_id_from=333.337.0.0
++ scss 跟 css 没有什么区别，让你能嵌套写 css，还有一些其他功能。xxx.module.scss 是使得样式模块化不污染全局，自己上网搜搜博客，或者参考项目里的写法。
++ 
+
+## 开始写代码
 
 ### 1. 克隆仓库并进入项目文件夹
 
@@ -28,18 +36,18 @@ npm install
 ### 4. 目录结构
 
 ```shell
-# vote-fe
 ├─node_modules/   # 模块
 ├─package.json    # 配置文件
 ├─package-lock.json # 配置文件
 ├─public/         # html
 └─src/
+    ├─api/           # 对后台请求的统一管理
     ├─assets/           # 图片等静态文件放在这里
     ├─components/       # 公共组件放在这里
-    ├─router/IndexRouter.js   # Router文件
-    ├─views/            # 页面文件 主要在这里写代码
+    ├─router/IndexRouter.js   # 配置路由
+    ├─views/            # 页面文件 主要在这里写代码 找到自己对应的页面
     ├─setupProxy.js   #开发过程代理配置
-    ├─App.css         #全局样式
+    ├─index.scss         #全局样式
     ├─App.js           # 根组件
     └─index.js           # 入口js文件
 ```
@@ -55,6 +63,7 @@ npm start
 
 ### 6. 代码提交
 
+
 **1.add**
 
 ```shell
@@ -62,12 +71,12 @@ npm start
 git add .
     
 # 如果只想把某些文件加入，可以指定对应文件，如：
-git add src/main.js src/App.vue
+git add src/views/xxx/xxx.js 
 ```
 
 **2.commit**
 
-注意: 用英文字符，:号后面空一格
+注意: 冒号用英文字符，:号后面空一格
 
 commit规范
 
@@ -98,11 +107,19 @@ feat: 新建xx页面
 初步完成xx组件
 ```
 
-**3.push**
+**3.pull**
+pull = fetch + merge
+提交之前看看有没有人提交了新版本代码，要先 pull，发生冲突要解决冲突
+
+**4.push**
 
 ```shell
 # 提交到dev分支
 git push origin dev
 ```
 
-## 风格规范
+### 7.一些注意点
++ 务必熟悉
++ 尽量只改动自己任务下的文件
++ 整体结构上的改动要跟团队协商公示
++ 新的库的引入要跟团队协商公示
