@@ -6,7 +6,7 @@ import { Layout, Breadcrumb } from 'antd'
 import SideMenu from '../../components/page-container/SideMenu/SideMenu.js'
 import TopHeader from '../../components/page-container/TopHeader/TopHeader.js'
 
-import './PageContainer.css'
+import './PageContainer.scss'
 
 import Home from './Home/Home'
 // import Personal from './Personal/Personal.js'

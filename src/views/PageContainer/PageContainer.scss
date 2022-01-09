@@ -1,0 +1,4 @@
+/* 想要修改一些 antd 组件的样式好像有时必须写一个 .scss 没法模模块化， 在 module.scss 难以准确指定到目标标签 */
+.site-layout .site-layout-background {
+  background: rgb(255, 255, 255);
+}

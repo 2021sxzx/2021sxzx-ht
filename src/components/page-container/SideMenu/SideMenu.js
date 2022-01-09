@@ -25,6 +25,11 @@ const menuList = [
     icon:<UserOutlined />
   },
   {
+    key:'/ItemAudit',
+    title:'事项审核',
+    icon:<UserOutlined />
+  },
+  {
     key:'/item-manage',
     title:'事项管理',
     icon:<FileOutlined />,
