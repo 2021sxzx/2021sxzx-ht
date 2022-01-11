@@ -231,10 +231,13 @@ const DetailModal = (props) => {
         onOk={handleOk}
         onCancel={handleCancel}
       >
+
       </Modal>
     </>
   );
 };
+
+
 
 export default function SystemManageResource() {
   const [tableData, setTableData] = useState([]);
