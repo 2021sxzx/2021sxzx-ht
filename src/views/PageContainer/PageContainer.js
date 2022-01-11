@@ -17,6 +17,10 @@ import ItemManageGuide from './ItemManage/ItemManageGuide/ItemManageGuide'
 import ItemManageProcess from './ItemManage/ItemManageProcess/ItemManageProcess'
 import CommentManageList from './ComponentManageList/CommentManageList.js'
 import CommentManageReport from './CommentManageReport/CommentManageReport.js'
+import SystemManageJournal
+  from "./SystemManage/SystemManageJournal/SystemManageJournal.js";
+import SystemManageResource
+  from "./SystemManage/SystemManageResource/SystemManageResource.js";
 
 import NoPermission from './NoPermission/NoPermission.js'
 
@@ -42,6 +46,8 @@ export default function PageContainer() {
               <Route path="/item-manage/process" component={ItemManageProcess}/>
               <Route path="/item-manage/guide" component={ItemManageGuide}/>
               <Route path="/item-manage/rule" component={ItemManageRule}/>
+              <Route path="/system-manage/journal" component={SystemManageJournal}/>
+              <Route path="/system-manage/resource" component={SystemManageResource}/>
               <Redirect from="/" to="/home" exact />
               <Route path="*" component={NoPermission} />
             </Switch>

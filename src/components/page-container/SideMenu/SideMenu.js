@@ -8,6 +8,7 @@ import {
   DesktopOutlined,
   FileOutlined,
   UserOutlined,
+  SettingOutlined,
 } from '@ant-design/icons';
 
 const { Sider } = Layout;
@@ -46,6 +47,21 @@ const menuList = [
         key:'/item-manage/rule',
         title:'事项规则管理',
       },
+    ]
+  },
+  {
+    key:'/system-manage',
+    title:'系统管理',
+    icon:<SettingOutlined />,
+    children:[
+      {
+        key:'/system-manage/journal',
+        title:'日志管理'
+      },
+      {
+        key:'/system-manage/resource',
+        title:'资源管理'
+      }
     ]
   },
   {
