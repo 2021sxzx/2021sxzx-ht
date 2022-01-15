@@ -4,7 +4,7 @@ import service from "./http";
  */
 
 const api ={
-    GetComment(data) {
+    GetLog(data) {
         return service.request({
             method: "get",
             url: "/v1/log/",
