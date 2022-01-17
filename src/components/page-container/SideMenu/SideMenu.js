@@ -89,15 +89,15 @@ const menuList = [
         title:'后台账号管理'
       },
       {
-        key:'/comment-manage/role',
+        key:'/user-manage/role',
         title:'角色管理'
       },
       {
-        key:'/comment-manage/department',
+        key:'/user-manage/department',
         title:'部门管理'
       },
       {
-        key:'/comment-manage/metaData',
+        key:'/user-manage/metaData',
         title:'用户资料元数据管理'
       },
       
