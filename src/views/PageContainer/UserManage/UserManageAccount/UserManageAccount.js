@@ -5,6 +5,7 @@
 import React, { useEffect, useState } from 'react'
 
 import { DatePicker, Space, Form, Input, Button, Select, Table, Modal, Descriptions, Badge } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 //import { getYMD, getTimeStamp } from "../../../../utils/TimeStamp";
 import api from "../../../../api/comment";
 
@@ -97,7 +98,7 @@ const SelectForm = (props) => {
 //  优化详情弹窗的 UI
 const CreateModal = (props) => {
     // 初始化新增用户弹窗的展示状态
-    const [isCreateModalVisible, setIsCreateModalVisible] = useState(false);
+    const [isModalVisible, setIsModalVisible] = useState(false);
     // 获取详情内容的数据
     const detail = props.itemDetail
     // 详情弹窗中展示的属性名
@@ -116,18 +117,32 @@ const CreateModal = (props) => {
         // role_name: detail.role_name,
         // role_describe: detail.role_describe,
         // role_permissions: detail.role_permissions
+
     }*/
+
+    //表单提交的成功、失败反馈
+    const onFinish = (values) => {
+        console.log('Success:', values);
+    };
+
+    const onFinishFailed = (errorInfo) => {
+        console.log('Failed:', errorInfo);
+    };
+
+
+
+
     // 查看详情按钮的触发函数，展示详情弹窗
     const showModal = () => {
-        setIsCreateModalVisible(true);
+        setIsModalVisible(true);
     };
     // 保存按钮的触发函数，关闭详情弹窗并保存信息的修改
-    const handleSave = () => {//  保存信息的修改
-        setIsCreateModalVisible(false);
+    const handleOk = () => {//  保存信息的修改
+        setIsModalVisible(false);
     };
     // Cancel按钮的触发函数，关闭详情弹窗
     const handleCancel = () => {
-        setIsCreateModalVisible(false);
+        setIsModalVisible(false);
     };
 
 
@@ -139,17 +154,85 @@ const CreateModal = (props) => {
                 新增用户
             </Button>
 
-            <Modal title="新增用户" visible={isCreateModalVisible} onSave={handleSave} onCancel={handleCancel}>
-                {
-                    /*
-                 <Descriptions>
-                    {Object.keys(detailData).map((item, index) => {
-                        return <Descriptions.Item label={key2name[item]} key={item} span={3}>{detailData[item]}</Descriptions.Item>
-                    })}
-                </Descriptions>
-                   
-                    */
+            <Modal title="新增用户" visible={isModalVisible} onSave={handleOk} onCancel={handleCancel}
+                footer={[
+                    <Button key="back" onClick={handleCancel}>
+                        取消
+                    </Button>,
+                    <Button key="submit" type="primary" htmlType="submit" onClick={handleOk}>
+                        保存
+                    </Button>,
+                ]}
+            >
+                {//引用antd的form组件实现数据录入与提交
                 }
+                <Form
+                    name="basic"
+                    labelCol={{
+                        span: 8,
+                    }}
+                    wrapperCol={{
+                        span: 16,
+                    }}
+                    initialValues={{
+                        remember: true,
+                    }}
+                    onFinish={onFinish}
+                    onFinishFailed={onFinishFailed}
+                    autoComplete="off"
+                >
+                    <Form.Item
+                        label="用户名"
+                        name="username"
+                        rules={[
+                            {
+                                required: true,
+                                message: '请输入用户名!',
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label="用户名账号"
+                        name="useraccount"
+                        rules={[
+                            {
+                                required: true,
+                                message: '请输入用户账号!',
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="用户密码"
+                        name="password"
+                        rules={[
+                            {
+                                required: true,
+                                message: '请输入用户密码!',
+                            },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+                    <Form.Item
+                        label="角色"
+                        name="role"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+
+                    >
+                        <Input />
+                    </Form.Item>
+
+
+                </Form>
             </Modal>
 
 
@@ -158,15 +241,42 @@ const CreateModal = (props) => {
 };
 
 
-// 查看详情按钮及其对应的详情弹窗
-//  优化详情弹窗的 UI
+// 操作组件，包括修改用户信息按钮和删除按钮
 const Opration = (props) => {
     // 使用并设置表单组件
     const [form] = Form.useForm();
     const formLayout = 'inline';
 
-    // 初始化详情弹窗的展示状态
-    const [isModifyModalVisible, setIsModifyModalVisible] = useState(false);
+
+    return (
+        <>
+            <Form
+                layout={formLayout}
+                form={form}
+                initialValues={{
+                    layout: formLayout,
+                }}
+            >
+                <Form.Item >
+                    <ModifyModal></ModifyModal>
+                </Form.Item>
+                <Form.Item >
+                    <DeleteModal></DeleteModal>
+                </Form.Item>
+            </Form>
+
+
+
+        </>
+    );
+};
+
+//修改用户信息的按钮以及弹窗
+const ModifyModal = (props) => {
+    // 初始化新增用户弹窗的展示状态
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    /*
     // 获取详情内容的数据
     const detail = props.itemDetail
     // 详情弹窗中展示的属性名
@@ -185,55 +295,157 @@ const Opration = (props) => {
         // role_name: detail.role_name,
         // role_describe: detail.role_describe,
         // role_permissions: detail.role_permissions
-    }
+
+    }*/
+
+    //表单提交的成功、失败反馈
+    const onFinish = (values) => {
+        console.log('Success:', values);
+    };
+
+    const onFinishFailed = (errorInfo) => {
+        console.log('Failed:', errorInfo);
+    };
+
+
+
+
     // 查看详情按钮的触发函数，展示详情弹窗
     const showModal = () => {
-        setIsModifyModalVisible(true);
+        setIsModalVisible(true);
     };
     // 保存按钮的触发函数，关闭详情弹窗并保存信息的修改
-    const handleSave = () => {//  保存信息的修改
-        setIsModifyModalVisible(false);
+    const handleOk = () => {//  保存信息的修改
+        setIsModalVisible(false);
     };
     // Cancel按钮的触发函数，关闭详情弹窗
     const handleCancel = () => {
-        setIsModifyModalVisible(false);
+        setIsModalVisible(false);
     };
+
+
 
     return (
         <>
-            <Form
-                layout={formLayout}
-                form={form}
-                initialValues={{
-                    layout: formLayout,
-                }}
+
+            <Button onClick={showModal}>
+                修改用户信息
+            </Button>
+
+            <Modal title="修改用户信息" visible={isModalVisible} onSave={handleOk} onCancel={handleCancel}
+                footer={[
+                    <Button key="back" onClick={handleCancel}>
+                        取消
+                    </Button>,
+                    <Button key="submit" type="primary" htmlType="submit" onClick={handleOk}>
+                        保存
+                    </Button>,
+                ]}
             >
-                <Form.Item >
-                    <Button onClick={showModal}>
-                        修改用户信息
-                    </Button>
+                <Form
+                    name="basic"
+                    labelCol={{
+                        span: 8,
+                    }}
+                    wrapperCol={{
+                        span: 16,
+                    }}
+                    initialValues={{
+                        remember: true,
+                    }}
+                    onFinish={onFinish}
+                    onFinishFailed={onFinishFailed}
+                    autoComplete="off"
+                >
+                    <Form.Item
+                        label="用户名"
+                        name="username"
+                        rules={[
+                            {
+                                required: true,
+                                message: '请输入用户名!',
+                            },
+                        ]}
+                    >
+                        <Input defaultValue="张思成" />
+                    </Form.Item>
+                    <Form.Item
+                        label="用户名账号"
+                        name="useraccount"
+                        rules={[
+                            {
+                                required: true,
+                                message: '请输入用户账号!',
+                            },
+                        ]}
+                    >
+                        <Input defaultValue="asdfgh" />
+                    </Form.Item>
 
-                    <Modal title="修改用户信息" visible={isModifyModalVisible} onSave={handleSave} onCancel={handleCancel}>
-                        <Descriptions>
-                            {Object.keys(detailData).map((item, index) => {
-                                return <Descriptions.Item label={key2name[item]} key={item} span={3}>{detailData[item]}</Descriptions.Item>
-                            })}
-                        </Descriptions>
-                    </Modal>
+                    <Form.Item
+                        label="用户密码"
+                        name="password"
+                        rules={[
+                            {
+                                required: true,
+                                message: '请输入用户密码!',
+                            },
+                        ]}
+                    >
+                        <Input defaultValue="jkl123" />
+                    </Form.Item>
+                    <Form.Item
+                        label="角色"
+                        name="role"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
 
-                </Form.Item>
-                <Form.Item >
-                    <Button >
-                        删除
-                    </Button>
-                </Form.Item>
-            </Form>
+                    >
+                        <Input defaultValue="审核员" />
+                    </Form.Item>
 
+
+                </Form>
+            </Modal>
 
 
         </>
     );
 };
+
+
+//删除按钮以及点击弹窗
+//引用antd的确认对话框组件confirm（）
+const DeleteModal = (props) => {
+    const { confirm } = Modal;
+
+    const showPromiseConfirm = () => {
+        confirm({
+            title: '你确定要删除这个用户吗？',
+            icon: <ExclamationCircleOutlined />,
+            okText: '确定',
+            okType: 'danger',
+            cancelText: '取消',
+            onOk() {
+                return new Promise((resolve, reject) => {
+                    setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+                }).catch(() => console.log('Oops errors!'));
+            },
+            onCancel() { },
+        });
+    };
+
+    return (
+        <>
+            <Space wrap>
+                <Button onClick={showPromiseConfirm}>删除</Button>
+            </Space>
+        </>
+    );
+}
 
 //  修改和服务器的数据接口
 //  修改页面 UI 样式
