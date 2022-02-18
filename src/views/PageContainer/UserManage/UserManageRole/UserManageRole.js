@@ -149,19 +149,15 @@ const CreateModal = (props) => {
      * 1. 下面三个 function 重复度高，可以合成一个
      * 2. 现在是输入框每次内容改变的时候都会 setState，但实际只需要点击保存按钮的时候能获取输入框的内容就行了
      */
-    function handleInputChangeRoleName(event) {
+    const handleInputChangeRoleName = (event) => {
         setRoleName(event.target.value);
     }
 
-    function handleInputChangeRoleDescribe(event) {
+    const handleInputChangeRoleDescribe = (event) => {
         setRoleDescribe(event.target.value);
     }
 
-    function handleInputChangePermission(event) {
-        setPermissionIdentifierArray(event.target.value);
-    }
-
-    function handleMultipleSelectChange(value) {
+    const handleMultipleSelectChange = (value) => {
         console.log('multiSelect = ', value)
         setPermissionIdentifierArray(value);
     }
@@ -409,15 +405,15 @@ const UpdateModal = (props) => {
      * 1. 下面三个 function 重复度高，可以合成一个
      * 2. 现在是输入框每次内容改变的时候都会 setState，但实际只需要点击保存按钮的时候能获取输入框的内容就行了
      */
-    function handleInputChangeRoleName(event) {
+    const handleInputChangeRoleName = (event) => {
         setRoleName(event.target.value);
     }
 
-    function handleInputChangeRoleDescribe(event) {
+    const handleInputChangeRoleDescribe = (event) => {
         setRoleDescribe(event.target.value);
     }
 
-    function handleMultipleSelectChange(value) {
+    const handleMultipleSelectChange = (value) => {
         console.log('multiSelect = ', value)
         setPermissionIdentifierArray(value);
     }
