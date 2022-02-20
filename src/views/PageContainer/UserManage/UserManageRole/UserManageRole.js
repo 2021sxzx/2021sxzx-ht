@@ -21,7 +21,7 @@ import {ExclamationCircleOutlined} from "@ant-design/icons";
 const {Option} = Select;
 
 // 设置角色下拉列表的内容   
-const roleList = [];
+// const roleList = [];
 // // 下拉列表组件
 // const DropSelect = (props) => {
 //     const {dataList, setData} = props
@@ -554,7 +554,7 @@ export default function CommentManageList() {
         console.log('roleSearchValue=', data)
         api.SearchRole(data).then(response => {
             // log 服务端返回的搜索结果
-            console.log('searchResult=', response.data.data)
+            console.log('searchResult=', response.data)
             setTableData(response.data.data)
         }).catch(error => {
         })
