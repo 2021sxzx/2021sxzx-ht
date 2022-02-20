@@ -1,9 +1,7 @@
 /**
- * 获取角色数据的API
+ * 角色-权限数据相关的服务器 API
  */
 import service from "./http";
-
-// TODO(zzj): 所有接口都待完善
 
 const api = {
     // 增加角色
