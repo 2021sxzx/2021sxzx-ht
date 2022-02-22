@@ -4,12 +4,12 @@ import { DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptio
 import TagsArea from './TagsArea.js'
 
 export default function CreateRule(props){
-    const [taskCode, setTaskCode] = useState('11440117007517547R4442111820008')
+    const [taskCode, setTaskCode] = useState('-')
     const [taskRule, setTaskRule] = useState('\\' + props.ruleRoot.nodeName + '\\')
     const [chosenTags, setChosenTags] = useState([])
     const [enabledTags, setEnabledTags] = useState([])
     const [recommendedTags, setRecommendedTags] = useState([{
-        'nodeName': '2',
+        'nodeName': '暂无',
         'nodeId': '12345'
     }])
     const [isCreating, setIsCreating] = useState(false)
@@ -34,6 +34,7 @@ export default function CreateRule(props){
 
         // 获取选取的节点，渲染其子节点并处理规则路径
         let tag = enabledTags[index]
+        console.log(tag)
         chosenTags.push(tag)
         let currChildren = []
         if (tag.nodeId in props.ruleTree){
@@ -59,6 +60,7 @@ export default function CreateRule(props){
         }
         let currRule = taskRule + tag.nodeName + '\\'
         setEnabledTags(currChildren)
+        console.log(currChildren)
         setTaskRule(currRule)
     }
 
@@ -174,7 +176,7 @@ export default function CreateRule(props){
                     }
                 </div>
 
-                <Modal centered destroyOnClose={true} title='Creating' visible={isCreating} onCancel={endCreating} onOk={finishCreating}>
+                <Modal centered destroyOnClose={true} title='自定义标签' visible={isCreating} onCancel={endCreating} onOk={finishCreating}>
                     <Input id='creatingInput' placeholder='请输入自定义标签名' size='middle' onChange={handleCreatingInputChange}/>
                 </Modal>
                 
@@ -205,7 +207,7 @@ export default function CreateRule(props){
                     <div className={style.chooseBoxSubTitle} style={{left: 480, bottom: 55}}>
                         用户自定义：
                     </div>
-                    <div className={style.tag} style={{position: 'absolute', width: 90, bottom: 20, left: 500}}
+                    <div className={style.tag} style={{position: 'absolute', width: 90, bottom: 20, left: 500, cursor: 'pointer'}}
                         onClick={startCreating}>
                         自定义标签+
                     </div>
