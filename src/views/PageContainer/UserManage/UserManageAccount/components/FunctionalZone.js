@@ -19,7 +19,7 @@ export default function FunctionalZone (props){
         console.log('批量导入并刷新表格')
 
         // 刷新表格内容
-        // props.refreshTableData()
+        props.refreshTableData()
     }
 
     const addUserAndRefresh = function (data){
@@ -32,7 +32,7 @@ export default function FunctionalZone (props){
         });
 
         // 刷新表格内容
-        // props.refreshTableData()
+        props.refreshTableData()
     }
 
     return (

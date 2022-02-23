@@ -24,7 +24,7 @@ export default function UserTable(props) {
         });
 
         // 刷新表格内容
-        // props.refreshTableData()
+        props.refreshTableData()
     }
 
     // 表格的属性/列名
