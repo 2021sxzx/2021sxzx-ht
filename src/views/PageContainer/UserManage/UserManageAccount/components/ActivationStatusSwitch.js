@@ -43,7 +43,6 @@ export default function ActivationStatusSwitch (props){
         return <Switch
             checkedChildren={"已激活"}
             unCheckedChildren={"未激活"}
-            {/* 将 activationStatus 转换为 defaultChecked */}
             defaultChecked={activationStatus===1}
             onChange={handleSwitchChangeActivationState}
         />
