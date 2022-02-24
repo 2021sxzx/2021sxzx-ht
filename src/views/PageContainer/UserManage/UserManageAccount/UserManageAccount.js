@@ -4,10 +4,10 @@
 
 import React, {useEffect, useState} from 'react'
 
-import {Space} from 'antd';
+import {message, Space} from 'antd';
 
 import api from "../../../../api/user";
-import FunctionalZone from "./components/FunctionalZone";
+import UserTableFunctionalZone from "./components/UserTableFunctionalZone";
 import UserTable from "./components/UserTable";
 
 //  修改页面 UI 样式
@@ -33,8 +33,10 @@ export default function UserManageAccount() {
         api.SearchUser(data).then(response => {
             console.log('SearchValue =', response.data)
             setTableData(response.data.data)
+            message.success('搜索用户信息成功')
         }).catch(error => {
             console.log("error = ",error)
+            message.error('搜索用户信息发生错误')
         })
     }
 
@@ -47,9 +49,9 @@ export default function UserManageAccount() {
         <div>
             <Space direction="vertical" size={12}>
                 {/* 功能区 */}
-                <FunctionalZone getSearch={getSearchUser} refreshTableData={getUser}/>
+                <UserTableFunctionalZone getSearch={getSearchUser} refreshTableData={getUser}/>
                 {/* 用户评价的表格 */}
-                <UserTable  tableData={tableData} refreshTableData={getUser}/>
+                <UserTable tableData={tableData} refreshTableData={getUser}/>
             </Space>,
         </div>
     )
