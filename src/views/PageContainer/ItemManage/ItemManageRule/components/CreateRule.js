@@ -7,7 +7,7 @@ import api from '../../../../../api/rule';
 export default function CreateRule(props){
     // 页面中用以展示的基础数据
     const [taskCode, setTaskCode] = useState('-')
-    const [taskRule, setTaskRule] = useState('\\' + props.ruleRoot.nodeName + '\\')
+    const [taskRule, setTaskRule] = useState(props.ruleRoot.nodeName + '\\')
     // 选择过程中的已选择、待选择节点
     const [chosenTags, setChosenTags] = useState([])
     const [enabledTags, setEnabledTags] = useState([])
@@ -21,13 +21,16 @@ export default function CreateRule(props){
     // 创建自定义节点
     const [isCreating, setIsCreating] = useState(false)
     const [newNode, setNewNode] = useState('')
+    // 是否已经可以创建
+    const [chooseEnd, setChooseEnd] = useState(false)
+    // 加载效果
+    const [isLoading, setIsLoading] = useState(false)
 
     useEffect(()=>{
         // 初始化分类规则树的根节点
         let currChildren = []
         let currChosen = []
         currChosen.push(props.ruleRoot)
-        console.log(props)
         for (let i = 0; i < (props.ruleTree[props.ruleRoot.nodeId]).length; i++){
             currChildren.push((props.ruleTree[props.ruleRoot.nodeId])[i])
         }
@@ -54,7 +57,8 @@ export default function CreateRule(props){
             }
             else{
                 // 区划节点选择完毕
-                // 无事发生，之后需要操作什么再在这里处理
+                // 只有当全部选择完毕的时候才可以进行创建或修改
+                setChooseEnd(true)
             }
             setCurrRegionId(tag.nodeId)
         }
@@ -86,7 +90,8 @@ export default function CreateRule(props){
         }
         let currChosen = []
         let currChildren = []
-        let currRule = '\\'
+        let currRule = ''
+        setChooseEnd(false)
 
         let returnTag = chosenTags[index]
         for (let i = 0; i <= index; i++){
@@ -137,8 +142,12 @@ export default function CreateRule(props){
             ]
         }
         api.CreateItemRules(data).then(response=>{
-            props.init()
-            props.setPageType(1)
+            setIsLoading(true)
+            setTimeout(function(){
+                props.init()
+                props.setPageType(1)
+                setIsLoading(false)
+            }, 1000)
         }).catch(error=>{
         })
     }
@@ -154,8 +163,12 @@ export default function CreateRule(props){
             ]
         }
         api.UpdateItemRules(data).then(response=>{
-            props.init()
-            props.setPageType(1)
+            setIsLoading(true)
+            setTimeout(function(){
+                props.init()
+                props.setPageType(1)
+                setIsLoading(false)
+            }, 1000)
         }).catch(error=>{
         })
     }
@@ -272,7 +285,9 @@ export default function CreateRule(props){
                 <Button type='default' size='middle' style={{left: 400, width: 100}}
                     onClick={handleCancel}>取消</Button>
                 <Button type='primary' size='middle' style={{left: 500, width: 100}}
-                    onClick={props.modifyId == '' ? handleCreate : handleModify}>{props.modifyId == '' ? '创建' : '修改'}</Button>
+                    onClick={props.modifyId == '' ? handleCreate : handleModify} disabled={!chooseEnd} loading={isLoading}>
+                    {props.modifyId == '' ? '创建' : '修改'}
+                </Button>
             </div>
         </Space>
     )
