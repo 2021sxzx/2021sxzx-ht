@@ -20,37 +20,58 @@ const api ={
     },
     GetItemRules(data){
         return service.request({
-            methods: "get",
+            method: "post",
             url: "/v1/getItemRules/",
-            data,
-        })
-    },
-    GetItemByUniId(data){
-        return service.request({
-            methods: "get",
-            url: "/v1/getItemByUniId/",
             data,
         })
     },
     CreateRules(data){
         return service.request({
-            methods: "get",
+            method: "post",
             url: "/v1/createRules/",
             data,
         })
     },
     DeleteRules(data){
         return service.request({
-            methods: "get",
+            method: "post",
             url: "/v1/deleteRules/",
             data,
         })
     },
-    GetItemsByRuleId(data){
+    DeleteItemRules(data){
         return service.request({
-            methods: "get",
-            url: "/v1/getItemsByRuleId/",
+            method: "post",
+            url: "/v1/deleteItemRules/",
             data,
+        })
+    },
+    GetRulePath(data){
+        return service.request({
+            method: "post",
+            url: "/v1/getRulePath",
+            data,
+        })
+    },
+    GetRegionPath(data){
+        return service.request({
+            method: "post",
+            url: "/v1/getRegionPath",
+            data
+        })
+    },
+    CreateItemRules(data){
+        return service.request({
+            method: "post",
+            url: "/v1/createItemRules",
+            data
+        })
+    },
+    UpdateItemRules(data){
+        return service.request({
+            method: "post",
+            url: "/v1/updateItemRules",
+            data
         })
     }
 }

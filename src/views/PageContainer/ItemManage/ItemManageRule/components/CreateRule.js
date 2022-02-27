@@ -2,16 +2,23 @@ import React, {useEffect, useState} from 'react'
 import style from './CreateRule.module.scss'
 import { DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
 import TagsArea from './TagsArea.js'
+import api from '../../../../../api/rule';
 
 export default function CreateRule(props){
+    // 页面中用以展示的基础数据
     const [taskCode, setTaskCode] = useState('-')
     const [taskRule, setTaskRule] = useState('\\' + props.ruleRoot.nodeName + '\\')
+    // 选择过程中的已选择、待选择节点
     const [chosenTags, setChosenTags] = useState([])
     const [enabledTags, setEnabledTags] = useState([])
     const [recommendedTags, setRecommendedTags] = useState([{
         'nodeName': '暂无',
         'nodeId': '12345'
     }])
+    // 已选择节点的规则id以及区划id
+    const [currRuleId, setCurrRuleId] = useState('')
+    const [currRegionId, setCurrRegionId] = useState('')
+    // 创建自定义节点
     const [isCreating, setIsCreating] = useState(false)
     const [newNode, setNewNode] = useState('')
 
@@ -37,60 +44,78 @@ export default function CreateRule(props){
         console.log(tag)
         chosenTags.push(tag)
         let currChildren = []
-        if (tag.nodeId in props.ruleTree){
-            // 选择了一个有子节点的分类规则节点
-            for (let i = 0; i < props.ruleTree[tag.nodeId].length; i++){
-                currChildren.push(props.ruleTree[tag.nodeId][i])
+        if (tag.isRegion){
+            // 是区划节点
+            if (tag.nodeId in props.regionTree){
+                // 选择了一个有子节点的区划节点
+                for (let i = 0; i < props.regionTree[tag.nodeId].length; i++){
+                    currChildren.push(props.regionTree[tag.nodeId][i])
+                }
             }
-        }
-        else if (tag.nodeId in props.regionTree){
-            // 选择了一个有子节点的区划节点
-            for (let i = 0; i < props.regionTree[tag.nodeId].length; i++){
-                currChildren.push(props.regionTree[tag.nodeId][i])
+            else{
+                // 区划节点选择完毕
+                // 无事发生，之后需要操作什么再在这里处理
             }
-        }
-        else if ('isRegion' in tag){
-            // 区划节点选择完毕
-            alert('选择完毕')
-            return
+            setCurrRegionId(tag.nodeId)
         }
         else{
-            // 分类规则选择完毕，切换为区划
-            currChildren.push(props.regionRoot)
+            // 是规则节点
+            if (tag.nodeId in props.ruleTree){
+                // 选择了一个有子节点的分类规则节点
+                for (let i = 0; i < props.ruleTree[tag.nodeId].length; i++){
+                    currChildren.push(props.ruleTree[tag.nodeId][i])
+                }
+            }
+            else{
+                // 分类规则选择完毕，切换为区划
+                currChildren.push(props.regionRoot)
+            }
+            setCurrRuleId(tag.nodeId)
         }
+        
         let currRule = taskRule + tag.nodeName + '\\'
         setEnabledTags(currChildren)
-        console.log(currChildren)
+        console.log(tag)
         setTaskRule(currRule)
     }
 
     const getBack = (index)=>{
         if (index === chosenTags.length - 1){
+            // 原地tp
             return
         }
         let currChosen = []
         let currChildren = []
         let currRule = '\\'
 
-        let returnId = chosenTags[index].nodeId
+        let returnTag = chosenTags[index]
         for (let i = 0; i <= index; i++){
+            // 把现在已选择的节点列表还原到选中的t节点为止
             currChosen.push(chosenTags[i])
             currRule += (chosenTags[i].nodeName + '\\')
         }
 
-        if (returnId in props.ruleTree){
-            // 加个判断处理选择分类规则叶子节点的情况
-            for (let i = 0; i < props.ruleTree[returnId].length; i++){
-                currChildren.push(props.ruleTree[returnId][i])
+        if (returnTag.isRegion){
+            // 判断返回的节点是规则还是区划，从对应的树中获取其子节点
+            for (let i = 0; i < props.regionTree[returnTag.nodeId].length; i++){
+                currChildren.push(props.regionTree[returnTag.nodeId][i])
             }
-        }
-        else if (returnId in props.regionTree){
-            for (let i = 0; i < props.regionTree[returnId].length; i++){
-                currChildren.push(props.regionTree[returnId][i])
-            }
+            // 只需回退区划Id
+            setCurrRegionId(returnTag.nodeId)
         }
         else{
-            currChildren.push(props.regionRoot)
+            if (!(returnTag.nodeId in props.ruleTree)){
+                // 若返回的节点不在树中，说明是叶子节点，将区划根节点推入即可
+                currChildren.push(props.regionRoot)
+            }
+            else{
+                for (let i = 0; i < props.ruleTree[returnTag.nodeId].length; i++){
+                    currChildren.push(props.ruleTree[returnTag.nodeId][i])
+                }
+            }
+            // 回退到规则Id时，区划Id尚未选择，所以清零
+            setCurrRegionId('')
+            setCurrRuleId(returnTag.nodeId)
         }
         
         setChosenTags(currChosen)
@@ -103,7 +128,36 @@ export default function CreateRule(props){
     }
 
     const handleCreate = ()=>{
+        let data = {
+            itemRules: [
+                {
+                    rule_id: currRuleId,
+                    region_id: currRegionId
+                }
+            ]
+        }
+        api.CreateItemRules(data).then(response=>{
+            props.init()
+            props.setPageType(1)
+        }).catch(error=>{
+        })
+    }
 
+    const handleModify = ()=>{
+        let data = {
+            itemRules: [
+                {
+                    item_rule_id: props.modifyId,
+                    rule_id: currRuleId,
+                    region_id: currRegionId
+                }
+            ]
+        }
+        api.UpdateItemRules(data).then(response=>{
+            props.init()
+            props.setPageType(1)
+        }).catch(error=>{
+        })
     }
 
     const handleCreatingInputChange = (e)=>{
@@ -127,6 +181,10 @@ export default function CreateRule(props){
 
     return (
         <Space direction='vertical' size={15}>
+            <Modal centered destroyOnClose={true} title='自定义标签' visible={isCreating} onCancel={endCreating} onOk={finishCreating}>
+                <Input id='creatingInput' placeholder='请输入自定义标签名' size='middle' onChange={handleCreatingInputChange}/>
+            </Modal>
+
             <div className={style.ruleItem}>
                 <div className={style.itemTitle}>
                     事项指南编码：
@@ -175,10 +233,6 @@ export default function CreateRule(props){
                         )
                     }
                 </div>
-
-                <Modal centered destroyOnClose={true} title='自定义标签' visible={isCreating} onCancel={endCreating} onOk={finishCreating}>
-                    <Input id='creatingInput' placeholder='请输入自定义标签名' size='middle' onChange={handleCreatingInputChange}/>
-                </Modal>
                 
                 <div className={style.createTitle} style={{top: 50, left: 15}}>
                     事项规则库：
@@ -217,7 +271,8 @@ export default function CreateRule(props){
             <div style={{display: 'block'}}>
                 <Button type='default' size='middle' style={{left: 400, width: 100}}
                     onClick={handleCancel}>取消</Button>
-                <Button type='primary' size='middle' style={{left: 500, width: 100}}>创建</Button>
+                <Button type='primary' size='middle' style={{left: 500, width: 100}}
+                    onClick={props.modifyId == '' ? handleCreate : handleModify}>{props.modifyId == '' ? '创建' : '修改'}</Button>
             </div>
         </Space>
     )

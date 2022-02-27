@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react'
 import {DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptions, Badge} from 'antd'
-
+import {getTimeStamp} from "../../../../../utils/TimeStamp";
 const {RangePicker} = DatePicker
 
 export default function SelectForm(props){
     const [form] = Form.useForm()
-    const [startTime, setStartTime] = useState('')
-    const [endTime, setEndTime] = useState('')
-    const [taskCode, setTaskCode] = useState('')
+    const [start_time, setStartTime] = useState('')
+    const [end_time, setEndTime] = useState('')
+    const [item_rule_id, setTaskCode] = useState('')
     const [taskRule, setTaskRule] = useState('')
     const [department, setDepartment] = useState('')
     const [creator, setCreator] = useState('')
@@ -27,9 +27,9 @@ export default function SelectForm(props){
 
     const Search = ()=>{
         const data = {
-            startTime,
-            endTime,
-            taskCode,
+            start_time,
+            end_time,
+            item_rule_id,
             taskRule,
             department,
             creator
@@ -48,6 +48,16 @@ export default function SelectForm(props){
         }
     }
 
+    const reset = ()=>{
+        setTaskCode('')
+        setTaskRule('')
+        setDepartment('')
+        setCreator('')
+        setStartTime('')
+        setEndTime('')
+        props.reset()
+    }
+
     return (
         <>
             <Form
@@ -61,7 +71,7 @@ export default function SelectForm(props){
                     <Input placeholder='请输入编码' size='middle' style={{width: 288.4}} onChange={handleTaskCodeChange}></Input>
                 </Form.Item>
                 <Form.Item label='规则名称'>
-                    <Input placeholder='请输入名称' size='middle' style={{width: 200}} onChange={handleTaskRuleChange}></Input>
+                    <Input placeholder='请输入名称' size='middle' style={{width: 249}} onChange={handleTaskRuleChange}></Input>
                 </Form.Item>
                 <Form.Item label='业务部门'>
                     <Input placeholder='请输入部门' size='middle' onChange={handleDepartmentChange}></Input>
@@ -73,8 +83,8 @@ export default function SelectForm(props){
                 <Form.Item label='起始时间' style={{marginTop: 10}}>
                     <RangePicker onChange={handleDateChange}/>      
                 </Form.Item>
-                <Form.Item style={{marginLeft: 646, marginTop: 10}}>
-                    <Button type='default' onClick={props.reset}>重置</Button>
+                <Form.Item style={{marginLeft: 696, marginTop: 10}}>
+                    <Button type='default' onClick={reset}>重置</Button>
                 </Form.Item>
                 <Form.Item style={{marginTop: 10}}>
                     <Button type='primary' onClick={Search}>查询</Button>
