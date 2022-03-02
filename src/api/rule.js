@@ -25,20 +25,6 @@ const api ={
             data,
         })
     },
-    CreateRules(data){
-        return service.request({
-            method: "post",
-            url: "/v1/createRules/",
-            data,
-        })
-    },
-    DeleteRules(data){
-        return service.request({
-            method: "post",
-            url: "/v1/deleteRules/",
-            data,
-        })
-    },
     DeleteItemRules(data){
         return service.request({
             method: "post",
@@ -71,6 +57,13 @@ const api ={
         return service.request({
             method: "post",
             url: "/v1/updateItemRules",
+            data
+        })
+    },
+    CreateRules(data){
+        return service.request({
+            method: "post",
+            url: "/v1/createRules",
             data
         })
     }

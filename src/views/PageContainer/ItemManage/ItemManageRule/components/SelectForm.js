@@ -17,7 +17,7 @@ export default function SelectForm(props){
         setItemRuleId(e.target.value)
     }
     const handleTaskRuleChange = (e)=>{
-        setTaskRule(e.target.value)
+        setItemRuleName(e.target.value)
     }
     const handleDepartmentChange = (e)=>{
         setDepartment(e.target.value)

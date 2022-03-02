@@ -8,6 +8,7 @@ export default function CreateRule(props){
     // 页面中用以展示的基础数据
     const [taskCode, setTaskCode] = useState('-')
     const [taskRule, setTaskRule] = useState(props.ruleRoot.nodeName + '\\')
+    const [extraHeight, setExtraHeight] = useState(0)
     // 选择过程中的已选择、待选择节点
     const [chosenTags, setChosenTags] = useState([])
     const [enabledTags, setEnabledTags] = useState([])
@@ -21,6 +22,8 @@ export default function CreateRule(props){
     // 创建自定义节点
     const [isCreating, setIsCreating] = useState(false)
     const [newNode, setNewNode] = useState('')
+    const [newNodeList, setNewNodeList] = useState([])
+    const [realNewId, setRealNewId] = useState('')
     // 是否已经可以创建
     const [chooseEnd, setChooseEnd] = useState(false)
     // 加载效果
@@ -44,7 +47,6 @@ export default function CreateRule(props){
 
         // 获取选取的节点，渲染其子节点并处理规则路径
         let tag = enabledTags[index]
-        console.log(tag)
         chosenTags.push(tag)
         let currChildren = []
         if (tag.isRegion){
@@ -72,14 +74,13 @@ export default function CreateRule(props){
             }
             else{
                 // 分类规则选择完毕，切换为区划
-                currChildren.push(props.regionRoot)
+                currChildren = props.regionRoot
             }
             setCurrRuleId(tag.nodeId)
         }
         
         let currRule = taskRule + tag.nodeName + '\\'
         setEnabledTags(currChildren)
-        console.log(tag)
         setTaskRule(currRule)
     }
 
@@ -90,15 +91,22 @@ export default function CreateRule(props){
         }
         let currChosen = []
         let currChildren = []
+        let currNewNodeList = []
+        let listIndex = 0
         let currRule = ''
         setChooseEnd(false)
 
         let returnTag = chosenTags[index]
         for (let i = 0; i <= index; i++){
-            // 把现在已选择的节点列表还原到选中的t节点为止
+            // 把现在已选择的节点列表还原到选中的节点为止
             currChosen.push(chosenTags[i])
             currRule += (chosenTags[i].nodeName + '\\')
+            if (chosenTags[i].nodeId[0] == 't'){
+                // 若其中有待创建队列，则重新推入队列
+                currNewNodeList.push(newNodeList[listIndex++])
+            }
         }
+        setNewNodeList(currNewNodeList)
 
         if (returnTag.isRegion){
             // 判断返回的节点是规则还是区划，从对应的树中获取其子节点
@@ -111,7 +119,7 @@ export default function CreateRule(props){
         else{
             if (!(returnTag.nodeId in props.ruleTree)){
                 // 若返回的节点不在树中，说明是叶子节点，将区划根节点推入即可
-                currChildren.push(props.regionRoot)
+                currChildren = props.regionRoot
             }
             else{
                 for (let i = 0; i < props.ruleTree[returnTag.nodeId].length; i++){
@@ -122,7 +130,6 @@ export default function CreateRule(props){
             setCurrRegionId('')
             setCurrRuleId(returnTag.nodeId)
         }
-        
         setChosenTags(currChosen)
         setTaskRule(currRule)
         setEnabledTags(currChildren)
@@ -133,43 +140,116 @@ export default function CreateRule(props){
     }
 
     const handleCreate = ()=>{
-        let data = {
-            itemRules: [
-                {
-                    rule_id: currRuleId,
-                    region_id: currRegionId
-                }
-            ]
+        setIsLoading(true)
+        if (newNodeList.length != 0){
+            // 若有新建的规则，则先创建规则
+            let list = {
+                rules: newNodeList
+            }
+            createRules(list)
         }
-        api.CreateItemRules(data).then(response=>{
-            setIsLoading(true)
-            setTimeout(function(){
-                props.init()
-                props.setPageType(1)
-                setIsLoading(false)
-            }, 1000)
-        }).catch(error=>{
-        })
+        else{
+            let data = {
+                itemRules: [
+                    {
+                        rule_id: currRuleId,
+                        region_id: currRegionId
+                    }
+                ]
+            }
+            createItemRules(data)
+        }
     }
 
     const handleModify = ()=>{
-        let data = {
-            itemRules: [
-                {
-                    item_rule_id: props.modifyId,
-                    rule_id: currRuleId,
-                    region_id: currRegionId
-                }
-            ]
+        setIsLoading(true)
+        if (newNodeList.length != 0){
+            // 若有新建的规则，则先创建规则
+            let list = {
+                rules: newNodeList
+            }
+            createRules(list)
         }
-        api.UpdateItemRules(data).then(response=>{
-            setIsLoading(true)
-            setTimeout(function(){
-                props.init()
-                props.setPageType(1)
-                setIsLoading(false)
-            }, 1000)
+        else{
+            let data = {
+                itemRules: [
+                    {
+                        item_rule_id: props.modifyId,
+                        rule_id: currRuleId,
+                        region_id: currRegionId
+                    }
+                ]
+            }
+            updateItemRules(data)
+        }
+    }
+
+    useEffect(function(){
+        if (realNewId == ''){
+            return
+        }
+        // 用获取的规则id进行事项规则的创建
+        // 为了防止state更新的延迟，用hook实现
+        if (props.modifyId == ''){
+            let data = {
+                itemRules: [
+                    {
+                        rule_id: realNewId,
+                        region_id: currRegionId
+                    }
+                ]
+            }
+            createItemRules(data)
+        }
+        else{
+            let data = {
+                itemRules: [
+                    {
+                        item_rule_id: props.modifyId,
+                        rule_id: realNewId,
+                        region_id: currRegionId
+                    }
+                ]
+            }
+            updateItemRules(data)
+        } 
+    },[realNewId])
+
+    const createItemRules = (data)=>{
+        api.CreateItemRules(data).then(response=>{
+            setIsLoading(false)
+            props.init()
+            props.setPageType(1)
         }).catch(error=>{
+            returnError()
+        })
+    }
+
+    const updateItemRules = (data)=>{
+        api.UpdateItemRules(data).then(response=>{
+            setIsLoading(false)
+            props.init()
+            props.setPageType(1)
+        }).catch(error=>{
+            // 若修改过程出错，可能是库已经发生改变，树和事项都刷新
+            returnError()
+        })
+    }
+
+    const createRules = (data)=>{
+        // 调用创建规则接口
+        api.CreateRules(data).then(response=>{
+            let dict = response.data.data
+            console.log(dict)
+            // 对照字典查询新建节点的正式id并设置state
+            for (let i = 0; i < dict.length; i++){
+                if (dict[i].temp_id == newNodeList[newNodeList.length - 1].temp_id){
+                    setRealNewId(dict[i].rule_id)
+                }
+            }
+        }).catch(error=>{
+            // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
+            returnError()
         })
     }
 
@@ -186,11 +266,51 @@ export default function CreateRule(props){
     }
 
     const finishCreating = ()=>{
-        // createNewNode(newNode)
+        // 点击OK则将规则推入待创建队列
+        let tempNode = {
+            nodeId: 'temp' + newNodeList.length,
+            nodeName: newNode,
+            isRegion: false
+        }
+        createNewNode(tempNode)
+        // 然后清空创建窗口
         document.getElementById('creatingInput').value = ''
         setNewNode('')
         setIsCreating(false)
     }
+
+    const createNewNode = (node)=>{
+        // 放进待处理数组
+        newNodeList.push({
+            temp_id: node.nodeId,
+            rule_name: node.nodeName,
+            parentId: currRuleId
+        })
+        // 处理页面展示内容
+        chosenTags.push(node)
+        setTaskRule(taskRule + node.nodeName + '\\')
+        setEnabledTags(props.regionRoot)
+        setCurrRuleId(node.nodeId)
+    }
+
+    const returnError = ()=>{
+        props.init()
+        props.showError()
+        props.setPageType(1)
+    }
+
+    useEffect(function(){
+        let height = 0
+        if (enabledTags.length > 7 || recommendedTags.length > 4){
+            if (enabledTags.length - 7 > recommendedTags.length - 4){
+                height = enabledTags.length - 7
+            }
+            else{
+                height = recommendedTags.length - 4
+            }
+        }
+        setExtraHeight(height * 32)
+    },[enabledTags, recommendedTags])
 
     return (
         <Space direction='vertical' size={15}>
@@ -230,11 +350,11 @@ export default function CreateRule(props){
                 </div>
             </div>
 
-            <div className={style.createBox} style={{height: 352 + (enabledTags.length - 7) * 32, minHeight: 352}}>
+            <div className={style.createBox} style={{height: 352 + extraHeight, minHeight: 352}}>
                 <div className={style.chosenTags}>
                     {
                         chosenTags.map((tag, index) =>
-                            <div className={style.chosenTag} key={'c' + tag.nodeId} onClick={
+                            <div className={style.chosenTag} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')} onClick={
                                 value=>{
                                     getBack(index)
                                 }
@@ -250,7 +370,7 @@ export default function CreateRule(props){
                 <div className={style.createTitle} style={{top: 50, left: 15}}>
                     事项规则库：
                 </div>
-                <div className={style.chooseBox} style={{height: 276 + (enabledTags.length - 7) * 32, minHeight: 276}}>
+                <div className={style.chooseBox} style={{height: 276 + extraHeight, minHeight: 276}}>
                     <div className={style.chooseBoxTitle} style={{left: 30, top: 15}}>
                         可选事项规则项：
                     </div>
@@ -258,7 +378,7 @@ export default function CreateRule(props){
                         <TagsArea tags={enabledTags} chooseTag={chooseTag} type={'1'}/>
                     </div>
 
-                    <div className={style.separator} style={{height: 240 + (enabledTags.length - 7) * 32, minHeight: 240}}></div>
+                    <div className={style.separator} style={{height: 240 + extraHeight, minHeight: 240}}></div>
                     
                     <div className={style.chooseBoxTitle} style={{left: 450, top: 15}}>
                         候选事项规则项：
@@ -271,10 +391,10 @@ export default function CreateRule(props){
                         <TagsArea tags={recommendedTags} chooseTag={chooseTag} type={'2'}/>
                     </div>
 
-                    <div className={style.chooseBoxSubTitle} style={{left: 480, bottom: 55}}>
+                    <div className={style.chooseBoxSubTitle} style={{left: 480, bottom: 55, display: currRegionId == '' ? 'block' : 'none'}}>
                         用户自定义：
                     </div>
-                    <div className={style.tag} style={{position: 'absolute', width: 90, bottom: 20, left: 500, cursor: 'pointer'}}
+                    <div className={style.createTag} style={{display: currRegionId == '' ? 'block' : 'none'}}
                         onClick={startCreating}>
                         自定义标签+
                     </div>

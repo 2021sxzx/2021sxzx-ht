@@ -110,7 +110,7 @@ export default function ManageRules(props) {
         api.GetItemRules({}).then(response=>{
             let rules = response.data.data
             for (let i = 0; i < rules.length; i++){
-                rules[i]['rule_path'] = getPathByRuleId(rules[i]['rule_id']) + getPathByRegionId(rules[i]['region_id'])
+                rules[i]['rule_path'] = (rules[i]['rule_id'] != '' ? getPathByRuleId(rules[i]['rule_id']) : '') + (rules[i]['region_id'] != '' ? getPathByRegionId(rules[i]['region_id']) : '')
             }
             setTableData(rules)
         }).catch(error=>{
@@ -156,7 +156,10 @@ export default function ManageRules(props) {
             // 等规则路径问题处理完后只需要刷新ruleItems
             getItemRules()
         }).catch(error=>{
-            console.log(error)
+            // 删除报错时，弹出报错框并重新加载数据
+            props.showError()
+            props.init()
+            getItemRules()
         })
     }
 
