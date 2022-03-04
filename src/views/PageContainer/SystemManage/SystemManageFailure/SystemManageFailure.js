@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+//全选之后有啥用，详情有啥用,。报警阈值不会做。处理按钮是用来修改的吗。删除没做。成功的提示没做。
 import {
   Space,
   Form,
@@ -7,7 +7,7 @@ import {
   Button,
   Table,
   Checkbox,
-  Radio
+  Radio,Divider,Modal
 } from "antd";
 import { SyncOutlined } from "@ant-design/icons";
 import api from "../../../../api/log";
@@ -110,11 +110,68 @@ const SelectForm = (props) => {
     </>
   );
 };
+
+const tableData1=[
+  {key:1,failure_name:"闪退",create_time:"2017-01-01",content:"闪选",user_name:"zyk"}
+,  {key:2,failure_name:"重启",create_time:"2017-08-01",content:"dddd",user_name:"wlz"}
+,  {key:3,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
+]
+//弹窗Modal
+const HandleModal = (props) => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  return (
+    <>
+      <Button style={{border:"1px solid blue"}} onClick={showModal}>
+        处理
+      </Button>
+      <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} okText="确定" cancelText="取消">
+        <p>{props.record.failure_name}</p>
+        <p>{props.record.user_name}</p>
+        <p>{props.record.create_time}</p>
+      </Modal>
+    </>
+  );
+};
+
+//删除操作
+const deleteFuncElem=(aimedRowData)=>{
+  // console.log(aimedRowData);
+  const totalFuncDataList = tableData1;
+  // console.log(totalFuncDataList);
+  let i;
+  let indexOfFuncList;
+  for(i = 0; i <totalFuncDataList.length;i++) {
+    if(aimedRowData.index=== totalFuncDataList[i].index) {
+      break;
+    }
+  }
+  // console.log(totalFuncDataList[i]);
+  totalFuncDataList.splice(i+1,1);
+  console.log(totalFuncDataList);
+  // this.setState({
+  //   data:totalFuncDataList
+  // });
+  // this.showTable(this.state.data);
+}
+
 const tableColumns = [
   {
-    title: "标号",
-    dataIndex: "log_id",
-    key: "log_id",
+    title: "故障名称",
+    dataIndex: "failure_name",
+    key: "failure_name",
   },
   {
     title: "时间",
@@ -127,18 +184,67 @@ const tableColumns = [
     key: "content",
   },
   {
-    title: "操作人",
+    title: "提交人",
     key: "user_name",
     dataIndex: "user_name",
   },
   {
-    title: "身份证号",
-    key: "idc",
-    dataIndex: "idc",
-  },
+    // title:"详情",
+    key:"detail",
+    dataIndex: "detail",
+    render: () => (
+      <Space size="middle">
+        <a style={{textDecoration:"underline"}}>详情</a>
+      </Space>)
+  },{
+    key:"handle",
+    dataIndex: "handle",
+    render: (_,record,index) => (//参数分别为当前行的值，当前行数据，行索引
+      <>
+      {/* <Space size="middle">
+        <button onClick={()=>{console.log(index)}}>处理</button>
+      </Space> */}
+      <HandleModal record={record}></HandleModal>
+    </>
+      )
+  },{
+    key:"delete",
+    dataIndex: "delete",
+    render: (_,record) => (
+      <Space size="middle">
+        <Button style={{border:"1px solid blue"}} onClick={()=>{deleteFuncElem(record)}}>删除</Button>
+      </Space>)
+  }
 ];
 
-export default function SystemManageJournal() {
+const rowSelection = {
+  onChange: (selectedRowKeys, selectedRows) => {
+    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+  },
+  getCheckboxProps: (record) => ({
+    disabled: record.name === 'Disabled User',
+    // Column configuration not to be checked
+    name: record.name,
+  }),
+};
+
+const Demo = () => {
+  const [selectionType, setSelectionType] = useState('checkbox');
+  return (
+    <div>
+      <Divider />
+      <Table
+        rowSelection={{
+          type: selectionType,
+          ...rowSelection,
+        }}
+        columns={tableColumns}
+        dataSource={tableData1}
+      />
+    </div>
+  );
+};
+export default function SystemManageFailure() {
   const [tableData, setTableData] = useState([]);
   const getLog = (data) => {
     api
@@ -161,8 +267,14 @@ export default function SystemManageJournal() {
   }, []);
   return (
     <>
-      <SelectForm getSearch={getSearchLog}></SelectForm>
-      <Table rowKey="log_id" columns={tableColumns} dataSource={tableData} />
+      {/* <SelectForm getSearch={getSearchLog}></SelectForm> */}
+      {/* <Table rowKey="log_id"         
+      rowSelection={{
+          type: selectionType,
+          ...rowSelection,
+      }} 
+      columns={tableColumns} dataSource={tableData1} /> */}
+      <Demo></Demo>
     </>
   );
 }

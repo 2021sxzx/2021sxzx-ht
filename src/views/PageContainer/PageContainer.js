@@ -21,7 +21,8 @@ import SystemManageJournal
   from "./SystemManage/SystemManageJournal/SystemManageJournal.js";
 import SystemManageResource
   from "./SystemManage/SystemManageResource/SystemManageResource.js";
-
+import SystemManageFailure from './SystemManage/SystemManageFailure/SystemManageFailure.js';
+import FileMetaData from './SystemManage/FileMetaData/FileMetaData.js'
 import NoPermission from './NoPermission/NoPermission.js'
 
 const { Content } = Layout
@@ -48,6 +49,8 @@ export default function PageContainer() {
               <Route path="/item-manage/rule" component={ItemManageRule}/>
               <Route path="/system-manage/journal" component={SystemManageJournal}/>
               <Route path="/system-manage/resource" component={SystemManageResource}/>
+              <Route path="/system-manage/failure" component={SystemManageFailure}/>
+              <Route path="/system-manage/file-meta-data" component={FileMetaData}/>
               <Redirect from="/" to="/home" exact />
               <Route path="*" component={NoPermission} />
             </Switch>
