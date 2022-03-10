@@ -60,7 +60,10 @@ export default function CreateRule(props){
             else{
                 // 区划节点选择完毕
                 // 只有当全部选择完毕的时候才可以进行创建或修改
-                setChooseEnd(true)
+                confirmItemRules({
+                    rule_id: currRuleId,
+                    region_id: tag.nodeId
+                })
             }
             setCurrRegionId(tag.nodeId)
         }
@@ -184,6 +187,23 @@ export default function CreateRule(props){
         }
     }
 
+    const confirmItemRules = (data)=>{
+        api.GetItemRules(data).then(response=>{
+            let rules = response.data.data
+            if (rules.length === 0){
+                setChooseEnd(true)
+            }
+            else{
+                Modal.error({
+                    title: '已有规则',
+                    content: '该事项规则已经存在，请重新选择！',
+                    centered: true
+                })
+            }
+        }).catch(error=>{
+        })
+    }
+
     useEffect(function(){
         if (realNewId == ''){
             return
@@ -218,6 +238,7 @@ export default function CreateRule(props){
     const createItemRules = (data)=>{
         api.CreateItemRules(data).then(response=>{
             setIsLoading(false)
+            props.showSuccess()
             props.init()
             props.setPageType(1)
         }).catch(error=>{
@@ -228,6 +249,7 @@ export default function CreateRule(props){
     const updateItemRules = (data)=>{
         api.UpdateItemRules(data).then(response=>{
             setIsLoading(false)
+            props.showSuccess()
             props.init()
             props.setPageType(1)
         }).catch(error=>{
@@ -350,28 +372,30 @@ export default function CreateRule(props){
                 </div>
             </div>
 
-            <div className={style.createBox} style={{height: 352 + extraHeight, minHeight: 352}}>
-                <div className={style.chosenTags}>
-                    {
-                        chosenTags.map((tag, index) =>
-                            <div className={style.chosenTag} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')} onClick={
-                                value=>{
-                                    getBack(index)
-                                }
-                            }>
-                                <div className={style.tagContent}>
-                                    {tag.nodeName}
+            <Space className={style.createBox} direction='vertical' size={0}>
+                <div>
+                    <div className={style.createTitle}>
+                        事项规则库：
+                    </div>
+                    <Space className={style.chosenTags} direction='horizontal' size={[12, 4]} wrap>
+                        {
+                            chosenTags.map((tag, index) =>
+                                <div className={style.chosenTag} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')} onClick={
+                                    value=>{
+                                        getBack(index)
+                                    }
+                                }>
+                                    <div className={style.tagContent}>
+                                        {tag.nodeName}
+                                    </div>
                                 </div>
-                            </div>
-                        )
-                    }
+                            )
+                        }
+                    </Space>
                 </div>
-                
-                <div className={style.createTitle} style={{top: 50, left: 15}}>
-                    事项规则库：
-                </div>
+
                 <div className={style.chooseBox} style={{height: 276 + extraHeight, minHeight: 276}}>
-                    <div className={style.chooseBoxTitle} style={{left: 30, top: 15}}>
+                    <div className={style.chooseBoxTitle1}>
                         可选事项规则项：
                     </div>
                     <div className={style.enabledTags}>
@@ -380,31 +404,31 @@ export default function CreateRule(props){
 
                     <div className={style.separator} style={{height: 240 + extraHeight, minHeight: 240}}></div>
                     
-                    <div className={style.chooseBoxTitle} style={{left: 450, top: 15}}>
+                    <div className={style.chooseBoxTitle2}>
                         候选事项规则项：
                     </div>
 
-                    <div className={style.chooseBoxSubTitle} style={{left: 480, top: 40}}>
+                    <div className={style.chooseBoxSubTitle}>
                         推荐规则项：
                     </div>
                     <div className={style.textRankTags}>
                         <TagsArea tags={recommendedTags} chooseTag={chooseTag} type={'2'}/>
                     </div>
 
-                    <div className={style.chooseBoxSubTitle} style={{left: 480, bottom: 55, display: currRegionId == '' ? 'block' : 'none'}}>
+                    <div className={style.chooseBoxSubTitle} style={{top: 120 + extraHeight, display: currRegionId == '' ? 'block' : 'none'}}>
                         用户自定义：
                     </div>
-                    <div className={style.createTag} style={{display: currRegionId == '' ? 'block' : 'none'}}
+                    <div className={style.createTag} style={{display: currRegionId == '' ? 'block' : 'none', top: 125 + extraHeight}}
                         onClick={startCreating}>
                         自定义标签+
                     </div>
                 </div>
-            </div>
+            </Space>
 
-            <div style={{display: 'block'}}>
-                <Button type='default' size='middle' style={{left: 400, width: 100}}
+            <div style={{display: 'block', textAlign: 'center'}}>
+                <Button type='default' size='middle' style={{marginRight: 60, width: 100}}
                     onClick={handleCancel}>取消</Button>
-                <Button type='primary' size='middle' style={{left: 500, width: 100}}
+                <Button type='primary' size='middle' style={{width: 100}}
                     onClick={props.modifyId == '' ? handleCreate : handleModify} disabled={!chooseEnd} loading={isLoading}>
                     {props.modifyId == '' ? '创建' : '修改'}
                 </Button>

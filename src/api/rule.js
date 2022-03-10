@@ -4,20 +4,22 @@ import service from "./http";
  */
 
 const api ={
+    // 数据层
     GetRuleTree(data) {
         return service.request({
             method: "get",
             url: "/v1/getRuleTree/",
-            data, //data:data同名可以直接写 data
+            data
         });
     },
     GetRegionTree(data){
         return service.request({
             method: "get",
             url: "/v1/getRegionTree/",
-            data, //data:data同名可以直接写 data
+            data
         });
     },
+    // 暂留
     GetItemRules(data){
         return service.request({
             method: "post",
@@ -29,20 +31,6 @@ const api ={
         return service.request({
             method: "post",
             url: "/v1/deleteItemRules/",
-            data,
-        })
-    },
-    GetRulePath(data){
-        return service.request({
-            method: "post",
-            url: "/v1/getRulePath",
-            data,
-        })
-    },
-    GetRegionPath(data){
-        return service.request({
-            method: "post",
-            url: "/v1/getRegionPath",
             data
         })
     },
@@ -60,10 +48,25 @@ const api ={
             data
         })
     },
+    // 业务规则管理
     CreateRules(data){
         return service.request({
             method: "post",
             url: "/v1/createRules",
+            data
+        })
+    },
+    DeleteRules(data){
+        return service.request({
+            method: "post",
+            url: "/v1/deleteRules",
+            data
+        })
+    },
+    UpdateRules(data){
+        return service.request({
+            method: "post",
+            url: "/v1/updateRules",
             data
         })
     }

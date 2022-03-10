@@ -44,8 +44,18 @@ const menuList = [
         title:'事项指南管理',
       },
       {
-        key:'/item-manage/rule',
+        key:'item-manage/item-rule',
         title:'事项规则管理',
+        children:[
+          {
+            key:'/item-manage/item-rule/rule',
+            title:'业务规则管理'
+          },
+          {
+            key:'item-manage/item-rule/region',
+            title:'区划规则管理'
+          }
+        ]
       },
     ]
   },
