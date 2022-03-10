@@ -1,340 +1,495 @@
 import React, { useEffect, useState } from "react";
 
-import {DatePicker,Space,Form,Input,Button,Select,Table,Modal,Descriptions,Badge,Checkbox,
+import {
+  DatePicker,
+  Space,
+  Form,
+  Input,
+  Button,
+  Select,
+  Table,
+  Modal,
+  Descriptions,
+  Badge,
+  Checkbox,
+  Tooltip,
+  Progress,
+  Row,Col,PageHeader,Slider,Card
 } from "antd";
 import { getYMD, getTimeStamp } from "../../../../utils/TimeStamp";
 import api from "../../../../api/comment";
 
 import { CaretDownOutlined } from "@ant-design/icons";
-const { RangePicker } = DatePicker;
-const { Option } = Select;
+import * as echarts from "echarts";
 
-const starList = ["全部", "1", "2", "3", "4", "5"];
-const idList = ["全部", "证件号", "事项指南名称", "事项指南编码", "事项规则"];
-const DropSelect = (props) => {
-  const { dataList, setData } = props;
-  const handleChange = (value) => {
-    setData(value);
-  };
-  return (
-    <Select
-      defaultValue={dataList[0]}
-      style={{ width: 120 }}
-      onChange={handleChange}
-    >
-      {dataList.map((item, index) => {
-        return (
-          <Option value={index} key={index}>
-            {item}
-          </Option>
-        );
-      })}
-    </Select>
-  );
-};
-const tableColumns = [
-  /**{
-        title: '事项指南编码',
-        dataIndex: 'item_guide_id',
-        key: 'item_guide_id',
-    },
-    {
-        title: '事项指南名称',
-        dataIndex: 'item_guide_name',
-        key: 'item_guide_name',
-    },**/
-  {
-    title: "事项指南编码",
-    dataIndex: ["item_guide", "item_guide_id"],
-    key: "item_guide.item_guide_id",
-  },
-  {
-    title: "事项指南名称",
-    dataIndex: ["item_guide", "item_guide_name"],
-    key: "item_guide.item_guide_name",
-  },
-  {
-    title: "星级",
-    dataIndex: "score",
-    key: "score",
-  },
-  {
-    title: "评价日期",
-    key: "create_time",
-    render: (text, record) => (
-      <Space size="middle">{getYMD(record.create_time)}</Space>
-    ),
-  },
-  {
-    title: "查看详情",
-    key: "detail",
-    render: (text, record) => (
-      <Space size="middle">
-        <DetailModal itemDetail={record}></DetailModal>
-      </Space>
-    ),
-  },
-];
-
-const SelectForm = (props) => {
-  const [form] = Form.useForm();
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [score, setScore] = useState("");
-  const [type, setType] = useState("");
-  const [typeData, setTypeData] = useState("");
-  const formLayout = "inline";
-  const paramTest = (param) => {
-    return (event) => {
-      props.getSearch(param);
-    };
-  };
-  const handleInputChange = (e) => {
-    setTypeData(e.target.value);
-  };
-
-  const Search = () => {
-    const data = {
-      startTime,
-      endTime,
-      score,
-      type,
-      typeData,
-    };
-    props.getSearch(data);
-  };
-  const handleDateChange = (value, dateString) => {
-    if (value) {
-      setStartTime(getTimeStamp(dateString[0]));
-      setEndTime(getTimeStamp(dateString[1]));
-    } else {
-      setEndTime("");
-      setStartTime("");
-    }
-  };
-  const layout = {
-    labelCol: {
-      span: 8,
-    },
-    wrapperCol: {
-      span: 16,
-    },
-  };
-  const tailLayout = {
-    wrapperCol: {
-      offset: 8,
-      span: 16,
-    },
-  };
-  return (
-    <>
-      {/* <Form
-        // layout={formLayout}
-        // form={form}
-        // initialValues={{
-        //   layout: formLayout,
-        // }}
-        // name="basic"
-        // labelCol={{
-        //   span: 8,
-        // }}
-        // wrapperCol={{
-        //   span: 16,
-        // }}
-        // initialValues={{
-        //   remember: true,
-        // }}
-        // onFinish={onFinish}
-        // onFinishFailed={onFinishFailed}
-        // autoComplete="off"
-      >
-        <Form.Item
-          label="Username"
-          name="username"
-          rules={[
-            {
-              required: true,
-              message: "Please input your username!",
+const Memory = (props) => {
+  React.useEffect(() => {
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById("forms"));
+    // 绘制图表
+    myChart.setOption({
+      title: {
+        //标题组件
+        text: "内存使用",
+        left: "32%", //标题的位置 默认是left，其余还有center、right属性
+        top: "47%",
+        textStyle: {
+          color: "#436EEE",
+          fontSize: 17,
+        },
+      },
+      tooltip: {
+        //提示框组件
+        trigger: "item", //触发类型(饼状图片就是用这个)
+        formatter: "{a} <br/>{b} : {c} ({d}%)", //提示框浮层内容格式器
+      },
+      color: ["#48cda6", "#fd87fb", "#11abff", "#ffdf6f"], //手动设置每个图例的颜色
+      legend: {
+        //图例组件
+        right: 200, //图例组件离右边的距离
+        // left:420,
+        orient: "horizontal", //布局  纵向布局 图例标记居文字的左边 vertical则反之
+        width: 40, //图行例组件的宽度,默认自适应
+        x: "right", //图例显示在右边
+        y: "center", //图例在垂直方向上面显示居中
+        itemWidth: 10, //图例标记的图形宽度
+        itemHeight: 10, //图例标记的图形高度
+        data: ["用户评价信息", "指南数据", "系统日志", "未使用内存"],
+        textStyle: {
+          //图例文字的样式
+          color: "#333", //文字颜色
+          fontSize: 12, //文字大小
+        },
+      },
+      series: [
+        //系列列表
+        {
+          name: "内存占用", //系列名称
+          type: "pie", //类型 pie表示饼图
+          center: ["40%", "50%"], //设置饼的原心坐标 不设置就会默认在中心的位置
+          radius: ["50%", "70%"], //饼图的半径,第一项是内半径,第二项是外半径,内半径为0就是真的饼,不是环形
+          itemStyle: {
+            //图形样式
+            normal: {
+              //normal 是图形在默认状态下的样式；emphasis 是图形在高亮状态下的样式，比如在鼠标悬浮或者图例联动高亮时。
+              label: {
+                //饼图图形上的文本标签
+                show: false, //平常不显示
+              },
+              labelLine: {
+                //标签的视觉引导线样式
+                show: false, //平常不显示
+              },
             },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[
-            {
-              required: true,
-              message: "Please input your password!",
-            },
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
-
-        <Form.Item
-          name="remember"
-          valuePropName="checked"
-          wrapperCol={{
-            offset: 8,
-            span: 16,
-          }}
-        >
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item>
-
-        <Form.Item
-          wrapperCol={{
-            offset: 8,
-            span: 16,
-          }}
-        >
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
-      </Form> */}
-          <Form {...layout} form={form} name="control-hooks">
-      <Form.Item
-        name="note"
-        label="Note"
-        rules={[
-          {
-            required: true,
-          },
-        ]}
-      >
-        <Input />
-      </Form.Item>
-      <Form.Item
-        name="gender"
-        label="Gender"
-        rules={[
-          {
-            required: true,
-          },
-        ]}
-      >
-        <Select
-          placeholder="Select a option and change input text above"
-          allowClear
-        >
-          <Option value="male">male</Option>
-          <Option value="female">female</Option>
-          <Option value="other">other</Option>
-        </Select>
-      </Form.Item>
-      <Form.Item
-        noStyle
-        shouldUpdate={(prevValues, currentValues) => prevValues.gender !== currentValues.gender}
-      >
-        {({ getFieldValue }) =>
-          getFieldValue('gender') === 'other' ? (
-            <Form.Item
-              name="customizeGender"
-              label="Customize Gender"
-              rules={[
-                {
-                  required: true,
+            emphasis: {
+              //normal 是图形在默认状态下的样式；emphasis 是图形在高亮状态下的样式，比如在鼠标悬浮或者图例联动高亮时。
+              label: {
+                //饼图图形上的文本标签
+                show: true,
+                position: "center",
+                textStyle: {
+                  fontSize: "10",
+                  fontWeight: "bold",
                 },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-          ) : null
-        }
-      </Form.Item>
-      <Form.Item {...tailLayout}>
-        <Button type="primary" htmlType="submit">
-          Submit
-        </Button>
-        <Button htmlType="button">
-          Reset
-        </Button>
-        <Button type="link" htmlType="button">
-          Fill form
-        </Button>
-      </Form.Item>
-    </Form>     
-    </>
-  );
+              },
+            },
+          },
+          data: [
+            { value: 40, name: "用户评价信息" },
+            { value: 17, name: "指南数据" },
+            { value: 21, name: "系统日志" },
+            { value: 20, name: "未使用内存" },
+          ],
+        },
+      ],
+    });
+  });
+  return <div id="forms" style={{ width: "450px", height: "250px" }}></div>;
 };
 
-const DetailModal = (props) => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const detail = props.itemDetail;
-  const key2name = {
-    item_guide_name: "事项指南名称",
-    item_guide_id: "事项指南编码",
-    score: "星级",
-    content: "评价内容",
-    idc_type: "证件类型",
-    idc: "证件号",
-    rule_name: "事项规则",
-    create_time: "创建时间",
+const StorageSpace = (props) => {
+  var used = 0.9;
+  var unused = 1-used;
+  var labelTop0 = {
+    //blue
+    normal: {
+      color: "blue",
+      label: {
+        show: true, //标签是否显示
+        position: "center", //饼图可选为：'outer'（外部） | 'inner'（内部）/饼图可选为：'outer'（外部） | 'inner'（内部）
+        formatter: "{b}", //饼图、雷达图、仪表盘、漏斗图: a（系列名称），b（数据项名称），c（数值）, d（饼图：百分比 | 雷达图：指标名称）
+        textStyle: {
+          baseline: "bottom",
+          color: "blue",
+        },
+      },
+      labelLine: {
+        show: false,
+      },
+    },
   };
-  const showModal = () => {
-    setIsModalVisible(true);
+  var labelTop1 = {
+    normal: {
+      color: "yellow",
+      label: {
+        show: true,
+        position: "center",
+        formatter: "{b}",
+        textStyle: {
+          baseline: "bottom",
+          color: "yellow",
+        },
+      },
+      labelLine: {
+        show: false,
+      },
+    },
   };
+  var labelTop2 = {
+    normal: {
+      color: "red",
+      label: {
+        show: false, //标签是否显示
+        position: "center",
+        formatter: "{b}",
+        textStyle: {
+          baseline: "bottom",
+          color: "Red",
+        },
+      },
+      labelLine: {
+        show: false,
+      },
+    },
+  };
+  //---------------------------------------------------
+  var labelFromatter0 = {
+    normal: {
+      label: {
+        //函数中会读取 option中 data中数据进行计算
+        formatter: function (params) {
+          return (
+            (used*100).toFixed(0) + "%"
+          );
+        },
+        textStyle: {
+          baseline: "top",
+          color: "blue",
+        },
+      },
+    },
+  };
+  var labelFromatter1 = {
+    normal: {
+      label: {
+        formatter: function (params) {
+          return (
+            (used*100).toFixed(0) + "%"
+          );
+        },
+        textStyle: {
+          baseline: "top",
+          color: "yellow",
+        },
+      },
+    },
+  };
+  var labelFromatter2 = {
+    normal: {
+      label: {
+        formatter: function (params) {
+          return (
+            (used*100).toFixed(0) + "%"
+          );
+        },
+        textStyle: {
+          baseline: "top",
+          color: "red",
+        },
+      },
+    },
+  };
+  var labelBottom = {
+    normal: {
+      color: "#ccc",
+      label: {
+        formatter: function (params) {
+          return (
+            ((1-used)*100).toFixed(0) + "%"
+          );
+        },
+        show: true,
+        position: "center",
+      },
+      labelLine: {
+        show: false,
+      },
+    },
+    emphasis: {
+      color: "rgba(0,0,0,0)",
+    },
+  };
+  React.useEffect(() => {
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById("forms"));
+    var labelTop=labelTop0;
+    var labelFromatter=labelFromatter0;
+    if (used <= 0.1) {
+      labelTop = labelTop0;
+      labelFromatter = labelFromatter0;
+    } else if (0.8 > used > 0.1) {
+      labelTop = labelTop1;
+      labelFromatter = labelFromatter1;
+    } else {
+      labelFromatter = labelFromatter2;
+      labelTop = labelTop2;
+    }
+    var option = {
+      tooltip: {
+        show: true,
+      },
+      series: [
+        {
+          center: ["50%", "50%"],
+          type: "pie",
+          radius: [40, 50],
+          itemStyle: labelFromatter,//提示标签的颜色
+          clockWise: true, //是否顺时针
+          selectedMode: null, //选中模式，默认关闭，可选single，multiple
+          data: [
+            {
+              name: "已使用",
+              value: used,
+              itemStyle: labelTop,//已使用进度条的颜色
+            },
+            {
+              name: "未使用",
+              value: 1-used,
+              itemStyle: labelBottom,//未使用进度条的颜色
+            }
+          ],
+        },
+      ],
+    };
+    // 为echarts对象加载数据
+    myChart.setOption(option);
+  });
+  return <div id="forms" style={{ width: "450px", height: "250px" }}></div>;
+};
 
-  const handleOk = () => {
-    setIsModalVisible(false);
-  };
+const Bing = (props) => {
+  React.useEffect(() => {
+    var myChart = echarts.init(document.getElementById("forms"));
+    var option = {
+      // 标题组件，包含主标题和副标题
+      title: {
+        show: true,
+        text: "执行任务",
+        x: "center",
+        textStyle: {
+          fontSize: "15",
+          color: "green",
+          fontWeight: "bold",
+        },
+      },
+      //  提示框组件
+      tooltip: {
+        //是否显示提示框组件，包括提示框浮层和 axisPointe
+        show: false,
+        // 触发类型: item:数据项触发，axis：坐标轴触发
+        trigger: "item",
+        formatter: "{a} <br/>{b}: {c} ({d}%)",
+      },
+      // // 图例
+      // legend: {
+      //     orient: 'vertical',
+      //     x: 'left',
+      //     data:['完成率']
+      // },
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
+      // 系列列表。每个系列通过 type 决定自己的图表类型
+      series: [
+        {
+          // 系列名称，用于tooltip的显示，legend 的图例筛选，在 setOption 更新数据和配置项时用于指定对应的系列。
+          name: "任务进度",
+          type: "pie",
+          // 饼图的半径，数组的第一项是内半径，第二项是外半径
+          radius: ["50%", "70%"],
+          // 是否启用防止标签重叠策略，默认开启
+          avoidLabelOverlap: false,
+          hoverAnimation: false,
+          // 标签的视觉引导线样式，在 label 位置 设置为'outside'的时候会显示视觉引导线
+          labelLine: {
+            normal: {
+              show: false,
+            },
+          },
+          data: [
+            {
+              // 数据值
+              value: 20,
+              // 数据项名称
+              name: "完成率",
+              //该数据项是否被选中
+              selected: false,
+              // 单个扇区的标签配置
+              label: {
+                normal: {
+                  // 是显示标签
+                  show: true,
+                  position: "center",
+                  fontSize: 20,
+                  // 标签内容格式器，支持字符串模板和回调函数两种形式，字符串模板与回调函数返回的字符串均支持用 \n 换行
+                  formatter: "{b}\n{d}%",
+                },
+              },
+            },
+            {
+              value: 100,
+              label: {
+                normal: {
+                  show: false,
+                },
+              },
+            },
+          ],
+        },
+      ],
+    };
+    myChart.setOption(option);
+  });
+  return <div id="forms" style={{ width: "450px", height: "250px" }}></div>;
+};
 
+const Chart = (props) => {
+  var used=props.used;
+  var total=props.total;
+  var company='';
+  var proportion=used/total;
+  var color='';
+  if(proportion<=0.2){
+    color='blue';
+  }else{
+    if (0.2<proportion&&proportion<=0.8){
+      color='yellow';
+    }else{
+      color='red';
+    }
+  }
+  switch(props.id){
+    case "CPU":company="Ghz";break;
+    case "Users":company="";break;
+    default:company="GB";break;
+  }
+  React.useEffect(() => {
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById(props.id));
+    // 绘制图表
+    myChart.setOption({
+      // title: {
+      //   //标题组件
+      //   text: props.name,
+      //   left: "52%", //标题的位置 默认是left，其余还有center、right属性
+      //   top: "43%",
+      //   // position:"center",
+      //   textStyle: {
+      //     color: "#436EEE",
+      //     fontSize: 17,
+      //   },
+      // },
+      tooltip: {
+        //提示框组件
+        trigger: "item", //触发类型(饼状图片就是用这个)
+        formatter: "{a} <br/>{b} : {c} ({d}%)", //提示框浮层内容格式器
+      },
+      color: [color, "lightgray"], //手动设置每个图例的颜色
+      series: [
+        //系列列表
+        {
+          name: "内存占用", //系列名称
+          type: "pie", //类型 pie表示饼图
+          center: ["70%", "50%"], //设置饼的原心坐标 不设置就会默认在中心的位置
+          radius: ["50%", "70%"], //饼图的半径,第一项是内半径,第二项是外半径,内半径为0就是真的饼,不是环形
+          itemStyle: {
+            //图形样式
+            normal: {
+              //normal 是图形在默认状态下的样式；emphasis 是图形在高亮状态下的样式，比如在鼠标悬浮或者图例联动高亮时。
+              label: {
+                //饼图图形上的文本标签
+                show: false, //平常不显示
+              },
+              labelLine: {
+                //标签的视觉引导线样式
+                show: false, //平常不显示
+              },
+            },
+            emphasis: {
+              //normal 是图形在默认状态下的样式；emphasis 是图形在高亮状态下的样式，比如在鼠标悬浮或者图例联动高亮时。
+              label: {
+                //饼图图形上的文本标签
+                show: true,
+                position: "center",
+                textStyle: {
+                  fontSize: "10",
+                  fontWeight: "bold",
+                },
+              },
+            },
+          },
+          data: [
+            { value: used, name: "已使用" },
+            { value: total-used, name: "未使用" }
+          ],
+        },
+      ],
+    });
+  });
   return (
-    <>
-      <Button onClick={showModal}>查看详情</Button>
-      <Modal
-        title="事项详情"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-
-      </Modal>
-    </>
-  );
+  <div style={{ border:"1px solid blue",borderRadius:"8px",width: "300px", height: "170px"}}>
+    <div style={{display:"inline-block",width:"80px",height:"170px",float:"left"}}>
+      <div style={{height:"50px",textAlign:"center",lineHeight:"50px",fontSize:"15px",fontWeight:"bold"}}>{props.name}</div>
+    <div style={{height:"30px",textAlign:"center",lineHeight:"30px",color:"#92b6d9"}}>占用率</div>
+    <div style={{height:"50px",textAlign:"center",lineHeight:"50px",fontSize:"35px",fontWeight:"bold",color:"#1890ff"}}>{proportion*100}%</div>
+    <div>{used}{company}/{total}{company}</div></div>
+  <div id={props.id} style={{ width: "215px", height: "170px",paddingLeft:"10px",display:"inline-block",float:"left" }}></div>
+  </div>);
 };
-
-
 
 export default function SystemManageResource() {
-  const [tableData, setTableData] = useState([]);const getComment = (data) => {
-    api
-      .GetComment()
-      .then((response) => {
-        setTableData(response.data.data);
-        console.log("response.data.data=", response.data.data);
-      })
-      .catch((error) => {});
-  };
-  const getSearchComment = (data) => {
-    console.log(data);
-    api
-      .SearchComment(data)
-      .then((response) => {
-        console.log("searchData=", response.data.data);
-        setTableData(response.data.data);
-      })
-      .catch((error) => {});
-  };
-
-  useEffect(() => {
-    getComment({});
-  }, []);
   return (
-    <div>
-      <Space direction="vertical" size={12}>
-        <SelectForm getSearch={getSearchComment}></SelectForm>
-        <Table columns={tableColumns} dataSource={tableData} />
-      </Space>
-      ,
-    </div>
+    <>
+      <div>
+        {/* <Memory></Memory> */}
+        {/* <StorageSpace></StorageSpace> */}
+        {/* <Bing></Bing> */}
+        <PageHeader title="虚拟机"></PageHeader>
+        <Space size={50}>
+          {" "}
+          <Chart id="CPU" name="CPU" used={1.2} total={2}></Chart>
+          <Chart id="Memory" name="内存" used={0.4} total={16}></Chart>
+          <Chart id="StorageSpace" name="存储空间" used={90} total={100}></Chart>
+        </Space>
+      </div>
+      <div>
+        <PageHeader title="服务器"></PageHeader>
+        <Space size={50}>
+          {" "}
+          <Chart id="Users" name="用户并发数" used={82} total={100}></Chart>
+          <Chart id="ServerMemory" name="内存" used={0.9} total={16}></Chart>
+          <Chart id="ServerStorageSpace" name="存储空间" used={12} total={100}></Chart>
+        </Space>
+      </div>
+      <div>
+        <PageHeader title="报警阈值"></PageHeader>
+        <Slider defaultValue={30} style={{width:"600px",strokeWidth:"40px"}}/>
+      </div>
+      {/* <div style={{background:'#ececec',padding:"30px"}}>
+    <Card title="Card title" bordered={false} style={{ width: 300 }}>
+      <p>Card content</p>
+      <p>Card content</p>
+      <p>Card content</p>
+    </Card>
+  </div> */}
+    </>
   );
 }
