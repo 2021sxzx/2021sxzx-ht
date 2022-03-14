@@ -36,35 +36,32 @@ export default function UserTableFunctionalZone(props) {
             message.error('账号创建发生错误');
         });
 
-
         // 刷新表格内容
         props.refreshTableData()
-
     }
 
     return (
-        <>
-            <Space direction="vertical">
-                <Space direction="horizontall">
-                    {/*账号按创建钮*/}
-                    <UserModal buttonText={"账号创建"}
-                               buttonType={"primary"}
-                               title={"账号创建"}
-                               detailData={{
-                                   user_name: '',
-                                   password: '',
-                                   role_name: '',
-                                   account: '',
-                                   department: '',
-                               }}
-                               callback={addUserAndRefresh}/>
+        <div>
+            <Space direction="horizontal">
+                {/*账号按创建钮*/}
+                <UserModal buttonText={"账号创建"}
+                           buttonType={"primary"}
+                           title={"账号创建"}
+                           detailData={{
+                               user_name: '',
+                               password: '',
+                               role_name: '',
+                               account: '',
+                               department: '',
+                           }}
+                           saveInfoFunction={addUserAndRefresh}/>
 
-                    {/*批量导入按钮*/}
-                    <Button type="primary" onClick={multiCreate}>批量导入用户</Button>
-                </Space>
+                {/*批量导入按钮*/}
+                <Button type="primary" onClick={multiCreate}>批量导入用户</Button>
+
                 {/*搜索表单*/}
                 <SearchForm getSearch={props.getSearch}/>
             </Space>
-        </>
+        </div>
     )
 }

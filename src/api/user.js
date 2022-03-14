@@ -118,19 +118,18 @@ const api = {
         });
     },
 
-    // TODO （钟卓江）：等 API 写好之后改一下 url
     /**
      * 更新账号状态
      * @param data
      * @returns {Promise<AxiosResponse<any>>}
      * @constructor
      */
-    UpdateActivationState(data){
-        // return service.request({
-        //     method: "post",
-        //     url: "/v1/????",
-        //     data, //data:data同名可以直接写 data
-        // });
+    SetActivation(data){
+        return service.request({
+            method: "post",
+            url: "v1/setActivation",
+            data, //data:data同名可以直接写 data
+        });
     }
 }
 

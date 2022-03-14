@@ -2,6 +2,7 @@ import {Button, Col, Form, Input, Row} from "antd";
 import {MobileOutlined, UserOutlined} from "@ant-design/icons";
 import React from "react";
 import QuickLogin from "./QuickLogin";
+import CountDownButton from "./CountDownButton";
 
 /**
  * 手机验证码登录
@@ -9,7 +10,6 @@ import QuickLogin from "./QuickLogin";
  * @constructor
  */
 export default function MobileLoginForm() {
-
     const onFinish = (values) => {
         console.log('MobileLoginForm Success:', values);
     };
@@ -60,12 +60,12 @@ export default function MobileLoginForm() {
                 ]}
             >
                 <Row>
-                    <Col span={18}>
+                    <Col span={16}>
                         <Input placeholder={"验证码"}
                                prefix={<MobileOutlined/>} allowClear={true}/>
                     </Col>
-                    <Col span={5} offset={1}>
-                        <Button block={true}>验证</Button>
+                    <Col span={7} offset={1}>
+                        <CountDownButton />
                     </Col>
                 </Row>
             </Form.Item>

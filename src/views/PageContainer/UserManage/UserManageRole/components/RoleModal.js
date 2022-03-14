@@ -49,8 +49,8 @@ export default function RoleModal(props) {
     // 保存按钮的触发函数，关闭详情弹窗并保存信息的修改
     const handleOk = () => {//  保存信息的修改
         setIsModalVisible(false);
-        // TODO（钟卓江）：更新用户的 API 修改完成之后要也更新一下这里
         props.callback({
+            role_name_old:props.detailData.role_name,
             role_name: roleName,
             role_describe: roleDescribe,
             permission: permission

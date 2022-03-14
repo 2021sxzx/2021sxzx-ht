@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Switch} from "antd";
-
+import api from '../../../../../api/user'
 /**
  * 切换用户激活状态的开关
  * @param props = {
@@ -22,21 +22,22 @@ export default function ActivationStatusSwitch (props){
      * @param checked :switch 是否被选中
      */
     const handleSwitchChangeActivationState = (checked) => {
-        setActivationStatus(checked ? 1 : 0)
-        console.log("Activation Status = ", activationStatus)
+        // setActivationStatus(checked ? 1 : 0)
+        // console.log("Activation Status = ", activationStatus)
 
         const data = {
-            user_name: record.user_name,
-            // ...
-            activation_status: activationStatus,
+            account: record.account,
         }
 
-        // TODO（钟卓江）：等 API 写好之后测试一下
-        // api.UpdateActivationState(data).then(response => {
-        //     // log 服务端返回的搜索结果
-        //     console.log('updateUserResult=', response.data)
-        // }).catch(error => {
-        // }
+        // TODO wait for api
+        api.SetActivation(data).then(response => {
+            // log 服务端返回的搜索结果
+            console.log('SetActivation=', response.data)
+            setActivationStatus(response.data.data.activation_status)
+
+        }).catch(error => {
+            console.log("error: handleSwitchChangeActivationState",error)
+        })
     }
 
     if (activationStatus === 0 || activationStatus === 1) {
@@ -47,6 +48,6 @@ export default function ActivationStatusSwitch (props){
             onChange={handleSwitchChangeActivationState}
         />
     } else {
-        return "error status"
+        return <div>error status</div>
     }
 }

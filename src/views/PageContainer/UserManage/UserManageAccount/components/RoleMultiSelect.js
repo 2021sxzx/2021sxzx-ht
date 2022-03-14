@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import api from "../../../../../api/role";
 
 /**
- * 权限多选器
+ * 角色多选器
  * @param props = {
  *     defaultValue=[], // 默认值
  *     placeholder:String, // 占位符
@@ -12,33 +12,32 @@ import api from "../../../../../api/role";
  * @returns {JSX.Element}
  * @constructor
  */
-export default function PermissionMultipleSelect(props) {
+export default function RoleMultiSelect(props) {
     const {Option} = Select
 
     const [options,setOptions] = useState([])
 
     // 只在初次渲染的时候请求权限列表
     useEffect(()=>{
-        api.GetPermission().then(response => {
+        api.GetRole().then(response => {
             console.log('data1',response.data.data)
             setOptions(
                 response.data.data.map((item)=>{
                     return (
-                        <Option key={item.permission}
-                                value={item.permission}>
-                            {item.permission}
+                        <Option key={item.role_name}
+                                value={item.role_name}>
+                            {item.role_name}
                         </Option>
                     );
                 })
             )
         }).catch(()=>{
-            console.log('error:GetPermission')
+            console.log('error:GetRoleList')
         })
     },[])
 
     return (
         <Select
-            mode="multiple"
             allowClear
             placeholder={props.placeholder}
             defaultValue={props.defaultValue}

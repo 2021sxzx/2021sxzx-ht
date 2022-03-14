@@ -23,8 +23,6 @@ export default function UserManageAccount() {
         }).catch(error => {
             console.log("error = ",error)
         })
-
-        console.log('1111111111111')
     }
 
     // 从服务器中获取搜索结果，保存到 tableData 中
@@ -47,7 +45,7 @@ export default function UserManageAccount() {
 
     return (
         <div>
-            <Space direction="vertical" size={12}>
+            <Space direction="vertical" size={12} style={{width:100+'%'}}>
                 {/* 功能区 */}
                 <UserTableFunctionalZone getSearch={getSearchUser} refreshTableData={getUser}/>
                 {/* 用户评价的表格 */}

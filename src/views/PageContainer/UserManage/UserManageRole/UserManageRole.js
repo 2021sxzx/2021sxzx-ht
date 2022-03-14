@@ -45,7 +45,7 @@ export default function CommentManageList() {
 
     return (
         <div>
-            <Space direction="vertical" size={12}>
+            <Space direction="vertical" size={12} style={{width:100+'%'}}>
                 {/* 搜索 */}
                 <SelectForm getSearch={getSearchRole} refreshTableData={getRole}/>
                 {/* 用户评价的表格 */}

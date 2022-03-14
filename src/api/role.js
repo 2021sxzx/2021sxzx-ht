@@ -58,6 +58,11 @@ const api = {
             url: "/v1/searchRole",
             data, //data:data同名可以直接写 data
         });
+    },
+
+    //获取权限列表
+    GetPermission(){
+        return service.get('/v1/permissionList')
     }
 }
 

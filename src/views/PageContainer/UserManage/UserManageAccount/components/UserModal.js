@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {Button, Form, Input, Modal} from "antd";
+import RoleMultiSelect from "./RoleMultiSelect";
 
 /**
  * 用户管理相关的弹窗
@@ -14,7 +15,8 @@ import {Button, Form, Input, Modal} from "antd";
  *         account: account,
  *         department: department
  *     },
- *     callback(data):function([]), // 回调函数，一般是和服务端通信的 API. data 为弹窗中表单的内容的数组。
+ *     saveInfoFunction(data):function([]), // 回调函数，一般是和服务端通信的 API. data 为弹窗中表单的内容的数组。
+ *     accountReadOnly:Boolean, // 是否允许修改账号
  * }
  * @returns {JSX.Element}
  */
@@ -46,13 +48,13 @@ export default function UserModal(props) {
     // 保存按钮的触发函数，关闭详情弹窗并保存信息的修改
     const handleOk = () => {//  保存信息的修改
         setIsModalVisible(false);
-        // TODO（钟卓江）：更新用户的 API 修改完成之后要也更新一下这里
-        props.callback({
+        props.saveInfoFunction({
             user_name: userName,
             password: password,
             role_name: roleName,
-            account: account,
-            department: department, //TODO：等后台的部门 API 做好之后再来修改
+            account: props.detailData.account,
+            new_account:account,
+            // department: department, //TODO：等后台的部门 API 做好之后再来修改
         })
     };
 
@@ -68,8 +70,9 @@ export default function UserModal(props) {
     const handleInputChangeAccount = (e) => {
         setAccount(e.target.value)
     }
-    const handleInputChangeRoleName = (e) => {
-        setRoleName(e.target.value)
+    const handleInputChangeRoleName = (value) => {
+        console.log(value)
+        setRoleName(value)
     }
     const handleInputChangeDepartment = (e) => {
         setDepartment(e.target.value)
@@ -110,6 +113,23 @@ export default function UserModal(props) {
                     autoComplete="off"
                 >
                     <Form.Item
+                        label="账号（手机号码）"
+                        name="account"
+                        rules={[
+                            {
+                                required: true,
+                                message: '请输入账号（手机号码）!',
+                            },
+                        ]}
+                    >
+                        {props.accountReadOnly ?
+                            <div>account</div> :
+                            <Input defaultValue={account} placeholder={'请输入用户账号（手机号码）'}
+                                   onChange={handleInputChangeAccount} allowClear={true}/>}
+
+                    </Form.Item>
+
+                    <Form.Item
                         label="用户名"
                         name="user_name"
                         rules={[
@@ -121,20 +141,6 @@ export default function UserModal(props) {
                     >
                         <Input defaultValue={userName} placeholder={'请输入用户名'}
                                onChange={handleInputChangeUserName} allowClear={true}/>
-                    </Form.Item>
-
-                    <Form.Item
-                        label="账号/手机号码"
-                        name="account"
-                        rules={[
-                            {
-                                required: true,
-                                message: '请输入账号/手机号码!',
-                            },
-                        ]}
-                    >
-                        <Input defaultValue={account} placeholder={'请输入用户账号/手机号码'}
-                               onChange={handleInputChangeAccount} allowClear={true}/>
                     </Form.Item>
 
                     <Form.Item
@@ -161,8 +167,7 @@ export default function UserModal(props) {
                             },
                         ]}
                     >
-                        {/* TODO（钟卓江）：等获取角色种类的 API 完成之后完善这里,还需要换成多选*/}
-                        <Input defaultValue={roleName} placeholder={'请选择角色' + '，这里应该是下拉列表'} onChange={handleInputChangeRoleName} allowClear={true}/>
+                        <RoleMultiSelect defaultValue={[]} placeholder={'请选择角色'} onChange={handleInputChangeRoleName}/>
                     </Form.Item>
 
                     <Form.Item
@@ -176,7 +181,8 @@ export default function UserModal(props) {
                         ]}
                     >
                         {/* TODO（钟卓江）：等获取部门种类的 API 完成之后完善这里,还需要换成多选*/}
-                        <Input defaultValue={department} placeholder={'请选择部门' + '，这里应该是下拉列表'} onChange={handleInputChangeDepartment} allowClear={true}/>
+                        <Input defaultValue={department} placeholder={'请选择部门' + '，这里应该是下拉列表'}
+                               onChange={handleInputChangeDepartment} allowClear={true}/>
                     </Form.Item>
                 </Form>
             </Modal>

@@ -18,7 +18,7 @@ export default function RoleTable(props) {
         api.UpdateRole(data).then(response => {
             console.log('UpdateRole = ', response.data)
         }).catch(error => {
-            message.error('修改角色信息发生错误')
+            message.error('修改角色信息发生错误').then()
             console.log("UpdateRole error",error)
         })
 
@@ -26,7 +26,7 @@ export default function RoleTable(props) {
         api.UpdateRolePermission(data).then(response => {
             console.log('UpdatePermission = ', response.data)
         }).catch(error => {
-            message.error('修改角色信息发生错误')
+            message.error('修改角色信息发生错误').then()
             console.log("UpdateRolePermission error",error)
         })
 

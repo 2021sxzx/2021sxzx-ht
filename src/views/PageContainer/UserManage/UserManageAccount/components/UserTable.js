@@ -70,7 +70,7 @@ export default function UserTable(props) {
             key: 'detail',
             render: (text, record) => (//修改用户信息按钮
                 <UserModal buttonText={'修改用户信息'} title={'修改用户信息'}
-                           detailData={record} callback={updateUserAndRefresh}/>
+                           detailData={record} saveInfoFunction={updateUserAndRefresh} accountReadOnly={false}/>
             ),
         },
     ]

@@ -100,7 +100,6 @@ const menuList = [
         key:'/user-manage/metaData',
         title:'用户资料元数据管理'
       },
-      
     ]
   },
 ]
