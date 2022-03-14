@@ -2,9 +2,9 @@
  * 用户管理/后台账号管理页面
  */
 
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 
-import {message, Space} from 'antd';
+import { message, Space } from 'antd';
 
 import api from "../../../../api/user";
 import UserTableFunctionalZone from "./components/UserTableFunctionalZone";
@@ -21,7 +21,7 @@ export default function UserManageAccount() {
             setTableData(response.data.data)
             console.log('getUser response.data.data=', response.data.data)
         }).catch(error => {
-            console.log("error = ",error)
+            console.log("error = ", error)
         })
     }
 
@@ -33,7 +33,7 @@ export default function UserManageAccount() {
             setTableData(response.data.data)
             message.success('搜索用户信息成功')
         }).catch(error => {
-            console.log("error = ",error)
+            console.log("error = ", error)
             message.error('搜索用户信息发生错误')
         })
     }
@@ -47,9 +47,9 @@ export default function UserManageAccount() {
         <div>
             <Space direction="vertical" size={12} style={{width:100+'%'}}>
                 {/* 功能区 */}
-                <UserTableFunctionalZone getSearch={getSearchUser} refreshTableData={getUser}/>
+                <UserTableFunctionalZone getSearch={getSearchUser} refreshTableData={getUser} />
                 {/* 用户评价的表格 */}
-                <UserTable tableData={tableData} refreshTableData={getUser}/>
+                <UserTable tableData={tableData} refreshTableData={getUser} />
             </Space>,
         </div>
     )

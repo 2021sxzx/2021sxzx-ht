@@ -5,7 +5,7 @@ import service from "./http";
 
 const api = {
     // 增加角色
-    AddRole(data){
+    AddRole(data) {
         return service.request({
             method: "post",
             url: "/v1/role/",
@@ -13,7 +13,7 @@ const api = {
         });
     },
 
-    DeleteRole(data){
+    DeleteRole(data) {
         return service.request({
             method: "delete",
             url: "/v1/role/",
@@ -22,7 +22,7 @@ const api = {
     },
 
     // 更新角色非权限相关的信息
-    UpdateRole(data){
+    UpdateRole(data) {
         return service.request({
             method: "patch",
             url: "/v1/role/",
@@ -31,7 +31,7 @@ const api = {
     },
 
     // 修改用户权限(更新角色权限相关的信息)
-    UpdateRolePermission(data){
+    UpdateRolePermission(data) {
         return service.request({
             method: "patch",
             url: "/v1/permission/",
@@ -47,7 +47,7 @@ const api = {
             data, //data:data同名可以直接写 data
         });
     },
-    async getRole(){
+    async getRole() {
         return service.get('/v1/role')
     },
 
