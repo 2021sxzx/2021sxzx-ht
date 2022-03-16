@@ -3,6 +3,7 @@ import api from '../../../api/rule';
 //import { Route, Switch } from 'react-router'
 import { HashRouter as Router, Route, Link, Switch, useRouteMatch, useParams } from 'react-router-dom'
 import ItemManageRule from './ItemManageRule/ItemManageRule'
+import ItemManageRegion from './ItemManageRegion/ItemManageRegion'
 import ItemManageGuide from './ItemManageGuide/ItemManageGuide'
 import ItemManageProcess from './ItemManageProcess/ItemManageProcess'
 
@@ -19,13 +20,13 @@ export default function ItemManage() {
     })
     const [regionRoot, setRegionRoot] = useState([])
 
-    const [rule2region, setRule2region] = useState({})
-    const [region2rule, setRegion2rule] = useState({})
+    const [ruleDict, setRuleDict] = useState({})
+    const [regionDict, setRegionDict] = useState({})
     // 临时存储获取到的所有节点，用于生成规则或区划路径
     const [ruleNodes, setRuleNodes] = useState({})
     const [regionNodes, setRegionNodes] = useState({})
 
-    const getTree = ()=>{
+    const getRuleTree = ()=>{
         // 构建父子关系树
         api.GetRuleTree({}).then(response=>{
             let nodes = response.data.data
@@ -88,14 +89,13 @@ export default function ItemManage() {
                     }
                 }
                 else{
-                    root.push({
+                    setRegionRoot({
                         nodeId: key,
                         nodeName: node.region_name,
                         isRegion: true
                     })
                 }
             }
-            setRegionRoot(root)
             setRegionTree(tree)
         }).catch(error=>{
         })
@@ -103,14 +103,19 @@ export default function ItemManage() {
 
     const buildRuleNRegionTree = ()=>{
         api.GetItems({}).then(response=>{
+            let items = response.data.data
             let ruleDict = {}
             let regionDict = {}
-            for (let item in response.data.data){
-                ruleDict[item.item_rule_id] = item.task_code
-                regionDict[item.task_coded] = item.item_rule_id
+            for (let i = 0; i < items.length; i++){
+                if (!(items[i].rule_id in ruleDict)){
+                    ruleDict[items[i].rule_id] = true
+                }
+                if (!(items[i].region_id in regionDict)){
+                    regionDict[items[i].region_id] = true
+                }
             }
-            setRule2region(ruleDict)
-            setRegion2rule(regionDict)
+            setRuleDict(ruleDict)
+            setRegionDict(regionDict)
         }).catch(error=>{
 
         })
@@ -119,7 +124,7 @@ export default function ItemManage() {
     const init = ()=>{
         // 通过设置延迟确保先获取规则和区划树
         // 再进行路径的生成
-        getTree()
+        getRuleTree()
         getRegionTree()
     }
 
@@ -128,14 +133,24 @@ export default function ItemManage() {
     }, [])
 
     return (
-        <Switch>
-            <Route path={`${path}/process`} 
-                component={()=><ItemManageProcess/>}/>
-            <Route path={`${path}/guide`} 
-                component={()=><ItemManageGuide region2rule={region2rule}/>}/>
-            <Route path={`${path}/item-rule/rule`} 
-                component={()=><ItemManageRule regionNodes={regionNodes} ruleNodes={ruleNodes} rule2region={rule2region}
+        <div>
+            <Switch>
+                <Route path={`${path}/process`} 
+                    component={()=><ItemManageProcess regionNodes={regionNodes} ruleNodes={ruleNodes} ruleDict={ruleDict}
                     regionTree={regionTree} ruleTree={ruleTree} regionRoot={regionRoot} ruleRoot={ruleRoot} init={init}/>}/>
-        </Switch>
+
+                <Route path={`${path}/guide`} 
+                    component={()=><ItemManageGuide regionDict={regionDict}/>}/>
+
+                <Route path={`${path}/item-rule/rule`} 
+                    component={()=><ItemManageRule ruleNodes={ruleNodes} ruleDict={ruleDict}
+                        ruleTree={ruleTree} ruleRoot={ruleRoot} getRuleTree={getRuleTree}/>}/>
+
+                <Route path={`${path}/item-rule/region`} 
+                    component={()=><ItemManageRegion regionNodes={regionNodes} regionDict={regionDict}
+                        regionTree={regionTree} regionRoot={regionRoot} getRegionTree={getRegionTree}/>}/>
+            </Switch>
+        </div>
+        
     )
 }

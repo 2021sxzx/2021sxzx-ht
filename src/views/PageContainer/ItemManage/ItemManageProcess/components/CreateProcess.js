@@ -1,299 +1,437 @@
 import React, {useEffect, useState} from 'react'
 import style from './CreateProcess.module.scss'
-import { Steps, Space, message, Form, Input, Button, Table, Modal,Descriptions, Badge  } from 'antd';
+import { DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
+import TagsArea from './TagsArea.js'
 import api from '../../../../../api/rule';
-import FormArea from './FormArea.js';
-const {Step} = Steps
-const {TextArea} = Input
 
 export default function CreateProcess(props){
-    // 各个事项指南输入项的值
-    const [guideName, setGuideName] = useState('')
-    const [guideCode, setGuideCode] = useState('')
-    const [guideContent, setGuideContent] = useState('')
-    const [guideAccord, setGuideAccord] = useState('')
-    const [guideCondition, setGuideCondition] = useState('')
-    const [guideMaterial, setGuideMaterial] = useState('')
-    const [guideTimeLimit, setGuideTimeLimit] = useState('')
-    const [guidePhone, setGuidePhone] = useState('')
-    const [guidePlatform, setGuidePlatform] = useState('')
-    const [guidePCAddress, setGuidePCAddress] = useState('')
-    const [guidePEAddress, setGuidePEAddress] = useState('')
-    const [guideSelfmadeAddress, setGuideSelfmadeAddress] = useState('')
-    const [guideAddress, setGuideAddress] = useState('')
-    const [guideQRCode, setGuideQRCode] = useState('')
-    // 判断指南输入状态
-    const [stepStatus, setStepStatus] = useState(['process', 'wait', 'wait', 'wait'])
-    const [current, setCurrent] = useState(0);
+    // 页面中用以展示的基础数据
+    const [taskCode, setTaskCode] = useState('-')
+    const [taskRule, setTaskRule] = useState(props.ruleRoot.nodeName + '\\')
+    const [extraHeight, setExtraHeight] = useState(0)
+    // 选择过程中的已选择、待选择节点
+    const [chosenTags, setChosenTags] = useState([])
+    const [enabledTags, setEnabledTags] = useState([])
+    const [recommendedTags, setRecommendedTags] = useState([{
+        'nodeName': '暂无',
+        'nodeId': '12345'
+    }])
+    // 已选择节点的规则id以及区划id
+    const [currRuleId, setCurrRuleId] = useState('')
+    const [currRegionId, setCurrRegionId] = useState('')
+    // 创建自定义节点
+    const [isCreating, setIsCreating] = useState(false)
+    const [newNode, setNewNode] = useState('')
+    const [newNodeList, setNewNodeList] = useState([])
+    const [realNewId, setRealNewId] = useState('')
+    // 是否已经可以创建
+    const [chooseEnd, setChooseEnd] = useState(false)
+    // 加载效果
+    const [isLoading, setIsLoading] = useState(false)
 
-    // 处理各个输入框的状态更新
-    // 事项基本信息
-    const handleGuideNameChange = (e)=>{
-        setGuideName(e.target.value)
-    }
-    const handleGuideCodeChange = (e)=>{
-        setGuideCode(e.target.value)
-    }
-    const handleGuideContentChange = (e)=>{
-        setGuideContent(e.target.value)
-    }
-    const handleGuideAccordChange = (e)=>{
-        setGuideAccord(e.target.value)
-    }
-    // 资格审核信息
-    const handleGuideConditionChange = (e)=>{
-        setGuideCondition(e.target.value)
-    }
-    const handleGuideMaterialChange = (e)=>{
-        setGuideMaterial(e.target.value)
-    }
-    const handleGuideTimeLimitChange = (e)=>{
-        setGuideTimeLimit(e.target.value)
-    }
-    // 业务咨询信息
-    const handleGuidePhoneChange = (e)=>{
-        setGuidePhone(e.target.value)
-    }
-    const handleGuidePlatformChange = (e)=>{
-        setGuidePlatform(e.target.value)
-    }
-    const handleGuidePCAddressChange = (e)=>{
-        setGuidePCAddress(e.target.value)
-    }
-    const handleGuidePEAddressChange = (e)=>{
-        setGuidePEAddress(e.target.value)
-    }
-    // 业务办理信息
-    const handleGuideSelfmadeAddressChange = (e)=>{
-        setGuideSelfmadeAddress(e.target.value)
-    }
-    const handleGuideAddressChange = (e)=>{
-        setGuideAddress(e.target.value)
-    }
-    const handleGuideQRCodeChange = (e)=>{
-        setGuideQRCode(e.target.value)
-    }
-
-    // 每一步的输入内容
-    const steps = [
-        {
-            title: '事项基本信息',
-            content: 
-            <Space className={style.form} direction='vertical' size={15}>
-                <FormArea handleChange={handleGuideNameChange} formName='事项名称' value={guideName}/>
-                <FormArea handleChange={handleGuideCodeChange} formName='事项代码' value={guideCode}/>
-                <FormArea handleChange={handleGuideContentChange} formName='事项内容' value={guideContent}/>
-                <FormArea handleChange={handleGuideAccordChange} formName='政策依据' value={guideAccord}/>
-            </Space>
-        },
-        {
-            title: '资格审核信息',
-            content: 
-            <Space className={style.form} direction='vertical' size={15}>
-                <FormArea handleChange={handleGuideConditionChange} formName='申办所需审核条件' value={guideCondition}/>
-                <FormArea handleChange={handleGuideMaterialChange} formName='申办材料' value={guideMaterial}/>
-                <FormArea handleChange={handleGuideTimeLimitChange} formName='审核时限' value={guideTimeLimit}/>
-            </Space>
-        },
-        {
-            title: '业务咨询信息',
-            content: 
-            <Space className={style.form} direction='vertical' size={15}>
-                <FormArea handleChange={handleGuidePhoneChange} formName='咨询电话' value={guidePhone}/>
-                <FormArea handleChange={handleGuidePlatformChange} formName='咨询平台' value={guidePlatform}/>
-                <FormArea handleChange={handleGuidePCAddressChange} formName='网办PC端' value={guidePCAddress}/>
-                <FormArea handleChange={handleGuidePEAddressChange} formName='网办移动端' value={guidePEAddress}/>
-            </Space>
-        },
-        {
-            title: '业务办理信息',
-            content: 
-            <Space className={style.form} direction='vertical' size={15}>
-                <FormArea handleChange={handleGuideSelfmadeAddressChange} formName='自助终端' value={guideSelfmadeAddress}/>
-                <FormArea handleChange={handleGuideAddressChange} formName='办事大厅地址' value={guideAddress}/>
-                <FormArea handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>
-            </Space>
+    useEffect(()=>{
+        // 初始化分类规则树的根节点
+        let currChildren = []
+        let currChosen = []
+        currChosen.push(props.ruleRoot)
+        for (let i = 0; i < (props.ruleTree[props.ruleRoot.nodeId]).length; i++){
+            currChildren.push((props.ruleTree[props.ruleRoot.nodeId])[i])
         }
-    ]
+        setEnabledTags(currChildren)
+        setChosenTags(currChosen)
+    },[])
 
-    // 按钮
+    const chooseTag = (index, type)=>{
+        // 暂不处理推荐事项
+        if (type !== '1') return
+
+        // 获取选取的节点，渲染其子节点并处理规则路径
+        let tag = enabledTags[index]
+        chosenTags.push(tag)
+        let currChildren = []
+        if (tag.isRegion){
+            // 是区划节点
+            if (tag.nodeId in props.regionTree){
+                // 选择了一个有子节点的区划节点
+                for (let i = 0; i < props.regionTree[tag.nodeId].length; i++){
+                    currChildren.push(props.regionTree[tag.nodeId][i])
+                }
+            }
+            else{
+                // 区划节点选择完毕
+                // 只有当全部选择完毕的时候才可以进行创建或修改
+                confirmItemRules({
+                    rule_id: currRuleId,
+                    region_id: tag.nodeId
+                })
+            }
+            setCurrRegionId(tag.nodeId)
+        }
+        else{
+            // 是规则节点
+            if (tag.nodeId in props.ruleTree){
+                // 选择了一个有子节点的分类规则节点
+                for (let i = 0; i < props.ruleTree[tag.nodeId].length; i++){
+                    currChildren.push(props.ruleTree[tag.nodeId][i])
+                }
+            }
+            else{
+                // 分类规则选择完毕，切换为区划
+                currChildren = props.regionRoot
+            }
+            setCurrRuleId(tag.nodeId)
+        }
+        
+        let currRule = taskRule + tag.nodeName + '\\'
+        setEnabledTags(currChildren)
+        setTaskRule(currRule)
+    }
+
+    const getBack = (index)=>{
+        if (index === chosenTags.length - 1){
+            // 原地tp
+            return
+        }
+        let currChosen = []
+        let currChildren = []
+        let currNewNodeList = []
+        let listIndex = 0
+        let currRule = ''
+        setChooseEnd(false)
+
+        let returnTag = chosenTags[index]
+        for (let i = 0; i <= index; i++){
+            // 把现在已选择的节点列表还原到选中的节点为止
+            currChosen.push(chosenTags[i])
+            currRule += (chosenTags[i].nodeName + '\\')
+            if (chosenTags[i].nodeId[0] == 't'){
+                // 若其中有待创建队列，则重新推入队列
+                currNewNodeList.push(newNodeList[listIndex++])
+            }
+        }
+        setNewNodeList(currNewNodeList)
+
+        if (returnTag.isRegion){
+            // 判断返回的节点是规则还是区划，从对应的树中获取其子节点
+            for (let i = 0; i < props.regionTree[returnTag.nodeId].length; i++){
+                currChildren.push(props.regionTree[returnTag.nodeId][i])
+            }
+            // 只需回退区划Id
+            setCurrRegionId(returnTag.nodeId)
+        }
+        else{
+            if (!(returnTag.nodeId in props.ruleTree)){
+                // 若返回的节点不在树中，说明是叶子节点，将区划根节点推入即可
+                currChildren = props.regionRoot
+            }
+            else{
+                for (let i = 0; i < props.ruleTree[returnTag.nodeId].length; i++){
+                    currChildren.push(props.ruleTree[returnTag.nodeId][i])
+                }
+            }
+            // 回退到规则Id时，区划Id尚未选择，所以清零
+            setCurrRegionId('')
+            setCurrRuleId(returnTag.nodeId)
+        }
+        setChosenTags(currChosen)
+        setTaskRule(currRule)
+        setEnabledTags(currChildren)
+    }
+
     const handleCancel = ()=>{
         props.setPageType(1)
     }
 
-    // 判断处理是否有未输入的内容
     const handleCreate = ()=>{
-        let emptyArea = []
-        if (guideName === '') emptyArea.push('事项名称')
-        if (guideCode === '') emptyArea.push('事项编码')
-        if (guideContent === '') emptyArea.push('事项内容')
-        if (guideAccord === '') emptyArea.push('政策依据')
-        if (guideCondition === '') emptyArea.push('申办所需资格条件')
-        if (guideMaterial === '') emptyArea.push('申办材料')
-        if (guideTimeLimit === '') emptyArea.push('审核时限')
-        if (guidePhone === '') emptyArea.push('咨询电话')
-        if (guidePlatform === '') emptyArea.push('咨询平台')
-        if (guidePCAddress === '') emptyArea.push('网办PC端')
-        if (guidePEAddress === '') emptyArea.push('网办移动端')
-        if (guideSelfmadeAddress === '') emptyArea.push('自助终端')
-        if (guideAddress === '')  emptyArea.push('办事大厅地址')
-        if (guideQRCode === '') emptyArea.push('二维码')
-
-        if (emptyArea.length === 0){
-            showConfirmCreate()
+        setIsLoading(true)
+        if (newNodeList.length != 0){
+            // 若有新建的规则，则先创建规则
+            let list = {
+                rules: newNodeList
+            }
+            createRules(list)
         }
         else{
-            showEnterFull(emptyArea)
+            let data = {
+                itemRules: [
+                    {
+                        rule_id: currRuleId,
+                        region_id: currRegionId
+                    }
+                ]
+            }
+            createItemRules(data)
         }
     }
 
-    const nextStep = ()=>{
-      setCurrent(current + 1);
-    };
-  
-    const prevStep = ()=>{
-      setCurrent(current - 1);
-    };
-
-    const handleCurrentChange = (current)=>{
-        setCurrent(current)
-    }
-    
-    // api调用
-    const createItemGuide = ()=>{
-        let data = {
-            guideName, guideCode, guideContent, guideAccord,
-            guideCondition, guideMaterial, guideTimeLimit,
-            guidePhone, guidePlatform, guidePCAddress, guidePEAddress,
-            guideSelfmadeAddress, guideAddress, guideQRCode
+    const handleModify = ()=>{
+        setIsLoading(true)
+        if (newNodeList.length != 0){
+            // 若有新建的规则，则先创建规则
+            let list = {
+                rules: newNodeList
+            }
+            createRules(list)
         }
-        console.log(data)
+        else{
+            let data = {
+                itemRules: [
+                    {
+                        item_rule_id: props.modifyId,
+                        rule_id: currRuleId,
+                        region_id: currRegionId
+                    }
+                ]
+            }
+            updateItemRules(data)
+        }
     }
 
-    // 点击创建后根据表单是否填写完毕触发不同函数
-    const showEnterFull = (emptyArea)=>{
-        let str = ''
-        for (let i = 0; i < emptyArea.length; i++){
-            str = str + '      · ' + emptyArea[i] + '\n'
-        }
-        Modal.error({
-            title: '未输入完毕',
-            content: '本表单仍有以下内容未填写：\n' + str + '请填写完毕后再创建！',
-            centered: true,
-            style: {whiteSpace: 'pre'}
+    const confirmItemRules = (data)=>{
+        api.GetItemRules(data).then(response=>{
+            let rules = response.data.data
+            if (rules.length === 0){
+                setChooseEnd(true)
+            }
+            else{
+                Modal.error({
+                    title: '已有规则',
+                    content: '该事项规则已经存在，请重新选择！',
+                    centered: true
+                })
+            }
+        }).catch(error=>{
         })
     }
 
-    const showConfirmCreate = ()=>{
-        Modal.confirm({
-            title: '创建确认',
-            content: '确认创建《' + guideName + '》吗？',
-            centered: true,
-            onOk: createItemGuide
+    useEffect(function(){
+        if (realNewId == ''){
+            return
+        }
+        // 用获取的规则id进行事项规则的创建
+        // 为了防止state更新的延迟，用hook实现
+        if (props.modifyId == ''){
+            let data = {
+                itemRules: [
+                    {
+                        rule_id: realNewId,
+                        region_id: currRegionId
+                    }
+                ]
+            }
+            createItemRules(data)
+        }
+        else{
+            let data = {
+                itemRules: [
+                    {
+                        item_rule_id: props.modifyId,
+                        rule_id: realNewId,
+                        region_id: currRegionId
+                    }
+                ]
+            }
+            updateItemRules(data)
+        } 
+    },[realNewId])
+
+    const createItemRules = (data)=>{
+        api.CreateItemRules(data).then(response=>{
+            setIsLoading(false)
+            props.showSuccess()
+            props.init()
+            props.setPageType(1)
+        }).catch(error=>{
+            returnError()
         })
     }
 
-    // 翻页时进行每个步骤的输入是否完成
-    useEffect(function(){
-        let tempStatus = ['', '', '', '']
-        // 事项基本信息
-        if (guideName !== '' && guideCode !== '' && guideContent !== '' && guideAccord !== ''){
-            tempStatus[0] = 'finish'
+    const updateItemRules = (data)=>{
+        api.UpdateItemRules(data).then(response=>{
+            setIsLoading(false)
+            props.showSuccess()
+            props.init()
+            props.setPageType(1)
+        }).catch(error=>{
+            // 若修改过程出错，可能是库已经发生改变，树和事项都刷新
+            returnError()
+        })
+    }
+
+    const createRules = (data)=>{
+        // 调用创建规则接口
+        api.CreateRules(data).then(response=>{
+            let dict = response.data.data
+            console.log(dict)
+            // 对照字典查询新建节点的正式id并设置state
+            for (let i = 0; i < dict.length; i++){
+                if (dict[i].temp_id == newNodeList[newNodeList.length - 1].temp_id){
+                    setRealNewId(dict[i].rule_id)
+                }
+            }
+        }).catch(error=>{
+            // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
+            returnError()
+        })
+    }
+
+    const handleCreatingInputChange = (e)=>{
+        setNewNode(e.target.value)
+    }
+
+    const startCreating = ()=>{
+        setIsCreating(true)
+    }
+
+    const endCreating = ()=>{
+        setIsCreating(false)
+    }
+
+    const finishCreating = ()=>{
+        // 点击OK则将规则推入待创建队列
+        let tempNode = {
+            nodeId: 'temp' + newNodeList.length,
+            nodeName: newNode,
+            isRegion: false
         }
-        else{
-            tempStatus[0] = 'wait'
-        }
-        // 资格审核信息
-        if (guideCondition !== '' && guideMaterial !== '' && guideTimeLimit !== ''){
-            tempStatus[1] = 'finish'
-        }
-        else{
-            tempStatus[1] = 'wait'
-        }
-        // 业务咨询信息
-        if (guidePhone !== '' && guidePlatform !== '' && guidePCAddress !== '' && guidePEAddress !== ''){
-            tempStatus[2] = 'finish'
-        }
-        else{
-            tempStatus[2] = 'wait'
-        }
-        // 业务办理信息
-        if (guideSelfmadeAddress !== '' && guideAddress !== '' && guideQRCode !== ''){
-            tempStatus[3] = 'finish'
-        }
-        else{
-            tempStatus[3] = 'wait'
-        }
-        tempStatus[current] = 'process'
-        setStepStatus(tempStatus)
-    }, [current])
+        createNewNode(tempNode)
+        // 然后清空创建窗口
+        document.getElementById('creatingInput').value = ''
+        setNewNode('')
+        setIsCreating(false)
+    }
+
+    const createNewNode = (node)=>{
+        // 放进待处理数组
+        newNodeList.push({
+            temp_id: node.nodeId,
+            rule_name: node.nodeName,
+            parentId: currRuleId
+        })
+        // 处理页面展示内容
+        chosenTags.push(node)
+        setTaskRule(taskRule + node.nodeName + '\\')
+        setEnabledTags(props.regionRoot)
+        setCurrRuleId(node.nodeId)
+    }
+
+    const returnError = ()=>{
+        props.init()
+        props.showError()
+        props.setPageType(1)
+    }
 
     useEffect(function(){
-        if ('guideCode' in props.modifyContent){
-            let c = props.modifyContent
-            setGuideName(c.guideName)
-            setGuideCode(c.guideCode)
-            setGuideContent(c.guideContent)
-            setGuideAccord(c.guideAccord)
-            setGuideCondition(c.guideCondition)
-            setGuideMaterial(c.guideMaterial)
-            setGuideTimeLimit(c.guideTimeLimit)
-            setGuidePhone(c.guidePhone)
-            setGuidePlatform(c.guidePlatform)
-            setGuidePCAddress(c.guidePCAddress)
-            setGuidePEAddress(c.guidePEAddress)
-            setGuideSelfmadeAddress(c.guideSelfmadeAddress)
-            setGuideAddress(c.guideAddress)
-            setGuideQRCode(c.guideQRCode)
+        let height = 0
+        if (enabledTags.length > 7 || recommendedTags.length > 4){
+            if (enabledTags.length - 7 > recommendedTags.length - 4){
+                height = enabledTags.length - 7
+            }
+            else{
+                height = recommendedTags.length - 4
+            }
         }
-    }, [])
+        setExtraHeight(height * 32)
+    },[enabledTags, recommendedTags])
 
-    /*useEffect(function(){
-        // 暂时采用比较笨的方法，每次有输入更新则设置一下是否完成
-        setStepFull(guideName !== '' && guideCode !== '' && guideContent !== '' && guideAccord !== ''
-            && guideCondition !== '' && guideMaterial !== '' && guideTimeLimit !== ''
-            && guidePhone !== '' && guidePlatform !== '' && guidePCAddress !== '' && guidePEAddress !== ''
-            && guideSelfmadeAddress !== '' && guideAddress !== '' && guideQRCode !== '')
-    }, [guideName, guideCode, guideContent, guideAccord, guideCondition, guideMaterial, guideTimeLimit,
-        guidePhone, guidePlatform, guidePCAddress, guidePEAddress, guideSelfmadeAddress, guideAddress, guideQRCode])*/
-    
     return (
         <Space direction='vertical' size={15}>
-            <Steps current={current} onChange={handleCurrentChange} type="navigation"
-                className={style.siteNavigationSteps} style={{width: 1250}}>
-                {steps.map((item, index) => 
-                    <Step key={item.title} title={item.title} status={stepStatus[index]}/>
-                )}
-            </Steps>
-            <div className={style.stepsContent}>
-                {steps[current].content}
+            <Modal centered destroyOnClose={true} title='自定义标签' visible={isCreating} onCancel={endCreating} onOk={finishCreating}>
+                <Input id='creatingInput' placeholder='请输入自定义标签名' size='middle' onChange={handleCreatingInputChange}/>
+            </Modal>
+
+            <div className={style.ruleItem}>
+                <div className={style.itemTitle}>
+                    事项指南编码：
+                </div>
+                <div className={style.itemContent}>
+                    {taskCode}
+                </div>
             </div>
-            
-            <div className={style.buttons}>
-                <Button type='default' size='middle' className={style.button}
-                    onClick={handleCancel}>
-                    取消
+
+            <div className={style.ruleItem}>
+                <div className={style.itemTitle}>
+                    事项指南：
+                </div>
+                <div className={style.itemContent}>
+                    <Button size='small' type='primary'>绑定指南</Button>
+                </div>
+            </div>
+
+            <div className={style.ruleItem}>
+                <div className={style.itemTitle}>
+                    创建事项规则：
+                </div>
+                <div className={style.itemContent}>
+                    <div className={style.ruleText}>
+                        {taskRule}
+                    </div>
+                    <div className={style.ps}>
+                        （备注：通过下面的事项规则库，逐级选择规则项，完成创建）
+                    </div>
+                </div>
+            </div>
+
+            <Space className={style.createBox} direction='vertical' size={0}>
+                <div>
+                    <div className={style.createTitle}>
+                        事项规则库：
+                    </div>
+                    <Space className={style.chosenTags} direction='horizontal' size={[12, 4]} wrap>
+                        {
+                            chosenTags.map((tag, index) =>
+                                <div className={style.chosenTag} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')} onClick={
+                                    value=>{
+                                        getBack(index)
+                                    }
+                                }>
+                                    <div className={style.tagContent}>
+                                        {tag.nodeName}
+                                    </div>
+                                </div>
+                            )
+                        }
+                    </Space>
+                </div>
+
+                <div className={style.chooseBox} style={{height: 276 + extraHeight, minHeight: 276}}>
+                    <div className={style.chooseBoxTitle1}>
+                        可选事项规则项：
+                    </div>
+                    <div className={style.enabledTags}>
+                        <TagsArea tags={enabledTags} chooseTag={chooseTag} type={'1'}/>
+                    </div>
+
+                    <div className={style.separator} style={{height: 240 + extraHeight, minHeight: 240}}></div>
+                    
+                    <div className={style.chooseBoxTitle2}>
+                        候选事项规则项：
+                    </div>
+
+                    <div className={style.chooseBoxSubTitle}>
+                        推荐规则项：
+                    </div>
+                    <div className={style.textRankTags}>
+                        <TagsArea tags={recommendedTags} chooseTag={chooseTag} type={'2'}/>
+                    </div>
+
+                    <div className={style.chooseBoxSubTitle} style={{top: 120 + extraHeight, display: currRegionId == '' ? 'block' : 'none'}}>
+                        用户自定义：
+                    </div>
+                    <div className={style.createTag} style={{display: currRegionId == '' ? 'block' : 'none', top: 125 + extraHeight}}
+                        onClick={startCreating}>
+                        自定义标签+
+                    </div>
+                </div>
+            </Space>
+
+            <div style={{display: 'block', textAlign: 'center'}}>
+                <Button type='default' size='middle' style={{marginRight: 60, width: 100}}
+                    onClick={handleCancel}>取消</Button>
+                <Button type='primary' size='middle' style={{width: 100}}
+                    onClick={props.modifyId == '' ? handleCreate : handleModify} disabled={!chooseEnd} loading={isLoading}>
+                    {props.modifyId == '' ? '创建' : '修改'}
                 </Button>
-                {
-                    current > 0 &&
-                    <Button type='primary' size='middle' className={style.button}
-                        onClick={prevStep}>
-                        上一步
-                    </Button>
-                }
-                {
-                    current !== steps.length - 1 &&
-                    <Button type='primary' size='middle' className={style.button}
-                        onClick={nextStep}>
-                        下一步
-                    </Button>
-                }
-                {
-                    <Button type='primary' size='middle' className={style.button}
-                        onClick={handleCreate}>
-                        创建
-                    </Button>
-                }
             </div>
         </Space>
     )

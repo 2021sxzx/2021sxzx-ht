@@ -44,7 +44,7 @@ export default function PageContainer() {
               <Route path="/comment-manage/list" component={CommentManageList} />
               <Route path="/comment-manage/report" component={CommentManageReport} />
               <Route path="/personal" component={Personal}/>
-              <Route path="/item-manage" component={()=><ItemManage />}/>
+              <Route path="/item-manage" component={ItemManage}/>
               <Route path="/system-manage/journal" component={SystemManageJournal}/>
               <Route path="/system-manage/resource" component={SystemManageResource}/>
               <Route path="/system-manage/failure" component={SystemManageFailure}/>

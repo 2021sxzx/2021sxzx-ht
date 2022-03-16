@@ -159,6 +159,34 @@ export default function ManageGuide(props) {
         guideQRCode: '1'
     }
 
+    const getPathByRuleId = (id)=>{
+        // 获取规则id对应的规则路径
+        let parent = props.ruleNodes[id].parentId
+        let currId = id
+        let res = ''
+        while (parent !== '' && parent !== currId){
+            res = props.ruleNodes[currId].rule_name + '\\' + res
+            currId = parent
+            parent = props.ruleNodes[currId].parentId
+        }
+        res = props.ruleNodes[currId].rule_name + '\\' + res
+        return res
+    }
+
+    const getPathByRegionId = (id)=>{
+        // 获取规则id对应的规则路径
+        let parent = props.regionNodes[id].parentId
+        let currId = id
+        let res = ''
+        while (parent !== '' && parent !== currId){
+            res = props.regionNodes[currId].region_name + '\\' + res
+            currId = parent
+            parent = props.regionNodes[currId].parentId
+        }
+        res = props.regionNodes[currId].region_name + '\\' + res
+        return res
+    }
+
     const getItemGuide = ()=>{
         // 获取所有事项规则
         /*api.GetItemGuide({}).then(response=>{

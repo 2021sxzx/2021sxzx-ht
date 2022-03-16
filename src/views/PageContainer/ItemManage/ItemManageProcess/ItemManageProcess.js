@@ -13,10 +13,14 @@ export default function ItemManageProcess(props) {
 
     const showError = ()=>{
         Modal.error({
-            title: 'error',
-            content: 'error',
+            title: '出错啦！',
+            content: '本次操作出现了错误，请稍后重试！',
             centered: true
         })
+    }
+
+    const showSuccess = ()=>{
+        message.success('操作成功！')
     }
 
     return (
@@ -28,7 +32,9 @@ export default function ItemManageProcess(props) {
             }
             {
                 pageType === 2 &&
-                <CreateProcess setPageType={setPageType} modifyContent={modifyContent}/>
+                <CreateProcess setPageType={setPageType} ruleTree={props.ruleTree} regionTree={props.regionTree}
+                ruleRoot={props.ruleRoot} regionRoot={props.regionRoot} init={props.init} modifyId={modifyId} 
+                showError={showError} showSuccess={showSuccess}/>
             }
         </>
     )

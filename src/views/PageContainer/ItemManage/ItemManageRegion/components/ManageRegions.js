@@ -4,7 +4,7 @@ import { getYMD } from "../../../../../utils/TimeStamp";
 import api from '../../../../../api/rule';
 import SelectForm from './SelectForm'
 
-export default function ManageRules(props) {
+export default function ManageRegions(props) {
     // 页面的基础数据
     const [tableData, setTableData] = useState([])
     // 是否正在删除，以及删除队列
@@ -27,15 +27,15 @@ export default function ManageRules(props) {
 
     const tableColumns = [
         {
-            title: '规则编码',
-            dataIndex: 'rule_id',
-            key: 'rule_id',
+            title: '区划编码',
+            dataIndex: 'region_id',
+            key: 'region_id',
             width: 120
         },
         {
             title: '规则路径',
-            dataIndex: 'rule_path',
-            key: 'rule_path',
+            dataIndex: 'region_path',
+            key: 'region_path',
             width: 500
         },
         {
@@ -75,7 +75,7 @@ export default function ManageRules(props) {
                     <Menu>
                         <Menu.Item key='0'>
                             <Button type='primary' onClick={function(){
-                                modifyRule(record.rule_id)
+                                modifyRegion(record.region_id)
                             }}>
                                 编辑
                             </Button>
@@ -89,7 +89,7 @@ export default function ManageRules(props) {
                         </Menu.Item>
                         <Menu.Item key='2'>
                             <Button style={{backgroundColor: 'red', color: 'white'}} onClick={function(){
-                                deleteSingleItem(record.rule_id)
+                                deleteSingleItem(record.region_id)
                             }}>
                                 删除
                             </Button>
@@ -104,37 +104,37 @@ export default function ManageRules(props) {
         }
     ]
 
-    const getPathByRuleId = (id)=>{
+    const getPathByRegionId = (id)=>{
         // 获取规则id对应的规则路径
-        let parent = props.ruleNodes[id].parentId
+        let parent = props.regionNodes[id].parentId
         let currId = id
         let res = ''
         while (parent !== '' && parent !== currId){
-            res = props.ruleNodes[currId].rule_name + '\\' + res
+            res = props.regionNodes[currId].region_name + '\\' + res
             currId = parent
-            parent = props.ruleNodes[currId].parentId
+            parent = props.regionNodes[currId].parentId
         }
-        res = props.ruleNodes[currId].rule_name + '\\' + res
+        res = props.regionNodes[currId].region_name + '\\' + res
         return res
     }
 
-    const getNodesByRuleId = (id)=>{
-        // 获取规则id对应的规则路径节点
-        let parent = props.ruleNodes[id].parentId
+    const getNodesByRegionId = (id)=>{
+        // 获取规则id对应的规则路径
+        let parent = props.regionNodes[id].parentId
         let currId = id
         let res = []
         while (parent !== '' && parent !== currId){
             res.push({
-                nodeId: props.ruleNodes[currId].rule_id,
-                nodeName: props.ruleNodes[currId].rule_name,
+                nodeId: props.regionNodes[currId].region_id,
+                nodeName: props.regionNodes[currId].region_name,
                 isRegion: false
             })
             currId = parent
-            parent = props.ruleNodes[currId].parentId
+            parent = props.regionNodes[currId].parentId
         }
         res.push({
-            nodeId: props.ruleNodes[currId].rule_id,
-            nodeName: props.ruleNodes[currId].rule_name,
+            nodeId: props.regionNodes[currId].region_id,
+            nodeName: props.regionNodes[currId].region_name,
             isRegion: false
         })
         return res
@@ -162,59 +162,66 @@ export default function ManageRules(props) {
 
     const finishDeleting = ()=>{
         // 确定删除，调用接口
-        deleteRules()
+        deleteRegions()
         setIsDeleting(false)
     }
 
-    const deleteRules = ()=>{
+    const deleteRegions = ()=>{
         let data = {
-            rules: deletingIds
+            Regions: deletingIds
         } 
         // 根据事项规则id删除事项规则，删除完之后重新载入事项规则
-        api.DeleteRules(data).then(response=>{ 
-            // 等规则路径问题处理完后只需要刷新ruleItems
+        api.DeleteRegions(data).then(response=>{ 
+            // 等规则路径问题处理完后只需要刷新regionItems
             props.showSuccess()
-            getRules()
+            getRegions()
         }).catch(error=>{
             // 删除报错时，弹出报错框并重新加载数据
             props.showError()
-            props.getruleTree()
-            getRules()
+            props.getRegionTree()
+            getRegions()
         })
     }
 
-    const getRules = (nodes)=>{
-        let rules = []
-        console.log(nodes)
-        console.log(props.ruleTree)
+    /*const getRegions = ()=>{
+        api.GetRegions({}).then(response=>{
+            let regions = response.data.data
+            console.log(regions)
+            for (let i = 0; i < regions.length; i++){
+                regions[i]['region_path'] = getPathByRegionId(regions[i].region_id)
+            }
+            setTableData(regions)
+        }).catch(error=>{
+
+        })
+    }*/
+    const getRegions = (nodes)=>{
+        let regions = []
         for (let key in nodes){
-            if (nodes[key].rule_id in props.ruleTree){
-                continue
-            }
-            let rule = {
-                rule_id: nodes[key].rule_id,
+            let region = {
+                region_id: nodes[key].region_id,
                 isRegion: false,
-                rule_path: getPathByRuleId(nodes[key].rule_id)
+                region_path: getPathByRegionId(nodes[key].region_id)
             }
-            rules.push(rule)
+            regions.push(region)
         }
-        setTableData(rules)
+        setTableData(regions)
     }
 
-    const searchRules = (data)=>{
-        api.GetRules(data).then(response=>{
-            let rules = response.data.data
-            for (let i = 0; i < rules.length; i++){
-                rules[rule_path] = getPathByRuleId(rules[rule_id])
+    const searchRegions = (data)=>{
+        api.GetRegions(data).then(response=>{
+            let regions = response.data.data
+            for (let i = 0; i < regions.length; i++){
+                regions[region_path] = getPathByRegionId(regions[region_id])
             }
-            setTableData(rules)
+            setTableData(regions)
         }).catch(error=>{
 
         })
     }
 
-    const modifyRule = (id)=>{
-        let nodes = getNodesByRuleId(id)
+    const modifyRegion = (id)=>{
+        let nodes = getNodesByRegionId(id)
         props.setModifyPath(nodes)
         props.setPageType(2)
     }
@@ -226,7 +233,7 @@ export default function ManageRules(props) {
 
     const resetSearch = ()=>{
         setCurrent(1)
-        getRules()
+        getRegions()
     }
 
     const changePage = (page)=>{
@@ -236,8 +243,8 @@ export default function ManageRules(props) {
     }
 
     useEffect(function(){
-        getRules(props.ruleNodes)
-    }, [props.ruleNodes])
+        getRegions(props.regionNodes)
+    }, [props.regionNodes])
 
     return (
         <>
@@ -245,13 +252,13 @@ export default function ManageRules(props) {
                 <Modal centered destroyOnClose={true} title='删除确认' visible={isDeleting} onCancel={endDeleting} onOk={finishDeleting}>
                     <div>是否确定删除该{deletingIds.length}项规则？</div>
                 </Modal>
-                <SelectForm getSearch={searchRules} reset={resetSearch}></SelectForm>
+                <SelectForm getSearch={searchRegions} reset={resetSearch}></SelectForm>
                 <Space direction='horizontal' size={12} style={{marginLeft: 925}}>
                     <Button type='primary' onClick={handleCreate}>创建规则</Button>
                     <Button type='primary' disabled={!isBatching}>批量导出</Button>
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>
                 </Space>
-                <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='item_rule_id'
+                <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='item_region_id'
                     pagination={{onChange: changePage, current: current}}/>
             </Space>
         </>

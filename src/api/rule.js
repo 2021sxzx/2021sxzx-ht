@@ -69,6 +69,20 @@ const api ={
             url: "/v1/updateRules",
             data
         })
+    },
+    GetRules(data){
+        return service.request({
+            method: "post",
+            url: "/v1/getRules",
+            data
+        })
+    },
+    GetRegions(data){
+        return service.request({
+            method: "post",
+            url: "/v1/getRegions",
+            data
+        })
     }
 }
 

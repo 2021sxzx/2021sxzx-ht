@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react'
-import style from './CreateRule.module.scss'
+import style from './CreateRegion.module.scss'
 import { DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
 import TagsArea from './TagsArea.js'
 import api from '../../../../../api/rule';
 
-export default function CreateRule(props){
+export default function CreateRegion(props){
     // 页面中用以展示的基础数据
     const [taskCode, setTaskCode] = useState('-')
-    const [pathName, setPathName] = useState(props.ruleRoot.nodeName + '\\')
+    const [pathName, setPathName] = useState(props.regionRoot.nodeName + '\\')
     const [extraHeight, setExtraHeight] = useState(0)
     // 选择过程中的已选择、待选择节点
     const [chosenTags, setChosenTags] = useState([])
@@ -18,7 +18,7 @@ export default function CreateRule(props){
         'disabled': false
     }])
     // 已选择节点的规则id以及区划id
-    const [currRuleId, setCurrRuleId] = useState('')
+    const [currRegionId, setCurrRegionId] = useState('')
     // 创建自定义节点
     const [isCreating, setIsCreating] = useState(false)
     const [newNode, setNewNode] = useState('')
@@ -41,11 +41,11 @@ export default function CreateRule(props){
         let currChosen = []
         if (props.modifyPath.length === 0){
             // 若是创建，则用规则树根节点进行处理
-            currChosen.push(props.ruleRoot)
+            currChosen.push(props.regionRoot)
             // 初始化可选节点
-            for (let i = 0; i < (props.ruleTree[props.ruleRoot.nodeId]).length; i++){
-                let node = props.ruleTree[props.ruleRoot.nodeId][i]
-                if (node.nodeId in props.ruleTree){
+            for (let i = 0; i < (props.regionTree[props.regionRoot.nodeId]).length; i++){
+                let node = props.regionTree[props.regionRoot.nodeId][i]
+                if (node.nodeId in props.regionTree){
                     node['disabled'] = false
                 }
                 else{
@@ -61,9 +61,9 @@ export default function CreateRule(props){
                 currChosen.push(props.modifyPath[i])
                 pathName = pathName + props.modifyPath[i].nodeName + '\\'
             }
-            for (let i = 0; i < props.ruleTree[props.modifyPath[1].nodeId].length; i++){
-                let node = props.ruleTree[props.modifyPath[1].nodeId][i]
-                if (node.nodeId in props.ruleTree){
+            for (let i = 0; i < props.regionTree[props.modifyPath[1].nodeId].length; i++){
+                let node = props.regionTree[props.modifyPath[1].nodeId][i]
+                if (node.nodeId in props.regionTree){
                     node['disabled'] = false
                 }
                 else{
@@ -89,11 +89,11 @@ export default function CreateRule(props){
         let currChildren = []
         
         // 是规则节点
-        if (tag.nodeId in props.ruleTree){
+        if (tag.nodeId in props.regionTree){
             // 选择了一个有子节点的分类规则节点
-            for (let i = 0; i < props.ruleTree[tag.nodeId].length; i++){
-                let node = props.ruleTree[tag.nodeId][i]
-                if (node.nodeId in props.ruleTree){
+            for (let i = 0; i < props.regionTree[tag.nodeId].length; i++){
+                let node = props.regionTree[tag.nodeId][i]
+                if (node.nodeId in props.regionTree){
                     node['disabled'] = false
                 }
                 else{
@@ -103,10 +103,10 @@ export default function CreateRule(props){
             }
         }
 
-        setCurrRuleId(tag.nodeId)
-        let currRule = pathName + tag.nodeName + '\\'
+        setCurrRegionId(tag.nodeId)
+        let currRegion = pathName + tag.nodeName + '\\'
         setEnabledTags(currChildren)
-        setPathName(currRule)
+        setPathName(currRegion)
     }
 
     const getBack = (index)=>{
@@ -118,14 +118,14 @@ export default function CreateRule(props){
         let currChildren = []
         let currNewNodeList = []
         let listIndex = 0
-        let currRule = ''
+        let currRegion = ''
         let end = false
         
         let returnTag = chosenTags[index]
         for (let i = 0; i <= index; i++){
             // 把现在已选择的节点列表还原到选中的节点为止
             currChosen.push(chosenTags[i])
-            currRule += (chosenTags[i].nodeName + '\\')
+            currRegion += (chosenTags[i].nodeName + '\\')
             if (chosenTags[i].nodeId[0] == 't'){
                 // 若其中有待创建队列，则重新推入队列，同时可以完成创建
                 currNewNodeList.push(newNodeList[listIndex++])
@@ -133,19 +133,19 @@ export default function CreateRule(props){
             }
         }
         
-        if (returnTag.nodeId in props.ruleTree){
+        if (returnTag.nodeId in props.regionTree){
             // 若回退节点有子节点，则显示
-            for (let i = 0; i < props.ruleTree[returnTag.nodeId].length; i++){
-                currChildren.push(props.ruleTree[returnTag.nodeId][i])
+            for (let i = 0; i < props.regionTree[returnTag.nodeId].length; i++){
+                currChildren.push(props.regionTree[returnTag.nodeId][i])
             }
         }
 
         // 将新的状态返回
         setChooseEnd(end)
-        setCurrRuleId(returnTag.nodeId)
+        setCurrRegionId(returnTag.nodeId)
         setNewNodeList(currNewNodeList)
         setChosenTags(currChosen)
-        setPathName(currRule)
+        setPathName(currRegion)
         setEnabledTags(currChildren)
     }
 
@@ -157,9 +157,9 @@ export default function CreateRule(props){
         setIsLoading(true)
 
         let list = {
-            rules: newNodeList
+            regions: newNodeList
         }
-        CreateRules(list)
+        createRegions(list)
     }
 
     const handleModify = ()=>{
@@ -197,14 +197,14 @@ export default function CreateRule(props){
         // 放进待处理数组
         newNodeList.push({
             temp_id: node.nodeId,
-            rule_name: node.nodeName,
-            parentId: currRuleId
+            region_name: node.nodeName,
+            parentId: currRegionId
         })
         // 处理页面展示内容
         chosenTags.push(node)
         setPathName(pathName + node.nodeName + '\\')
         setEnabledTags([])
-        setCurrRuleId(node.nodeId)
+        setCurrRegionId(node.nodeId)
     }
 
     const handleModifyingInputChange = (e)=>{
@@ -229,16 +229,16 @@ export default function CreateRule(props){
     }
 
     const returnError = ()=>{
-        props.getRuleTree()
+        props.getRegionTree()
         props.showError()
         props.setPageType(1)
     }
 
-    const CreateRules = (data)=>{
+    const createRegions = (data)=>{
         // 调用创建规则接口
-        api.CreateRules(data).then(response=>{
+        api.CreateRegions(data).then(response=>{
             props.showSuccess()
-            props.getRuleTree()
+            props.getRegionTree()
             props.setPageType(1)
         }).catch(error=>{
             // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
@@ -269,7 +269,7 @@ export default function CreateRule(props){
             </Modal>
             {
                 modifyingNode.nodeId !== 'none' &&
-                <div className={style.ruleItem}>
+                <div className={style.regionItem}>
                     <div className={style.itemTitle}>
                         节点名称：
                     </div>
@@ -280,12 +280,12 @@ export default function CreateRule(props){
                 </div>
             }
 
-            <div className={style.ruleItem}>
+            <div className={style.regionItem}>
                 <div className={style.itemTitle}>
                     创建事项规则：
                 </div>
                 <div className={style.itemContent}>
-                    <div className={style.ruleText}>
+                    <div className={style.regionText}>
                         {pathName + (modifyingNode.nodeId === 'none' ? '' : modifyingNode.nodeName + '\\')}
                     </div>
                     <div className={style.ps}>
