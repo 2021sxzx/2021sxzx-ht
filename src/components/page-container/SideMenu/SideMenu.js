@@ -1,150 +1,154 @@
-import React, { useEffect, useState } from 'react'
-import { withRouter } from 'react-router';
-import axios from 'axios';
-import { Layout, Menu, } from 'antd'
-import  {Scrollbars} from 'react-custom-scrollbars'
+import React, { useState} from 'react'
+import {withRouter} from 'react-router';
+import {Layout, Menu,} from 'antd'
+import {Scrollbars} from 'react-custom-scrollbars'
 import style from './SideMenu.module.css'
 import {
-  DesktopOutlined,
-  FileOutlined,
-  UserOutlined,
-  SettingOutlined,
+    DesktopOutlined,
+    FileOutlined,
+    UserOutlined,
+    SettingOutlined,
 } from '@ant-design/icons';
+import MenuList from "../../../utils/MenuList";
 
-const { Sider } = Layout;
-const { SubMenu } = Menu;
+const {Sider} = Layout;
+const {SubMenu} = Menu;
 
-const menuList = [
-  {
-    key:'/home',
-    title:'首页',
-    icon:<DesktopOutlined />
-  },
-  {
-    key:'/personal',
-    title:'个人中心',
-    icon:<UserOutlined />
-  },
-  {
-    key:'/ItemAudit',
-    title:'事项审核',
-    icon:<UserOutlined />
-  },
-  {
-    key:'/item-manage',
-    title:'事项管理',
-    icon:<FileOutlined />,
-    children:[
-      {
-        key:'/item-manage/process',
-        title:'事项过程管理',
-      },
-      {
-        key:'/item-manage/guide',
-        title:'事项指南管理',
-      },
-      {
-        key:'/item-manage/rule',
-        title:'事项规则管理',
-      },
-    ]
-  },
-  {
-    key:'/system-manage',
-    title:'系统管理',
-    icon:<SettingOutlined />,
-    children:[
-      {
-        key:'/system-manage/journal',
-        title:'日志管理'
-      },
-      {
-        key:'/system-manage/resource',
-        title:'资源管理'
-      }
-    ]
-  },
-  {
-    key:'/comment-manage',
-    title:'用户评价管理',
-    icon:<FileOutlined />,
-    children:[
-      {
-        key:'/comment-manage/list',
-        title:'用户评价'
-      },
-      {
-        key:'/comment-manage/report',
-        title:'评价报告'
-      }
-    ]
-  },
-  {
-    key:'/user-manage',
-    title:'用户管理',
-    icon:<FileOutlined />,
-    children:[
-      {
-        key:'/user-manage/account',
-        title:'后台账号管理'
-      },
-      {
-        key:'/user-manage/role',
-        title:'角色管理'
-      },
-      {
-        key:'/user-manage/department',
-        title:'部门管理'
-      },
-      {
-        key:'/user-manage/metaData',
-        title:'用户资料元数据管理'
-      },
-    ]
-  },
-]
+let menuTitleIcon = new Map([
+    ['首页', <DesktopOutlined/>],
+    ['个人中心', <UserOutlined/>],
+    ['事项审核', <UserOutlined/>],
+    ['事项管理', <FileOutlined/>],
+    ['系统管理', <SettingOutlined/>],
+    ['用户评价管理', <FileOutlined/>],
+    ['用户管理', <FileOutlined/>]
+])
+
+// const menuList = [
+//   {
+//     key:'/home',
+//     title:'首页',
+//     icon:<DesktopOutlined />
+//   },
+//   {
+//     key:'/personal',
+//     title:'个人中心',
+//     icon:<UserOutlined />
+//   },
+//   {
+//     key:'/ItemAudit',
+//     title:'事项审核',
+//     icon:<UserOutlined />
+//   },
+//   {
+//     key:'/item-manage',
+//     title:'事项管理',
+//     icon:<FileOutlined />,
+//     children:[
+//       {
+//         key:'/item-manage/process',
+//         title:'事项过程管理',
+//       },
+//       {
+//         key:'/item-manage/guide',
+//         title:'事项指南管理',
+//       },
+//       {
+//         key:'/item-manage/rule',
+//         title:'事项规则管理',
+//       },
+//     ]
+//   },
+//   {
+//     key:'/system-manage',
+//     title:'系统管理',
+//     icon:<SettingOutlined />,
+//     children:[
+//       {
+//         key:'/system-manage/journal',
+//         title:'日志管理'
+//       },
+//       {
+//         key:'/system-manage/resource',
+//         title:'资源管理'
+//       }
+//     ]
+//   },
+//   {
+//     key:'/comment-manage',
+//     title:'用户评价管理',
+//     icon:<FileOutlined />,
+//     children:[
+//       {
+//         key:'/comment-manage/list',
+//         title:'用户评价'
+//       },
+//       {
+//         key:'/comment-manage/report',
+//         title:'评价报告'
+//       }
+//     ]
+//   },
+//   {
+//     key:'/user-manage',
+//     title:'用户管理',
+//     icon:<FileOutlined />,
+//     children:[
+//       {
+//         key:'/user-manage/account',
+//         title:'后台账号管理'
+//       },
+//       {
+//         key:'/user-manage/role',
+//         title:'角色管理'
+//       },
+//       {
+//         key:'/user-manage/department',
+//         title:'部门管理'
+//       },
+//       {
+//         key:'/user-manage/metaData',
+//         title:'用户资料元数据管理'
+//       },
+//     ]
+//   },
+// ]
 
 
 function SideMenu(props) {
+    // 获取侧边栏菜单
+    const [menuList, setMenuList] = useState(MenuList.getAndStorageMenuList())
 
-  const [menu, setMenu] = useState(menuList)
+    const renderMenu = (menuList) => {
+        return menuList.map(item => {
+            if (item.children?.length > 0) {
+                return <SubMenu key={item.key} icon={menuTitleIcon.get(item.title)} title={item.title}>
+                    {renderMenu(item.children)}
+                </SubMenu>
+            }
+            return <Menu.Item key={item.key} icon={menuTitleIcon.get(item.title)} onClick={() => {
+                props.history.push(item.key)
+            }}>{item.title}</Menu.Item>
+        })
+    }
 
-  useEffect(()=>{
-    //后期要改成根据后台返回数据渲染左侧菜单
-    // axios.get('http://localhost:5000/rights?_embed=children').then(res=>{
-    //   setMenu(res.data)
-  },[])
+    const selectedKeys = [props.location.pathname]
+    const openKeys = ['/' + props.location.pathname.split('/')[1]]
 
-  const renderMenu = (menuList)=>{
-    return menuList.map(item=>{
-      if(item.children?.length>0){
-        return <SubMenu key={item.key} icon={item.icon} title={item.title}>
-          {renderMenu(item.children)}
-        </SubMenu>
-      }
-      return <Menu.Item key={item.key} icon={item.icon} onClick={()=>{
-          props.history.push(item.key)
-        }}>{item.title}</Menu.Item>
-    })
-  }
-
-  const selectedKeys = [props.location.pathname]
-  const openKeys = ['/'+props.location.pathname.split('/')[1]]
-
-  return (
-      <Sider theme="light">
-        <div style={{display:'flex',height:"100%", "flexDirection":"column"}}>
-          <div className={style.logo}>广州人社</div>
-          <Scrollbars>
-            <div style={{flex:1,"overflow":"auto"}}>
-              <Menu theme="light" selectedKeys={selectedKeys} mode="inline" defaultOpenKeys={openKeys}>
-                {renderMenu(menu)}
-              </Menu>
+    return ( 
+        <Sider theme="light">
+            <div style={{display: 'flex', height: "100%", "flexDirection": "column"}}>
+                <div className={style.logo}>广州人社</div>
+                <Scrollbars>
+                    <div style={{flex: 1, "overflow": "auto"}}>
+                        <Menu theme="light" selectedKeys={selectedKeys} mode="inline" defaultOpenKeys={openKeys}>
+                            {renderMenu(menuList)}
+                        </Menu>
+                    </div>
+                </Scrollbars>
             </div>
-          </Scrollbars>
-        </div>
-      </Sider>
-  )
+        </Sider>
+    )
 }
 
 export default withRouter(SideMenu)

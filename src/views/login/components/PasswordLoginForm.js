@@ -1,10 +1,11 @@
-import {Button, Checkbox, Col, Form, Row, Input} from "antd";
+import {Button, Checkbox, Col, Form, Row, Input, message} from "antd";
 import {LockOutlined, UserOutlined} from "@ant-design/icons";
 import React, {useState} from "react";
 import QuickLogin from "./QuickLogin";
 import api from "../../../api/login";
 import Cookie from "../../../utils/Cookie";
 import UrlJump from "../../../utils/UrlJump";
+import MenuList from "../../../utils/MenuList";
 
 /**
  * 账号密码登录
@@ -14,7 +15,6 @@ import UrlJump from "../../../utils/UrlJump";
 export default function PasswordLoginForm() {
     const [account, setAccount] = useState('')
     const [password, setPassword] = useState('')
-    const [sideBar,setSideBar] = useState({})
 
     const handleInputChangeAccount = (e) => {
         setAccount(e.target.value)
@@ -28,36 +28,28 @@ export default function PasswordLoginForm() {
         api.Login({
             account: account,
             password: password
-        }).then(response => {
+        }).then(async response => {
             console.log('login response', response.data)
             // 存 token
-            Cookie.setCookie('loginToken',response.data.data.jwt.token,1,'days')
+            Cookie.setCookie('loginToken', response.data.data.jwt.token)
             // 存角色
-            Cookie.setCookie('roleName',response.data.data.role_name,1,'days')
-            // 获取侧边栏
-            getSideBar(response.data.data.role_name)
-            const sideBarJson = JSON.stringify(sideBar);
-            sessionStorage.setItem('sideBar',sideBarJson)
-            console.log('sideBar',Cookie.getCookie('sideBar'))
+            Cookie.setCookie('roleName', response.data.data.role_name)
+            // 获取并保存侧边栏
+            MenuList.getAndStorageMenuList(response.data.data.role_name)
 
-            // 跳转到首页
-            // UrlJump.goto('#/home')
+            // TODO(钟卓江): 使用异步的方式等待 getAndStorageMenuList 完成后展现登录成功操作提示并跳转到首页
+            setTimeout(()=>{
+                message.success('登录成功')
+                UrlJump.goto('#/home')
+            },300)
+
+
+
         }).catch(error => {
             console.log('error:login', error)
+            message.error('登录失败，请尝试重新登录')
         })
     }
-
-    const getSideBar = (roleName) => {
-        api.GetSideBar({roleName}).then((response => {
-            console.log('getSideBar',response.data.data)
-            setSideBar(response.data.data)
-
-        })).catch(error => {
-            console.log("error getSideBar",error)
-        })
-    }
-
-
 
 
     return (

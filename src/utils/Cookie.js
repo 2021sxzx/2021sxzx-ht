@@ -1,7 +1,7 @@
 import React from 'react'
 
 const Cookie = {
-    // 未找到
+    // 未找到 cookieValue 的标识
     NotFound:null,
     // 时间单位常量
     timeUnitSet: {
@@ -11,13 +11,16 @@ const Cookie = {
         hours:'hours',
         minutes:'minutes'
     },
+    // 默认 cookie 过期时间
+    defaultExpiredTime:1,
+    defaultTimeUnit:'days',
     /**
      * 计算过期时间。目前以 day 为单位。
      * @param expiredTime 过期时间
      * @param timeUnit 过期时间的单位，默认为 days。取值为：{'months','weeks','days','hours','minutes'}
      * @returns {number}
      */
-    calculateExpiredTime(expiredTime, timeUnit = this.timeUnitSet.days) {
+    calculateExpiredTime(expiredTime = this.defaultExpiredTime, timeUnit = this.timeUnitSet.days) {
         switch (timeUnit) {
             case this.timeUnitSet.months:
                 // 30 天
@@ -42,7 +45,7 @@ const Cookie = {
      * @param timeUnit 过期时间的单位，默认为 days。取值为：{'months','weeks','days','hours','minutes'}
      * @returns {boolean} 是否添加成功
      */
-    setCookie(cookieName, cookieValue, expiredTime = 1, timeUnit = this.timeUnitSet.days) {
+    setCookie(cookieName, cookieValue, expiredTime = this.defaultExpiredTime, timeUnit = this.defaultTimeUnit) {
         let d = new Date();
         d.setTime(d.getTime() + this.calculateExpiredTime(expiredTime, timeUnit));
         // 设置 cookie
@@ -61,34 +64,29 @@ const Cookie = {
         for(let i=0; i<ca.length; i++)
         {
             let c = ca[i].trim();
-            if (c.indexOf(name)===0) return c.substring(name.length,c.length);
+            if (c.indexOf(name)===0) {
+                return c.substring(name.length, c.length)
+            }
         }
         // TODO（钟卓江）：这里应该要加一个报错信息？
         return this.NotFound;
     },
+
     /**
-     *
-     * @param cookieName
-     * @param expiredTime
-     * @returns {boolean}
-     */
-    /**
-     * 检查是否有对应的 cookie，并重新设置过期时间。
+     * 获取 cookie，并重新设置过期时间。
      * @param cookieName cookie name
      * @param expiredTime 过期时间，默认为 1
      * @param timeUnit 时间单位，默认 'days'.取值为：{'months','weeks','days','hours','minutes'}
-     * @returns {boolean} 是否有对应的 cookie
+     * @returns {string} 是否有对应的 cookie
      */
-    checkAndResetCookie(cookieName, expiredTime = 1, timeUnit = this.timeUnitSet.days) {
+    getAndResetCookie(cookieName, expiredTime = this.defaultExpiredTime, timeUnit = this.defaultTimeUnit) {
         const cookieValue = this.getCookie(cookieName);
+        // 存在对应的 cookie
         if (cookieValue !== this.NotFound) {
+            // 重新设置过期时间。
             this.setCookie(cookieName, cookieValue, expiredTime,timeUnit);
-            return true
-        } else {
-            if (cookieValue !== "" && cookieValue != null) {
-
-            }
         }
+        return cookieValue
     }
 }
 

@@ -14,7 +14,7 @@ const api = {
         });
     },
     // 根据角色名获取侧边栏
-    GetSideBar(data){
+    GetMenuList(data){
         return service.request({
             method:"post",
             url:'/v1/sideBar',

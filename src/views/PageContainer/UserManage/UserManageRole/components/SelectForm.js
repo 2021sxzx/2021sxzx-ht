@@ -35,6 +35,7 @@ export default function SelectForm(props) {
     }
 
     const AddRoleAndRefresh = (data) => {
+        // TODO(zzj):新增角色有bug，服务器会崩溃！！！
         // 新增角色非权限信息
         api.AddRole(data).then(response => {
             // log 服务端返回的搜索结果
