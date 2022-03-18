@@ -34,7 +34,16 @@ const api = {
     UpdateRolePermission(data) {
         return service.request({
             method: "patch",
-            url: "/v1/permission/",
+            url: "/v1/aboutPermission/",
+            data, //data:data同名可以直接写 data
+        })
+    },
+
+    // 添加用户权限(添加角色权限相关的信息)
+    AddRolePermission(data){
+        return service.request({
+            method: "post",
+            url: "/v1/aboutPermission/",
             data, //data:data同名可以直接写 data
         })
     },

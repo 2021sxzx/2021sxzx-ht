@@ -29,7 +29,7 @@ export default function RoleModal(props) {
     // 储存角色信息
     const [roleName, setRoleName] = useState(props.detailData.role_name)
     const [roleDescribe, setRoleDescribe] = useState(props.detailData.role_describe)
-    const [permission, setPermission] = useState(props.detailData.permission)
+    const [permissionIdentifierArray, setPermissionIdentifierArray] = useState(props.detailData.permission)
 
 
     //表单提交的成功、失败反馈
@@ -53,7 +53,7 @@ export default function RoleModal(props) {
             role_name_old:props.detailData.role_name,
             role_name: roleName,
             role_describe: roleDescribe,
-            permission: permission
+            permission_identifier_array: permissionIdentifierArray
         })
     };
 
@@ -73,7 +73,7 @@ export default function RoleModal(props) {
 
     const handleMultipleSelectChange = (value) => {
         console.log('multiSelect = ', value)
-        setPermission(value);
+        setPermissionIdentifierArray(value);
     }
 
     return (
@@ -141,7 +141,7 @@ export default function RoleModal(props) {
                             },
                         ]}
                     >
-                        <PermissionMultipleSelect defaultValue={permission}
+                        <PermissionMultipleSelect defaultValue={permissionIdentifierArray}
                                                   placeholder={'请选择角色权限'}
                                                   onChange={handleMultipleSelectChange}/>
                     </Form.Item>
