@@ -1,4 +1,4 @@
-.ruleItem{
+.regionItem{
     display: flex;
 }
 
@@ -20,7 +20,7 @@
     margin-right: 10px;
 }
 
-.ruleText{
+.regionText{
     color: #F59A23;
     width: 1000px;
 }
@@ -149,7 +149,7 @@
     left: 500px;
 }
 
-.ruleUploadBtn{
+.regionUploadBtn{
     position: absolute;
     top: 60px;
     left: 170px;
@@ -163,7 +163,7 @@
     line-height: 22px;
 }
 
-.ruleName{
+.regionName{
     position: absolute;
     top: 58px;
     left: 245px;
@@ -171,7 +171,7 @@
     font-size: 16px;
 }
 
-.ruleNumber{
+.regionNumber{
     position: absolute;
     top: 19px;
     left: 170px;

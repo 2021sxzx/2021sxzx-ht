@@ -27,14 +27,16 @@ export default function SelectForm(props){
     }
 
     const Search = ()=>{
-        const data = {}
-        if (start_time !== '') data['start_time'] = start_time
-        if (end_time !== '') data['end_time'] = end_time
-        if (item_rule_id !== '') data['item_rule_id'] = item_rule_id
-        if (item_rule_name !== '') data['item_rule_name'] = item_rule_name
-        if (department !== '') data['department'] = department
-        if (creator !== '') data['creator'] = creator
+        const data = {
+            start_time,
+            end_time,
+            item_rule_id,
+            item_rule_name,
+            department,
+            creator
+        }
         clear()
+        console.log(data)
         props.getSearch(data)
     }
 
