@@ -35,13 +35,24 @@ export default function SelectForm(props) {
     }
 
     const AddRoleAndRefresh = (data) => {
+        // 新增角色非权限信息
         api.AddRole(data).then(response => {
             // log 服务端返回的搜索结果
             console.log('addRoleResult=', response.data)
             message.success('新增角色成功')
         }).catch(error => {
             message.error('新增角色出现错误')
-            console.log("AddRoleAndRefresh error",error)
+            console.log("AddRole error",error)
+        })
+
+        // 新增角色权限信息
+        api.AddRolePermission(data).then(response => {
+            // log 服务端返回的搜索结果
+            console.log('addRolePermissionResult=', response.data)
+            message.success('新增角色权限成功')
+        }).catch(error => {
+            message.error('新增角色权限出现错误')
+            console.log("AddRolePermission error",error)
         })
 
         // 刷新页面
