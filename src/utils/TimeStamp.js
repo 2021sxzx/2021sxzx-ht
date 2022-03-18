@@ -1,5 +1,5 @@
 export function getYMDHMS (timestamp) {
-    let time = new Date(timestamp*1)
+    let time = new Date(timestamp * 1)
     let year = time.getFullYear()
     let month = time.getMonth() + 1
     let date = time.getDate()

@@ -100,9 +100,18 @@ const menuList = [
         key:'/user-manage/metaData',
         title:'用户资料元数据管理'
       },
-      
     ]
   },
+]
+
+const iconList = [
+  <DesktopOutlined />,
+  <UserOutlined />,
+  <UserOutlined />,
+  <FileOutlined />,
+  <SettingOutlined />,
+  <FileOutlined />,
+  <FileOutlined />
 ]
 
 
