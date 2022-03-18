@@ -24,8 +24,8 @@ export default function PermissionMultipleSelect(props) {
             setOptions(
                 response.data.data.map((item)=>{
                     return (
-                        <Option key={item.permission}
-                                value={item.permission}>
+                        <Option key={item.permission_identifier}
+                                value={item.permission_identifier}>
                             {item.permission}
                         </Option>
                     );

@@ -1,7 +1,10 @@
 import {Button, Checkbox, Col, Form, Row, Input} from "antd";
 import {LockOutlined, UserOutlined} from "@ant-design/icons";
-import React from "react";
+import React, {useState} from "react";
 import QuickLogin from "./QuickLogin";
+import api from "../../../api/login";
+import Cookie from "../../../utils/Cookie";
+import UrlJump from "../../../utils/UrlJump";
 
 /**
  * 账号密码登录
@@ -9,13 +12,53 @@ import QuickLogin from "./QuickLogin";
  * @constructor
  */
 export default function PasswordLoginForm() {
-    const onFinish = (values) => {
-        console.log('passwordLoginForm Success:', values);
-    };
+    const [account, setAccount] = useState('')
+    const [password, setPassword] = useState('')
+    const [sideBar,setSideBar] = useState({})
 
-    const onFinishFailed = (errorInfo) => {
-        console.log('passwordLoginForm Failed:', errorInfo);
-    };
+    const handleInputChangeAccount = (e) => {
+        setAccount(e.target.value)
+    }
+
+    const handleInputChangePassword = (e) => {
+        setPassword(e.target.value)
+    }
+
+    const login = () => {
+        api.Login({
+            account: account,
+            password: password
+        }).then(response => {
+            console.log('login response', response.data)
+            // 存 token
+            Cookie.setCookie('loginToken',response.data.data.jwt.token,1,'days')
+            // 存角色
+            Cookie.setCookie('roleName',response.data.data.role_name,1,'days')
+            // 获取侧边栏
+            getSideBar(response.data.data.role_name)
+            const sideBarJson = JSON.stringify(sideBar);
+            sessionStorage.setItem('sideBar',sideBarJson)
+            console.log('sideBar',Cookie.getCookie('sideBar'))
+
+            // 跳转到首页
+            // UrlJump.goto('#/home')
+        }).catch(error => {
+            console.log('error:login', error)
+        })
+    }
+
+    const getSideBar = (roleName) => {
+        api.GetSideBar({roleName}).then((response => {
+            console.log('getSideBar',response.data.data)
+            setSideBar(response.data.data)
+
+        })).catch(error => {
+            console.log("error getSideBar",error)
+        })
+    }
+
+
+
 
     return (
         <Form
@@ -30,14 +73,12 @@ export default function PasswordLoginForm() {
             initialValues={{
                 remember: true,
             }}
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
             autoComplete="off"
         >
             {/*账号/手机号码*/}
             <Form.Item
                 // label="账号"
-                name="userAccount"
+                name="account"
                 rules={[
                     {
                         required: true,
@@ -46,7 +87,7 @@ export default function PasswordLoginForm() {
                 ]}
             >
                 <Input placeholder={'账号/手机号码'} prefix={<UserOutlined className="site-form-item-icon"/>}
-                       allowClear={true}/>
+                       allowClear={true} onChange={handleInputChangeAccount}/>
             </Form.Item>
             {/*密码*/}
             <Form.Item
@@ -59,8 +100,11 @@ export default function PasswordLoginForm() {
                     },
                 ]}
             >
-                <Input.Password type={"password"} placeholder={"密码"}
-                                prefix={<LockOutlined className="site-form-item-icon"/>} allowClear={true}/>
+                <Input.Password type={"password"}
+                                placeholder={"密码"}
+                                prefix={<LockOutlined className="site-form-item-icon"/>}
+                                allowClear={true}
+                                onChange={handleInputChangePassword}/>
             </Form.Item>
             {/*是否记住登录状态 & 忘记密码 */}
             <Form.Item
@@ -86,7 +130,7 @@ export default function PasswordLoginForm() {
             <Form.Item>
                 <Row type="flex" justify="center" align="middle">
                     <Col span={24}>
-                        <Button type="primary" htmlType="submit" block={true}>
+                        <Button type="primary" htmlType="submit" block={true} onClick={login}>
                             登录
                         </Button>
                     </Col>
