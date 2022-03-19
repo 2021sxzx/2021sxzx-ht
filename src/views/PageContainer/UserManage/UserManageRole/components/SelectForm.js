@@ -37,7 +37,11 @@ export default function SelectForm(props) {
     const AddRoleAndRefresh = (data) => {
         // TODO(zzj):新增角色有bug，服务器会崩溃！！！
         // 新增角色非权限信息
-        api.AddRole(data).then(response => {
+        api.AddRole({
+            role_name: data.role_name,
+            role_describe: data.role_describe,
+            permission_identifier_array: data.permission_identifier_array
+        }).then(response => {
             // log 服务端返回的搜索结果
             console.log('addRoleResult=', response.data)
             message.success('新增角色成功')
@@ -47,7 +51,10 @@ export default function SelectForm(props) {
         })
 
         // 新增角色权限信息
-        api.AddRolePermission(data).then(response => {
+        api.AddRolePermission({
+            role_name: data.role_name,
+            permission_identifier_array: data.permission_identifier_array
+        }).then(response => {
             // log 服务端返回的搜索结果
             console.log('addRolePermissionResult=', response.data)
             message.success('新增角色权限成功')

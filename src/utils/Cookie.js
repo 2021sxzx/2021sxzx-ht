@@ -55,7 +55,7 @@ const Cookie = {
     /**
      * 获取 cookie 信息
      * @param cookieName cookie name
-     * @returns {string} cookie value
+     * @returns {string|null} cookie value
      */
     getCookie(cookieName) {
         const name = cookieName + "=";
@@ -77,7 +77,7 @@ const Cookie = {
      * @param cookieName cookie name
      * @param expiredTime 过期时间，默认为 1
      * @param timeUnit 时间单位，默认 'days'.取值为：{'months','weeks','days','hours','minutes'}
-     * @returns {string} 是否有对应的 cookie
+     * @returns {string|null} 是否有对应的 cookie
      */
     getAndResetCookie(cookieName, expiredTime = this.defaultExpiredTime, timeUnit = this.defaultTimeUnit) {
         const cookieValue = this.getCookie(cookieName);

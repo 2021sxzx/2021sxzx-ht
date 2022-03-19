@@ -20,7 +20,15 @@ const MenuList = {
         // 如果没有获得 roleName，去获得 roleName
         if (roleName === '') {
             roleName = Cookie.getAndResetCookie('roleName')
+            // 如果没有找到 roleName
+            if(!roleName){
+                console.log("error getAndStorageMenuList")
+                // TODO（钟卓江）：测试一下
+                roleName = '全知全能的开发人员'
+            }
         }
+
+
 
         // 根据角色名称向服务器申请获取 MenuList
         api.GetMenuList({role_name: roleName}).then((response => {
