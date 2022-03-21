@@ -16,7 +16,7 @@ const instance = axios.create({
 // 添加请求拦截器
 instance.interceptors.request.use(
     function (config) {
-        console.log(config);
+        console.log('请求拦截器',config);
         return config;
     },
     function (error) {
