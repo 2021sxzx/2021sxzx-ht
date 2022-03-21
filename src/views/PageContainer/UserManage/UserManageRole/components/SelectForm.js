@@ -81,7 +81,8 @@ export default function SelectForm(props) {
                                detailData={{
                                    role_name: '',
                                    role_describe: '',
-                                   permission: []
+                                   permission: [],
+                                   permission_identifier_array:[],
                                }} callback={AddRoleAndRefresh}/>
                 </Form.Item>
                 <Form.Item>

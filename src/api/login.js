@@ -20,6 +20,10 @@ const api = {
             url:'/v1/sideBar',
             data:data,//{role_name}
         })
+    },
+    // 判断是否成功登录
+    isLogin(data){
+        // TODO(zzj):等后端API完善
     }
 }
 

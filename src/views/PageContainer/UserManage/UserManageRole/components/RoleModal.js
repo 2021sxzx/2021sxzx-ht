@@ -29,7 +29,9 @@ export default function RoleModal(props) {
     // 储存角色信息
     const [roleName, setRoleName] = useState(props.detailData.role_name)
     const [roleDescribe, setRoleDescribe] = useState(props.detailData.role_describe)
-    const [permissionIdentifierArray, setPermissionIdentifierArray] = useState(props.detailData.permission)
+    // TODO(zzj):default value
+    const [permissionIdentifierArray, setPermissionIdentifierArray] = useState(props.detailData.permission_identifier_array)
+    const permissions = props.detailData.permission
 
 
     //表单提交的成功、失败反馈
@@ -141,7 +143,7 @@ export default function RoleModal(props) {
                             },
                         ]}
                     >
-                        <PermissionMultipleSelect defaultValue={permissionIdentifierArray}
+                        <PermissionMultipleSelect defaultValue={permissions}
                                                   placeholder={'请选择角色权限'}
                                                   onChange={handleMultipleSelectChange}/>
                     </Form.Item>

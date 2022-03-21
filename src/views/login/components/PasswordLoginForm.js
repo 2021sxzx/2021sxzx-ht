@@ -13,8 +13,12 @@ import MenuList from "../../../utils/MenuList";
  * @constructor
  */
 export default function PasswordLoginForm() {
-    const [account, setAccount] = useState('')
-    const [password, setPassword] = useState('')
+    const rememberPassword = !!localStorage.getItem('rememberPassword') // 是否选择记住密码（Boolean）
+    const historyAccount = localStorage.getItem('account')
+    const historyPassword = localStorage.getItem('password')
+
+    const [account, setAccount] = useState(historyAccount)
+    const [password, setPassword] = useState(historyPassword)
 
     const handleInputChangeAccount = (e) => {
         setAccount(e.target.value)
@@ -34,23 +38,36 @@ export default function PasswordLoginForm() {
             Cookie.setCookie('loginToken', response.data.data.jwt.token)
             // 存角色
             Cookie.setCookie('roleName', response.data.data.role_name)
-            // 获取并保存侧边栏
-            MenuList.getAndStorageMenuList(response.data.data.role_name)
+            // 根据登录角色获取侧边栏并保存到 sessionStorage 中
+            MenuList.getAndStorageMenuList(()=>{},response.data.data.role_name)
 
-            // TODO(钟卓江): 使用异步的方式等待 getAndStorageMenuList 完成后展现登录成功操作提示并跳转到首页
-            setTimeout(()=>{
-                message.success('登录成功')
+            // 保存账号密码
+            saveAccountPassword()
+
+            // 展现 0.1s 的登录成功操作提示并自动跳转到首页
+            message.success('登录成功', 0.1, () => {
                 UrlJump.goto('#/home')
-            },300)
-
-
-
-        }).catch(error => {
-            console.log('error:login', error)
-            message.error('登录失败，请尝试重新登录')
+            })
+        }).catch(() => {
+            message.error('账号或密码错误，请尝试重新登录')
         })
     }
 
+    const handleCheckboxChange = (e) => {
+        // 将是否记住账号密码保存到 localStorage：true 存非空字符串，false 存空字符串 ''
+        localStorage.setItem('rememberPassword',e.target.checked?'rememberPassword':'')
+    }
+
+    const saveAccountPassword = ()=>{
+        // 从 localStorage 中获取是否记住密码（boolean）
+        let rememberPassword = !!localStorage.getItem('rememberPassword')
+        localStorage.setItem('account',account)
+        if(rememberPassword){
+            localStorage.setItem('password',password)
+        }else{
+            localStorage.setItem('password','')
+        }
+    }
 
     return (
         <Form
@@ -78,8 +95,11 @@ export default function PasswordLoginForm() {
                     },
                 ]}
             >
-                <Input placeholder={'账号/手机号码'} prefix={<UserOutlined className="site-form-item-icon"/>}
-                       allowClear={true} onChange={handleInputChangeAccount}/>
+                <Input placeholder={'账号/手机号码'}
+                       defaultValue={historyAccount}
+                       prefix={<UserOutlined className="site-form-item-icon"/>}
+                       allowClear={true}
+                       onChange={handleInputChangeAccount}/>
             </Form.Item>
             {/*密码*/}
             <Form.Item
@@ -94,6 +114,7 @@ export default function PasswordLoginForm() {
             >
                 <Input.Password type={"password"}
                                 placeholder={"密码"}
+                                defaultValue={historyPassword}
                                 prefix={<LockOutlined className="site-form-item-icon"/>}
                                 allowClear={true}
                                 onChange={handleInputChangePassword}/>
@@ -109,7 +130,7 @@ export default function PasswordLoginForm() {
             >
                 <Row>
                     <Col span={8}>
-                        <Checkbox>自动登录</Checkbox>
+                        <Checkbox defaultChecked={rememberPassword} onChange={handleCheckboxChange}>记住密码</Checkbox>
                     </Col>
                     <Col span={3} offset={13}>
                         <a className="login-form-forgot" href="">

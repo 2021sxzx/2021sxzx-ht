@@ -1,6 +1,5 @@
 import React from 'react'
-import { Route, Switch } from 'react-router'
-import { Redirect } from 'react-router-dom'
+import { Redirect, Switch,Route } from 'react-router-dom'
 
 import { Layout, Breadcrumb } from 'antd'
 import SideMenu from '../../components/page-container/SideMenu/SideMenu.js'
@@ -30,9 +29,9 @@ const { Content } = Layout
 export default function PageContainer() {
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <SideMenu></SideMenu>
+      <SideMenu/>
       <Layout className="site-layout">
-        <TopHeader></TopHeader>
+        <TopHeader/>
         <Content style={{ margin: '0 16px' }}>
           <Breadcrumb style={{ margin: '16px 0' }}>
             <Breadcrumb.Item>User</Breadcrumb.Item>
