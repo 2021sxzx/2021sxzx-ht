@@ -1,0 +1,33 @@
+.tag{
+    position: relative;
+    text-align: center;
+    background-color: rgba(2, 167, 240, 1);
+    border-radius: 2px;
+    height: 27px;
+    line-height: 27px;
+    font-size: 13px;
+    color: #FFFFFF;
+    //margin-bottom: 5px;
+    width: fit-content;
+
+    cursor: pointer;
+}
+
+.disabledTag{
+    position: relative;
+    text-align: center;
+    background-color: gray;
+    border-radius: 2px;
+    height: 27px;
+    line-height: 27px;
+    font-size: 13px;
+    color: #FFFFFF;
+    //margin-bottom: 5px;
+    width: fit-content;
+    cursor: default;
+}
+
+.tagContent{
+    margin-left: 8px;
+    margin-right: 8px;
+}
