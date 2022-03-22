@@ -72,12 +72,13 @@ export default function RoleTable(props) {
                            buttonType={''}
                            title={'修改角色信息'}
                            detailData={record}
-                           callback={UpdateRoleInfoAndRefresh}/>
+                           callback={UpdateRoleInfoAndRefresh}
+                />
             ),
         },
     ]
 
     return (
-        <Table columns={tableColumns} dataSource={props.tableData}/>
+        <Table columns={tableColumns} dataSource={props.tableData !== {} ? props.tableData : {}} rowKey={record=>record.role_name}/>
     )
 }

@@ -11,14 +11,18 @@ import RoleTable from "./components/RoleTable";
 
 
 // TODO(zzj): 修改和服务器的数据接口
-export default function CommentManageList() {
+export default function UserManageList() {
     // 用 [] 初始化 useState，第一项（tableData）用于保存状态值（表格数据），第二项（setTableData）用于保存更新状态的函数，
     const [tableData, setTableData] = useState([])
-    // 从服务器获取评论表格的数据，保存到 tableData 中
-    const getRole = (data) => {
-        api.GetRole(data).then(response => {
+    // 第一次渲染组件的的时候加载表格数据
+    useEffect(() => {
+        getRole()
+    }, [])
+    // 从服务器获取角色表格的数据，保存到 tableData 中
+    const getRole = () => {
+        api.GetRole().then(response => {
+            console.log('角色表格的数据 GetRole =', response.data.data)
             setTableData(response.data.data)
-            console.log('response.data.data=', response.data.data)
         }).catch(error => {
             console.log('GetRole error:', error)
         })
@@ -37,10 +41,6 @@ export default function CommentManageList() {
             console.log("SearchRole error:", error)
         })
     }
-    // 第一次渲染组件的的时候加载表格数据
-    useEffect(() => {
-        getRole({})
-    }, [])
 
     return (
         <div>
