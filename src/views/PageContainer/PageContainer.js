@@ -11,6 +11,7 @@ import './PageContainer.scss'
 import Home from './Home/Home'
 import Personal from './Personal/Personal'
 import ItemManageRule from './ItemManage/ItemManageRule/ItemManageRule'
+import ItemManage from './ItemManage/ItemManage'
 import ItemManageGuide from './ItemManage/ItemManageGuide/ItemManageGuide'
 import ItemManageProcess from './ItemManage/ItemManageProcess/ItemManageProcess'
 import CommentManageList from './ComponentManageList/CommentManageList.js'
@@ -22,6 +23,8 @@ import SystemManageResource
 import UserManageAccount
   from './UserManage/UserManageAccount/UserManageAccount'
 import UserManageRole from './UserManage/UserManageRole/UserManageRole'
+import SystemManageFailure from './SystemManage/SystemManageFailure/SystemManageFailure.js';
+import FileMetaData from './SystemManage/FileMetaData/FileMetaData.js'
 import NoPermission from './NoPermission/NoPermission.js'
 
 const { Content } = Layout
@@ -61,7 +64,8 @@ export default function PageContainer() {
               <Route path="/user-manage/account" component={UserManageAccount} />
               {/* 角色管理 */}
               <Route path="/user-manage/role" component={UserManageRole} />
-              {/* 其他 */}
+              <Route path="/system-manage/failure" component={SystemManageFailure}/>
+              <Route path="/system-manage/file-meta-data" component={FileMetaData}/>
               <Redirect from="/" to="/home" exact />
               <Route path="*" component={NoPermission} />
             </Switch>
