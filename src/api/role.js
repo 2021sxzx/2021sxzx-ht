@@ -49,11 +49,10 @@ const api = {
     },
 
     // 获取角色数据
-    GetRole(data) {
+    GetRole() {
         return service.request({
             method: "get",
-            url: "/v1/role/",
-            data, //data:data同名可以直接写 data
+            url: "/v1/role/"
         });
     },
     async getRole() {
