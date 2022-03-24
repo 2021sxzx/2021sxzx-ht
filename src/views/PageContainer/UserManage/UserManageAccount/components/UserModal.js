@@ -52,10 +52,12 @@ export default function UserModal(props) {
             user_name: userName,
             password: password,
             role_name: roleName,
-            account: props.detailData.account?'':account,// 如果初始值为 ‘’ 说明是创建用户，否则为修改用户
+            account: props.detailData.account?props.detailData.account:account,// 如果初始值为 ‘’ 说明是创建用户，否则为修改用户
             new_account:account,
             // department: department, //TODO：等后台的部门 API 做好之后再来修改
         })
+
+
     };
 
     // Cancel按钮的触发函数，关闭详情弹窗
@@ -167,7 +169,7 @@ export default function UserModal(props) {
                             },
                         ]}
                     >
-                        <RoleMultiSelect defaultValue={[]} placeholder={'请选择角色'} onChange={handleInputChangeRoleName}/>
+                        <RoleMultiSelect defaultValue={roleName} placeholder={'请选择角色'} onChange={handleInputChangeRoleName}/>
                     </Form.Item>
 
                     <Form.Item

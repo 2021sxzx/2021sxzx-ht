@@ -21,8 +21,8 @@ export default function UserTableFunctionalZone(props) {
         message.success('用户批量导入成功');
         message.error('用户批量导入发生错误');
 
-        // 刷新表格内容
-        props.refreshTableData()
+        // 刷新表格数据
+        setTimeout(props.refreshTableData,1000)
     }
 
     const addUserAndRefresh = function (data) {
@@ -36,8 +36,8 @@ export default function UserTableFunctionalZone(props) {
             message.error('账号创建发生错误');
         });
 
-        // 刷新表格内容
-        props.refreshTableData()
+        // 刷新表格数据
+        setTimeout(props.refreshTableData,1000)
     }
 
     return (
