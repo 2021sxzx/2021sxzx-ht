@@ -63,8 +63,9 @@ export default function SelectForm(props) {
             console.log("AddRolePermission error",error)
         })
 
-        // 刷新页面
-        props.refreshTableData()
+        // 刷新表格数据
+        setTimeout(props.refreshTableData,1000)
+
     }
 
     return (
