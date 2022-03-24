@@ -46,7 +46,7 @@ export default function PasswordLoginForm() {
 
             // 展现 0.1s 的登录成功操作提示并自动跳转到首页
             message.success('登录成功', 0.1, () => {
-                UrlJump.goto('#/home')
+                UrlJump.goto('#/home') // 不行
             })
         }).catch(() => {
             message.error('账号或密码错误，请尝试重新登录')

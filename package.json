@@ -2,7 +2,7 @@
   "name": "2021sxzx-ht",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://.",
+  "homepage": ".",
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "@testing-library/jest-dom": "^5.14.1",
