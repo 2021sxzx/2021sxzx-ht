@@ -157,7 +157,7 @@ const DetailModal = (props) => {
         content: '评价内容',
         idc_type: '证件类型',
         idc: '证件号',
-        rule_name: '事项规则',
+        // rule_name: '事项规则',
 
         create_time: '创建时间'
     }
@@ -192,11 +192,11 @@ const DetailModal = (props) => {
             </Button>
 
             <Modal title="事项详情" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
-                <Descriptions>
+                {/* <Descriptions>
                     {Object.keys(detailData).map((item, index) => {
                         return <Descriptions.Item label={key2name[item]} key={item} span={3}>{detailData[item]}</Descriptions.Item>
                     })}
-                </Descriptions>
+                </Descriptions> */}
             </Modal>
         </>
     );
