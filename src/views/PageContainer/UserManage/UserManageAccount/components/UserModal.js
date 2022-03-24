@@ -52,7 +52,7 @@ export default function UserModal(props) {
             user_name: userName,
             password: password,
             role_name: roleName,
-            account: props.detailData.account,
+            account: props.detailData.account?'':account,// 如果初始值为 ‘’ 说明是创建用户，否则为修改用户
             new_account:account,
             // department: department, //TODO：等后台的部门 API 做好之后再来修改
         })
