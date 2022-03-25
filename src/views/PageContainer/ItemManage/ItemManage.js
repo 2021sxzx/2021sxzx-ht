@@ -29,10 +29,11 @@ export default function ItemManage() {
     const getRuleTree = ()=>{
         // 构建父子关系树
         api.GetRuleTree({}).then(response=>{
-            let nodes = response.data.data
-            setRuleNodes(nodes)
+            let nodes = response.data.data 
             let tree = {}
+            let size = 0
             for (let key in nodes){
+                size++
                 let node = nodes[key]
                 if (node.parentId !== ''){
                     if (node.parentId in tree){
@@ -58,6 +59,7 @@ export default function ItemManage() {
                     })
                 }
             }
+            setRuleNodes(nodes)
             setRuleTree(tree)
         }).catch(error=>{
         })
@@ -67,7 +69,6 @@ export default function ItemManage() {
         // 构建区划父子关系树
         api.GetRegionTree({}).then(response=>{
             let nodes = response.data.data
-            let root = []
             setRegionNodes(nodes)
             let tree = {}
             for (let key in nodes){
@@ -77,6 +78,7 @@ export default function ItemManage() {
                         tree[node.parentId].push({
                             nodeId: key,
                             nodeName: node.region_name,
+                            nodeCode: node.region_code,
                             isRegion: true
                         })
                     }
@@ -84,6 +86,7 @@ export default function ItemManage() {
                         tree[node.parentId] = [{
                             nodeId: key,
                             nodeName: node.region_name,
+                            nodeCode: node.region_code,
                             isRegion: true
                         }]
                     }
@@ -92,6 +95,7 @@ export default function ItemManage() {
                     setRegionRoot({
                         nodeId: key,
                         nodeName: node.region_name,
+                        nodeCode: node.region_code,
                         isRegion: true
                     })
                 }
@@ -110,8 +114,8 @@ export default function ItemManage() {
                 if (!(items[i].rule_id in ruleDict)){
                     ruleDict[items[i].rule_id] = true
                 }
-                if (!(items[i].region_id in regionDict)){
-                    regionDict[items[i].region_id] = true
+                if (!(items[i]._id in regionDict)){
+                    regionDict[items[i]._id] = true
                 }
             }
             setRuleDict(ruleDict)
@@ -119,6 +123,205 @@ export default function ItemManage() {
         }).catch(error=>{
 
         })
+    }
+
+    const createRuleSimulate = (rules)=>{
+        // 传入的是id，名称以及父节点id
+        let nodes = ruleNodes
+        let tree = ruleTree
+        for (let i = 0; i < rules.length; i++){
+            let rule = rules[i]
+            // 直接加入nodes
+            nodes[rule.rule_id] = rule
+            // 在树中调整父子关系
+            if (rule.parentId in tree){
+                tree[rule.parentId].push({
+                    nodeId: rule.rule_id,
+                    nodeName: rule.rule_name,
+                    isRegion: false
+                })
+            }
+            else{
+                tree[rule.parentId] = [{
+                    nodeId: rule.rule_id,
+                    nodeName: rule.rule_name,
+                    isRegion: false
+                }]
+            }
+        }
+        setRuleNodes(nodes)
+        setRuleTree(tree)
+    }
+
+    const deleteRuleSimulate = (rules)=>{
+        // 传入的是要删除的元素的id
+        let nodes = ruleNodes
+        let tree = ruleTree
+        for (let i = 0; i < rules.length; i++){
+            // 将节点从其父节点的子节点数组中移除
+            let parent = nodes[rules[i]].parentId
+            let newChildren = []
+            let children = tree[parent]
+            for (let j = 0; j < children.length; j++){
+                if (children[j].nodeId !== rules[i]){
+                    newChildren.push(children[j])
+                }
+            }
+            // 若是最后一个子节点，那就直接移除
+            if (newChildren.length === 0){
+                delete tree[parent]
+            }
+            else{
+                tree[nodes[rules[i]].parentId] = newChildren
+            }
+            // 移除该节点
+            delete nodes[rules[i]]
+        }
+        setRuleNodes(nodes)
+        setRuleTree(tree)
+    }
+
+    const updateRuleSimulate = (rules)=>{
+        let nodes = ruleNodes
+        let tree = ruleTree
+        for (let i = 0; i < rules.length; i++){
+            let rule = rules[i]
+            // 原parent
+            let parent = nodes[rule.rule_id].parentId
+            let children = tree[parent]
+            let newChildren = []
+            // 先从原来的parent下移除
+            for (let j = 0; j < children.length; j++){
+                if (children[j].nodeId !== rule.rule_id){
+                    newChildren.push(children[j])
+                }
+            }
+            if (newChildren.length === 0){
+                delete tree[parent]
+            }
+            else{
+                tree[nodes[rule.rule_id].parentId] = newChildren
+            }
+            // 再加入到新的parent下
+            if (rule.parentId in tree){
+                tree[rule.parentId].push({
+                    nodeId: rule.rule_id,
+                    nodeName: rule.rule_name,
+                    isRegion: false
+                })
+            }
+            else{
+                tree[rule.parentId] = [{
+                    nodeId: rule.rule_id,
+                    nodeName: rule.rule_name,
+                    isRegion: false
+                }]
+            }
+            // 最后调整nodes中key对应的value
+            nodes[rule.rule_id] = rule
+        }
+        setRuleNodes(nodes)
+        setRuleTree(tree)
+    }
+
+    const createRegionSimulate = (region)=>{
+        let nodes = regionNodes
+        let tree = regionTree
+
+        // 直接加入nodes
+        nodes[region._id] = region
+        // 在树中调整父子关系
+        if (region.parentId in tree){
+            tree[region.parentId].push({
+                nodeId: region._id,
+                nodeCode: region.region_code,
+                nodeName: region.region_name,
+                isRegion: true
+            })
+        }
+        else{
+            tree[region.parentId] = [{
+                nodeId: region._id,
+                nodeCode: region.region_code,
+                nodeName: region.region_name,
+                isRegion: true
+            }]
+        }
+        
+        setRegionNodes(nodes)
+        setRegionTree(tree)
+    }
+
+    const deleteRegionSimulate = (regions)=>{
+        // 传入的是要删除的元素的id
+        let nodes = regionNodes
+        let tree = regionTree
+        for (let i = 0; i < regions.length; i++){
+            // 将节点从其父节点的子节点数组中移除
+            let parent = nodes[regions[i]].parentId
+            let newChildren = []
+            let children = tree[parent]
+            for (let j = 0; j < children.length; j++){
+                if (children[j].nodeId !== regions[i]){
+                    newChildren.push(children[j])
+                }
+            }
+            // 若是最后一个子节点，那就直接移除
+            if (newChildren.length === 0){
+                delete tree[parent]
+            }
+            else{
+                tree[parent] = newChildren
+            }
+            // 移除该节点
+            delete nodes[regions[i]]
+        }
+        setRegionNodes(nodes)
+        setRegionTree(tree)
+    }
+
+    const updateRegionSimulate = (region)=>{
+        let nodes = regionNodes
+        let tree = regionTree
+
+        // 原parent
+        let parent = nodes[region._id].parentId
+        let children = tree[parent]
+        let newChildren = []
+        // 先从原来的parent下移除
+        for (let j = 0; j < children.length; j++){
+            if (children[j].nodeId !== region._id){
+                newChildren.push(children[j])
+            }
+        }
+        if (newChildren.length === 0){
+            delete tree[parent]
+        }
+        else{
+            tree[nodes[region._id].parentId] = newChildren
+        }
+        // 再加入到新的parent下
+        if (region.parentId in tree){
+            tree[region.parentId].push({
+                nodeId: region._id,
+                nodeCode: region.region_code,
+                nodeName: region.region_name,
+                isRegion: false
+            })
+        }
+        else{
+            tree[region.parentId] = [{
+                nodeId: region._id,
+                nodeCode: region.region_code,
+                nodeName: region.region_name,
+                isRegion: false
+            }]
+        }
+        // 最后调整nodes中key对应的value
+        nodes[region._id] = region
+        
+        setRegionNodes(nodes)
+        setRegionTree(tree)
     }
 
     const init = ()=>{
@@ -136,19 +339,23 @@ export default function ItemManage() {
         <div>
             <Switch>
                 <Route path={`${path}/process`} 
-                    component={()=><ItemManageProcess regionNodes={regionNodes} ruleNodes={ruleNodes} ruleDict={ruleDict}
-                    regionTree={regionTree} ruleTree={ruleTree} regionRoot={regionRoot} ruleRoot={ruleRoot} init={init}/>}/>
+                    render={()=>(<ItemManageProcess regionNodes={regionNodes} ruleNodes={ruleNodes} ruleDict={ruleDict}
+                    regionTree={regionTree} ruleTree={ruleTree} regionRoot={regionRoot} ruleRoot={ruleRoot} init={init}/>)}/>
 
                 <Route path={`${path}/guide`} 
-                    component={()=><ItemManageGuide regionDict={regionDict}/>}/>
+                    render={()=>(<ItemManageGuide regionDict={regionDict}/>)}/>
 
                 <Route path={`${path}/item-rule/rule`} 
-                    component={()=><ItemManageRule ruleNodes={ruleNodes} ruleDict={ruleDict}
-                        ruleTree={ruleTree} ruleRoot={ruleRoot} getRuleTree={getRuleTree}/>}/>
+                    render={()=>(<ItemManageRule ruleNodes={ruleNodes} ruleDict={ruleDict}
+                        ruleTree={ruleTree} ruleRoot={ruleRoot} getRuleTree={getRuleTree}
+                        createRuleSimulate={createRuleSimulate} deleteRuleSimulate={deleteRuleSimulate}
+                        updateRuleSimulate={updateRuleSimulate}/>)}/>
 
                 <Route path={`${path}/item-rule/region`} 
-                    component={()=><ItemManageRegion regionNodes={regionNodes} regionDict={regionDict}
-                        regionTree={regionTree} regionRoot={regionRoot} getRegionTree={getRegionTree}/>}/>
+                    render={()=>(<ItemManageRegion regionNodes={regionNodes} regionDict={regionDict}
+                        regionTree={regionTree} regionRoot={regionRoot} getRegionTree={getRegionTree}
+                        createRegionSimulate={createRegionSimulate} updateRegionSimulate={updateRegionSimulate}
+                        deleteRegionSimulate={deleteRegionSimulate}/>)}/>
             </Switch>
         </div>
         

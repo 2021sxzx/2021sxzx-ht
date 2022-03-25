@@ -5,6 +5,7 @@ if(process.env.NODE_ENV==="development"){
 }
 else if(process.env.NODE_ENV==="test"){
     BASEURL='http://8.134.73.52:80/api'
+    // BASEURL = 'http://127.0.0.1:5001/api'
 }
 else if(process.env.NODE_ENV==="production"){
     BASEURL='http://8.134.73.52:80/api'
