@@ -7,6 +7,7 @@ import SelectForm from './SelectForm'
 export default function ManageRules(props) {
     // 页面的基础数据
     const [tableData, setTableData] = useState([])
+    const [originData, setOringinData] = useState({})
     // 是否正在删除，以及删除队列
     const [isDeleting, setIsDeleting] = useState(false)
     const [deletingIds, setDeletingIds] = useState([])
@@ -21,9 +22,14 @@ export default function ManageRules(props) {
     const rowSelection = {
         selectedRowKeys,
         onChange: onSelectionChange,
+        getCheckboxProps: (record)=>({
+            disabled: record.rule_id in props.ruleTree
+        })
     }
-    // 当前展示的页数，用于重置时归零
-    const [current, setCurrent] = useState(1)
+    // 页数处理
+    const [current, setCurrent] = useState(0)
+    const [currPageSize, setCurrPageSize] = useState(10)
+    const [totalSize, setTotalSize] = useState(0)
 
     const tableColumns = [
         {
@@ -35,8 +41,7 @@ export default function ManageRules(props) {
         {
             title: '规则路径',
             dataIndex: 'rule_path',
-            key: 'rule_path',
-            width: 500
+            key: 'rule_path'
         },
         {
             title: '业务部门',
@@ -87,13 +92,17 @@ export default function ManageRules(props) {
                                 导出
                             </Button>
                         </Menu.Item>
-                        <Menu.Item key='2'>
-                            <Button style={{backgroundColor: 'red', color: 'white'}} onClick={function(){
-                                deleteSingleItem(record.rule_id)
-                            }}>
-                                删除
-                            </Button>
-                        </Menu.Item>
+                        {
+                            !(record.rule_id in props.ruleTree) &&
+                            <Menu.Item key='2'>
+                                <Button style={{backgroundColor: 'red', color: 'white'}} onClick={function(){
+                                    deleteSingleItem(record.rule_id)
+                                }}>
+                                    删除
+                                </Button>
+                            </Menu.Item>
+                        }
+                        
                     </Menu>
                 } trigger={['click']}>
                     <Button type='primary'>
@@ -142,29 +151,72 @@ export default function ManageRules(props) {
 
     const deleteSingleItem = (id)=>{
         // 删除单个事项，将事项id设为deletingIds
-        setIsDeleting(true)
-        setDeletingIds([id])
+        let str = ''
+        let nodes = [id]
+        if (id in props.ruleTree){
+            str = '该节点为中间节点，若删除则会连同其子节点一起删除，确定要删除吗？'
+        }
+        else{
+            str = '确定删除该节点吗？'
+        }
+        Modal.confirm({
+            centered: true,
+            title: '删除确认',
+            content: str,
+            onOk: function(){
+                if (id in props.ruleTree){
+                    return
+                }
+                finishDeleting(nodes)
+            }
+        })
     }
 
     const handleBatchDelete = ()=>{
         // 删除多个事项，将selectedRowKeys全部推进deletingIds
-        setIsDeleting(true)
-        let temp = []
+        let nodes = []
+        let str = '以下节点为中间节点：\n'
+        let wow = false
         for (let i = 0; i < selectedRowKeys.length; i++){
-            temp.push(selectedRowKeys[i])
+            if (selectedRowKeys[i] in props.ruleTree){
+                wow = true
+                str += '    “' + getPathByRuleId(selectedRowKeys[i]) + '”\n'
+            }
+            nodes.push(selectedRowKeys[i])
         }
-        setDeletingIds(temp)
+        if (wow){
+            str += '若删除，则会连同其子节点一起删除，确定要删除吗？'
+        }
+        else{
+            str = '确定删除该' + selectedRowKeys.length + '个节点吗？'
+        }
+        Modal.confirm({
+            centered: true,
+            title: '删除确认',
+            content: str,
+            onOk: function(){
+                if (wow){
+                    return
+                }
+                finishDeleting(nodes)
+            },
+            style: {whiteSpace: 'pre-wrap'}
+        })
     }
 
     const endDeleting = ()=>{
         setIsDeleting(false)
     }
 
-    const finishDeleting = ()=>{
+    const finishDeleting = (id)=>{
         // 确定删除，调用接口
-        deleteRules()
-        setIsDeleting(false)
+        setDeletingIds(id)
     }
+
+    useEffect(function(){
+        if (deletingIds.length === 0) return
+        deleteRules()
+    }, [deletingIds])
 
     const deleteRules = ()=>{
         let data = {
@@ -173,41 +225,40 @@ export default function ManageRules(props) {
         // 根据事项规则id删除事项规则，删除完之后重新载入事项规则
         api.DeleteRules(data).then(response=>{ 
             // 等规则路径问题处理完后只需要刷新ruleItems
+            props.deleteRuleSimulate(deletingIds)
             props.showSuccess()
             getRules()
         }).catch(error=>{
             // 删除报错时，弹出报错框并重新加载数据
             props.showError()
-            props.getruleTree()
-            getRules()
+            props.getRuleTree()
         })
+        setDeletingIds([])
     }
 
-    const getRules = (nodes)=>{
-        let rules = []
-        console.log(nodes)
-        console.log(props.ruleTree)
-        for (let key in nodes){
-            if (nodes[key].rule_id in props.ruleTree){
-                continue
+    const getRules = ()=>{
+        api.GetRules({}).then(response=>{
+            let rules = response.data.data
+            let table = []
+            for (let i = 0; i < rules.length; i++){
+                rules[i]['rule_path'] = getPathByRuleId(rules[i].rule_id)
+                table.push(rules[i])
             }
-            let rule = {
-                rule_id: nodes[key].rule_id,
-                isRegion: false,
-                rule_path: getPathByRuleId(nodes[key].rule_id)
-            }
-            rules.push(rule)
-        }
-        setTableData(rules)
+            setTableData(table)
+        }).catch(error=>{
+            console.log(error)
+        })
     }
 
     const searchRules = (data)=>{
         api.GetRules(data).then(response=>{
             let rules = response.data.data
+            let table = []
             for (let i = 0; i < rules.length; i++){
-                rules[rule_path] = getPathByRuleId(rules[rule_id])
+                rules[i]['rule_path'] = getPathByRuleId(rules[i].rule_id)
+                table.push(rules[i])
             }
-            setTableData(rules)
+            setTableData(table)
         }).catch(error=>{
 
         })
@@ -215,44 +266,49 @@ export default function ManageRules(props) {
 
     const modifyRule = (id)=>{
         let nodes = getNodesByRuleId(id)
-        props.setModifyPath(nodes)
+        props.setUpdatePath(nodes)
         props.setPageType(2)
     }
 
     const handleCreate = ()=>{
-        props.setModifyPath('')
+        props.setUpdatePath('')
         props.setPageType(2)
     }
 
     const resetSearch = ()=>{
-        setCurrent(1)
-        getRules()
+        setCurrent(0)
+        props.getRuleTree()
     }
 
-    const changePage = (page)=>{
+    const changePage = (page, pageSize)=>{
         // 换页时清空选择
         setSelectedRowKeys([])
-        setCurrent(page)
+        setCurrent(page - 1)
+        setCurrPageSize(pageSize)
     }
 
     useEffect(function(){
-        getRules(props.ruleNodes)
-    }, [props.ruleNodes])
+        // 避开初始化时的查询
+        for (let key in props.ruleTree){
+            getRules()
+            break
+        }
+    }, [props.ruleTree])
 
     return (
         <>
-            <Space direction='vertical' size={12}>
+            <Space direction='vertical' size={12} style={{width: '100%'}}>
                 <Modal centered destroyOnClose={true} title='删除确认' visible={isDeleting} onCancel={endDeleting} onOk={finishDeleting}>
-                    <div>是否确定删除该{deletingIds.length}项规则？</div>
+                    是否确定删除该{deletingIds.length}项规则?
                 </Modal>
-                <SelectForm getSearch={searchRules} reset={resetSearch}></SelectForm>
-                <Space direction='horizontal' size={12} style={{marginLeft: 925}}>
+                <SelectForm getSearch={searchRules} reset={resetSearch} setOringinData={setOringinData}></SelectForm>
+                <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
                     <Button type='primary' onClick={handleCreate}>创建规则</Button>
                     <Button type='primary' disabled={!isBatching}>批量导出</Button>
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>
                 </Space>
-                <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='item_rule_id'
-                    pagination={{onChange: changePage, current: current}}/>
+                <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='rule_id'
+                    pagination={{onChange: changePage, current: current + 1}}/>
             </Space>
         </>
     )

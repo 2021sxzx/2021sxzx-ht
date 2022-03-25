@@ -7,6 +7,8 @@ import SelectForm from './SelectForm'
 export default function ManageRegions(props) {
     // 页面的基础数据
     const [tableData, setTableData] = useState([])
+    const [originData, setOringinData] = useState({})
+    const [unableCreate, setUnableCreate] = useState(true)
     // 是否正在删除，以及删除队列
     const [isDeleting, setIsDeleting] = useState(false)
     const [deletingIds, setDeletingIds] = useState([])
@@ -14,29 +16,32 @@ export default function ManageRegions(props) {
     const [selectedRowKeys, setSelectedRowKeys] = useState([])
     const [isBatching, setIsBatching] = useState(false)
     const onSelectionChange = keys=>{
-        console.log(keys)
         setIsBatching(keys.length > 0)
         setSelectedRowKeys(keys)
     }
     const rowSelection = {
         selectedRowKeys,
         onChange: onSelectionChange,
+        getCheckboxProps: (record)=>({
+            disabled: record._id in props.regionTree
+        })
     }
-    // 当前展示的页数，用于重置时归零
-    const [current, setCurrent] = useState(1)
+    // 页数处理
+    const [current, setCurrent] = useState(0)
+    const [currPageSize, setCurrPageSize] = useState(10)
+    const [totalSize, setTotalSize] = useState(0)
 
     const tableColumns = [
         {
-            title: '区划编码',
-            dataIndex: 'region_id',
-            key: 'region_id',
+            title: '规则编码',
+            dataIndex: 'region_code',
+            key: 'region_code',
             width: 120
         },
         {
             title: '规则路径',
             dataIndex: 'region_path',
-            key: 'region_path',
-            width: 500
+            key: 'region_path'
         },
         {
             title: '业务部门',
@@ -75,7 +80,7 @@ export default function ManageRegions(props) {
                     <Menu>
                         <Menu.Item key='0'>
                             <Button type='primary' onClick={function(){
-                                modifyRegion(record.region_id)
+                                modifyRegion(record._id)
                             }}>
                                 编辑
                             </Button>
@@ -87,13 +92,16 @@ export default function ManageRegions(props) {
                                 导出
                             </Button>
                         </Menu.Item>
-                        <Menu.Item key='2'>
-                            <Button style={{backgroundColor: 'red', color: 'white'}} onClick={function(){
-                                deleteSingleItem(record.region_id)
-                            }}>
-                                删除
-                            </Button>
-                        </Menu.Item>
+                        {
+                            !(record._id in props.regionTree) &&
+                            <Menu.Item key='2'>
+                                <Button style={{backgroundColor: 'red', color: 'white'}} onClick={function(){
+                                    deleteSingleItem(record._id)
+                                }}>
+                                    删除
+                                </Button>
+                            </Menu.Item>
+                        }  
                     </Menu>
                 } trigger={['click']}>
                     <Button type='primary'>
@@ -119,13 +127,14 @@ export default function ManageRegions(props) {
     }
 
     const getNodesByRegionId = (id)=>{
-        // 获取规则id对应的规则路径
+        // 获取规则id对应的规则路径节点
         let parent = props.regionNodes[id].parentId
         let currId = id
         let res = []
         while (parent !== '' && parent !== currId){
             res.push({
-                nodeId: props.regionNodes[currId].region_id,
+                nodeId: props.regionNodes[currId]._id,
+                nodeCode: props.regionNodes[currId].region_code,
                 nodeName: props.regionNodes[currId].region_name,
                 isRegion: false
             })
@@ -133,7 +142,8 @@ export default function ManageRegions(props) {
             parent = props.regionNodes[currId].parentId
         }
         res.push({
-            nodeId: props.regionNodes[currId].region_id,
+            nodeId: props.regionNodes[currId]._id,
+            nodeCode: props.regionNodes[currId].region_code,
             nodeName: props.regionNodes[currId].region_name,
             isRegion: false
         })
@@ -142,79 +152,83 @@ export default function ManageRegions(props) {
 
     const deleteSingleItem = (id)=>{
         // 删除单个事项，将事项id设为deletingIds
-        setIsDeleting(true)
-        setDeletingIds([id])
+        let str = '确定删除该节点吗？'
+        let nodes = [id]
+        Modal.confirm({
+            centered: true,
+            title: '删除确认',
+            content: str,
+            onOk: function(){
+                finishDeleting(nodes)
+            }
+        })
     }
 
     const handleBatchDelete = ()=>{
         // 删除多个事项，将selectedRowKeys全部推进deletingIds
-        setIsDeleting(true)
-        let temp = []
-        for (let i = 0; i < selectedRowKeys.length; i++){
-            temp.push(selectedRowKeys[i])
-        }
-        setDeletingIds(temp)
+        let str = '确定删除该' + selectedRowKeys.length + '个节点吗？'      
+        Modal.confirm({
+            centered: true,
+            title: '删除确认',
+            content: str,
+            onOk: function(){
+                finishDeleting(selectedRowKeys)
+            },
+            style: {whiteSpace: 'pre-wrap'}
+        })
     }
 
-    const endDeleting = ()=>{
-        setIsDeleting(false)
-    }
-
-    const finishDeleting = ()=>{
+    const finishDeleting = (id)=>{
         // 确定删除，调用接口
-        deleteRegions()
-        setIsDeleting(false)
+        setDeletingIds(id)
     }
+
+    useEffect(function(){
+        if (deletingIds.length === 0) return
+        deleteRegions()
+    }, [deletingIds])
 
     const deleteRegions = ()=>{
         let data = {
-            Regions: deletingIds
+            regions: deletingIds
         } 
         // 根据事项规则id删除事项规则，删除完之后重新载入事项规则
         api.DeleteRegions(data).then(response=>{ 
             // 等规则路径问题处理完后只需要刷新regionItems
-            props.showSuccess()
+            props.deleteRegionSimulate(deletingIds)
             getRegions()
+            props.showSuccess()
         }).catch(error=>{
             // 删除报错时，弹出报错框并重新加载数据
+            console.log(error)
             props.showError()
             props.getRegionTree()
-            getRegions()
         })
     }
 
-    /*const getRegions = ()=>{
+    const getRegions = ()=>{
         api.GetRegions({}).then(response=>{
             let regions = response.data.data
-            console.log(regions)
+            let table = []
             for (let i = 0; i < regions.length; i++){
-                regions[i]['region_path'] = getPathByRegionId(regions[i].region_id)
+                regions[i]['region_path'] = getPathByRegionId(regions[i]._id)
+                table.push(regions[i])
             }
-            setTableData(regions)
+            setTableData(table)
         }).catch(error=>{
-
+            console.log(error)
         })
-    }*/
-    const getRegions = (nodes)=>{
-        let regions = []
-        for (let key in nodes){
-            let region = {
-                region_id: nodes[key].region_id,
-                isRegion: false,
-                region_path: getPathByRegionId(nodes[key].region_id)
-            }
-            regions.push(region)
-        }
-        setTableData(regions)
     }
 
     const searchRegions = (data)=>{
         api.GetRegions(data).then(response=>{
             let regions = response.data.data
+            let table = []
             for (let i = 0; i < regions.length; i++){
-                regions[region_path] = getPathByRegionId(regions[region_id])
+                regions[i]['region_path'] = getPathByRegionId(regions[i]._id)
+                table.push(regions[i])
             }
-            setTableData(regions)
+            setTableData(table)
         }).catch(error=>{
 
         })
@@ -222,44 +236,47 @@ export default function ManageRegions(props) {
 
     const modifyRegion = (id)=>{
         let nodes = getNodesByRegionId(id)
-        props.setModifyPath(nodes)
+        props.setUpdatePath(nodes)
         props.setPageType(2)
     }
 
     const handleCreate = ()=>{
-        props.setModifyPath('')
+        props.setUpdatePath('')
         props.setPageType(2)
     }
 
     const resetSearch = ()=>{
-        setCurrent(1)
-        getRegions()
+        setCurrent(0)
+        props.getRegionTree()
     }
 
-    const changePage = (page)=>{
+    const changePage = (page, pageSize)=>{
         // 换页时清空选择
         setSelectedRowKeys([])
-        setCurrent(page)
+        setCurrent(page - 1)
+        setCurrPageSize(pageSize)
     }
 
     useEffect(function(){
-        getRegions(props.regionNodes)
-    }, [props.regionNodes])
+        // 避开初始化时执行查询
+        for (let key in props.regionTree){
+            getRegions()
+            setUnableCreate(false)
+            break
+        }
+    }, [props.regionTree])
 
     return (
         <>
             <Space direction='vertical' size={12}>
-                <Modal centered destroyOnClose={true} title='删除确认' visible={isDeleting} onCancel={endDeleting} onOk={finishDeleting}>
-                    <div>是否确定删除该{deletingIds.length}项规则？</div>
-                </Modal>
-                <SelectForm getSearch={searchRegions} reset={resetSearch}></SelectForm>
-                <Space direction='horizontal' size={12} style={{marginLeft: 925}}>
-                    <Button type='primary' onClick={handleCreate}>创建规则</Button>
+                <SelectForm getSearch={searchRegions} reset={resetSearch} setOringinData={setOringinData}></SelectForm>
+                <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
+                    <Button type='primary' onClick={handleCreate} disabled={unableCreate}>创建规则</Button>
                     <Button type='primary' disabled={!isBatching}>批量导出</Button>
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>
                 </Space>
-                <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='item_region_id'
-                    pagination={{onChange: changePage, current: current}}/>
+                <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='_id'
+                    pagination={{onChange: changePage, current: current + 1}}/>
             </Space>
         </>
     )
