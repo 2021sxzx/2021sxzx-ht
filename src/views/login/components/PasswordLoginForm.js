@@ -5,7 +5,6 @@ import QuickLogin from "./QuickLogin";
 import api from "../../../api/login";
 import Cookie from "../../../utils/Cookie";
 import UrlJump from "../../../utils/UrlJump";
-import MenuList from "../../../utils/MenuList";
 
 /**
  * 账号密码登录
@@ -38,8 +37,8 @@ export default function PasswordLoginForm() {
             Cookie.setCookie('loginToken', response.data.data.jwt.token)
             // 存角色
             Cookie.setCookie('roleName', response.data.data.role_name)
-            // 根据登录角色获取侧边栏并保存到 sessionStorage 中
-            MenuList.getAndStorageMenuList(()=>{},response.data.data.role_name)
+            // // 根据登录角色获取侧边栏并保存到 sessionStorage 中
+            // MenuList.getAndStorageMenuList(()=>{},response.data.data.role_name)
 
             // 保存账号密码
             saveAccountPassword()
