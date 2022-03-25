@@ -16,7 +16,6 @@ import api from '../../../../../api/user'
 export default function ActivationStatusSwitch (props){
     const record = props.record
     const [activationStatus, setActivationStatus] = useState(record.activation_status)
-
     /**
      * 切换账号激活状态。状态码为 1 表示激活，为 0 表示未激活
      * @param checked :switch 是否被选中
