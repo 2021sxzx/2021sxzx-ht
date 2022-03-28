@@ -77,6 +77,27 @@ const api ={
             data
         })
     },
+    CreateRegions(data){
+        return service.request({
+            method: "post",
+            url: "/v1/createRegion",
+            data
+        })
+    },
+    DeleteRegions(data){
+        return service.request({
+            method: "post",
+            url: "/v1/deleteRegions",
+            data
+        })
+    },
+    UpdateRegions(data){
+        return service.request({
+            method: "post",
+            url: "/v1/updateRegions",
+            data
+        })
+    },
     GetRegions(data){
         return service.request({
             method: "post",

@@ -61,7 +61,7 @@ function SideMenu(props) {
                 <Scrollbars>
                     <div style={{flex: 1, "overflow": "auto"}}>
                         <Menu theme="light" selectedKeys={selectedKeys} mode="inline" defaultOpenKeys={openKeys}>
-                            {renderMenu(menuList !== [] ? menuList : [])}
+                            {renderMenu(menuList ? menuList : [])}
                         </Menu>
                     </div>
                 </Scrollbars>

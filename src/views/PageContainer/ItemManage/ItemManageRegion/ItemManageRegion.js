@@ -8,7 +8,7 @@ export default function ItemManageRegion(props) {
     // 页面的基础数据
     const [pageType, setPageType] = useState(1)
     // 记录正在修改的事项规则的id
-    const [modifyPath, setModifyPath] = useState([])
+    const [updatePath, setUpdatePath] = useState([])
 
     const showError = ()=>{
         Modal.error({
@@ -26,15 +26,17 @@ export default function ItemManageRegion(props) {
         <>
             {
                 pageType === 1 &&
-                <ManageRegions regionNodes={props.regionNodes} regionDict={props.regionDict}
-                    setPageType={setPageType} setModifyPath={setModifyPath} getRegionTree={props.getRegionTree} 
-                    showError={showError} showSuccess={showSuccess}/>
+                <ManageRegions regionNodes={props.regionNodes} regionDict={props.regionDict} regionTree={props.regionTree}
+                    setPageType={setPageType} setUpdatePath={setUpdatePath} getRegionTree={props.getRegionTree} 
+                    showError={showError} showSuccess={showSuccess}
+                    deleteRegionSimulate={props.deleteRegionSimulate}/>
             }
             {
                 pageType === 2 &&
                 <CreateRegion setPageType={setPageType} regionTree={props.regionTree}
-                    regionRoot={props.regionRoot} getRegionTree={props.getRegionTree} modifyPath={modifyPath} 
-                    showError={showError} showSuccess={showSuccess}/>
+                    regionRoot={props.regionRoot} getRegionTree={props.getRegionTree} updatePath={updatePath} 
+                    showError={showError} showSuccess={showSuccess} updateRegionSimulate={props.updateRegionSimulate}
+                    createRegionSimulate={props.createRegionSimulate}/>
             }
         </>
     )
