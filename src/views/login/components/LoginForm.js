@@ -11,7 +11,7 @@ export default function LoginForm() {
     return (
         <div>
             <HeaderLoginForm/>
-            <Tabs defaultActiveKey="2" centered>
+            <Tabs defaultActiveKey="1" centered>
                 <TabPane tab="账号密码登录" key="1">
                     <PasswordLoginForm/>
                 </TabPane>
