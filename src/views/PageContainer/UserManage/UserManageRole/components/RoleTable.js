@@ -33,7 +33,7 @@ export default function RoleTable(props) {
         message.success('修改角色信息成功')
 
         // 刷新表格内容
-        props.refreshTableData()
+        setTimeout(props.refreshTableData,1000)
     }
 
     // 表格的属性/列名

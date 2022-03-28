@@ -1,6 +1,6 @@
 //暂时解决跨域问题
+// 只在开发环境下生效。被 npm run build 打包之后该文件无法使用，不会将 /api 开头的请求进行转发
 const { createProxyMiddleware } = require('http-proxy-middleware')
-
 
 module.exports = function(app){
   app.use(
