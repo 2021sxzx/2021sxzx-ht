@@ -8,13 +8,13 @@ export default function SelectForm(props){
     const [start_time, setStartTime] = useState('')
     const [end_time, setEndTime] = useState('')
     const [time, setTime] = useState([null, null])
-    const [region_id, setRegionId] = useState('')
+    const [region_code, setRegionCode] = useState('')
     const [region_name, setRegionName] = useState('')
     const [department, setDepartment] = useState('')
     const [creator, setCreator] = useState('')
 
     const handleTaskCodeChange = (e)=>{
-        setRegionId(e.target.value)
+        setRegionCode(e.target.value)
     }
     const handleTaskregionChange = (e)=>{
         setRegionName(e.target.value)
@@ -30,7 +30,7 @@ export default function SelectForm(props){
         const data = {}
         if (start_time !== '') data['start_time'] = start_time
         if (end_time !== '') data['end_time'] = end_time
-        if (region_id !== '') data['region_id'] = region_id
+        if (region_code !== '') data['region_code'] = region_code
         if (region_name !== '') data['region_name'] = region_name
         if (department !== '') data['department'] = department
         if (creator !== '') data['creator'] = creator
@@ -52,12 +52,12 @@ export default function SelectForm(props){
     }
 
     const clear = ()=>{
-        document.getElementById('regionIdInput').value = ''
+        document.getElementById('regionCodeInput').value = ''
         document.getElementById('regionNameInput').value = ''
         document.getElementById('departmentInput').value = ''
         document.getElementById('creatorInput').value = ''
         document.getElementById('timeInput').value = [null, null]
-        setRegionId('')
+        setRegionCode('')
         setRegionName('')
         setDepartment('')
         setCreator('')
@@ -81,7 +81,7 @@ export default function SelectForm(props){
                 }}
             >
                 <Form.Item label='规则编码' style={{width: '25%'}}>
-                    <Input id='regionIdInput' value={region_id}
+                    <Input id='regionCodeInput' value={region_code}
                         placeholder='请输入编码' size='middle' onChange={handleTaskCodeChange}></Input>
                 </Form.Item>
                 <Form.Item label='规则名称' style={{width: '25%'}}>
@@ -101,10 +101,10 @@ export default function SelectForm(props){
                     <RangePicker id='timeInput' value={time} style={{width: '100%'}} 
                         onChange={handleDateChange}/>      
                 </Form.Item>
-                <Form.Item style={{marginLeft: '50%', marginTop: 10, width: '5%'}}>
+                <Form.Item style={{marginLeft: '50%', marginTop: 10, width: '5%', minWidth: 62}}>
                     <Button type='default' onClick={reset} style={{width: '100%'}}>重置</Button>
                 </Form.Item>
-                <Form.Item style={{marginTop: 10, width: '5%'}}>
+                <Form.Item style={{marginTop: 10, width: '5%', minWidth: 62}}>
                     <Button type='primary' onClick={Search} style={{width: '100%'}}>查询</Button>
                 </Form.Item>
             </Form>

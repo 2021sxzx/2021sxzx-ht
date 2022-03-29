@@ -34,7 +34,6 @@ export default function SelectForm(props){
         if (rule_name !== '') data['rule_name'] = rule_name
         if (department !== '') data['department'] = department
         if (creator !== '') data['creator'] = creator
-        props.setOringinData(data)
         clear()
         props.getSearch(data)
     }
@@ -69,7 +68,6 @@ export default function SelectForm(props){
 
     const reset = ()=>{
         clear()
-        props.setOringinData({})
         props.reset()
     }
 
@@ -80,8 +78,7 @@ export default function SelectForm(props){
                 form={form}
                 initialValues={{
                     layout: 'inline'
-                }}
-                
+                }}   
             >
                 <Form.Item label='规则编码' style={{width: '25%'}}>
                     <Input id='ruleIdInput' value={rule_id}
@@ -104,10 +101,10 @@ export default function SelectForm(props){
                     <RangePicker id='timeInput' value={time} style={{width: '100%'}} 
                         onChange={handleDateChange}/>      
                 </Form.Item>
-                <Form.Item style={{marginLeft: '50%', marginTop: 10, width: '5%'}}>
+                <Form.Item style={{marginLeft: '50%', marginTop: 10, width: '5%', minWidth: 62}}>
                     <Button type='default' onClick={reset} style={{width: '100%'}}>重置</Button>
                 </Form.Item>
-                <Form.Item style={{marginTop: 10, width: '5%'}}>
+                <Form.Item style={{marginTop: 10, width: '5%', minWidth: 62}}>
                     <Button type='primary' onClick={Search} style={{width: '100%'}}>查询</Button>
                 </Form.Item>
             </Form>

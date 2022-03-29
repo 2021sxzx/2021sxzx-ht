@@ -16,7 +16,7 @@ export default function SelectForm(props){
     const handleTaskCodeChange = (e)=>{
         setItemRuleId(e.target.value)
     }
-    const handleTaskRuleChange = (e)=>{
+    const handleTaskItemRuleChange = (e)=>{
         setItemRuleName(e.target.value)
     }
     const handleDepartmentChange = (e)=>{
@@ -27,16 +27,14 @@ export default function SelectForm(props){
     }
 
     const Search = ()=>{
-        const data = {
-            start_time,
-            end_time,
-            item_rule_id,
-            item_rule_name,
-            department,
-            creator
-        }
+        const data = {}
+        if (start_time !== '') data['start_time'] = start_time
+        if (end_time !== '') data['end_time'] = end_time
+        if (rule_id !== '') data['item_rule_id'] = item_rule_id
+        if (rule_name !== '') data['item_rule_name'] = item_rule_name
+        if (department !== '') data['department'] = department
+        if (creator !== '') data['creator'] = creator
         clear()
-        console.log(data)
         props.getSearch(data)
     }
 
@@ -82,32 +80,32 @@ export default function SelectForm(props){
                     layout: 'inline'
                 }}
             >
-                <Form.Item label='规则编码'>
+                <Form.Item label='规则编码' style={{width: '25%'}}>
                     <Input id='itemRuleIdInput' value={item_rule_id}
-                        placeholder='请输入编码' size='middle' style={{width: 288.4}} onChange={handleTaskCodeChange}></Input>
+                        placeholder='请输入编码' size='middle' onChange={handleTaskCodeChange}></Input>
                 </Form.Item>
-                <Form.Item label='规则名称'>
+                <Form.Item label='规则名称' style={{width: '25%'}}>
                     <Input id='itemRuleNameInput' value={item_rule_name}
-                        placeholder='请输入名称' size='middle' style={{width: 249}} onChange={handleTaskRuleChange}></Input>
+                        placeholder='请输入名称' size='middle' onChange={handleTaskItemRuleChange}></Input>
                 </Form.Item>
-                <Form.Item label='业务部门'>
+                <Form.Item label='业务部门' style={{width: '22%'}}>
                     <Input id='departmentInput' value={department}
                         placeholder='请输入部门' size='middle' onChange={handleDepartmentChange}></Input>
                 </Form.Item>
-                <Form.Item label='创建人'>
+                <Form.Item label='创建人' style={{width: '22%'}}>
                     <Input id='creatorInput' value={creator}
                         placeholder='请输入创建人' size='middle' onChange={handleCreatorChange}></Input>
                 </Form.Item>
 
-                <Form.Item label='起始时间' style={{marginTop: 10}}>
-                    <RangePicker id='timeInput' value={time}
+                <Form.Item label='起始时间' style={{marginTop: 10, width: '35%'}}>
+                    <RangePicker id='timeInput' value={time} style={{width: '100%'}} 
                         onChange={handleDateChange}/>      
                 </Form.Item>
-                <Form.Item style={{marginLeft: 696, marginTop: 10}}>
-                    <Button type='default' onClick={reset}>重置</Button>
+                <Form.Item style={{marginLeft: '50%', marginTop: 10, width: '5%', minWidth: 62}}>
+                    <Button type='default' onClick={reset} style={{width: '100%'}}>重置</Button>
                 </Form.Item>
-                <Form.Item style={{marginTop: 10}}>
-                    <Button type='primary' onClick={Search}>查询</Button>
+                <Form.Item style={{marginTop: 10, width: '5%', minWidth: 62}}>
+                    <Button type='primary' onClick={Search} style={{width: '100%'}}>查询</Button>
                 </Form.Item>
             </Form>
         </>

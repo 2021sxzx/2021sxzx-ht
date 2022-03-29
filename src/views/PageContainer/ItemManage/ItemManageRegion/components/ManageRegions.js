@@ -9,8 +9,7 @@ export default function ManageRegions(props) {
     const [tableData, setTableData] = useState([])
     const [originData, setOringinData] = useState({})
     const [unableCreate, setUnableCreate] = useState(true)
-    // 是否正在删除，以及删除队列
-    const [isDeleting, setIsDeleting] = useState(false)
+    // 删除队列
     const [deletingIds, setDeletingIds] = useState([])
     // 用于获取批量处理的事项规则id
     const [selectedRowKeys, setSelectedRowKeys] = useState([])
@@ -23,6 +22,7 @@ export default function ManageRegions(props) {
         selectedRowKeys,
         onChange: onSelectionChange,
         getCheckboxProps: (record)=>({
+            // 不允许删除中间节点
             disabled: record._id in props.regionTree
         })
     }
@@ -179,11 +179,12 @@ export default function ManageRegions(props) {
     }
 
     const finishDeleting = (id)=>{
-        // 确定删除，调用接口
+        // 确定删除，调用接口，通过hook触发
         setDeletingIds(id)
     }
 
     useEffect(function(){
+        // 避免初始化触发或误触发
         if (deletingIds.length === 0) return
         deleteRegions()
     }, [deletingIds])
@@ -194,21 +195,24 @@ export default function ManageRegions(props) {
         } 
         // 根据事项规则id删除事项规则，删除完之后重新载入事项规则
         api.DeleteRegions(data).then(response=>{ 
-            // 等规则路径问题处理完后只需要刷新regionItems
             props.deleteRegionSimulate(deletingIds)
             getRegions()
             props.showSuccess()
         }).catch(error=>{
             // 删除报错时，弹出报错框并重新加载数据
-            console.log(error)
             props.showError()
             props.getRegionTree()
         })
     }
 
     const getRegions = ()=>{
-        api.GetRegions({}).then(response=>{
-            let regions = response.data.data
+        // 无搜索条件获取全数据
+        api.GetRegions({
+            page_num: 0,
+            page_size: currPageSize
+        }).then(response=>{
+            let regions = response.data.data.data
+            setTotalSize(response.data.data.total)
             let table = []
             for (let i = 0; i < regions.length; i++){
                 regions[i]['region_path'] = getPathByRegionId(regions[i]._id)
@@ -216,13 +220,19 @@ export default function ManageRegions(props) {
             }
             setTableData(table)
         }).catch(error=>{
-            console.log(error)
         })
     }
 
     const searchRegions = (data)=>{
-        api.GetRegions(data).then(response=>{
-            let regions = response.data.data
+        // 搜索时重置table
+        setOringinData(data)
+        let totalData = data
+        totalData['page_num'] = 0
+        totalData['page_size'] = currPageSize
+        api.GetRegions(totalData).then(response=>{
+            let regions = response.data.data.data
+            setCurrent(0)
+            setTotalSize(response.data.data.total)
             let table = []
             for (let i = 0; i < regions.length; i++){
                 regions[i]['region_path'] = getPathByRegionId(regions[i]._id)
@@ -230,37 +240,57 @@ export default function ManageRegions(props) {
             }
             setTableData(table)
         }).catch(error=>{
-
         })
     }
 
     const modifyRegion = (id)=>{
+        // 获取该节点的整条父子关系路径并存储，供修改界面使用
         let nodes = getNodesByRegionId(id)
         props.setUpdatePath(nodes)
         props.setPageType(2)
     }
 
     const handleCreate = ()=>{
-        props.setUpdatePath('')
+        // 无路径切换切面即为创建
+        props.setUpdatePath([])
         props.setPageType(2)
     }
 
     const resetSearch = ()=>{
+        // 回 归 本 源
+        setOringinData({})
         setCurrent(0)
-        props.getRegionTree()
+        getRegions()
     }
 
     const changePage = (page, pageSize)=>{
         // 换页时清空选择
         setSelectedRowKeys([])
+        // 更新页面数据
         setCurrent(page - 1)
         setCurrPageSize(pageSize)
+        // 只是换页的话还是用上一次的搜索条件进行筛查
+        let totalData = originData
+        totalData['page_num'] = page - 1
+        totalData['page_size'] = pageSize
+        api.GetRegions(totalData).then(response=>{
+            let regions = response.data.data.data
+            let table = []
+            for (let i = 0; i < regions.length; i++){
+                regions[i]['region_path'] = getPathByRegionId(regions[i]._id)
+                table.push(regions[i])
+            }
+            setTableData(table)
+        }).catch(error=>{
+
+        })
     }
 
     useEffect(function(){
         // 避开初始化时执行查询
         for (let key in props.regionTree){
             getRegions()
+            // regionTree初始化完毕前不能进行节点创建，否则会报错
             setUnableCreate(false)
             break
         }
@@ -276,7 +306,7 @@ export default function ManageRegions(props) {
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>
                 </Space>
                 <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='_id'
-                    pagination={{onChange: changePage, current: current + 1}}/>
+                    pagination={{onChange: changePage, current: current + 1, total: totalSize}}/>
             </Space>
         </>
     )
