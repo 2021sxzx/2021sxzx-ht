@@ -15,6 +15,7 @@ import api from '../../../../../api/user'
  */
 export default function ActivationStatusSwitch (props){
     const record = props.record
+    // console.log(record);
     const [activationStatus, setActivationStatus] = useState(record.activation_status)
     /**
      * 切换账号激活状态。状态码为 1 表示激活，为 0 表示未激活
@@ -23,7 +24,6 @@ export default function ActivationStatusSwitch (props){
     const handleSwitchChangeActivationState = (checked) => {
         // setActivationStatus(checked ? 1 : 0)
         // console.log("Activation Status = ", activationStatus)
-
         const data = {
             account: record.account,
         }
@@ -41,9 +41,10 @@ export default function ActivationStatusSwitch (props){
 
     if (activationStatus === 0 || activationStatus === 1) {
         return <Switch
+            disabled={record._id === localStorage.getItem('_id') || record.role_name === localStorage.getItem('role_name')}
             checkedChildren={"已激活"}
             unCheckedChildren={"未激活"}
-            defaultChecked={activationStatus===1}
+            defaultChecked={activationStatus==1}
             onChange={handleSwitchChangeActivationState}
         />
     } else {

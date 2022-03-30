@@ -43,6 +43,17 @@ export default function PasswordLoginForm() {
             // 保存账号密码
             saveAccountPassword()
 
+            // 保存用户id
+            if (localStorage.getItem('_id')) {
+              localStorage.removeItem('_id');
+              localStorage.removeItem('role_name');
+              localStorage.setItem('_id', response.data.data._id);
+              localStorage.setItem('role_name', response.data.data.role_name);
+            } else {
+              localStorage.setItem('_id', response.data.data._id);
+              localStorage.setItem('role_name', response.data.data.role_name);
+            }
+
             // 展现 0.1s 的登录成功操作提示并自动跳转到首页
             message.success('登录成功', 0.1, () => {
                 UrlJump.goto('#/home') // 不行
