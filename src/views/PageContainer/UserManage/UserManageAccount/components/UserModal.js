@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {Button, Form, Input, Modal} from "antd";
 import RoleMultiSelect from "./RoleMultiSelect";
+import Cookie from "../../../../../utils/Cookie";
 
 /**
  * 用户管理相关的弹窗
@@ -57,7 +58,9 @@ export default function UserModal(props) {
             // department: department, //TODO：等后台的部门 API 做好之后再来修改
         })
 
-
+        // Cookie.setCookie('roleName', roleName);
+        localStorage.removeItem('role_name');
+        localStorage.setItem('role_name', roleName)
     };
 
     // Cancel按钮的触发函数，关闭详情弹窗
@@ -73,7 +76,6 @@ export default function UserModal(props) {
         setAccount(e.target.value)
     }
     const handleInputChangeRoleName = (value) => {
-        console.log(value)
         setRoleName(value)
     }
     const handleInputChangeDepartment = (e) => {
