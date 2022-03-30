@@ -10,10 +10,7 @@ import './PageContainer.scss'
 // 导入页面内容
 import Home from './Home/Home'
 import Personal from './Personal/Personal'
-import ItemManageRule from './ItemManage/ItemManageRule/ItemManageRule'
 import ItemManage from './ItemManage/ItemManage'
-import ItemManageGuide from './ItemManage/ItemManageGuide/ItemManageGuide'
-import ItemManageProcess from './ItemManage/ItemManageProcess/ItemManageProcess'
 import CommentManageList from './ComponentManageList/CommentManageList.js'
 import CommentManageReport from './CommentManageReport/CommentManageReport.js'
 import SystemManageJournal
@@ -51,11 +48,7 @@ export default function PageContainer() {
               {/* 个人中心 */}
               <Route path="/personal" component={Personal} />
               {/* 事项过程管理 */}
-              <Route path="/item-manage/process" component={ItemManageProcess} />
-              {/* 事项指南管理 */}
-              <Route path="/item-manage/guide" component={ItemManageGuide} />
-              {/* 事项规则管理 */}
-              <Route path="/item-manage/rule" component={ItemManageRule} />
+              <Route path="/item-manage" component={ItemManage} />
               {/* 日志管理 */}
               <Route path="/system-manage/journal" component={SystemManageJournal} />
               {/* 资源管理 */}

@@ -25,6 +25,31 @@ export default function ManageGuide(props) {
     // 当前展示的页数，用于重置时归零
     const [current, setCurrent] = useState(1)
 
+    const tempGuide = [{
+        item_id: 'temp',
+        item_guide_id: '11440100696927671X3442011817001',
+        guide_name: '（1年后）劳动能力复查鉴定申请',
+        rule_name: '分类规则标准\\个人业务\\人事人才\\人才引进\\引进在职人才入户\\市辖区\\南沙区\\区县本级\\',
+        create_time: 1646709061357
+    }]
+
+    const tempGuideContent = {
+        guideName: '（1年后）劳动能力复查鉴定申请',
+        guideCode: '11440100696927671X3442011817001',
+        guideContent: '（1年后）劳动能力复查鉴定申请',
+        guideAccord: '《工伤保险条例》( 2010年国务院令586号修订)',
+        guideCondition: '自劳动能力鉴定结论作出之日起1年后，工伤职工、用人单位或者社会保险经办机构认为伤残情况发生变化的，可以向设区的市级劳动能力鉴定委员会申请劳动能力复查鉴定。',
+        guideMaterial: '1.工伤职工的居民身份证或者社会保障卡等其他有效身份证明原件；\n2.劳动能力鉴定（确认）申请表；\n3.有效的诊断证明、按照医疗机构病历管理有关规定复印或者复制的检查、检验报告等完整病历材料。',
+        guideTimeLimit: '法定办结时限：60个工作日\n承诺办结时限：40个工作日',
+        guidePhone: '市区办理点：020-87656275\n番禺办理点：020-84881099\n花都办理点：020-86969331\n增城办理点：020-82729239\n从化办理点：020-87963237',
+        guidePlatform: 'http://rsj.gz.gov.cn/sofpro/bmyyqt/hrssgz/ywzx/ywzx_list.jsp',
+        guidePCAddress: 'http://tyrz.gd.gov.cn/tif/sso/connect/page/oauth2/authorize?service=initService&response_type=code&client_id=gzldbzxt&scope=all&redirect_uri=http://gzlss.hrssgz.gov.cn/gzlss_web/business/tomain/styzr.xhtml?sxbm=11440100696927671X3442111817001',
+        guidePEAddress: 'http://tyrz.gd.gov.cn/tif/sso/connect/page/oauth2/authorize?service=initService&response_type=code&client_id=gzldbzxt&scope=all&redirect_uri=http://gzlss.hrssgz.gov.cn/gzlss_web/business/tomain/styzr.xhtml?sxbm=11440100696927671X3442111817001',
+        guideSelfmadeAddress: 'http://tyrz.gd.gov.cn/tif/sso/connect/page/oauth2/authorize?service=initService&response_type=code&client_id=gzldbzxt&scope=all&redirect_uri=http://gzlss.hrssgz.gov.cn/gzlss_web/business/tomain/styzr.xhtml?sxbm=11440100696927671X3442111817001',
+        guideAddress: '1.市区办理点：广州市越秀区梅东路28号广州市人力资源和社会保障综合服务大厅2楼\n2.番禺办理点：广州市番禺区桥南街桥南路11号1楼4、5号窗口\n3.花都办理点：广州市花都区新华街公益大道府西路1号花都区人力资源和社会保障局3号楼1楼工伤业务窗\n4.增城办理点：广州市增城区荔湖街景观大道北7号增城区政务服务中心B区社保医保服务厅24号窗口\n5.从化办理点：广州市从化区街口街河滨南路43号一楼社保科办公室',
+        guideQRCode: '1'
+    }
+
     const tableColumns = [
         {
             title: '事项指南编码',
@@ -78,49 +103,49 @@ export default function ManageGuide(props) {
                     <Menu>
                         <Menu.Item key='0'>
                             <Button type='primary' style={{width: 88}} onClick={function(){
-                                message.info('1')
+                                cancelItem(record.item_id)
                             }}>
                                 解绑
                             </Button>
                         </Menu.Item>
                         <Menu.Item style={{display: 'flex'}} key='1'>
                             <Button type='primary' onClick={function(){
-                                message.info('导出！')
+                                updateItem(record.item_id, state.AUDITING)
                             }}>
                                 提交审核
                             </Button>
                         </Menu.Item>
                         <Menu.Item style={{display: 'flex'}} key='2'>
                             <Button type='primary' onClick={function(){
-                                message.info('导出！')
+                                showGuide(record.item_id)
                             }}>
                                 查看详情
                             </Button>
                         </Menu.Item>
                         <Menu.Item style={{display: 'flex'}} key='3'>
                             <Button type='primary' onClick={function(){
-                                message.info('导出！')
+                                updateItem(record.item_id, state.UNAUDITED)
                             }}>
                                 取消审核
                             </Button>
                         </Menu.Item>
                         <Menu.Item style={{display: 'flex'}} key='4'>
                             <Button style={{backgroundColor: 'red', color: 'white', width: 88}} onClick={function(){
-                                message.info('导出！')
+                                updateItem(record.item_id, state.RECALLING)
                             }}>
                                 撤回
                             </Button>
                         </Menu.Item>
                         <Menu.Item style={{display: 'flex'}} key='5'>
                             <Button style={{backgroundColor: 'red', color: 'white'}} onClick={function(){
-                                message.info('导出！')
+                                updateItem(record.item_id, state.AUDITED)
                             }}>
                                 取消撤回
                             </Button>
                         </Menu.Item>
                         <Menu.Item key='6'>
                             <Button style={{backgroundColor: 'red', color: 'white', width: 88}} onClick={function(){
-                                deleteSingleItem(record.item_guide_id)
+                                deleteSingleItem(record.item_id)
                             }}>
                                 删除
                             </Button>
@@ -134,30 +159,6 @@ export default function ManageGuide(props) {
             )
         }
     ]
-
-    const tempGuide = [{
-        item_guide_id: '11440100696927671X3442011817001',
-        guide_name: '（1年后）劳动能力复查鉴定申请',
-        rule_name: '分类规则标准\\个人业务\\人事人才\\人才引进\\引进在职人才入户\\市辖区\\南沙区\\区县本级\\',
-        create_time: 1646709061357
-    }]
-
-    const tempGuideContent = {
-        guideName: '（1年后）劳动能力复查鉴定申请',
-        guideCode: '11440100696927671X3442011817001',
-        guideContent: '（1年后）劳动能力复查鉴定申请',
-        guideAccord: '《工伤保险条例》( 2010年国务院令586号修订)',
-        guideCondition: '自劳动能力鉴定结论作出之日起1年后，工伤职工、用人单位或者社会保险经办机构认为伤残情况发生变化的，可以向设区的市级劳动能力鉴定委员会申请劳动能力复查鉴定。',
-        guideMaterial: '1.工伤职工的居民身份证或者社会保障卡等其他有效身份证明原件；\n2.劳动能力鉴定（确认）申请表；\n3.有效的诊断证明、按照医疗机构病历管理有关规定复印或者复制的检查、检验报告等完整病历材料。',
-        guideTimeLimit: '法定办结时限：60个工作日\n承诺办结时限：40个工作日',
-        guidePhone: '市区办理点：020-87656275\n番禺办理点：020-84881099\n花都办理点：020-86969331\n增城办理点：020-82729239\n从化办理点：020-87963237',
-        guidePlatform: 'http://rsj.gz.gov.cn/sofpro/bmyyqt/hrssgz/ywzx/ywzx_list.jsp',
-        guidePCAddress: 'http://tyrz.gd.gov.cn/tif/sso/connect/page/oauth2/authorize?service=initService&response_type=code&client_id=gzldbzxt&scope=all&redirect_uri=http://gzlss.hrssgz.gov.cn/gzlss_web/business/tomain/styzr.xhtml?sxbm=11440100696927671X3442111817001',
-        guidePEAddress: 'http://tyrz.gd.gov.cn/tif/sso/connect/page/oauth2/authorize?service=initService&response_type=code&client_id=gzldbzxt&scope=all&redirect_uri=http://gzlss.hrssgz.gov.cn/gzlss_web/business/tomain/styzr.xhtml?sxbm=11440100696927671X3442111817001',
-        guideSelfmadeAddress: 'http://tyrz.gd.gov.cn/tif/sso/connect/page/oauth2/authorize?service=initService&response_type=code&client_id=gzldbzxt&scope=all&redirect_uri=http://gzlss.hrssgz.gov.cn/gzlss_web/business/tomain/styzr.xhtml?sxbm=11440100696927671X3442111817001',
-        guideAddress: '1.市区办理点：广州市越秀区梅东路28号广州市人力资源和社会保障综合服务大厅2楼\n2.番禺办理点：广州市番禺区桥南街桥南路11号1楼4、5号窗口\n3.花都办理点：广州市花都区新华街公益大道府西路1号花都区人力资源和社会保障局3号楼1楼工伤业务窗\n4.增城办理点：广州市增城区荔湖街景观大道北7号增城区政务服务中心B区社保医保服务厅24号窗口\n5.从化办理点：广州市从化区街口街河滨南路43号一楼社保科办公室',
-        guideQRCode: '1'
-    }
 
     const getPathByRuleId = (id)=>{
         // 获取规则id对应的规则路径
@@ -280,12 +281,9 @@ export default function ManageGuide(props) {
 
     return (
         <>
-            <Space direction='vertical' size={12}>
-                <Modal centered destroyOnClose={true} title='删除确认' visible={isDeleting} onCancel={endDeleting} onOk={finishDeleting}>
-                    <div>删除操作将会把规则以及指南也删除，是否确定删除该{deletingIds.length}项规则？</div>
-                </Modal>
+            <Space direction='vertical' size={12} style={{width: '100%'}}>
                 <SelectForm getSearch={searchItemGuide} reset={resetSearch}></SelectForm>
-                <Space direction='horizontal' size={12} style={{marginLeft: 925}}>
+                <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
                     <Button type='primary' onClick={handleCreate}>绑定事项</Button>
                     <Button type='primary' disabled={!isBatching}>批量导出</Button>
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>

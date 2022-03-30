@@ -33,6 +33,7 @@ export default function CreateProcess(props){
         // 初始化分类规则树的根节点
         let currChildren = []
         let currChosen = []
+        console.log(props)
         currChosen.push(props.ruleRoot)
         for (let i = 0; i < (props.ruleTree[props.ruleRoot.nodeId]).length; i++){
             currChildren.push((props.ruleTree[props.ruleRoot.nodeId])[i])
@@ -360,14 +361,14 @@ export default function CreateProcess(props){
 
             <div className={style.ruleItem}>
                 <div className={style.itemTitle}>
-                    创建事项规则：
+                    事项规则：
                 </div>
                 <div className={style.itemContent}>
                     <div className={style.ruleText}>
                         {taskRule}
                     </div>
                     <div className={style.ps}>
-                        （备注：通过下面的事项规则库，逐级选择规则项，完成创建）
+                        （备注：通过下面的事项规则库，逐级选择规则项，完成绑定）
                     </div>
                 </div>
             </div>
