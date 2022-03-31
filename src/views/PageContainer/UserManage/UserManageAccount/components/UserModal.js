@@ -32,7 +32,6 @@ export default function UserModal(props) {
     const [department, setDepartment] = useState(props.detailData.department);
     const [password, setPassword] = useState(props.detailData.password);
 
-
     //表单提交的成功、失败反馈
     const onFinish = (values) => {
         console.log('User Form Success:', values);
@@ -87,7 +86,11 @@ export default function UserModal(props) {
 
     return (
         <>
-            <Button type={props.buttonType} onClick={showModal}>
+            <Button 
+                type={props.buttonType} 
+                onClick={showModal}
+                disabled={!(props.detailData._id === localStorage.getItem('_id')) && props.detailData.role_name === localStorage.getItem('role_name')}
+            >
                 {props.buttonText}
             </Button>
 
