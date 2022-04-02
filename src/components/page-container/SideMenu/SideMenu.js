@@ -55,6 +55,10 @@ const menuList = [
     icon:<SettingOutlined />,
     children:[
       {
+        key:'/system-manage/basic',
+        title:'基础管理'
+      },
+      {
         key:'/system-manage/journal',
         title:'日志管理'
       },
@@ -67,8 +71,12 @@ const menuList = [
         title:'故障管理'
       },
       {
-        key:'/system-manage/file-meta-data',
-        title:'文件元数据管理'
+        key:'/system-manage/meta-data',
+        title:'元数据管理'
+      },
+      {
+        key:'/system-manage/backup',
+        title:'备份管理'
       }
     ]
   },

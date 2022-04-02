@@ -132,7 +132,7 @@ const tableColumns = [
     dataIndex: "user_name",
   },
   {
-    title: "身份证号",
+    title: "手机号",
     key: "idc",
     dataIndex: "idc",
   },

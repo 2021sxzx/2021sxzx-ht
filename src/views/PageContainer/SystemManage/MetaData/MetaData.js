@@ -7,7 +7,7 @@ import {
   Button,
   Table,
   Checkbox,
-  Radio,Divider,Modal,Tabs 
+  Radio,Divider,Modal,Tabs,Image,Switch,Row,Col
 } from "antd";
 import { SyncOutlined } from "@ant-design/icons";
 import api from "../../../../api/log";
@@ -209,29 +209,157 @@ const rowSelection = {
 };
 
 const Demo = () => {
+  const [WebsiteStatus, setWebsiteStatus] = React.useState(true);
+  const onFinish = (values) => {
+    console.log('Success:', values);
+    alert('ok')
+  };
+
+  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
+  //互斥单选框
+  const [value, setValue] = React.useState(1);
+
+  const onChange = e => {
+    console.log('radio checked', e.target.value);
+    setValue(e.target.value);
+  };
   return (
     <div className="card-container">
-    <Tabs type="card">
-      <TabPane tab="Tab Title 1" key="1">
-        <p>Content of Tab Pane 1</p>
-        <p>Content of Tab Pane 1</p>
-        <p>Content of Tab Pane 1</p>
-      </TabPane>
-      <TabPane tab="Tab Title 2" key="2">
-        <p>Content of Tab Pane 2</p>
-        <p>Content of Tab Pane 2</p>
-        <p>Content of Tab Pane 2</p>
-      </TabPane>
-      <TabPane tab="Tab Title 3" key="3">
-        <p>Content of Tab Pane 3</p>
-        <p>Content of Tab Pane 3</p>
-        <p>Content of Tab Pane 3</p>
-      </TabPane>
-    </Tabs>
-  </div>
+      <Tabs type="card">
+        <TabPane tab="图片处理" key="1">
+          <Form
+            labelCol={{ span: 4 }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+          >
+            <Form.Item label="缩略图功能" name="WebsiteStatus">
+              <Switch
+                checked={WebsiteStatus}
+                checkedChildren="开"
+                unCheckedChildren="关"
+                onChange={() => {
+                  setWebsiteStatus(!WebsiteStatus);
+                }}
+              />{" "}
+            </Form.Item>
+            <Form.Item label="生成方式" name="WebsiteStatus">
+              <Radio.Group onChange={onChange} value={value}>
+                <Radio value={1}>拉伸</Radio>
+                <Radio value={2}>留白</Radio>
+                <Radio value={3}>裁切</Radio>
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item label="缩略图大小" name="WebsiteStatus">
+              <Input.Group size="large">
+                <Row gutter={8}>
+                  <Col span={2}>
+                    <Input defaultValue="571" />
+                  </Col>
+                  <Col>X</Col>
+                  <Col span={2}>
+                    <Input defaultValue="268" />
+                  </Col>
+                  <Col>(宽)x(高)(像素)</Col>
+                </Row>
+              </Input.Group>
+            </Form.Item>
+            <Form.Item label="压缩功能" name="WebsiteStatus">
+              <Switch
+                checked={WebsiteStatus}
+                checkedChildren="开"
+                unCheckedChildren="关"
+                onChange={() => {
+                  setWebsiteStatus(!WebsiteStatus);
+                }}
+              />{" "}
+            </Form.Item>
+            <Form.Item
+              label="压缩条件"
+              name="CopyrightInformation"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "70px" }} />KB
+            </Form.Item>
+            <Form.Item
+              label="压缩质量"
+              name="RecordNumber"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item wrapperCol={{ offset: 10, span: 16 }}>
+              <Button type="primary" htmlType="submit">
+                确认更改
+              </Button>
+            </Form.Item>
+          </Form>
+        </TabPane>
+        <TabPane tab="附件设置" key="2">
+        <Form
+            labelCol={{ span: 4 }}
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+          >
+            <Form.Item
+              label="主页链接名"
+              name="RecordNumber"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="栏目设置间隔符"
+              name="RecordNumber"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="上传图片类型"
+              name="RecordNumber"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="上传文件类型"
+              name="RecordNumber"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="图片上传路径"
+              name="RecordNumber"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="上传图片大小"
+              name="CopyrightInformation"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              最大<Input style={{ width: "40px" }} />MB
+            </Form.Item>
+            <Form.Item wrapperCol={{ offset: 10, span: 16 }}>
+              <Button type="primary" htmlType="submit">
+                确认更改
+              </Button>
+            </Form.Item>
+          </Form>
+        </TabPane>
+        <TabPane tab="业务数据" key="3">
+          <p>咨询电话</p>
+          <p>事项状态</p>
+        </TabPane>
+      </Tabs>
+    </div>
   );
 };
-export default function FileMetaData() {
+export default function MetaData() {
   const [tableData, setTableData] = useState([]);
   const getLog = (data) => {
     api
@@ -254,13 +382,6 @@ export default function FileMetaData() {
   }, []);
   return (
     <>
-      {/* <SelectForm getSearch={getSearchLog}></SelectForm> */}
-      {/* <Table rowKey="log_id"         
-      rowSelection={{
-          type: selectionType,
-          ...rowSelection,
-      }} 
-      columns={tableColumns} dataSource={tableData1} /> */}
       <Demo></Demo>
     </>
   );
