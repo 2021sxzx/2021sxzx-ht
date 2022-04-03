@@ -8,7 +8,8 @@ export default function TagsArea(props){
             {
                 props.tags.length != 0 &&
                 props.tags.map((tag, index)=>
-                    <div className={style.tag} key={props.type + '_' + tag.nodeId} onClick={
+                    <div className={style.tag} /*style={{display: tag.disabled ? 'none' : 'flex'}}*/
+                        key={props.type + '_' + tag.nodeId} onClick={
                         value=>{
                             props.chooseTag(index, props.type)
                         }
@@ -17,7 +18,7 @@ export default function TagsArea(props){
                             {tag.nodeName}
                         </div>   
                     </div>
-                )
+                )    
             }
         </Space>        
     )

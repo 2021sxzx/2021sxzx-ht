@@ -5,6 +5,7 @@ if(process.env.NODE_ENV==="development"){
 }
 else if(process.env.NODE_ENV==="test"){
     BASEURL='http://8.134.73.52:80/api'
+    // BASEURL = 'http://127.0.0.1:5001/api'
 }
 else if(process.env.NODE_ENV==="production"){
     BASEURL='http://8.134.73.52:80/api'
@@ -16,7 +17,7 @@ const instance = axios.create({
 // 添加请求拦截器
 instance.interceptors.request.use(
     function (config) {
-        console.log(config);
+        console.log('请求拦截器',config);
         return config;
     },
     function (error) {
@@ -28,6 +29,7 @@ instance.interceptors.request.use(
 // 添加响应拦截器
 instance.interceptors.response.use(
     function (response) {
+        console.log('响应拦截器',response);
         // 对响应数据做点什么
         return response
     },
