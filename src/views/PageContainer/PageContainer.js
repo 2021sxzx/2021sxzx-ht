@@ -11,7 +11,7 @@ import './PageContainer.scss'
 import Home from './Home/Home'
 import Personal from './Personal/Personal'
 import ItemManage from './ItemManage/ItemManage'
-import CommentManageList from './ComponentManageList/CommentManageList.js'
+import CommentManageList from './CommentManageList/CommentManageList.js'
 import CommentManageReport from './CommentManageReport/CommentManageReport.js'
 import SystemManageBasic from './SystemManage/SystemManageBasic/SystemManageBasic.js'
 import SystemManageJournal
