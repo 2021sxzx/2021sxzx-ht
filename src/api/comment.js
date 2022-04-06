@@ -8,6 +8,9 @@ const api = {
 		return service.request({
 			method: 'get',
 			url: '/v1/comment/',
+			params:{
+				pageNum:1
+			},
 			data // data:data同名可以直接写 data
 		})
 	},
