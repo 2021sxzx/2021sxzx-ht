@@ -3,7 +3,7 @@ import api from '../../../../api/rule';
 import ManageProcess from './components/ManageProcess'
 import CreateProcess from './components/CreateProcess'
 import {useState} from 'react'
-import {Modal} from 'antd'
+import {Modal, message} from 'antd'
 
 export default function ItemManageProcess(props) {
     // 页面的基础数据
@@ -27,12 +27,12 @@ export default function ItemManageProcess(props) {
         <>
             {
                 pageType === 1 &&
-                <ManageProcess setPageType={setPageType} setModifyId={setModifyId}
-                    setModifyContent={setModifyContent} showError={showError}/>
+                <ManageProcess setPageType={setPageType} setModifyId={setModifyId} ruleNodes={props.ruleNodes} regionNodes={props.regionNodes}
+                    setModifyContent={setModifyContent} showError={showError} userId={props.userId} showSuccess={showSuccess}/>
             }
             {
                 pageType === 2 &&
-                <CreateProcess setPageType={setPageType} ruleTree={props.ruleTree} regionTree={props.regionTree}
+                <CreateProcess setPageType={setPageType} ruleTree={props.ruleTree} regionTree={props.regionTree} userId={props.userId}
                 ruleRoot={props.ruleRoot} regionRoot={props.regionRoot} init={props.init} modifyId={modifyId} 
                 showError={showError} showSuccess={showSuccess}/>
             }

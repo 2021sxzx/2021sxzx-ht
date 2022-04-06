@@ -380,7 +380,7 @@ export default function CreateRegion(props){
             
             <div className={style.regionItem}>
                 <div className={style.itemTitle}>
-                    创建事项规则：
+                    创建区划规则：
                 </div>
                 <div className={style.itemContent}>
                     <div className={style.regionText}>

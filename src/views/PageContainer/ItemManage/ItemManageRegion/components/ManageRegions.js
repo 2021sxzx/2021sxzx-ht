@@ -7,8 +7,9 @@ import SelectForm from './SelectForm'
 export default function ManageRegions(props) {
     // 页面的基础数据
     const [tableData, setTableData] = useState([])
-    const [originData, setOringinData] = useState({})
+    const [originData, setOriginData] = useState({})
     const [unableCreate, setUnableCreate] = useState(true)
+    const [tableLoading, setTableLoading] = useState(true)
     // 删除队列
     const [deletingIds, setDeletingIds] = useState([])
     // 用于获取批量处理的事项规则id
@@ -103,7 +104,7 @@ export default function ManageRegions(props) {
                             </Menu.Item>
                         }  
                     </Menu>
-                } trigger={['click']}>
+                } trigger={['click']} placement='bottomCenter'>
                     <Button type='primary'>
                         操作
                     </Button>
@@ -206,6 +207,7 @@ export default function ManageRegions(props) {
     }
 
     const getRegions = ()=>{
+        setTableLoading(true)
         // 无搜索条件获取全数据
         api.GetRegions({
             page_num: 0,
@@ -219,13 +221,16 @@ export default function ManageRegions(props) {
                 table.push(regions[i])
             }
             setTableData(table)
+            setTableLoading(false)
         }).catch(error=>{
+            setTableLoading(false)
         })
     }
 
     const searchRegions = (data)=>{
+        setTableLoading(true)
         // 搜索时重置table
-        setOringinData(data)
+        setOriginData(data)
         let totalData = data
         totalData['page_num'] = 0
         totalData['page_size'] = currPageSize
@@ -239,7 +244,9 @@ export default function ManageRegions(props) {
                 table.push(regions[i])
             }
             setTableData(table)
+            setTableLoading(false)
         }).catch(error=>{
+            setTableLoading(false)
         })
     }
 
@@ -258,7 +265,7 @@ export default function ManageRegions(props) {
 
     const resetSearch = ()=>{
         // 回 归 本 源
-        setOringinData({})
+        setOriginData({})
         setCurrent(0)
         getRegions()
     }
@@ -273,6 +280,7 @@ export default function ManageRegions(props) {
         let totalData = originData
         totalData['page_num'] = page - 1
         totalData['page_size'] = pageSize
+        setTableLoading(true)
         api.GetRegions(totalData).then(response=>{
             let regions = response.data.data.data
             let table = []
@@ -281,8 +289,9 @@ export default function ManageRegions(props) {
                 table.push(regions[i])
             }
             setTableData(table)
+            setTableLoading(false)
         }).catch(error=>{
-
+            setTableLoading(false)
         })
     }
 
@@ -298,15 +307,15 @@ export default function ManageRegions(props) {
 
     return (
         <>
-            <Space direction='vertical' size={12}>
-                <SelectForm getSearch={searchRegions} reset={resetSearch} setOringinData={setOringinData}></SelectForm>
+            <Space direction='vertical' size={12} style={{width: '100%'}}>
+                <SelectForm getSearch={searchRegions} reset={resetSearch} setOriginData={setOriginData}></SelectForm>
                 <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
                     <Button type='primary' onClick={handleCreate} disabled={unableCreate}>创建规则</Button>
                     <Button type='primary' disabled={!isBatching}>批量导出</Button>
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>
                 </Space>
                 <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='_id'
-                    pagination={{onChange: changePage, current: current + 1, total: totalSize}}/>
+                    pagination={{onChange: changePage, current: current + 1, total: totalSize}} loading={tableLoading}/>
             </Space>
         </>
     )

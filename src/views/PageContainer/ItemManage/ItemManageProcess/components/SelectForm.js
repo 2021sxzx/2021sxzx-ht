@@ -8,15 +8,15 @@ export default function SelectForm(props){
     const [start_time, setStartTime] = useState('')
     const [end_time, setEndTime] = useState('')
     const [time, setTime] = useState([null, null])
-    const [item_rule_id, setItemRuleId] = useState('')
-    const [item_rule_name, setItemRuleName] = useState('')
+    const [task_code, setTaskCode] = useState('')
+    const [item_name, setItemRuleName] = useState('')
     const [department, setDepartment] = useState('')
     const [creator, setCreator] = useState('')
 
     const handleTaskCodeChange = (e)=>{
-        setItemRuleId(e.target.value)
+        setTaskCode(e.target.value)
     }
-    const handleTaskItemRuleChange = (e)=>{
+    const handleItemNameChange = (e)=>{
         setItemRuleName(e.target.value)
     }
     const handleDepartmentChange = (e)=>{
@@ -30,11 +30,12 @@ export default function SelectForm(props){
         const data = {}
         if (start_time !== '') data['start_time'] = start_time
         if (end_time !== '') data['end_time'] = end_time
-        if (rule_id !== '') data['item_rule_id'] = item_rule_id
-        if (rule_name !== '') data['item_rule_name'] = item_rule_name
+        if (task_code !== '') data['task_code'] = task_code
+        if (item_name !== '') data['item_name'] = item_name
         if (department !== '') data['department'] = department
         if (creator !== '') data['creator'] = creator
         clear()
+        props.setOriginData(data)
         props.getSearch(data)
     }
 
@@ -52,12 +53,12 @@ export default function SelectForm(props){
     }
 
     const clear = ()=>{
-        document.getElementById('itemRuleIdInput').value = ''
-        document.getElementById('itemRuleNameInput').value = ''
+        document.getElementById('taskCodeInput').value = ''
+        document.getElementById('itemNameInput').value = ''
         document.getElementById('departmentInput').value = ''
         document.getElementById('creatorInput').value = ''
         document.getElementById('timeInput').value = [null, null]
-        setItemRuleId('')
+        setTaskCode('')
         setItemRuleName('')
         setDepartment('')
         setCreator('')
@@ -80,13 +81,13 @@ export default function SelectForm(props){
                     layout: 'inline'
                 }}
             >
-                <Form.Item label='规则编码' style={{width: '25%'}}>
-                    <Input id='itemRuleIdInput' value={item_rule_id}
+                <Form.Item label='指南编码' style={{width: '25%'}}>
+                    <Input id='taskCodeInput' value={task_code}
                         placeholder='请输入编码' size='middle' onChange={handleTaskCodeChange}></Input>
                 </Form.Item>
-                <Form.Item label='规则名称' style={{width: '25%'}}>
-                    <Input id='itemRuleNameInput' value={item_rule_name}
-                        placeholder='请输入名称' size='middle' onChange={handleTaskItemRuleChange}></Input>
+                <Form.Item label='指南名称' style={{width: '25%'}}>
+                    <Input id='itemNameInput' value={item_name}
+                        placeholder='请输入名称' size='middle' onChange={handleItemNameChange}></Input>
                 </Form.Item>
                 <Form.Item label='业务部门' style={{width: '22%'}}>
                     <Input id='departmentInput' value={department}

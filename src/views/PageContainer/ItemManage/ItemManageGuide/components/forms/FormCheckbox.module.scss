@@ -1,0 +1,18 @@
+.inputLabel {
+    width: 15%; 
+    margin-top: 4px;
+    text-align: right;
+}
+
+.form {
+    display: flex;
+    width: 100%;
+}
+
+.input {
+    position: relative;
+    display: block;
+    width: 80%;
+    top: 4px;
+    text-align: left;
+}

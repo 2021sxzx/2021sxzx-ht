@@ -6,10 +6,12 @@ import ItemManageRule from './ItemManageRule/ItemManageRule'
 import ItemManageRegion from './ItemManageRegion/ItemManageRegion'
 import ItemManageGuide from './ItemManageGuide/ItemManageGuide'
 import ItemManageProcess from './ItemManageProcess/ItemManageProcess'
+import Cookie from '../../../utils/Cookie'
 
 export default function ItemManage() {
     // 父子组件路径匹配
     const {path} = useRouteMatch()
+    const [userId, setUserId] = useState('')
     // 事项管理组件公用state
     const [ruleTree, setRuleTree] = useState({})
     const [regionTree, setRegionTree] = useState({})
@@ -325,12 +327,13 @@ export default function ItemManage() {
     }
 
     const init = ()=>{
-        // 通过设置延迟确保先获取规则和区划树
-        // 再进行路径的生成
+        // 获取规则和区划树
         getRuleTree()
         getRegionTree()
+        // 获取用户id
+        setUserId(Cookie.getAndResetCookie('userId'))
     }
-
+    
     useEffect(()=>{
         init()
     }, [])
@@ -339,21 +342,21 @@ export default function ItemManage() {
         <div>
             <Switch>
                 <Route path={`${path}/process`} 
-                    render={()=>(<ItemManageProcess regionNodes={regionNodes} ruleNodes={ruleNodes} ruleDict={ruleDict}
+                    render={()=>(<ItemManageProcess regionNodes={regionNodes} ruleNodes={ruleNodes} ruleDict={ruleDict} userId={userId}
                     regionTree={regionTree} ruleTree={ruleTree} regionRoot={regionRoot} ruleRoot={ruleRoot} init={init}/>)}/>
 
                 <Route path={`${path}/guide`} 
-                    render={()=>(<ItemManageGuide regionDict={regionDict}/>)}/>
+                    render={()=>(<ItemManageGuide regionDict={regionDict} userId={userId}/>)}/>
 
                 <Route path={`${path}/item-rule/rule`} 
                     render={()=>(<ItemManageRule ruleNodes={ruleNodes} ruleDict={ruleDict}
-                        ruleTree={ruleTree} ruleRoot={ruleRoot} getRuleTree={getRuleTree}
-                        createRuleSimulate={createRuleSimulate} deleteRuleSimulate={deleteRuleSimulate}
-                        updateRuleSimulate={updateRuleSimulate}/>)}/>
+                        ruleTree={ruleTree} ruleRoot={ruleRoot} userId={userId}
+                        getRuleTree={getRuleTree} createRuleSimulate={createRuleSimulate} 
+                        deleteRuleSimulate={deleteRuleSimulate} updateRuleSimulate={updateRuleSimulate}/>)}/>
 
                 <Route path={`${path}/item-rule/region`} 
                     render={()=>(<ItemManageRegion regionNodes={regionNodes} regionDict={regionDict}
-                        regionTree={regionTree} regionRoot={regionRoot} getRegionTree={getRegionTree}
+                        regionTree={regionTree} regionRoot={regionRoot} userId={userId} getRegionTree={getRegionTree}
                         createRegionSimulate={createRegionSimulate} updateRegionSimulate={updateRegionSimulate}
                         deleteRegionSimulate={deleteRegionSimulate}/>)}/>
             </Switch>

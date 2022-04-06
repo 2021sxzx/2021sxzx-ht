@@ -101,7 +101,7 @@ export default function ManageRules(props) {
                         }
                         
                     </Menu>
-                } trigger={['click']}>
+                } trigger={['click']} placement='bottomCenter'>
                     <Button type='primary'>
                         操作
                     </Button>

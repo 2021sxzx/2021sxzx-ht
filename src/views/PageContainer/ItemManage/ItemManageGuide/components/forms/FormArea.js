@@ -9,7 +9,10 @@ export default function FormArea(props){
                 <span style={{color: 'red'}}>*</span>
                 <span style={{marginLeft: 5}}>{props.formName}：</span>
             </div>
-            <TextArea className={style.textArea} onChange={props.handleChange} value={props.value} autoSize={true}/>
+            <div className={style.input}>
+                <TextArea onChange={props.handleChange}
+                    placeholder={'请输入' + props.formName} value={props.value} autoSize={true}/>
+            </div>
         </div>
     )
 }
