@@ -1,5 +1,4 @@
-import React from 'react'
-import api from '../../../../api/rule';
+import React, { useEffect } from 'react'
 import ManageGuides from './components/ManageGuides'
 import CreateGuide from './components/CreateGuide'
 import {useState} from 'react'
@@ -11,10 +10,10 @@ export default function ItemManageGuide(props) {
     const [modifyId, setModifyId] = useState('')
     const [modifyContent, setModifyContent] = useState({})
 
-    const showError = ()=>{
+    const showError = (info)=>{
         Modal.error({
-            title: 'error',
-            content: 'error',
+            title: '出错啦',
+            content: info,
             centered: true
         })
     }
@@ -22,6 +21,14 @@ export default function ItemManageGuide(props) {
     const showSuccess = ()=>{
         message.success('操作成功！')
     }
+
+    useEffect(function(){
+        for (let key in modifyContent){
+            setPageType(2)
+            break
+        }
+    }, [modifyContent])
+
     return (
         <>
             {
@@ -31,7 +38,7 @@ export default function ItemManageGuide(props) {
             }
             {
                 pageType === 2 &&
-                <CreateGuide setPageType={setPageType} modifyContent={modifyContent}
+                <CreateGuide setPageType={setPageType} modifyContent={modifyContent} modifyId={modifyId}
                     showSuccess={showSuccess} showError={showError}/>
             }
         </>

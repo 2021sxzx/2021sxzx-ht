@@ -10,10 +10,10 @@ export default function ItemManageRule(props) {
     // 记录正在修改的规则路径
     const [updatePath, setUpdatePath] = useState([])
 
-    const showError = ()=>{ 
+    const showError = (info)=>{ 
         Modal.error({
             title: '出错啦！',
-            content: '本次操作出现了错误，请稍后重试！',
+            content: info,
             centered: true
         })
     }

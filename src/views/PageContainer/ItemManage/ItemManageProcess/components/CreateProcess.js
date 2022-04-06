@@ -6,8 +6,12 @@ import api from '../../../../../api/rule';
 
 export default function CreateProcess(props){
     // 页面中用以展示的基础数据
-    const [taskCode, setTaskCode] = useState('11440115783785421N444211101A001')
-    const [taskName, setTaskName] = useState('-')
+    const [taskCode, setTaskCode] = useState('')
+    const [taskName, setTaskName] = useState('')
+    const [choosingGuide, setChoosingGuide] = useState(false)
+    const [enabledGuides, setEnabledGuides] = useState([])
+    const [guidePageNum, setGuidePageNum] = useState(0)
+    const [guideTableTotal, setGuideTableTotal] = useState(0)
     const [taskRule, setTaskRule] = useState(props.ruleRoot.nodeName + '\\')
     const [taskRegion, setTaskRegion] = useState(props.regionRoot.nodeName + '\\')
     // 选择过程中的已选择、待选择节点
@@ -31,7 +35,7 @@ export default function CreateProcess(props){
     const [chooseEnd, setChooseEnd] = useState(false)
     // 加载效果
     const [isLoading, setIsLoading] = useState(false)
-
+    
     useEffect(()=>{
         // 初始化分类规则树的根节点
         let currRuleTags = []
@@ -53,6 +57,75 @@ export default function CreateProcess(props){
         setChosenRules(currRules)
         setChosenRegions(currRegions)
     },[])
+
+    const guideColumns = [
+        {
+            title: '事项编码',
+            dataIndex: 'task_code',
+            key: 'task_code',
+            width: 320
+        },
+        {
+            title: '事项指南',
+            dataIndex: 'task_name',
+            key: 'task_name'
+        },
+        {
+            title: '选择',
+            key: 'choose',
+            width: 100,
+            render: (text, record)=>(
+                <Button type='primary' onClick={function(){
+                    setTaskCode(record.task_code)
+                    setTaskName(record.task_name)
+                    endChoosingGuide()
+                }}>
+                    选择
+                </Button>
+            )
+        }
+    ]
+
+    const startChoosingGuide = ()=>{
+        setChoosingGuide(true)
+        api.GetItemGuides({
+            task_status: 0,
+            page_size: 8,
+            page_num: 0
+        }).then(response=>{
+            let data = response.data.data
+            setGuideTableTotal(data.total)
+            setEnabledGuides(data.data)
+        }).catch(error=>{
+            props.showError('选择指南初始化失败')
+        })
+    }
+
+    const endChoosingGuide = ()=>{
+        setChoosingGuide(false)
+        setGuidePageNum(0)
+        setEnabledGuides([])
+    }
+
+    const handleGuideTableChange = (page)=>{
+        api.GetItemGuides({
+            task_status: 0,
+            page_size: 8,
+            page_num: page - 1
+        }).then(response=>{
+            setGuidePageNum(page - 1)
+            let data = response.data.data
+            setGuideTableTotal(data.total)
+            setEnabledGuides(data.data)
+        }).catch(error=>{
+            props.showError('选择指南换页失败')
+        })
+    }
+
+    /*useEffect(function(){
+        if (enabledGuides.length === 0) return
+        setChoosingGuide(true)
+    }, [enabledGuides])*/
 
     const chooseTag = (index, type)=>{
         // 暂不处理推荐事项
@@ -153,18 +226,27 @@ export default function CreateProcess(props){
             region_code: chosenRegions[chosenRegions.length - 1].nodeCode,
             region_id: chosenRegions[chosenRegions.length - 1].nodeId
         }]
-        console.log(chosenRegions[chosenRegions.length - 1])
         api.CreateItems({
             items: items
         }).then(response=>{
             setIsLoading(false)
+            props.showSuccess()
             props.setPageType(1)
         }).catch(error=>{
             setIsLoading(false)
+            console.log('绑定事项失败')
         })
     }
 
     const handleCreate = ()=>{
+        if (taskCode === ''){
+            Modal.info({
+                title: '未选择指南',
+                content: '请选择要绑定的事项指南！',
+                centered: true
+            })
+            return
+        }
         api.GetItems({
             rule_id: chosenRules[chosenRules.length - 1].nodeId,
             region_id: chosenRegions[chosenRegions.length - 1].nodeId
@@ -188,6 +270,7 @@ export default function CreateProcess(props){
                 })
             }
         }).catch(error=>{
+            props.showError('判断规则是否已存在失败！')
         })
     }
 
@@ -290,6 +373,10 @@ export default function CreateProcess(props){
             {/*<Modal centered destroyOnClose={true} title='自定义标签' visible={isCreating} onCancel={endCreating} onOk={finishCreating}>
                 <Input id='creatingInput' placeholder='请输入自定义标签名' size='middle' onChange={handleCreatingInputChange}/>
             </Modal>*/}
+            <Modal width={800} centered destroyOnClose={true} title='选择指南' visible={choosingGuide} footer={false} onCancel={endChoosingGuide}>
+                <Table class={style.guideTable} columns={guideColumns} dataSource={enabledGuides} rowKey='task_code'
+                    pagination={{total: guideTableTotal, onChange: handleGuideTableChange, current: guidePageNum + 1, showSizeChanger: false, pageSize: 8}}/>
+            </Modal>
 
             <div className={style.ruleItem}>
                 <div className={style.itemTitle}>
@@ -305,7 +392,10 @@ export default function CreateProcess(props){
                     事项指南：
                 </div>
                 <div className={style.itemContent}>
-                    <Button size='small' type='primary'>绑定指南</Button>
+                    <div className={style.guide}>
+                        <Button size='small' type='primary' onClick={startChoosingGuide}>绑定指南</Button>
+                        <div className={style.taskName}>{taskName}</div>
+                    </div>
                 </div>
             </div>
 

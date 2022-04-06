@@ -57,12 +57,6 @@ export default function ManageRegions(props) {
             width: 100
         },
         {
-            title: '状态',
-            dataIndex: 'status',
-            key: 'status',
-            width: 100
-        },
-        {
             title: '创建时间',
             key: 'create_time',
             width: 120,
@@ -201,7 +195,7 @@ export default function ManageRegions(props) {
             props.showSuccess()
         }).catch(error=>{
             // 删除报错时，弹出报错框并重新加载数据
-            props.showError()
+            props.showError('删除规则失败！')
             props.getRegionTree()
         })
     }
@@ -223,6 +217,7 @@ export default function ManageRegions(props) {
             setTableData(table)
             setTableLoading(false)
         }).catch(error=>{
+            props.showError('获取规则失败！')
             setTableLoading(false)
         })
     }
@@ -246,6 +241,7 @@ export default function ManageRegions(props) {
             setTableData(table)
             setTableLoading(false)
         }).catch(error=>{
+            props.showError('搜索规则失败！')
             setTableLoading(false)
         })
     }
@@ -291,6 +287,7 @@ export default function ManageRegions(props) {
             setTableData(table)
             setTableLoading(false)
         }).catch(error=>{
+            props.showError('换页时获取规则失败！')
             setTableLoading(false)
         })
     }
@@ -298,6 +295,7 @@ export default function ManageRegions(props) {
     useEffect(function(){
         // 避开初始化时执行查询
         for (let key in props.regionTree){
+            setCurrent(0)
             getRegions()
             // regionTree初始化完毕前不能进行节点创建，否则会报错
             setUnableCreate(false)

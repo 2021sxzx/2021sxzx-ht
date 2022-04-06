@@ -64,7 +64,7 @@ export default function ManageGuide(props) {
             title: '事项指南编码',
             dataIndex: 'task_code',
             key: 'task_code',
-            width: 310
+            width: 320
         },
         {
             title: '事项指南',
@@ -236,7 +236,7 @@ export default function ManageGuide(props) {
             })
             detailTable.push({
                 'detailType': '自助终端',
-                'detailInfo': data.wsyy
+                'detailInfo': data.zzzd
             })
             detailTable.push({
                 'detailType': '咨询电话',
@@ -259,7 +259,7 @@ export default function ManageGuide(props) {
             })
             setGuideDetail(detailTable)
         }).catch(error=>{
-
+            props.showError('获取事项详情失败！')
         })
     }
 
@@ -276,7 +276,7 @@ export default function ManageGuide(props) {
     }, [guideDetail])
 
     const getItemGuides = ()=>{
-        // 获取所有事项规则
+        // 获取所有事项指南
         api.GetItemGuides({
             page_num: 0,
             page_size: 10
@@ -289,6 +289,7 @@ export default function ManageGuide(props) {
             setTableData(guides)
             setTableLoading(false)
         }).catch(error=>{
+            props.showError('获取指南失败！')
             setTableLoading(false)
         })
     }
@@ -343,8 +344,7 @@ export default function ManageGuide(props) {
             props.showSuccess()
         }).catch(error=>{
             // 删除报错时，弹出报错框并重新加载数据
-            props.showError()
-            console.log(error)
+            props.showError('删除指南失败！')
             getItemGuides()
         })
     }
@@ -356,7 +356,6 @@ export default function ManageGuide(props) {
         let totalData = data
         totalData['page_num'] = 0
         totalData['page_size'] = currPageSize
-        console.log(totalData)
         api.GetItemGuides(totalData).then(response=>{
             let guides = response.data.data.data
             setCurrent(0)
@@ -367,6 +366,7 @@ export default function ManageGuide(props) {
             setTableData(guides)
             setTableLoading(false)
         }).catch(error=>{
+            props.showError('搜索指南失败！')
             setTableLoading(false)
         })
     }
@@ -375,12 +375,61 @@ export default function ManageGuide(props) {
         api.GetItemGuide({
             task_code: id
         }).then(response=>{
-            // TODO: 处理获取的itemGuide
+            let data = response.data.data
+            let tempGuideContent = {}
+            tempGuideContent['guideName'] = data.task_name
+            tempGuideContent['guideCode'] = data.task_code
+            tempGuideContent['guideContent'] = data.apply_content
+            let tempAccord = []
+            if (data.legal_basis){
+                for (let i = 0; i < data.legal_basis.length; i++){
+                    tempAccord.push(data.legal_basis[i].name)
+                }
+            }
+            tempGuideContent['guideAccord'] = tempAccord
+            tempGuideContent['guideCondition'] = data.conditions
+            let tempMaterial = []
+            if (data.submit_documents){
+                for (let i = 0; i < data.submit_documents.length; i++){
+                    tempMaterial.push(data.submit_documents[i].materials_name)
+                }
+            }
+            tempGuideContent['guideMaterial'] = tempMaterial
+            tempGuideContent['legalPeriod'] = data.legal_period
+            tempGuideContent['legalType'] = data.legal_period_type ? data.legal_period_type : '0'
+            tempGuideContent['promisedPeriod'] = data.promised_period
+            tempGuideContent['promisedType'] = data.promised_period_type ? data.promised_period_type : '0'
+            let tempWindow = []
+            let tempPhone = []
+            let tempAddress = []
+            if (data.windows){
+                for (let i = 0; i < data.windows.length; i++){
+                    tempWindow.push(data.windows[i].name)
+                    tempPhone.push(data.windows[i].phone)
+                    tempAddress.push(data.windows[i].address)
+                }
+            }
+            tempGuideContent['guidePhone'] = tempPhone
+            tempGuideContent['guideWindow'] = tempWindow
+            tempGuideContent['guideAddress'] = tempAddress
+            tempGuideContent['guidePlatform'] = data.zxpt
+            tempGuideContent['guidePCAddress'] = data.wsyy
+            tempGuideContent['guidePEAddress'] = data.mobile_applt_website
+            tempGuideContent['guideSelfmadeAddress'] = data.zzzd
+            tempGuideContent['guideQRCode'] = data.qr_code
+            let tempServiceType = []
+            if (data.service_object_type){
+                let tempData = data.service_object_type.split(',')
+                for (let i = 0; i < tempData; i++){
+                    tempServiceType.push(parseInt(tempData[i]))
+                }
+            }
+            tempGuideContent['guideServiceType'] = tempServiceType
+
             props.setModifyId(id)
             props.setModifyContent(tempGuideContent)
-            props.setPageType(2)
         }).catch(error=>{
-            props.showError()
+            props.showError('编辑指南时获取指南详情失败！')
         }) 
     }
 
@@ -416,6 +465,7 @@ export default function ManageGuide(props) {
             setTableData(guides)
             setTableLoading(false)
         }).catch(error=>{
+            props.showError('换页时获取指南失败！')
             setTableLoading(false)
         })
     }

@@ -10,10 +10,10 @@ export default function ItemManageRegion(props) {
     // 记录正在修改的事项规则的id
     const [updatePath, setUpdatePath] = useState([])
 
-    const showError = ()=>{
+    const showError = (info)=>{
         Modal.error({
             title: '出错啦！',
-            content: '本次操作出现了错误，请稍后重试！',
+            content: info,
             centered: true
         })
     }

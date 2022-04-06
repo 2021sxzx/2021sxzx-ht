@@ -11,10 +11,10 @@ export default function ItemManageProcess(props) {
     const [modifyId, setModifyId] = useState('')
     const [modifyContent, setModifyContent] = useState({})
 
-    const showError = ()=>{
+    const showError = (info)=>{
         Modal.error({
             title: '出错啦！',
-            content: '本次操作出现了错误，请稍后重试！',
+            content: info,
             centered: true
         })
     }

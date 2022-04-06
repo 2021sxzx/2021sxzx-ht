@@ -123,6 +123,10 @@ const api ={
         return service.request({
             method: "post",
             url: "/v1/createItemGuide",
+            //processData: false,
+            headers: {
+                contentType: 'multipart/form-data'
+            },
             data
         })
     },

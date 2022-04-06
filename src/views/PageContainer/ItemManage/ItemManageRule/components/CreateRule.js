@@ -248,7 +248,9 @@ export default function CreateRule(props){
                 props.createRuleSimulate(rules)
                 setRealId(dict[tempNodeId].rule_id)
             }).catch(error=>{
-                returnError()
+                props.getRuleTree()
+                props.showError('创建规则节点失败！')
+                props.setPageType(1)
             })
         }
     }
@@ -331,13 +333,6 @@ export default function CreateRule(props){
         setIsNameUpdated(true)
     }
 
-    const returnError = ()=>{
-        // 重新加载规则、返回管理页面并报错
-        props.getRuleTree()
-        props.showError()
-        props.setPageType(1)
-    }
-
     const createRules = (data)=>{
         // 调用创建规则接口
         api.CreateRules(data).then(response=>{
@@ -358,7 +353,9 @@ export default function CreateRule(props){
             props.setPageType(1)
         }).catch(error=>{
             // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
-            returnError()
+            props.getRuleTree()
+            props.showError('创建规则失败！')
+            props.setPageType(1)
         })
     }
 
@@ -370,8 +367,9 @@ export default function CreateRule(props){
             props.setPageType(1)
         }).catch(error=>{
             // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
-            returnError()
-            console.log(error)
+            props.getRuleTree()
+            props.showError('修改规则失败！')
+            props.setPageType(1)
         })
     }
 

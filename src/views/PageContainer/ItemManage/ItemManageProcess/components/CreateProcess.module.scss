@@ -16,6 +16,20 @@
     display: block;
 }
 
+.guide {
+    display: flex;
+}
+
+.guideTable {
+    white-space: pre-wrap; 
+    word-wrap: break-word; 
+    word-break: break-all;
+}
+
+.taskName {
+    margin-left: 10px;
+}
+
 .ruleText{
     color: #F59A23;
     width: 1000px;
