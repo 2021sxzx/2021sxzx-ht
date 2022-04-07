@@ -209,7 +209,6 @@ export default function CommentManageList() {
     const getComment = (data) => {
         api.GetComment(data).then(response => {
             setTableData(response.data.data)
-            console.log('response.data.data=', response.data.data)
         }).catch(error => {
         })
     }
@@ -224,8 +223,11 @@ export default function CommentManageList() {
     }
     // 获取所有评论表格的数据，组件每渲染一次，该函数就自动执行一次。
     useEffect(() => {
-        getComment({})
-    }, [])
+        getComment({
+          pageNum: 1
+        })
+    }, []);
+
     return (
         <div>
             <Space direction="vertical" size={12}>
