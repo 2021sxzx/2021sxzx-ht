@@ -79,14 +79,14 @@ export default function ManageProcess(props) {
         },
         {
             title: '业务部门',
-            dataIndex: 'department',
-            key: 'department',
+            dataIndex: 'department_name',
+            key: 'department_name',
             width: 100
         },
         {
             title: '创建人',
-            dataIndex: 'creator',
-            key: 'creator',
+            dataIndex: 'creator_name',
+            key: 'creator_name',
             width: 100
         },
         {
@@ -225,15 +225,17 @@ export default function ManageProcess(props) {
 
     const getItems = ()=>{
         setTableLoading(true)
+        let data = originData
+        data['page_num'] = current
+        data['page_size'] = currPageSize
         // 获取所有事项规则
-        api.GetItems({
-            page_num: current,
-            page_size: currPageSize
-        }).then(response=>{
+        api.GetItems(data).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
             for (let i = 0; i < items.length; i++){
                 // 规则路径生成、状态码转状态名
+                items[i]['creator_name'] = items[i].creator.name
+                items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
                 items[i]['status'] = statusName[items[i].item_status]
             }
@@ -297,7 +299,6 @@ export default function ManageProcess(props) {
             setCurrent(0)
             props.showError('解绑事项失败！')
         })
-        setDeletingIds([])
     }
 
     const changeItemStatus = (item_id, next_status)=>{
@@ -320,15 +321,19 @@ export default function ManageProcess(props) {
     }
 
     const searchItems = (data)=>{
+        setTableLoading(true)
         // 搜索事项
-        setCurrent(0)
+        setOriginData(data)
         let totalData = data
         totalData['page_num'] = 0
         totalData['page_size'] = currPageSize
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
+            setCurrent(0)
             for (let i = 0; i < items.length; i++){
                 // 规则路径生成、状态码转状态名
+                items[i]['creator_name'] = items[i].creator.name
+                items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
                 items[i]['status'] = statusName[items[i].item_status]
             }
@@ -355,6 +360,8 @@ export default function ManageProcess(props) {
             setTotalSize(response.data.data.total)
             for (let i = 0; i < items.length; i++){
                 // 规则路径生成、状态码转状态名
+                items[i]['creator_name'] = items[i].creator.name
+                items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
                 items[i]['status'] = statusName[items[i].item_status]
             }
@@ -380,6 +387,8 @@ export default function ManageProcess(props) {
             let items = response.data.data.data
             for (let i = 0; i < items.length; i++){
                 // 规则路径生成、状态码转状态名
+                items[i]['creator_name'] = items[i].creator.name
+                items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
                 items[i]['status'] = statusName[items[i].item_status]
             }
@@ -391,7 +400,7 @@ export default function ManageProcess(props) {
         })
     }
 
-    const getItemStatusScheme = ()=>{
+    const getItemstatusScheme = ()=>{
         api.GetItemStatusScheme({}).then(response=>{
             // 获取状态表
             let scheme = response.data.data
@@ -541,7 +550,7 @@ export default function ManageProcess(props) {
     useEffect(()=>{
         for (let key in props.regionNodes){
             for (let key in props.ruleNodes){
-                getItemStatusScheme()
+                getItemstatusScheme()
                 break
             }
             break
@@ -549,10 +558,29 @@ export default function ManageProcess(props) {
     }, [props.regionNodes, props.ruleNodes])
 
     useEffect(()=>{
+        // 若是跳转过来进行解绑的，处理绑定数据
+        for (let key in props.bindedData){
+            for (let key in statusName){
+                let data = {}
+                if ('rule_id' in props.bindedData){
+                    data['rule_id'] = props.bindedData.rule_id
+                }
+                if ('region_code' in props.bindedData){
+                    data['region_code'] = props.bindedData.region_code
+                }
+                setOriginData(data)
+                searchItems(data)
+                // 只设置一次
+                props.setBindedData({})
+                break
+            }
+            return
+        }
         for (let key in statusName){
             setCurrent(0)
-            getItems()
             setUnableCreate(false)
+            setOriginData({})
+            getItems()
             break
         }      
     }, [statusName])
@@ -564,7 +592,8 @@ export default function ManageProcess(props) {
                     destroyOnClose={true} onCancel={endShowing} footer={null}>
                     <Table style={{whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-all'}} columns={detailColumns} dataSource={guideDetail} rowKey='detailType'/>
                 </Modal>
-                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData}></SelectForm>
+                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData}
+                    bindedData={props.bindedData} setBindedData={props.setBindedData} />
                 <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
                     <Button type='primary' disabled={unableCreate} onClick={handleCreate}>绑定事项</Button>
                     <Button type='primary' disabled={!isBatching}>批量导出</Button>

@@ -191,6 +191,7 @@ export default function CreateRule(props){
             onOk: function(){
                 setIsLoading(true)
                 let list = {
+                    user_id: props.userId,
                     rules: newNodeList
                 }
                 createRules(list)
@@ -229,6 +230,7 @@ export default function CreateRule(props){
         else{
             // 若有新建节点，则先创建节点，再修改
             let data = {
+                user_id: props.userId,
                 rules: newNodeList
             }
             let tempNodeId = newNodeList[newNodeList.length - 1].temp_id
@@ -353,6 +355,8 @@ export default function CreateRule(props){
         }).catch(error=>{
             // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
             props.getRuleTree()
+            setIsLoading(false)
+            console.log(error)
             props.showError('创建规则失败！')
         })
     }
@@ -366,6 +370,7 @@ export default function CreateRule(props){
         }).catch(error=>{
             // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
             props.getRuleTree()
+            setIsLoading(false)
             props.showError('修改规则失败！')
         })
     }

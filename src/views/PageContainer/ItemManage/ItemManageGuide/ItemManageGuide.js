@@ -39,7 +39,7 @@ export default function ItemManageGuide(props) {
             {
                 pageType === 2 &&
                 <CreateGuide setPageType={setPageType} modifyContent={modifyContent} modifyId={modifyId}
-                    showSuccess={showSuccess} showError={showError}/>
+                    showSuccess={showSuccess} showError={showError} userId={props.userId}/>
             }
         </>
     )

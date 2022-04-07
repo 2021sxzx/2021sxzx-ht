@@ -8,7 +8,7 @@ import ItemManageGuide from './ItemManageGuide/ItemManageGuide'
 import ItemManageProcess from './ItemManageProcess/ItemManageProcess'
 import Cookie from '../../../utils/Cookie'
 
-export default function ItemManage() {
+export default function ItemManage(props) {
     // 父子组件路径匹配
     const {path} = useRouteMatch()
     const [userId, setUserId] = useState('')
@@ -22,11 +22,11 @@ export default function ItemManage() {
     })
     const [regionRoot, setRegionRoot] = useState([])
 
-    const [ruleDict, setRuleDict] = useState({})
-    const [regionDict, setRegionDict] = useState({})
     // 临时存储获取到的所有节点，用于生成规则或区划路径
     const [ruleNodes, setRuleNodes] = useState({})
     const [regionNodes, setRegionNodes] = useState({})
+    // 处理需要展示的绑定信息
+    const [bindedData, setBindedData] = useState({})
 
     const getRuleTree = ()=>{
         // 构建父子关系树
@@ -104,26 +104,6 @@ export default function ItemManage() {
             }
             setRegionTree(tree)
         }).catch(error=>{
-        })
-    }
-
-    const buildRuleNRegionTree = ()=>{
-        api.GetItems({}).then(response=>{
-            let items = response.data.data
-            let ruleDict = {}
-            let regionDict = {}
-            for (let i = 0; i < items.length; i++){
-                if (!(items[i].rule_id in ruleDict)){
-                    ruleDict[items[i].rule_id] = true
-                }
-                if (!(items[i]._id in regionDict)){
-                    regionDict[items[i]._id] = true
-                }
-            }
-            setRuleDict(ruleDict)
-            setRegionDict(regionDict)
-        }).catch(error=>{
-
         })
     }
 
@@ -331,7 +311,11 @@ export default function ItemManage() {
         getRuleTree()
         getRegionTree()
         // 获取用户id
-        setUserId(Cookie.getAndResetCookie('userId'))
+        setUserId(localStorage.getItem('_id'))
+    }
+
+    const jumpToProcess = ()=>{
+        props.history.push(path + '/process')
     }
     
     useEffect(()=>{
@@ -342,23 +326,24 @@ export default function ItemManage() {
         <div>
             <Switch>
                 <Route path={`${path}/process`} 
-                    render={()=>(<ItemManageProcess regionNodes={regionNodes} ruleNodes={ruleNodes} ruleDict={ruleDict} userId={userId}
-                    regionTree={regionTree} ruleTree={ruleTree} regionRoot={regionRoot} ruleRoot={ruleRoot} init={init}/>)}/>
+                    render={()=>(<ItemManageProcess regionNodes={regionNodes} ruleNodes={ruleNodes} userId={userId} 
+                        bindedData={bindedData} setBindedData={setBindedData} init={init}
+                        regionTree={regionTree} ruleTree={ruleTree} regionRoot={regionRoot} ruleRoot={ruleRoot}/>)}/>
 
                 <Route path={`${path}/guide`} 
-                    render={()=>(<ItemManageGuide regionDict={regionDict} userId={userId}/>)}/>
+                    render={()=>(<ItemManageGuide userId={userId}/>)}/>
 
                 <Route path={`${path}/item-rule/rule`} 
-                    render={()=>(<ItemManageRule ruleNodes={ruleNodes} ruleDict={ruleDict}
-                        ruleTree={ruleTree} ruleRoot={ruleRoot} userId={userId}
+                    render={()=>(<ItemManageRule ruleNodes={ruleNodes} ruleTree={ruleTree} ruleRoot={ruleRoot} userId={userId} 
+                        setBindedData={setBindedData} bindedData={bindedData} jumpToProcess={jumpToProcess}
                         getRuleTree={getRuleTree} createRuleSimulate={createRuleSimulate} 
                         deleteRuleSimulate={deleteRuleSimulate} updateRuleSimulate={updateRuleSimulate}/>)}/>
 
                 <Route path={`${path}/item-rule/region`} 
-                    render={()=>(<ItemManageRegion regionNodes={regionNodes} regionDict={regionDict}
-                        regionTree={regionTree} regionRoot={regionRoot} userId={userId} getRegionTree={getRegionTree}
+                    render={()=>(<ItemManageRegion regionNodes={regionNodes} regionTree={regionTree} regionRoot={regionRoot} userId={userId} 
+                        setBindedData={setBindedData} bindedData={bindedData} jumpToProcess={jumpToProcess}
                         createRegionSimulate={createRegionSimulate} updateRegionSimulate={updateRegionSimulate}
-                        deleteRegionSimulate={deleteRegionSimulate}/>)}/>
+                        deleteRegionSimulate={deleteRegionSimulate} getRegionTree={getRegionTree}/>)}/>
             </Switch>
         </div>
         

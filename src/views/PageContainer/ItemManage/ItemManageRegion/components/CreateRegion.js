@@ -179,6 +179,7 @@ export default function CreateRegion(props){
             onOk: function(){
                 setIsLoading(true)
                 createRegions({
+                    user_id: props.userId,
                     region_code: taskCode,
                     region_name: nodeName,
                     region_level: chosenTags.length,
@@ -250,6 +251,7 @@ export default function CreateRegion(props){
         }).catch(error=>{
             // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
             props.getRegionTree()
+            setIsLoading(false)
             props.showError('创建规则失败！')
         })
     }
@@ -260,13 +262,13 @@ export default function CreateRegion(props){
         }
         // 调用创建规则接口
         api.UpdateRegions(regions).then(response=>{
-            //props.getRegionTree()
             props.updateRegionSimulate(data)
             props.showSuccess()
             props.setPageType(1)
         }).catch(error=>{
             // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
             props.getRegionTree()
+            setIsLoading(false)
             props.showError('更新规则失败！')
         })
     }

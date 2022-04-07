@@ -12,6 +12,8 @@ export default function SelectForm(props){
     const [item_name, setItemRuleName] = useState('')
     const [department, setDepartment] = useState('')
     const [creator, setCreator] = useState('')
+    const [rule_id, setRuleId] = useState('')
+    const [region_code, setRegionCode] = useState('')
 
     const handleTaskCodeChange = (e)=>{
         setTaskCode(e.target.value)
@@ -25,16 +27,64 @@ export default function SelectForm(props){
     const handleCreatorChange = (e)=>{
         setCreator(e.target.value)
     }
+    const handleRuleIdChange = (e)=>{
+        setRuleId(e.target.value)
+    }
+    const handleRegionCodeChange = (e)=>{
+        setRegionCode(e.target.value)
+    }
+
+    useEffect(function(){
+        // 初始化搜索栏中的信息
+        for (let key in props.bindedData){
+            if ('rule_id' in props.bindedData){
+                let rule_id = parseIds(props.bindedData.rule_id)
+                setRuleId(rule_id)
+            }
+            if ('region_code' in props.bindedData){
+                let region_code = parseIds(props.bindedData.region_code)
+                setRegionCode(region_code)
+            }
+            break
+        }
+    }, [props.bindedData])
+
+    const splitIds = (id)=>{
+        let ids = []
+        let noEmpty = id.replace(/\s*/g, '')
+        ids = noEmpty.split(',')
+        return ids
+    }
+
+    const parseIds = (ids)=>{
+        let result = ''
+        for (let i = 0; i < ids.length; i++){
+            if (result !== '') result +=','
+            result += ids[i]
+        }
+        return result
+    }
 
     const Search = ()=>{
         const data = {}
         if (start_time !== '') data['start_time'] = start_time
         if (end_time !== '') data['end_time'] = end_time
-        if (task_code !== '') data['task_code'] = task_code
+        if (task_code !== ''){
+            let code = splitIds(task_code)
+            data['task_code'] = code
+        } 
         if (item_name !== '') data['item_name'] = item_name
-        if (department !== '') data['department'] = department
-        if (creator !== '') data['creator'] = creator
-        clear()
+        if (department !== '') data['department_name'] = department
+        if (creator !== '') data['creator_name'] = creator
+        if (rule_id !== ''){
+            let id = splitIds(rule_id)
+            data['rule_id'] = id
+        } 
+        if (region_code !== ''){
+            let code = splitIds(region_code)
+            data['region_code'] = code
+        } 
+        // clear()
         props.setOriginData(data)
         props.getSearch(data)
     }
@@ -57,11 +107,15 @@ export default function SelectForm(props){
         document.getElementById('itemNameInput').value = ''
         document.getElementById('departmentInput').value = ''
         document.getElementById('creatorInput').value = ''
+        document.getElementById('ruleIdInput').value = ''
+        document.getElementById('regionCodeInput').value = ''
         document.getElementById('timeInput').value = [null, null]
         setTaskCode('')
         setItemRuleName('')
         setDepartment('')
         setCreator('')
+        setRuleId('')
+        setRegionCode('')
         setStartTime('')
         setEndTime('')
         setTime([null, null])
@@ -98,11 +152,19 @@ export default function SelectForm(props){
                         placeholder='请输入创建人' size='middle' onChange={handleCreatorChange}></Input>
                 </Form.Item>
 
-                <Form.Item label='起始时间' style={{marginTop: 10, width: '35%'}}>
+                <Form.Item label='规则编码' style={{marginTop: 10, width: '25%'}}>
+                    <Input id='ruleIdInput' value={rule_id}
+                        placeholder='请输入业务规则编码' size='middle' onChange={handleRuleIdChange}></Input>
+                </Form.Item>
+                <Form.Item label='区划编码' style={{marginTop: 10, width: '25%'}}>
+                    <Input id='regionCodeInput' value={region_code}
+                        placeholder='请输入区划规则编码' size='middle' onChange={handleRegionCodeChange}></Input>
+                </Form.Item>
+                <Form.Item label='起始时间' style={{marginTop: 10, width: '32%'}}>
                     <RangePicker id='timeInput' value={time} style={{width: '100%'}} 
                         onChange={handleDateChange}/>      
                 </Form.Item>
-                <Form.Item style={{marginLeft: '50%', marginTop: 10, width: '5%', minWidth: 62}}>
+                <Form.Item style={{marginTop: 10, width: '5%', minWidth: 62}}>
                     <Button type='default' onClick={reset} style={{width: '100%'}}>重置</Button>
                 </Form.Item>
                 <Form.Item style={{marginTop: 10, width: '5%', minWidth: 62}}>

@@ -227,6 +227,7 @@ export default function CreateProcess(props){
             region_id: chosenRegions[chosenRegions.length - 1].nodeId
         }]
         api.CreateItems({
+            user_id: props.userId,
             items: items
         }).then(response=>{
             setIsLoading(false)

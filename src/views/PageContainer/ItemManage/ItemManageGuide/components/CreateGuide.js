@@ -284,6 +284,7 @@ export default function CreateGuide(props){
     // 数据预处理
     const dataProcessing = ()=>{
         let data = {
+            user_id: props.userId,
             task_name: guideName,
             wsyy: guidePCAddress,
             service_object_type: guideServiceType,
@@ -352,6 +353,7 @@ export default function CreateGuide(props){
             props.showSuccess()
             props.setPageType(1)
         }).catch(error=>{
+            console.log(error)
             props.showError('编辑指南失败！')
             props.setPageType(1)
         })

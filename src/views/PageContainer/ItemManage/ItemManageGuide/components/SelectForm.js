@@ -32,9 +32,9 @@ export default function SelectForm(props){
         if (end_time !== '') data['end_time'] = end_time
         if (task_code !== '') data['task_code'] = task_code
         if (task_name !== '') data['task_name'] = task_name
-        if (department !== '') data['department'] = department
-        if (creator !== '') data['creator'] = creator
-        clear()
+        if (department !== '') data['department_name'] = department
+        if (creator !== '') data['creator_name'] = creator
+        //clear()
         props.getSearch(data)
     }
 

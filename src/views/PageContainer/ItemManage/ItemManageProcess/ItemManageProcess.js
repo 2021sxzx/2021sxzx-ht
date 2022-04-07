@@ -27,8 +27,10 @@ export default function ItemManageProcess(props) {
         <>
             {
                 pageType === 1 &&
-                <ManageProcess setPageType={setPageType} setModifyId={setModifyId} ruleNodes={props.ruleNodes} regionNodes={props.regionNodes}
-                    setModifyContent={setModifyContent} showError={showError} userId={props.userId} showSuccess={showSuccess}/>
+                <ManageProcess setPageType={setPageType} setModifyId={setModifyId} setModifyContent={setModifyContent}
+                    ruleNodes={props.ruleNodes} regionNodes={props.regionNodes} userId={props.userId}
+                    showError={showError} showSuccess={showSuccess}
+                    bindedData={props.bindedData} setBindedData={props.setBindedData}/>
             }
             {
                 pageType === 2 &&

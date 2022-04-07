@@ -73,14 +73,14 @@ export default function ManageGuide(props) {
         },
         {
             title: '业务部门',
-            dataIndex: 'department',
-            key: 'department',
+            dataIndex: 'department_name',
+            key: 'department_name',
             width: 125
         },
         {
             title: '创建人',
-            dataIndex: 'creator',
-            key: 'creator',
+            dataIndex: 'creator_name',
+            key: 'creator_name',
             width: 100
         },
         {
@@ -276,19 +276,23 @@ export default function ManageGuide(props) {
     }, [guideDetail])
 
     const getItemGuides = ()=>{
+        setTableLoading(true)
+        let data = originData
+        data['page_num'] = current
+        data['page_size'] = currPageSize
         // 获取所有事项指南
-        api.GetItemGuides({
-            page_num: current,
-            page_size: 10
-        }).then(response=>{
+        api.GetItemGuides(data).then(response=>{
             let guides = response.data.data.data
             setTotalSize(response.data.data.total)
             for (let i = 0; i < guides.length; i++){
+                guides[i]['creator_name'] = guides[i].creator.name
+                guides[i]['department_name'] = guides[i].creator.department_name
                 guides[i]['status'] = guides[i].task_status === 0 ? '未绑定' : '已绑定'
             }
             setTableData(guides)
             setTableLoading(false)
         }).catch(error=>{
+            console.log(error)
             props.showError('获取指南失败！')
             setTableLoading(false)
         })
@@ -344,6 +348,7 @@ export default function ManageGuide(props) {
         }).catch(error=>{
             // 删除报错时，弹出报错框并重新加载数据
             props.showError('删除指南失败！')
+            setCurrent(0)
             getItemGuides()
         })
     }
@@ -360,6 +365,8 @@ export default function ManageGuide(props) {
             setCurrent(0)
             setTotalSize(response.data.data.total)
             for (let i = 0; i < guides.length; i++){
+                guides[i]['creator_name'] = guides[i].creator.name
+                guides[i]['department_name'] = guides[i].creator.department_name
                 guides[i]['status'] = guides[i].task_status === 0 ? '未绑定' : '已绑定'
             }
             setTableData(guides)
@@ -440,7 +447,24 @@ export default function ManageGuide(props) {
         // 回 归 本 源
         setOriginData({})
         setCurrent(0)
-        getItemGuides()
+        api.GetItemGuides({
+            page_num: 0,
+            page_size: currPageSize
+        }).then(response=>{
+            let guides = response.data.data.data
+            setTotalSize(response.data.data.total)
+            for (let i = 0; i < guides.length; i++){
+                guides[i]['creator_name'] = guides[i].creator.name
+                guides[i]['department_name'] = guides[i].creator.department_name
+                guides[i]['status'] = guides[i].task_status === 0 ? '未绑定' : '已绑定'
+            }
+            setTableData(guides)
+            setTableLoading(false)
+        }).catch(error=>{
+            console.log(error)
+            props.showError('重置失败！')
+            setTableLoading(false)
+        })
     }
 
     const changePage = (page, pageSize)=>{
@@ -457,6 +481,8 @@ export default function ManageGuide(props) {
         api.GetItemGuides(totalData).then(response=>{
             let guides = response.data.data.data
             for (let i = 0; i < guides.length; i++){
+                guides[i]['creator_name'] = guides[i].creator.name
+                guides[i]['department_name'] = guides[i].creator.department_name
                 guides[i]['status'] = guides[i].task_status === 1 ? '已绑定' : '未绑定'
             }
             setTableData(guides)
