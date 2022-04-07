@@ -278,7 +278,7 @@ export default function ManageGuide(props) {
     const getItemGuides = ()=>{
         // 获取所有事项指南
         api.GetItemGuides({
-            page_num: 0,
+            page_num: current,
             page_size: 10
         }).then(response=>{
             let guides = response.data.data.data
@@ -339,7 +339,6 @@ export default function ManageGuide(props) {
         } 
         // 根据事项规则id删除事项规则，删除完之后重新载入事项规则
         api.DeleteItemGuides(data).then(response=>{ 
-            setCurrent(0)
             getItemGuides()
             props.showSuccess()
         }).catch(error=>{
@@ -417,12 +416,10 @@ export default function ManageGuide(props) {
             tempGuideContent['guidePEAddress'] = data.mobile_applt_website
             tempGuideContent['guideSelfmadeAddress'] = data.zzzd
             tempGuideContent['guideQRCode'] = data.qr_code
+            let type = data.service_object_type.split(',')
             let tempServiceType = []
-            if (data.service_object_type){
-                let tempData = data.service_object_type.split(',')
-                for (let i = 0; i < tempData; i++){
-                    tempServiceType.push(parseInt(tempData[i]))
-                }
+            for (let i = 0; i < type.length; i++){
+                tempServiceType.push(parseInt(type[i]))
             }
             tempGuideContent['guideServiceType'] = tempServiceType
 
@@ -471,6 +468,7 @@ export default function ManageGuide(props) {
     }
 
     useEffect(()=>{
+        setCurrent(0)
         getItemGuides()
     }, [])
 

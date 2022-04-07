@@ -240,6 +240,7 @@ export default function ManageProcess(props) {
             setTableLoading(false)
             setTableData(items)
         }).catch(error=>{
+            props.showError('获取事项失败！')
             setTableLoading(false)
         })
     }
@@ -292,8 +293,9 @@ export default function ManageProcess(props) {
             props.showSuccess()
         }).catch(error=>{
             // 删除报错时，弹出报错框并重新加载数据
-            console.log(error)
-            props.showError()
+            getItems()
+            setCurrent(0)
+            props.showError('解绑事项失败！')
         })
         setDeletingIds([])
     }
@@ -311,7 +313,9 @@ export default function ManageProcess(props) {
             // 更新完毕后重新获取事项
             getItems()
         }).catch(error=>{
-            console.log(error)
+            getItems()
+            setCurrent(0)
+            props.showError('更新事项状态失败！')
         })
     }
 
@@ -332,6 +336,7 @@ export default function ManageProcess(props) {
             setTableData(items)
             setTableLoading(false)
         }).catch(error=>{
+            props.showError('搜索事项失败！')
             setTableLoading(false)
         })
     }
@@ -356,6 +361,7 @@ export default function ManageProcess(props) {
             setTableLoading(false)
             setTableData(items)
         }).catch(error=>{
+            props.showError('重置失败！')
             setTableLoading(false)
         })
     }
@@ -380,6 +386,7 @@ export default function ManageProcess(props) {
             setTableData(items)
             setTableLoading(false)
         }).catch(error=>{
+            props.showError('换页时获取事项信息失败！')
             setTableLoading(false)
         })
     }
@@ -399,7 +406,7 @@ export default function ManageProcess(props) {
             setStatusButtons(buttons)
             setStatusName(keyToWord)
         }).catch(error=>{
-
+            props.showError('初始化状态表失败！')
         })
     }
 
@@ -543,6 +550,7 @@ export default function ManageProcess(props) {
 
     useEffect(()=>{
         for (let key in statusName){
+            setCurrent(0)
             getItems()
             setUnableCreate(false)
             break

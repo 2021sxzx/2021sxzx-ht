@@ -234,7 +234,7 @@ export default function CreateProcess(props){
             props.setPageType(1)
         }).catch(error=>{
             setIsLoading(false)
-            console.log('绑定事项失败')
+            props.showError('绑定事项失败')
         })
     }
 
@@ -361,12 +361,6 @@ export default function CreateProcess(props){
         setRuleTags(props.regionRoot)
         setCurrRuleId(node.nodeId)
     }*/
-
-    const returnError = ()=>{
-        props.init()
-        props.showError()
-        props.setPageType(1)
-    }
 
     return (
         <Space direction='vertical' size={15}>

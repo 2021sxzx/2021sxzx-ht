@@ -6,11 +6,7 @@ import { MinusCircleOutlined } from '@ant-design/icons';
 
 export default function FormListPlus(props){
     const [data, setData] = useState(props.value)
-
-    useEffect(function(){
-        console.log(data)
-    },[data])
-
+    
     const handleChange = (input, index)=>{
         let tempData = []
         for (let i = 0; i < data.length; i++){

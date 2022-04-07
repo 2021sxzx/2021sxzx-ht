@@ -251,8 +251,6 @@ export default function CreateRegion(props){
             // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
             props.getRegionTree()
             props.showError('创建规则失败！')
-            console.log(error)
-            props.setPageType(1)
         })
     }
 
@@ -270,7 +268,6 @@ export default function CreateRegion(props){
             // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
             props.getRegionTree()
             props.showError('更新规则失败！')
-            props.setPageType(1)
         })
     }
 
