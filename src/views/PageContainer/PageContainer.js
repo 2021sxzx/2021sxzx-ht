@@ -25,6 +25,7 @@ import SystemManageFailure from './SystemManage/SystemManageFailure/SystemManage
 import MetaData from './SystemManage/MetaData/MetaData.js'
 import SystemManageBackup from './SystemManage/SystemManageBackup/SystemManageBackup.js'
 import NoPermission from './NoPermission/NoPermission.js'
+import DepartmentManagement from "./UserManage/departmentManagement/DepartmentManagement";
 
 const { Content } = Layout
 
@@ -59,6 +60,8 @@ export default function PageContainer() {
               <Route path="/user-manage/account" component={UserManageAccount} />
               {/* 角色管理 */}
               <Route path="/user-manage/role" component={UserManageRole} />
+              {/* 部门管理 */}
+              <Route path="/user-manage/department" component={DepartmentManagement} />
               <Route path="/system-manage/failure" component={SystemManageFailure}/>
               <Route path="/system-manage/meta-data" component={MetaData}/>
               <Route path="/system-manage/backup" component={SystemManageBackup}/>
