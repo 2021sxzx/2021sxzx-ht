@@ -1,9 +1,8 @@
-import React from 'react'
-import api from '../../../../api/rule';
+import React, { useEffect } from 'react'
 import ManageGuides from './components/ManageGuides'
 import CreateGuide from './components/CreateGuide'
 import {useState} from 'react'
-import {Modal} from 'antd'
+import {Modal, message} from 'antd'
 
 export default function ItemManageGuide(props) {
     // 页面的基础数据
@@ -11,24 +10,36 @@ export default function ItemManageGuide(props) {
     const [modifyId, setModifyId] = useState('')
     const [modifyContent, setModifyContent] = useState({})
 
-    const showError = ()=>{
+    const showError = (info)=>{
         Modal.error({
-            title: 'error',
-            content: 'error',
+            title: '出错啦',
+            content: info,
             centered: true
         })
     }
+
+    const showSuccess = ()=>{
+        message.success('操作成功！')
+    }
+
+    useEffect(function(){
+        for (let key in modifyContent){
+            setPageType(2)
+            break
+        }
+    }, [modifyContent])
 
     return (
         <>
             {
                 pageType === 1 &&
                 <ManageGuides setPageType={setPageType} setModifyId={setModifyId}
-                    setModifyContent={setModifyContent} showError={showError}/>
+                    setModifyContent={setModifyContent} showError={showError} showSuccess={showSuccess}/>
             }
             {
                 pageType === 2 &&
-                <CreateGuide setPageType={setPageType} modifyContent={modifyContent}/>
+                <CreateGuide setPageType={setPageType} modifyContent={modifyContent} modifyId={modifyId}
+                    showSuccess={showSuccess} showError={showError} userId={props.userId}/>
             }
         </>
     )

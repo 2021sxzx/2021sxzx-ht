@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 //全选之后有啥用，详情有啥用,。报警阈值不会做。处理按钮是用来修改的吗。删除没做。成功的提示没做。
+//点击处理之后，要刷新一下界面才能变为“已处理”
+//下一步，拿到表单信息
 import {
   Space,
   Form,
@@ -7,116 +9,79 @@ import {
   Button,
   Table,
   Checkbox,
-  Radio,Divider,Modal
+  Radio,Divider,Modal,Alert,Row,Col,Upload
 } from "antd";
-import { SyncOutlined } from "@ant-design/icons";
+import { UploadOutlined } from "@ant-design/icons";
 import api from "../../../../api/log";
-// const { RangePicker } = DatePicker;
-// const { Option } = Select;
-// function onChange(e) {
-//   console.log(`checked = ${e.target.checked}`);
-// }
+import emitter from "./ev"
+import FormItem from "antd/lib/form/FormItem";
 
-class DataBindCheckbox extends React.Component{
-  constructor(){
-      super()
-      this.state = {
-          value: false
-      }
-  }
-  handleChange(e){
-      this.setState({
-          value : e.target.value
-      })
-  }
-  
-  render(){
-      return(
-            <div>
-                <Checkbox value={this.state.value} onChange={this.handleChange.bind(this)}>bind</Checkbox>
-                <p>{this.state.value}</p>
-            </div>      
-      )
-  }
-}
-
-const SelectForm = (props) => {
-  const [form] = Form.useForm();
-  const [myself, setMyself] = useState(false);
-  const [today, setToday] = useState(false);
-  const [thisWeek, setThisWeek] = useState(false);
-
-  const handleToday=e=>{
-    setToday(true);
-    setThisWeek(false);
-    console.log("today:",today,".week:",thisWeek)
-  }
-  const handleWeek=e=>{
-    setToday(false);
-    setThisWeek(true);
-    console.log("week:",thisWeek,".today:",today)
-  }
-  const handleRadio=e=>{
-    console.log('radio checked',e.target.value)
-    if(e.target.value===1){
-      handleToday()
-    }
-    else if(e.target.value===2){
-      handleWeek()
-    }
-  }
-  const Search = () => {
-    const data = {
-      myself,
-      today,
-      thisWeek,
-    };
-    props.getSearch(data);
-  };
-  return (
-    <>
-      <Form form={form}>
-        <Form.Item>
-          <Button type="">查询日志</Button>
-          <Input style={{ width: 600 }}></Input>
-          {/* <Input style={{ width: 600 }} enterButton="查询日志"></Input> */}
-        </Form.Item>
-      </Form>
-      <Form layout={"inline"} form={form}>
-        <Form.Item>
-          <Space>
-            {/* <DataBindCheckbox></DataBindCheckbox> */}
-          <Checkbox onChange={(e)=>{setMyself(e.target.checked)}}>
-              查询操作人为您
-            </Checkbox>
-            <Radio.Group onChange={handleRadio}>
-            <Radio value={1}>
-              查询今天创建更新
-            </Radio>
-            <Radio value={2}>
-              查询本周创建更新
-            </Radio>
-            </Radio.Group>
-            <Button icon={<SyncOutlined />}>
-              高级查询
-            </Button>
-            <Button onClick={()=>{setMyself(false);setToday(false);setThisWeek(false);Search();}}>重置</Button>
-            <Button type="primary" onClick={Search}>
-              查询
-            </Button>
-          </Space>
-        </Form.Item>
-      </Form>
+const tableColumns = [
+  {
+    title: "故障名称",
+    dataIndex: "failure_name",
+    key: "failure_name",
+  },
+  {
+    title: "时间",
+    dataIndex: "create_time",
+    key: "create_time",
+  },
+  {
+    title: "操作描述",
+    dataIndex: "content",
+    key: "content",
+  },
+  {
+    title: "提交人",
+    key: "user_name",
+    dataIndex: "user_name",
+  },
+  {
+    // title:"详情",
+    key:"detail",
+    dataIndex: "detail",
+    render: (_,record,index) => (
+      <Space size="middle">
+      <HandleModal record={record}></HandleModal>
+      </Space>)
+  },{
+    key:"handle",
+    dataIndex: "handle",
+    render: (_,record,index) => (//参数分别为当前行的值，当前行数据，行索引
+      <>
+      <Space size="middle">
+        <Button style={{border:"1px solid blue"}} onClick={()=>{console.log(tableData1[index].content);tableData1[index].content='已处理'}}>
+        处理
+        </Button>
+      </Space>
+      {/* <HandleModal record={record}></HandleModal> */}
     </>
-  );
-};
-
+      )
+  },{
+    key:"delete",
+    dataIndex: "delete",
+    render: (_,record) => (
+      <Space size="middle">
+        <Button style={{border:"1px solid blue"}} onClick={()=>{deleteFuncElem(record)}}>删除</Button>
+      </Space>)
+  }
+];
 const tableData1=[
   {key:1,failure_name:"闪退",create_time:"2017-01-01",content:"闪选",user_name:"zyk"}
 ,  {key:2,failure_name:"重启",create_time:"2017-08-01",content:"dddd",user_name:"wlz"}
 ,  {key:3,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
+,  {key:4,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
+,  {key:5,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
+,  {key:6,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
+,  {key:7,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
+,  {key:8,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
+,  {key:9,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
+,  {key:10,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
+,  {key:11,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
+,  {key:12,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
 ]
-//弹窗Modal
+//详情的弹窗Modal
 const HandleModal = (props) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -134,9 +99,9 @@ const HandleModal = (props) => {
 
   return (
     <>
-      <Button style={{border:"1px solid blue"}} onClick={showModal}>
-        处理
-      </Button>
+      {/* <Button type="link" style={{color:"yellow",textDecoration:"underline"}}>详情</Button>
+      <button style={{textDecoration:"underline"}}>underline</button> */}
+      <a style={{textDecoration:"underline"}} onClick={showModal}>详情</a>
       <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} okText="确定" cancelText="取消">
         <p>{props.record.failure_name}</p>
         <p>{props.record.user_name}</p>
@@ -167,71 +132,130 @@ const deleteFuncElem=(aimedRowData)=>{
   // this.showTable(this.state.data);
 }
 
-const tableColumns = [
-  {
-    title: "故障名称",
-    dataIndex: "failure_name",
-    key: "failure_name",
-  },
-  {
-    title: "时间",
-    dataIndex: "create_time",
-    key: "create_time",
-  },
-  {
-    title: "操作描述",
-    dataIndex: "content",
-    key: "content",
-  },
-  {
-    title: "提交人",
-    key: "user_name",
-    dataIndex: "user_name",
-  },
-  {
-    // title:"详情",
-    key:"detail",
-    dataIndex: "detail",
-    render: () => (
-      <Space size="middle">
-        <a style={{textDecoration:"underline"}}>详情</a>
-      </Space>)
-  },{
-    key:"handle",
-    dataIndex: "handle",
-    render: (_,record,index) => (//参数分别为当前行的值，当前行数据，行索引
-      <>
-      {/* <Space size="middle">
-        <button onClick={()=>{console.log(index)}}>处理</button>
-      </Space> */}
-      <HandleModal record={record}></HandleModal>
-    </>
-      )
-  },{
-    key:"delete",
-    dataIndex: "delete",
-    render: (_,record) => (
-      <Space size="middle">
-        <Button style={{border:"1px solid blue"}} onClick={()=>{deleteFuncElem(record)}}>删除</Button>
-      </Space>)
-  }
-];
-
 const rowSelection = {
-  onChange: (selectedRowKeys, selectedRows) => {
+  onChange: (selectedRowKeys, selectedRows) => {//点前面的checkbox拿到当行的数据和index
     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
   },
-  getCheckboxProps: (record) => ({
+  getCheckboxProps: (record) => ({//选择框的默认属性配置,目前没啥用
     disabled: record.name === 'Disabled User',
     // Column configuration not to be checked
     name: record.name,
   }),
 };
+/**
+ * 消息弹框
+ * @returns null
+ */
+var HandleAlertBox=(isShow,type,message)=>{
+  emitter.emit("alert",isShow,type,message)
+}
+const AlertBox=()=>{//有四种样式 success、info、warning、error。
+  const [show,setShow]=useState(false)
+  const [type,setType]=useState(null)
+  const [message,setMessage]=useState(null)
+  useEffect(() => {
+    var eventEmitter=emitter.addListener("alert",(isShow,type,message)=>{
+      setShow(isShow)
+      setType(type)
+      setMessage(message)
+      console.log(isShow)
+      console.log(type)
+    })
+  })
+  return(
+    <div  style={{display:show?"block":"none"}}> 
+          <Alert message={message} type={type} />
+    </div>
+  )
+}
+
+//提交故障的按钮以及弹窗
+const SubmitFailure=(props)=>{
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [form] = Form.useForm(); //用于之后取数据
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const fileList = [
+    {
+      uid: "-1",
+      name: "xxx.png",
+      status: "done",
+      url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+      thumbUrl:
+        "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+    },
+    {
+      uid: "-2",
+      name: "yyy.png",
+      status: "error",
+    },
+  ];
+  return (
+    <>
+      {/* <Button type="link" style={{color:"yellow",textDecoration:"underline"}}>详情</Button>
+      <button style={{textDecoration:"underline"}}>underline</button> */}
+      {/* <a style={{textDecoration:"underline"}} onClick={showModal}>详情</a> */}
+      <Button type="primary" size="large" onClick={showModal}>
+        故障提交
+      </Button>
+      <Modal
+        title="Basic Modal"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="确定"
+        cancelText="取消"
+      >
+        <Form form={form} name="createSystemFailure">
+          <FormItem label="故障名称">
+            <Input></Input>
+          </FormItem>
+          <FormItem label="故障描述">
+            <Input></Input>
+          </FormItem>
+          <Form.Item label="故障截图" name="BackstageLogo">
+            <Upload
+              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+              listType="picture"
+              defaultFileList={[...fileList]}
+              // className="upload-list-inline"
+            >
+              <Button icon={<UploadOutlined />}>Upload</Button>
+              图片地址
+            </Upload>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
+  );
+  return (
+    <Button type="primary" size="large" onClick={()=>{HandleInputModal("true","error","Done")}}>故障提交</Button>
+  )
+}
 
 const Demo = () => {
   const [selectionType, setSelectionType] = useState('checkbox');
   return (
     <div>
+      <Row>
+        <Col span={19}>
+          <AlertBox></AlertBox>
+        </Col>
+        <Col span={2.5} offset={1}>
+          <SubmitFailure></SubmitFailure>
+        </Col>
+      </Row>
       <Divider />
       <Table
         rowSelection={{
@@ -240,6 +264,12 @@ const Demo = () => {
         }}
         columns={tableColumns}
         dataSource={tableData1}
+        pagination={{
+          pageSize: 10,
+          showQuickJumper: true,
+          pageSizeOptions: [10, 20, 50],
+          showSizeChanger: true,
+        }} //,position:['bottomLeft']
       />
     </div>
   );
@@ -267,13 +297,6 @@ export default function SystemManageFailure() {
   }, []);
   return (
     <>
-      {/* <SelectForm getSearch={getSearchLog}></SelectForm> */}
-      {/* <Table rowKey="log_id"         
-      rowSelection={{
-          type: selectionType,
-          ...rowSelection,
-      }} 
-      columns={tableColumns} dataSource={tableData1} /> */}
       <Demo></Demo>
     </>
   );

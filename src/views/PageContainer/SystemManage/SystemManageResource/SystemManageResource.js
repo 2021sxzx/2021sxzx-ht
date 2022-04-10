@@ -17,10 +17,12 @@ import {
   Row,Col,PageHeader,Slider,Card
 } from "antd";
 import { getYMD, getTimeStamp } from "../../../../utils/TimeStamp";
-import api from "../../../../api/comment";
+import api from "../../../../api/systemResource";
 
 import { CaretDownOutlined } from "@ant-design/icons";
 import * as echarts from "echarts";
+
+var osu=require("node-os-utils")
 
 const Memory = (props) => {
   React.useEffect(() => {
@@ -363,9 +365,13 @@ const Bing = (props) => {
 
 const Chart = (props) => {
   var used=props.used;
+  // used=Math.floor(used * 100) / 100;
   var total=props.total;
+  // total=Math.floor(used * 100) / 100;
   var company='';
-  var proportion=used/total;
+  var proportion=(used/total);
+  // proportion=Math.floor(proportion * 10000) / 10000;
+  console.log("proportion:"+proportion)
   var color='';
   if(proportion<=0.2){
     color='blue';
@@ -379,6 +385,7 @@ const Chart = (props) => {
   switch(props.id){
     case "CPU":company="Ghz";break;
     case "Users":company="";break;
+    case "ServerMemory":company="MB";break;
     default:company="GB";break;
   }
   React.useEffect(() => {
@@ -449,13 +456,76 @@ const Chart = (props) => {
     <div style={{display:"inline-block",width:"80px",height:"170px",float:"left"}}>
       <div style={{height:"50px",textAlign:"center",lineHeight:"50px",fontSize:"15px",fontWeight:"bold"}}>{props.name}</div>
     <div style={{height:"30px",textAlign:"center",lineHeight:"30px",color:"#92b6d9"}}>占用率</div>
-    <div style={{height:"50px",textAlign:"center",lineHeight:"50px",fontSize:"35px",fontWeight:"bold",color:"#1890ff"}}>{proportion*100}%</div>
-    <div>{used}{company}/{total}{company}</div></div>
+    <div style={{height:"50px",textAlign:"center",lineHeight:"50px",fontSize:"35px",fontWeight:"bold",color:"#1890ff"}}>{(Math.floor(proportion * 10000) / 10000)*100}%</div>
+    <div>{Math.floor(used * 100) / 100}{company}/{Math.floor(total * 100) / 100}{company}</div></div>
   <div id={props.id} style={{ width: "215px", height: "170px",paddingLeft:"10px",display:"inline-block",float:"left" }}></div>
   </div>);
 };
 
+const Resource=()=>{
+  var cpu=osu.cpu;
+  var count = cpu.count() // 8
+
+  cpu.usage().then((cpuPercentage) => {
+    console.log(cpuPercentage); // 10.38
+  });
+  
+  return(<div>
+    <h1>hhh</h1>
+  </div>);
+}
+
+function getPromise(a,b){
+  a=b;
+  console.log("a:"+a+"||b:"+b);
+  return a;
+}
+
 export default function SystemManageResource() {
+  const [test, setTest] = useState(false);
+  const [memory, setMemory] = useState(false);
+  const [disk, setDisk] = useState(false);
+  // const [test, setTest] = useState(false);
+  // setTest(1.6);
+  // var test=await api.GetCpuPercentage();
+  // var cp=await test();
+  // var a=new Number(123);
+  // test.then(info=>{a=getPromise(a,info.data.data);console.log("00:"+info.data.data)})
+  // console.log("p:",test);
+  const getCpuPercentage = () => {
+    api.GetCpuPercentage().then(info=>{
+      setTest(info.data.data);
+      console.log("cpuPercentage=", info.data.data)
+    }).catch();
+  };
+  const getMemory = () => {
+    api.GetMemory().then(info=>{
+      setMemory(info.data.data);
+      console.log("getMemory=", info.data.data)
+    }).catch();
+  };
+  const getDisk = () => {
+    api.GetDisk().then(info=>{
+      var calc = {
+        used:0,
+        sum: 0,
+      };
+      function myFunction(item, index){
+        this.used+=  Math.floor(item.used/1024/1024/1024 * 100) / 100;
+        this.sum+=  Math.floor(item.size/1024/1024/1024 * 100) / 100;
+        // this.sum+=item.size/1024/1024/1024;
+        // console.log(item.used)
+      }
+      info.data.data.forEach(myFunction,calc)
+      setDisk(calc);
+      console.log("getDisk=", calc)
+    }).catch();
+  };
+  useEffect(() => {
+    getCpuPercentage();
+    getMemory();
+    getDisk();
+  }, []);
   return (
     <>
       <div>
@@ -465,9 +535,9 @@ export default function SystemManageResource() {
         <PageHeader title="虚拟机"></PageHeader>
         <Space size={50}>
           {" "}
-          <Chart id="CPU" name="CPU" used={1.2} total={2}></Chart>
+          <Chart id="CPU" name="CPU" used={1} total={2}></Chart>
           <Chart id="Memory" name="内存" used={0.4} total={16}></Chart>
-          <Chart id="StorageSpace" name="存储空间" used={90} total={100}></Chart>
+          <Chart id="StorageSpace" name="存储空间" used={60} total={100}></Chart>
         </Space>
       </div>
       <div>
@@ -475,14 +545,18 @@ export default function SystemManageResource() {
         <Space size={50}>
           {" "}
           <Chart id="Users" name="用户并发数" used={82} total={100}></Chart>
-          <Chart id="ServerMemory" name="内存" used={0.9} total={16}></Chart>
-          <Chart id="ServerStorageSpace" name="存储空间" used={12} total={100}></Chart>
+          <Chart id="ServerMemory" name="内存" used={memory.usedMemMb} total={memory.totalMemMb}></Chart>
+          {/* <Chart id="ServerStorageSpace" name="存储空间" used={30} total={100}></Chart> */}
+          <Chart id="ServerStorageSpace" name="存储空间" used={disk.used} total={disk.sum}></Chart>
         </Space>
       </div>
       <div>
         <PageHeader title="报警阈值"></PageHeader>
         <Slider defaultValue={30} style={{width:"600px",strokeWidth:"40px"}}/>
       </div>
+      {/* <div>
+        <Resource></Resource>
+      </div> */}
       {/* <div style={{background:'#ececec',padding:"30px"}}>
     <Card title="Card title" bordered={false} style={{ width: 300 }}>
       <p>Card content</p>

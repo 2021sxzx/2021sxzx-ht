@@ -3,7 +3,7 @@ import api from '../../../../api/rule';
 import ManageProcess from './components/ManageProcess'
 import CreateProcess from './components/CreateProcess'
 import {useState} from 'react'
-import {Modal} from 'antd'
+import {Modal, message} from 'antd'
 
 export default function ItemManageProcess(props) {
     // 页面的基础数据
@@ -11,10 +11,10 @@ export default function ItemManageProcess(props) {
     const [modifyId, setModifyId] = useState('')
     const [modifyContent, setModifyContent] = useState({})
 
-    const showError = ()=>{
+    const showError = (info)=>{
         Modal.error({
             title: '出错啦！',
-            content: '本次操作出现了错误，请稍后重试！',
+            content: info,
             centered: true
         })
     }
@@ -27,12 +27,14 @@ export default function ItemManageProcess(props) {
         <>
             {
                 pageType === 1 &&
-                <ManageProcess setPageType={setPageType} setModifyId={setModifyId}
-                    setModifyContent={setModifyContent} showError={showError}/>
+                <ManageProcess setPageType={setPageType} setModifyId={setModifyId} setModifyContent={setModifyContent}
+                    ruleNodes={props.ruleNodes} regionNodes={props.regionNodes} userId={props.userId}
+                    showError={showError} showSuccess={showSuccess}
+                    bindedData={props.bindedData} setBindedData={props.setBindedData}/>
             }
             {
                 pageType === 2 &&
-                <CreateProcess setPageType={setPageType} ruleTree={props.ruleTree} regionTree={props.regionTree}
+                <CreateProcess setPageType={setPageType} ruleTree={props.ruleTree} regionTree={props.regionTree} userId={props.userId}
                 ruleRoot={props.ruleRoot} regionRoot={props.regionRoot} init={props.init} modifyId={modifyId} 
                 showError={showError} showSuccess={showSuccess}/>
             }

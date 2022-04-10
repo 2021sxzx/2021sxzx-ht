@@ -10,10 +10,10 @@ export default function ItemManageRule(props) {
     // 记录正在修改的规则路径
     const [updatePath, setUpdatePath] = useState([])
 
-    const showError = ()=>{ 
+    const showError = (info)=>{ 
         Modal.error({
             title: '出错啦！',
-            content: '本次操作出现了错误，请稍后重试！',
+            content: info,
             centered: true
         })
     }
@@ -26,16 +26,17 @@ export default function ItemManageRule(props) {
         <>
             {
                 pageType === 1 &&
-                <ManageRules ruleNodes={props.ruleNodes} ruleTree={props.ruleTree}
-                    setPageType={setPageType} setUpdatePath={setUpdatePath} getRuleTree={props.getRuleTree} 
-                    showError={showError} showSuccess={showSuccess} ruleDict={props.ruleDict}
+                <ManageRules ruleNodes={props.ruleNodes} ruleTree={props.ruleTree} getRuleTree={props.getRuleTree} 
+                    bindedData={props.bindedData} setBindedData={props.setBindedData} jumpToProcess={props.jumpToProcess}
+                    setPageType={setPageType} setUpdatePath={setUpdatePath} 
+                    showError={showError} showSuccess={showSuccess}
                     deleteRuleSimulate={props.deleteRuleSimulate}/>
             }
             {
                 pageType === 2 &&
-                <CreateRule setPageType={setPageType} ruleTree={props.ruleTree} ruleNodes={props.ruleNodes}
-                    ruleRoot={props.ruleRoot} getRuleTree={props.getRuleTree} updatePath={updatePath} 
-                    showError={showError} showSuccess={showSuccess}
+                <CreateRule ruleTree={props.ruleTree} ruleNodes={props.ruleNodes} ruleRoot={props.ruleRoot} 
+                    getRuleTree={props.getRuleTree} setPageType={setPageType} updatePath={updatePath} 
+                    showError={showError} showSuccess={showSuccess} userId={props.userId}
                     createRuleSimulate={props.createRuleSimulate} updateRuleSimulate={props.updateRuleSimulate}/>
             }
         </>

@@ -11,8 +11,9 @@ import './PageContainer.scss'
 import Home from './Home/Home'
 import Personal from './Personal/Personal'
 import ItemManage from './ItemManage/ItemManage'
-import CommentManageList from './ComponentManageList/CommentManageList.js'
+import CommentManageList from './CommentManageList/CommentManageList.js'
 import CommentManageReport from './CommentManageReport/CommentManageReport.js'
+import SystemManageBasic from './SystemManage/SystemManageBasic/SystemManageBasic.js'
 import SystemManageJournal
   from "./SystemManage/SystemManageJournal/SystemManageJournal.js";
 import SystemManageResource
@@ -21,7 +22,8 @@ import UserManageAccount
   from './UserManage/UserManageAccount/UserManageAccount'
 import UserManageRole from './UserManage/UserManageRole/UserManageRole'
 import SystemManageFailure from './SystemManage/SystemManageFailure/SystemManageFailure.js';
-import FileMetaData from './SystemManage/FileMetaData/FileMetaData.js'
+import MetaData from './SystemManage/MetaData/MetaData.js'
+import SystemManageBackup from './SystemManage/SystemManageBackup/SystemManageBackup.js'
 import NoPermission from './NoPermission/NoPermission.js'
 
 const { Content } = Layout
@@ -58,7 +60,9 @@ export default function PageContainer() {
               {/* 角色管理 */}
               <Route path="/user-manage/role" component={UserManageRole} />
               <Route path="/system-manage/failure" component={SystemManageFailure}/>
-              <Route path="/system-manage/file-meta-data" component={FileMetaData}/>
+              <Route path="/system-manage/meta-data" component={MetaData}/>
+              <Route path="/system-manage/backup" component={SystemManageBackup}/>
+              <Route path="/system-manage/basic" component={SystemManageBasic}/>
               <Redirect from="/" to="/home" exact />
               <Route path="*" component={NoPermission} />
             </Switch>

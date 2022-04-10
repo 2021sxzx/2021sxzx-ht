@@ -7,7 +7,7 @@ const api ={
     GetLog(data) {
         return service.request({
             method: "get",
-            url: "/v1/log/",
+            url: "/v1/show/",
             data, //data:data同名可以直接写 data
         });
     },

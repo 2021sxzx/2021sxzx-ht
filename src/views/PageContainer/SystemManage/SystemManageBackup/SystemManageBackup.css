@@ -1,0 +1,27 @@
+/* .site-layout .site-layout-background{
+    background: #f0f2f5;;
+}
+.ant-tabs-nav{
+    background:#ffffff;
+}
+.ant-tabs-card>.ant-tabs-nav .ant-tabs-tab,.ant-tabs-card>div>.ant-tabs-nav .ant-tabs-tab{
+    background:#d7d7d7;
+    border:0px;
+}
+.ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab, .ant-tabs-card.ant-tabs-bottom > .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab, .ant-tabs-card.ant-tabs-top > div > .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab, .ant-tabs-card.ant-tabs-bottom > div > .ant-tabs-nav .ant-tabs-tab + .ant-tabs-tab {
+    margin-left: 0px;
+}
+.ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab-active, .ant-tabs-card.ant-tabs-top > div > .ant-tabs-nav .ant-tabs-tab-active {
+    border-bottom-color: #fff;
+}
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab-active, .ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab-active {
+    color: #1890ff;
+    background: #fff;
+} */
+/* .ant-tabs-extra-content {
+    display:block;
+    background: yellow;
+} */
+#backup {
+    background:yellow
+}

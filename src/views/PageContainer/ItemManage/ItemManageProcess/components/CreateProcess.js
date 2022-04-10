@@ -6,12 +6,19 @@ import api from '../../../../../api/rule';
 
 export default function CreateProcess(props){
     // 页面中用以展示的基础数据
-    const [taskCode, setTaskCode] = useState('-')
+    const [taskCode, setTaskCode] = useState('')
+    const [taskName, setTaskName] = useState('')
+    const [choosingGuide, setChoosingGuide] = useState(false)
+    const [enabledGuides, setEnabledGuides] = useState([])
+    const [guidePageNum, setGuidePageNum] = useState(0)
+    const [guideTableTotal, setGuideTableTotal] = useState(0)
     const [taskRule, setTaskRule] = useState(props.ruleRoot.nodeName + '\\')
-    const [extraHeight, setExtraHeight] = useState(0)
+    const [taskRegion, setTaskRegion] = useState(props.regionRoot.nodeName + '\\')
     // 选择过程中的已选择、待选择节点
-    const [chosenTags, setChosenTags] = useState([])
-    const [enabledTags, setEnabledTags] = useState([])
+    const [chosenRules, setChosenRules] = useState([])
+    const [chosenRegions, setChosenRegions] = useState([])
+    const [ruleTags, setRuleTags] = useState([])
+    const [regionTags, setRegionTags] = useState([])
     const [recommendedTags, setRecommendedTags] = useState([{
         'nodeName': '暂无',
         'nodeId': '12345'
@@ -28,184 +35,247 @@ export default function CreateProcess(props){
     const [chooseEnd, setChooseEnd] = useState(false)
     // 加载效果
     const [isLoading, setIsLoading] = useState(false)
-
+    
     useEffect(()=>{
         // 初始化分类规则树的根节点
-        let currChildren = []
-        let currChosen = []
-        console.log(props)
-        currChosen.push(props.ruleRoot)
+        let currRuleTags = []
+        let currRegionTags = []
+        let currRules = []
+        let currRegions = []
+        // 根节点默认为已选择
+        currRules.push(props.ruleRoot)
+        currRegions.push(props.regionRoot)
+        // 两种类型的子节点处理
         for (let i = 0; i < (props.ruleTree[props.ruleRoot.nodeId]).length; i++){
-            currChildren.push((props.ruleTree[props.ruleRoot.nodeId])[i])
+            currRuleTags.push((props.ruleTree[props.ruleRoot.nodeId])[i])
         }
-        setEnabledTags(currChildren)
-        setChosenTags(currChosen)
+        for (let i = 0; i < (props.regionTree[props.regionRoot.nodeId]).length; i++){
+            currRegionTags.push((props.regionTree[props.regionRoot.nodeId])[i])
+        }
+        setRuleTags(currRuleTags)
+        setRegionTags(currRegionTags)
+        setChosenRules(currRules)
+        setChosenRegions(currRegions)
     },[])
+
+    const guideColumns = [
+        {
+            title: '事项编码',
+            dataIndex: 'task_code',
+            key: 'task_code',
+            width: 320
+        },
+        {
+            title: '事项指南',
+            dataIndex: 'task_name',
+            key: 'task_name'
+        },
+        {
+            title: '选择',
+            key: 'choose',
+            width: 100,
+            render: (text, record)=>(
+                <Button type='primary' onClick={function(){
+                    setTaskCode(record.task_code)
+                    setTaskName(record.task_name)
+                    endChoosingGuide()
+                }}>
+                    选择
+                </Button>
+            )
+        }
+    ]
+
+    const startChoosingGuide = ()=>{
+        setChoosingGuide(true)
+        api.GetItemGuides({
+            task_status: 0,
+            page_size: 8,
+            page_num: 0
+        }).then(response=>{
+            let data = response.data.data
+            setGuideTableTotal(data.total)
+            setEnabledGuides(data.data)
+        }).catch(error=>{
+            props.showError('选择指南初始化失败')
+        })
+    }
+
+    const endChoosingGuide = ()=>{
+        setChoosingGuide(false)
+        setGuidePageNum(0)
+        setEnabledGuides([])
+    }
+
+    const handleGuideTableChange = (page)=>{
+        api.GetItemGuides({
+            task_status: 0,
+            page_size: 8,
+            page_num: page - 1
+        }).then(response=>{
+            setGuidePageNum(page - 1)
+            let data = response.data.data
+            setGuideTableTotal(data.total)
+            setEnabledGuides(data.data)
+        }).catch(error=>{
+            props.showError('选择指南换页失败')
+        })
+    }
+
+    /*useEffect(function(){
+        if (enabledGuides.length === 0) return
+        setChoosingGuide(true)
+    }, [enabledGuides])*/
 
     const chooseTag = (index, type)=>{
         // 暂不处理推荐事项
-        if (type !== '1') return
+        if (type === '3'){
+            Modal.info({
+                title: '暂不处理',
+                content: '推荐项暂未进行处理',
+                centered: true
+            })
+        }
 
-        // 获取选取的节点，渲染其子节点并处理规则路径
-        let tag = enabledTags[index]
-        chosenTags.push(tag)
-        let currChildren = []
-        if (tag.isRegion){
-            // 是区划节点
-            if (tag.nodeId in props.regionTree){
-                // 选择了一个有子节点的区划节点
-                for (let i = 0; i < props.regionTree[tag.nodeId].length; i++){
-                    currChildren.push(props.regionTree[tag.nodeId][i])
-                }
-            }
-            else{
-                // 区划节点选择完毕
-                // 只有当全部选择完毕的时候才可以进行创建或修改
-                confirmItemRules({
-                    rule_id: currRuleId,
-                    region_id: tag.nodeId
-                })
-            }
-            setCurrRegionId(tag.nodeId)
-        }
-        else{
-            // 是规则节点
+        let currTags = []
+        if (type === 'rule'){
+            let tag = ruleTags[index]
+            // 将当前节点推入已选择队列
+            chosenRules.push(tag)
             if (tag.nodeId in props.ruleTree){
-                // 选择了一个有子节点的分类规则节点
+                // 处理子节点
                 for (let i = 0; i < props.ruleTree[tag.nodeId].length; i++){
-                    currChildren.push(props.ruleTree[tag.nodeId][i])
+                    currTags.push(props.ruleTree[tag.nodeId][i])
                 }
             }
-            else{
-                // 分类规则选择完毕，切换为区划
-                currChildren = props.regionRoot
-            }
-            setCurrRuleId(tag.nodeId)
+            let currRule = taskRule + tag.nodeName + '\\'
+            setTaskRule(currRule)
+            setRuleTags(currTags)
         }
-        
-        let currRule = taskRule + tag.nodeName + '\\'
-        setEnabledTags(currChildren)
-        setTaskRule(currRule)
+        else if (type === 'region'){
+            let tag = regionTags[index]
+            // 将当前节点推入已选择队列
+            chosenRegions.push(tag)
+            if (tag.nodeId in props.regionTree){
+                // 处理子节点
+                for (let i = 0; i < props.regionTree[tag.nodeId].length; i++){
+                    currTags.push(props.regionTree[tag.nodeId][i])
+                }
+            }
+            let currRegion = taskRegion + tag.nodeName + '\\'
+            setTaskRegion(currRegion)
+            setRegionTags(currTags)
+        }   
     }
 
-    const getBack = (index)=>{
-        if (index === chosenTags.length - 1){
-            // 原地tp
-            return
-        }
-        let currChosen = []
-        let currChildren = []
-        let currNewNodeList = []
-        let listIndex = 0
-        let currRule = ''
-        setChooseEnd(false)
+    const getBack = (index, type)=>{
+        // 已选择节点的回退
+        if (type === 'rule'){
+            if (index === chosenRules.length - 1) return
 
-        let returnTag = chosenTags[index]
-        for (let i = 0; i <= index; i++){
-            // 把现在已选择的节点列表还原到选中的节点为止
-            currChosen.push(chosenTags[i])
-            currRule += (chosenTags[i].nodeName + '\\')
-            if (chosenTags[i].nodeId[0] == 't'){
-                // 若其中有待创建队列，则重新推入队列
-                currNewNodeList.push(newNodeList[listIndex++])
-            }
-        }
-        setNewNodeList(currNewNodeList)
+            let currRules = []
+            let currChildren = []
+            let currTaskRule = ''
 
-        if (returnTag.isRegion){
-            // 判断返回的节点是规则还是区划，从对应的树中获取其子节点
-            for (let i = 0; i < props.regionTree[returnTag.nodeId].length; i++){
-                currChildren.push(props.regionTree[returnTag.nodeId][i])
+            for (let i = 0; i <= index; i++){
+                // 已选择节点的放入
+                currRules.push(chosenRules[i])
+                currTaskRule += (chosenRules[i].nodeName + '\\')
             }
-            // 只需回退区划Id
-            setCurrRegionId(returnTag.nodeId)
+            for (let i = 0; i < props.ruleTree[chosenRules[index].nodeId].length; i++){
+                // 将当前节点的子节点放入队列
+                currChildren.push(props.ruleTree[chosenRules[index].nodeId][i])
+            }
+
+            setChosenRules(currRules)
+            setRuleTags(currChildren)
+            setTaskRule(currTaskRule)
         }
         else{
-            if (!(returnTag.nodeId in props.ruleTree)){
-                // 若返回的节点不在树中，说明是叶子节点，将区划根节点推入即可
-                currChildren = props.regionRoot
+            if (index === chosenRegions.length - 1) return
+
+            let currRegions = []
+            let currChildren = []
+            let currTaskRegion = ''
+
+            for (let i = 0; i <= index; i++){
+                // 已选择节点的放入
+                currRegions.push(chosenRegions[i])
+                currTaskRegion += (chosenRegions[i].nodeName + '\\')
             }
-            else{
-                for (let i = 0; i < props.ruleTree[returnTag.nodeId].length; i++){
-                    currChildren.push(props.ruleTree[returnTag.nodeId][i])
-                }
+            for (let i = 0; i < props.regionTree[chosenRegions[index].nodeId].length; i++){
+                // 将当前节点的子节点放入队列
+                currChildren.push(props.regionTree[chosenRegions[index].nodeId][i])
             }
-            // 回退到规则Id时，区划Id尚未选择，所以清零
-            setCurrRegionId('')
-            setCurrRuleId(returnTag.nodeId)
+
+            setChosenRegions(currRegions)
+            setRegionTags(currChildren)
+            setTaskRegion(currTaskRegion)
         }
-        setChosenTags(currChosen)
-        setTaskRule(currRule)
-        setEnabledTags(currChildren)
     }
 
     const handleCancel = ()=>{
         props.setPageType(1)
     }
 
+    const createItem = ()=>{
+        setIsLoading(true)
+        let items = [{
+            task_code: taskCode,
+            rule_id: chosenRules[chosenRules.length - 1].nodeId,
+            region_code: chosenRegions[chosenRegions.length - 1].nodeCode,
+            region_id: chosenRegions[chosenRegions.length - 1].nodeId
+        }]
+        api.CreateItems({
+            user_id: props.userId,
+            items: items
+        }).then(response=>{
+            setIsLoading(false)
+            props.showSuccess()
+            props.setPageType(1)
+        }).catch(error=>{
+            setIsLoading(false)
+            props.showError('绑定事项失败')
+        })
+    }
+
     const handleCreate = ()=>{
-        setIsLoading(true)
-        if (newNodeList.length != 0){
-            // 若有新建的规则，则先创建规则
-            let list = {
-                rules: newNodeList
-            }
-            createRules(list)
+        if (taskCode === ''){
+            Modal.info({
+                title: '未选择指南',
+                content: '请选择要绑定的事项指南！',
+                centered: true
+            })
+            return
         }
-        else{
-            let data = {
-                itemRules: [
-                    {
-                        rule_id: currRuleId,
-                        region_id: currRegionId
-                    }
-                ]
-            }
-            createItemRules(data)
-        }
-    }
-
-    const handleModify = ()=>{
-        setIsLoading(true)
-        if (newNodeList.length != 0){
-            // 若有新建的规则，则先创建规则
-            let list = {
-                rules: newNodeList
-            }
-            createRules(list)
-        }
-        else{
-            let data = {
-                itemRules: [
-                    {
-                        item_rule_id: props.modifyId,
-                        rule_id: currRuleId,
-                        region_id: currRegionId
-                    }
-                ]
-            }
-            updateItemRules(data)
-        }
-    }
-
-    const confirmItemRules = (data)=>{
-        api.GetItemRules(data).then(response=>{
+        api.GetItems({
+            rule_id: chosenRules[chosenRules.length - 1].nodeId,
+            region_id: chosenRegions[chosenRegions.length - 1].nodeId
+        }).then(response=>{
             let rules = response.data.data
-            if (rules.length === 0){
-                setChooseEnd(true)
-            }
-            else{
+            if (rules.length !== 0){
                 Modal.error({
                     title: '已有规则',
                     content: '该事项规则已经存在，请重新选择！',
                     centered: true
                 })
             }
+            else{
+                let str = '确认绑定规则\“' + taskRule + taskRegion + '\”' +
+                    '和指南\“' + taskName + '”吗？'
+                Modal.confirm({
+                    title: '确认绑定',
+                    content: str,
+                    centered: true,
+                    onOk: createItem
+                })
+            }
         }).catch(error=>{
+            props.showError('判断规则是否已存在失败！')
         })
     }
 
-    useEffect(function(){
+    /*useEffect(function(){
         if (realNewId == ''){
             return
         }
@@ -235,29 +305,6 @@ export default function CreateProcess(props){
             updateItemRules(data)
         } 
     },[realNewId])
-
-    const createItemRules = (data)=>{
-        api.CreateItemRules(data).then(response=>{
-            setIsLoading(false)
-            props.showSuccess()
-            props.init()
-            props.setPageType(1)
-        }).catch(error=>{
-            returnError()
-        })
-    }
-
-    const updateItemRules = (data)=>{
-        api.UpdateItemRules(data).then(response=>{
-            setIsLoading(false)
-            props.showSuccess()
-            props.init()
-            props.setPageType(1)
-        }).catch(error=>{
-            // 若修改过程出错，可能是库已经发生改变，树和事项都刷新
-            returnError()
-        })
-    }
 
     const createRules = (data)=>{
         // 调用创建规则接口
@@ -310,35 +357,20 @@ export default function CreateProcess(props){
             parentId: currRuleId
         })
         // 处理页面展示内容
-        chosenTags.push(node)
+        chosenRules.push(node)
         setTaskRule(taskRule + node.nodeName + '\\')
-        setEnabledTags(props.regionRoot)
+        setRuleTags(props.regionRoot)
         setCurrRuleId(node.nodeId)
-    }
-
-    const returnError = ()=>{
-        props.init()
-        props.showError()
-        props.setPageType(1)
-    }
-
-    useEffect(function(){
-        let height = 0
-        if (enabledTags.length > 7 || recommendedTags.length > 4){
-            if (enabledTags.length - 7 > recommendedTags.length - 4){
-                height = enabledTags.length - 7
-            }
-            else{
-                height = recommendedTags.length - 4
-            }
-        }
-        setExtraHeight(height * 32)
-    },[enabledTags, recommendedTags])
+    }*/
 
     return (
         <Space direction='vertical' size={15}>
-            <Modal centered destroyOnClose={true} title='自定义标签' visible={isCreating} onCancel={endCreating} onOk={finishCreating}>
+            {/*<Modal centered destroyOnClose={true} title='自定义标签' visible={isCreating} onCancel={endCreating} onOk={finishCreating}>
                 <Input id='creatingInput' placeholder='请输入自定义标签名' size='middle' onChange={handleCreatingInputChange}/>
+            </Modal>*/}
+            <Modal width={800} centered destroyOnClose={true} title='选择指南' visible={choosingGuide} footer={false} onCancel={endChoosingGuide}>
+                <Table class={style.guideTable} columns={guideColumns} dataSource={enabledGuides} rowKey='task_code'
+                    pagination={{total: guideTableTotal, onChange: handleGuideTableChange, current: guidePageNum + 1, showSizeChanger: false, pageSize: 8}}/>
             </Modal>
 
             <div className={style.ruleItem}>
@@ -355,7 +387,10 @@ export default function CreateProcess(props){
                     事项指南：
                 </div>
                 <div className={style.itemContent}>
-                    <Button size='small' type='primary'>绑定指南</Button>
+                    <div className={style.guide}>
+                        <Button size='small' type='primary' onClick={startChoosingGuide}>绑定指南</Button>
+                        <div className={style.taskName}>{taskName}</div>
+                    </div>
                 </div>
             </div>
 
@@ -365,7 +400,7 @@ export default function CreateProcess(props){
                 </div>
                 <div className={style.itemContent}>
                     <div className={style.ruleText}>
-                        {taskRule}
+                        {taskRule + taskRegion}
                     </div>
                     <div className={style.ps}>
                         （备注：通过下面的事项规则库，逐级选择规则项，完成绑定）
@@ -380,10 +415,23 @@ export default function CreateProcess(props){
                     </div>
                     <Space className={style.chosenTags} direction='horizontal' size={[12, 4]} wrap>
                         {
-                            chosenTags.map((tag, index) =>
-                                <div className={style.chosenTag} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')} onClick={
+                            chosenRules.map((tag, index) =>
+                                <div className={style.chosenRule} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')} onClick={
                                     value=>{
-                                        getBack(index)
+                                        getBack(index, 'rule')
+                                    }
+                                }>
+                                    <div className={style.tagContent}>
+                                        {tag.nodeName}
+                                    </div>
+                                </div>
+                            )
+                        }
+                        {
+                            chosenRegions.map((tag, index) =>
+                                <div className={style.chosenRegion} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')} onClick={
+                                    value=>{
+                                        getBack(index, 'region')
                                     }
                                 }>
                                     <div className={style.tagContent}>
@@ -395,34 +443,44 @@ export default function CreateProcess(props){
                     </Space>
                 </div>
 
-                <div className={style.chooseBox} style={{height: 276 + extraHeight, minHeight: 276}}>
-                    <div className={style.chooseBoxTitle1}>
-                        可选事项规则项：
+                <div className={style.chooseBox}>
+                    <div className={style.chooseTagArea}>
+                        <div className={style.chooseBoxTitle1}>
+                            可选业务规则项：
+                        </div>
+                        <TagsArea tags={ruleTags} chooseTag={chooseTag} type={'rule'}/>
                     </div>
-                    <div className={style.enabledTags}>
-                        <TagsArea tags={enabledTags} chooseTag={chooseTag} type={'1'}/>
-                    </div>
-
-                    <div className={style.separator} style={{height: 240 + extraHeight, minHeight: 240}}></div>
                     
-                    <div className={style.chooseBoxTitle2}>
-                        候选事项规则项：
-                    </div>
+                    <div className={style.separator1}/>
 
-                    <div className={style.chooseBoxSubTitle}>
-                        推荐规则项：
+                    <div className={style.chooseTagArea}>
+                        <div className={style.chooseBoxTitle2}>
+                            可选区划规则项：
+                        </div>
+                        <TagsArea tags={regionTags} chooseTag={chooseTag} type={'region'}/>
                     </div>
-                    <div className={style.textRankTags}>
-                        <TagsArea tags={recommendedTags} chooseTag={chooseTag} type={'2'}/>
-                    </div>
+                    
+                    <div className={style.separator2}/>
+                    
+                    <div className={style.chooseTagArea}>
+                        <div className={style.chooseBoxTitle3}>
+                            候选事项规则项：
+                        </div>
 
-                    <div className={style.chooseBoxSubTitle} style={{top: 120 + extraHeight, display: currRegionId == '' ? 'block' : 'none'}}>
+                        <div className={style.chooseBoxSubTitle}>
+                            推荐规则项：
+                        </div>
+                        <TagsArea tags={recommendedTags} chooseTag={chooseTag} type={'3'}/>
+                    </div>
+                    
+
+                    {/*<div className={style.chooseBoxSubTitle} style={{top: 120 + extraHeight, display: currRegionId == '' ? 'block' : 'none'}}>
                         用户自定义：
                     </div>
                     <div className={style.createTag} style={{display: currRegionId == '' ? 'block' : 'none', top: 125 + extraHeight}}
                         onClick={startCreating}>
                         自定义标签+
-                    </div>
+                    </div>*/}
                 </div>
             </Space>
 
@@ -430,8 +488,8 @@ export default function CreateProcess(props){
                 <Button type='default' size='middle' style={{marginRight: 60, width: 100}}
                     onClick={handleCancel}>取消</Button>
                 <Button type='primary' size='middle' style={{width: 100}}
-                    onClick={props.modifyId == '' ? handleCreate : handleModify} disabled={!chooseEnd} loading={isLoading}>
-                    {props.modifyId == '' ? '创建' : '修改'}
+                    onClick={handleCreate} loading={isLoading}>
+                    绑定
                 </Button>
             </div>
         </Space>
