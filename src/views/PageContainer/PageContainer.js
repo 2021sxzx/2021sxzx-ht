@@ -10,7 +10,8 @@ import './PageContainer.scss'
 // 导入页面内容
 import Home from './Home/Home'
 import Personal from './Personal/Personal'
-import ItemManage from './ItemManage/ItemManage'
+import ItemManage from './ItemManage/ItemManage.js'
+import ItemAudit from './ItemAudit/ItemAudit.js'
 import CommentManageList from './CommentManageList/CommentManageList.js'
 import CommentManageReport from './CommentManageReport/CommentManageReport.js'
 import SystemManageBasic from './SystemManage/SystemManageBasic/SystemManageBasic.js'
@@ -51,6 +52,7 @@ export default function PageContainer() {
               <Route path="/personal" component={Personal} />
               {/* 事项过程管理 */}
               <Route path="/item-manage" component={ItemManage} />
+              <Route path="/item-audit" component={ItemAudit} />
               {/* 日志管理 */}
               <Route path="/system-manage/journal" component={SystemManageJournal} />
               {/* 资源管理 */}

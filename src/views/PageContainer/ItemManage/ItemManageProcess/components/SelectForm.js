@@ -152,11 +152,11 @@ export default function SelectForm(props){
                         placeholder='请输入创建人' size='middle' onChange={handleCreatorChange}></Input>
                 </Form.Item>
 
-                <Form.Item label='规则编码' style={{marginTop: 10, width: '25%'}}>
+                <Form.Item label='业务规则编码' style={{marginTop: 10, width: '25%'}}>
                     <Input id='ruleIdInput' value={rule_id}
                         placeholder='请输入业务规则编码' size='middle' onChange={handleRuleIdChange}></Input>
                 </Form.Item>
-                <Form.Item label='区划编码' style={{marginTop: 10, width: '25%'}}>
+                <Form.Item label='区划规则编码' style={{marginTop: 10, width: '25%'}}>
                     <Input id='regionCodeInput' value={region_code}
                         placeholder='请输入区划规则编码' size='middle' onChange={handleRegionCodeChange}></Input>
                 </Form.Item>

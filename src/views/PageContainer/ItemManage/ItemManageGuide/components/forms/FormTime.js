@@ -18,11 +18,11 @@ export default function FormTime(props){
         },
         {
             value: '1',
-            tag: '工作日'
+            tag: '个工作日'
         },
         {
             value: '2',
-            tag: '自然日'
+            tag: '个自然日'
         }
     ]
 
@@ -69,7 +69,7 @@ export default function FormTime(props){
             <div className={style.input}>
                 <div className={style.timeItem}>
                     <span className={style.timeLabel}>法定办结时限：</span>
-                    <TextArea disabled={legalDisable} className={style.textArea} placeholder='请输入法定办结时限'
+                    <TextArea disabled={legalDisable} className={style.textArea} placeholder='请输入正整数作为法定办结时限'
                         onChange={handleLegalPeriodChange} value={legalPeriod} autoSize={true}/>
                     <Select className={style.select} defaultValue={legalType} onChange={handleLegalTypeChange}>
                         {
@@ -80,7 +80,7 @@ export default function FormTime(props){
                 </div>
                 <div className={style.timeItem}>
                     <span className={style.timeLabel}>承诺办结时限：</span>
-                    <TextArea disabled={promisedDisable} className={style.textArea} placeholder='请输入承诺办结时限'
+                    <TextArea disabled={promisedDisable} className={style.textArea} placeholder='请输入正整数作为承诺办结时限'
                         onChange={handlePromisedPeriodChange} value={promisedPeriod} autoSize={true}/>
                     <Select className={style.select} defaultValue={promisedType} onChange={handlePromisedTypeChange}>
                         {

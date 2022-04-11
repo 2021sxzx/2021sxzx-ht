@@ -109,7 +109,7 @@ export default function CreateGuide(props){
             content: 
             <Space className={style.form} direction='vertical' size={15} style={{width: '100%'}}>
                 <FormArea handleChange={handleGuideConditionChange} formName='申办所需审核条件' value={guideCondition}/>
-                <FormList setData={setGuideMaterial} addBtn='添加申办材料' formName='申办材料' value={guideMaterial}/>
+                <FormList setData={setGuideMaterial} addBtn='添加所需申办材料' formName='所需申办材料' value={guideMaterial}/>
                 <FormTime formName='审核时限' legalPeriod={legalPeriod} legalType={legalType} promisedPeriod={promisedPeriod} promisedType={promisedType}
                     setLegalPeriod={setLegalPeriod} setLegalType={setLegalType} setPromisedPeriod={setPromisedPeriod} setPromisedType={setPromisedType}/>
             </Space>
@@ -163,14 +163,14 @@ export default function CreateGuide(props){
             }
         }
         if (guideCondition === '') emptyArea.push('申办所需资格条件')
-        // 申办材料数组处理
+        // 所需申办材料数组处理
         if (guideMaterial.length === 0){
-            emptyArea.push('申办材料')
+            emptyArea.push('所需申办材料')
         }
         else{
             for (let i = 0; i < guideMaterial.length; i++){
                 if (guideMaterial[i] === ''){
-                    emptyArea.push('申办材料')
+                    emptyArea.push('所需申办材料')
                     break
                 }
             }
@@ -189,7 +189,7 @@ export default function CreateGuide(props){
                 if (promisedType !== '0'){
                     promised = parseInt(promisedPeriod)
                 }
-                if (isNaN(legal) || isNaN(promised)){
+                if (isNaN(legal) || isNaN(promised) || legal <= 0 || promised <= 0){
                     notNum = true
                 }
             }  
@@ -256,7 +256,7 @@ export default function CreateGuide(props){
         }
         if (notNum){
             if (empties !== '') empties += '\n'
-            empties += '申办时限处的输入必须是数字，请进行修改！'
+            empties += '申办时限处的输入必须是正整数，请进行修改！'
         }
         
         Modal.error({
@@ -307,7 +307,7 @@ export default function CreateGuide(props){
             })
         }
         data['legal_basis'] = legalBasis
-        // 申办材料处理
+        // 所需申办材料处理
         let submitDocuments = []
         for (let i = 0; i < guideMaterial.length; i++){
             submitDocuments.push({

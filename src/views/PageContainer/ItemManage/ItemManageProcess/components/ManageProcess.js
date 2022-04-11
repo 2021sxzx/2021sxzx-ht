@@ -190,8 +190,6 @@ export default function ManageProcess(props) {
     ]
 
     const handleCreate = ()=>{
-        props.setModifyId('')
-        props.setModifyContent({})
         props.setPageType(2)
     }
 
@@ -385,6 +383,7 @@ export default function ManageProcess(props) {
         totalData['page_size'] = pageSize
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
+            setTotalSize(response.data.data.total)
             for (let i = 0; i < items.length; i++){
                 // 规则路径生成、状态码转状态名
                 items[i]['creator_name'] = items[i].creator.name
@@ -394,6 +393,7 @@ export default function ManageProcess(props) {
             }
             setTableData(items)
             setTableLoading(false)
+            console.log(response.data.data)
         }).catch(error=>{
             props.showError('换页时获取事项信息失败！')
             setTableLoading(false)
