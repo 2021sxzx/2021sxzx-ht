@@ -32,7 +32,7 @@ export default function ItemManageProcess(props) {
             {
                 pageType === 2 &&
                 <CreateProcess setPageType={setPageType} ruleTree={props.ruleTree} regionTree={props.regionTree} userId={props.userId}
-                    ruleRoot={props.ruleRoot} regionRoot={props.regionRoot} init={props.init}
+                    ruleRoot={props.ruleRoot} regionRoot={props.regionRoot}
                     showError={showError} showSuccess={showSuccess}/>
             }
         </>

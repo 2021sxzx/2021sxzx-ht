@@ -7,6 +7,7 @@ import ItemManageRegion from './ItemManageRegion/ItemManageRegion'
 import ItemManageGuide from './ItemManageGuide/ItemManageGuide'
 import ItemManageProcess from './ItemManageProcess/ItemManageProcess'
 import Cookie from '../../../utils/Cookie'
+import ItemManageUnusual from './ItemManageUnusual/ItemManageUnusual';
 
 export default function ItemManage(props) {
     // 父子组件路径匹配
@@ -327,7 +328,7 @@ export default function ItemManage(props) {
             <Switch>
                 <Route path={`${path}/process`} 
                     render={()=>(<ItemManageProcess regionNodes={regionNodes} ruleNodes={ruleNodes} userId={userId} 
-                        bindedData={bindedData} setBindedData={setBindedData} init={init}
+                        bindedData={bindedData} setBindedData={setBindedData}
                         regionTree={regionTree} ruleTree={ruleTree} regionRoot={regionRoot} ruleRoot={ruleRoot}/>)}/>
 
                 <Route path={`${path}/guide`} 
@@ -344,6 +345,12 @@ export default function ItemManage(props) {
                         setBindedData={setBindedData} bindedData={bindedData} jumpToProcess={jumpToProcess}
                         createRegionSimulate={createRegionSimulate} updateRegionSimulate={updateRegionSimulate}
                         deleteRegionSimulate={deleteRegionSimulate} getRegionTree={getRegionTree}/>)}/>
+
+                <Route path={`${path}/unusual`} 
+                    render={()=>(<ItemManageUnusual regionNodes={regionNodes} ruleNodes={ruleNodes} userId={userId} 
+                        bindedData={bindedData} setBindedData={setBindedData}
+                        regionTree={regionTree} ruleTree={ruleTree} regionRoot={regionRoot} ruleRoot={ruleRoot}/>)}/>
+
             </Switch>
         </div>
         

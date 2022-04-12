@@ -1,35 +1,17 @@
-import React, {cloneElement, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { Dropdown, Space, Menu, message, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
-import { getYMD } from "../../../../../utils/TimeStamp";
-import api from '../../../../../api/rule';
+import { getYMD } from "../../../../utils/TimeStamp";
+import api from '../../../../api/rule';
 import SelectForm from './SelectForm'
 
-export default function ManageProcess(props) {
+export default function ManageAudit(props) {
     // 页面的基础数据
     const [tableData, setTableData] = useState([])
     const [originData, setOriginData] = useState({})
     const [tableLoading, setTableLoading] = useState(true)
-    const [unableCreate, setUnableCreate] = useState(true)
-    const [guideDetail, setGuideDetail] = useState({})
-    const [isDetailShown, setIsDetailShown] = useState(false)
     // 状态映射表
     const [statusScheme, setStatusScheme] = useState({})
     const [statusName, setStatusName] = useState({})
-    const [statusButtons, setStatusButtons] = useState({})
-    // 是否正在删除，以及删除队列
-    const [isDeleting, setIsDeleting] = useState(false)
-    const [deletingIds, setDeletingIds] = useState([])
-    // 用于获取批量处理的事项规则id
-    const [selectedRowKeys, setSelectedRowKeys] = useState([])
-    const [isBatching, setIsBatching] = useState(false)
-    const onSelectionChange = keys=>{
-        setIsBatching(keys.length > 0)
-        setSelectedRowKeys(keys)
-    }
-    const rowSelection = {
-        selectedRowKeys,
-        onChange: onSelectionChange,
-    }
     // 当前展示的页数，用于重置时归零
     const [current, setCurrent] = useState(0)
     const [currPageSize, setCurrPageSize] = useState(10)
@@ -44,21 +26,6 @@ export default function ManageProcess(props) {
         '6': '行政机关',
         '9': '其他组织'
     }
-
-    const detailColumns = [
-        {
-            title: '数据类型',
-            dataIndex: 'detailType',
-            key: 'detailType',
-            width: '20%'
-        },
-        {
-            title: '详细信息',
-            dataIndex: 'detailInfo',
-            key: 'detailInfo',
-            width: '80%'
-        }
-    ]
 
     const tableColumns = [
         {
@@ -110,81 +77,14 @@ export default function ManageProcess(props) {
             key: 'operation',
             width: 120,
             render: (text, record)=>(
-                <Dropdown overlay={
-                    <Menu>
-                        {
-                            'unbind' in statusButtons[record.item_status] &&
-                            <Menu.Item key='0'>
-                                <Button type='primary' style={{width: 88}} onClick={function(){
-                                    deleteSingleItem(record._id)
-                                }}>
-                                    解绑
-                                </Button>
-                            </Menu.Item>
-                        }
-                        {
-                            'submit' in statusButtons[record.item_status] &&
-                            <Menu.Item style={{display: 'flex'}} key='1'>
-                                <Button type='primary' onClick={function(){
-                                    changeItemStatus(record._id, statusScheme.FirstAudit.id)
-                                }}>
-                                    提交审核
-                                </Button>
-                            </Menu.Item>
-                        }
-                        {
-                            'detail' in statusButtons[record.item_status] &&
-                            <Menu.Item style={{display: 'flex'}} key='2'>
-                                <Button type='primary' onClick={function(){
-                                    getGuideDetail(record._id)
-                                }}>
-                                    查看详情
-                                </Button>
-                            </Menu.Item>
-                        }
-                        {
-                            'cancel' in statusButtons[record.item_status] &&
-                            <Menu.Item style={{display: 'flex'}} key='3'>
-                                <Button type='primary' onClick={function(){
-                                    changeItemStatus(record._id, statusScheme.WaitAudit.id)
-                                }}>
-                                    取消审核
-                                </Button>
-                            </Menu.Item>
-                        }
-                        {
-                            'recall' in statusButtons[record.item_status] &&
-                            <Menu.Item style={{display: 'flex'}} key='4'>
-                                <Button style={{backgroundColor: 'red', color: 'white', width: 88}} onClick={function(){
-                                    changeItemStatus(record._id, statusScheme.Recall.id)
-                                }}>
-                                    撤回
-                                </Button>
-                            </Menu.Item>
-                        }
-                        {
-                            'cancelRecall' in statusButtons[record.item_status] &&
-                            <Menu.Item style={{display: 'flex'}} key='5'>
-                                <Button style={{backgroundColor: 'red', color: 'white'}} onClick={function(){
-                                    changeItemStatus(record._id, statusScheme.Success.id)
-                                }}>
-                                    取消撤回
-                                </Button>
-                            </Menu.Item>
-                        }
-                    </Menu>
-                } placement='bottomCenter' trigger={['click']}>
-                    <Button type='primary' style={{width: 88}}>
-                        操作
-                    </Button>
-                </Dropdown>
+                <Button type='primary' style={{width: 88}} onClick={function(){
+                    auditTask(record.task_code, record._id, record.rule_path)
+                }}>
+                    审核
+                </Button>
             )
         }
     ]
-
-    const handleCreate = ()=>{
-        props.setPageType(2)
-    }
 
     const getPathByRuleId = (id)=>{
         // 获取规则id对应的规则路径
@@ -219,6 +119,7 @@ export default function ManageProcess(props) {
         let data = originData
         data['page_num'] = current
         data['page_size'] = currPageSize
+        data['item_status'] = [statusScheme.FirstAudit.id, statusScheme.SecondAudit.id]
         // 获取所有事项规则
         api.GetItems(data).then(response=>{
             let items = response.data.data.data
@@ -235,60 +136,6 @@ export default function ManageProcess(props) {
         }).catch(error=>{
             props.showError('获取事项失败！')
             setTableLoading(false)
-        })
-    }
-
-    const deleteSingleItem = (id)=>{
-        // 删除单个事项，将事项id设为deletingIds
-        let str = '确定解绑该节点吗？'
-        Modal.confirm({
-            centered: true,
-            title: '解绑确认',
-            content: str,
-            onOk: function(){
-                finishDeleting([id])
-            }
-        })
-    }
-
-    const handleBatchDelete = ()=>{
-        // 删除多个事项，将selectedRowKeys全部推进deletingIds
-        let str = '确定解绑该' + selectedRowKeys.length + '个节点吗？'
-        Modal.confirm({
-            centered: true,
-            title: '解绑确认',
-            content: str,
-            onOk: function(){
-                finishDeleting(selectedRowKeys)
-            },
-            style: {whiteSpace: 'pre-wrap'}
-        })
-    }
-
-    const finishDeleting = (id)=>{
-        // 确定删除，调用接口，通过hook触发
-        setDeletingIds(id)
-    }
-
-    useEffect(function(){
-        // 避免初始化触发或误触发
-        if (deletingIds.length === 0) return
-        deleteItems()
-    }, [deletingIds])
-
-    const deleteItems = ()=>{
-        let data = {
-            items: deletingIds
-        } 
-        // 根据事项规则id删除事项规则，删除完之后重新载入事项规则
-        api.DeleteItems(data).then(response=>{ 
-            getItems()
-            props.showSuccess()
-        }).catch(error=>{
-            // 删除报错时，弹出报错框并重新加载数据
-            getItems()
-            setCurrent(0)
-            props.showError('解绑事项失败！')
         })
     }
 
@@ -318,6 +165,7 @@ export default function ManageProcess(props) {
         let totalData = data
         totalData['page_num'] = 0
         totalData['page_size'] = currPageSize
+        totalData['item_status'] = [statusScheme.FirstAudit.id, statusScheme.SecondAudit.id]
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setCurrent(0)
@@ -345,7 +193,8 @@ export default function ManageProcess(props) {
         // 获取所有事项规则
         api.GetItems({
             page_num: 0,
-            page_size: currPageSize
+            page_size: currPageSize,
+            item_status: [statusScheme.FirstAudit.id, statusScheme.SecondAudit.id]
         }).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -374,6 +223,7 @@ export default function ManageProcess(props) {
         let totalData = originData
         totalData['page_num'] = page - 1
         totalData['page_size'] = pageSize
+        totalData['item_status'] = [statusScheme.FirstAudit.id, statusScheme.SecondAudit.id]
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -386,34 +236,16 @@ export default function ManageProcess(props) {
             }
             setTableData(items)
             setTableLoading(false)
+            console.log(response.data.data)
         }).catch(error=>{
             props.showError('换页时获取事项信息失败！')
             setTableLoading(false)
         })
     }
 
-    const getItemstatusScheme = ()=>{
-        api.GetItemStatusScheme({}).then(response=>{
-            // 获取状态表
-            let scheme = response.data.data
-            let keyToWord = {}
-            let buttons = {}
-            for (let key in scheme){
-                // 状态码对状态名和相关按钮的映射
-                keyToWord[scheme[key].id] = scheme[key].cn_name
-                buttons[scheme[key].id] = scheme[key].buttons
-            }
-            setStatusScheme(scheme)
-            setStatusButtons(buttons)
-            setStatusName(keyToWord)
-        }).catch(error=>{
-            props.showError('初始化状态表失败！')
-        })
-    }
-
-    const getGuideDetail = (_id)=>{
-        api.GetItemGuideAndAuditAdvises({
-            item_id: _id
+    const auditTask = (task_code, id, path)=>{
+        api.GetItemGuide({
+            task_code: task_code
         }).then(response=>{
             // 将数据处理为有序格式
             let data = response.data.data
@@ -425,6 +257,10 @@ export default function ManageProcess(props) {
             detailTable.push({
                 'detailType': '事项代码',
                 'detailInfo': data.task_code
+            })
+            detailTable.push({
+                'detailType': '事项规则',
+                'detailInfo': path
             })
             detailTable.push({
                 'detailType': '事项内容',
@@ -521,34 +357,31 @@ export default function ManageProcess(props) {
                 'detailType': '服务对象类型',
                 'detailInfo': tempServiceType
             })
-            // 审核意见处理
-            let tempAdvises = ''
-            if ('audit_advises' in data){
-                for (let key in data.audit_advises){
-                    tempAdvises += (data[audit_advises][key] + '\n')
-                }
-            }
-            detailTable.push({
-                'detailType': '审核意见',
-                'detailInfo': tempAdvises
-            })
-            setGuideDetail(detailTable)
+            props.setAuditingData(detailTable)
+            props.setAuditingId(id)
         }).catch(error=>{
             props.showError('获取事项详情失败！')
         })
     }
 
-    const endShowing = ()=>{
-        setIsDetailShown(false)
-        setGuideDetail({})
+    const getItemstatusScheme = ()=>{
+        api.GetItemStatusScheme({}).then(response=>{
+            // 获取状态表
+            let scheme = response.data.data
+            let keyToWord = {}
+            let buttons = {}
+            for (let key in scheme){
+                // 状态码对状态名和相关按钮的映射
+                keyToWord[scheme[key].id] = scheme[key].cn_name
+                // buttons[scheme[key].id] = scheme[key].buttons
+            }
+            setStatusScheme(scheme)
+            // setStatusButtons(buttons)
+            setStatusName(keyToWord)
+        }).catch(error=>{
+            props.showError('初始化状态表失败！')
+        })
     }
-
-    useEffect(function(){
-        for (let key in guideDetail){
-            setIsDetailShown(true)
-            break
-        }
-    }, [guideDetail])
 
     useEffect(()=>{
         for (let key in props.regionNodes){
@@ -581,7 +414,6 @@ export default function ManageProcess(props) {
         }
         for (let key in statusName){
             setCurrent(0)
-            setUnableCreate(false)
             setOriginData({})
             getItems()
             break
@@ -591,18 +423,9 @@ export default function ManageProcess(props) {
     return (
         <>
             <Space direction='vertical' size={12} style={{width: '100%'}}>
-                <Modal width={800} title={guideDetail.task_name} visible={isDetailShown}
-                    destroyOnClose={true} onCancel={endShowing} footer={null}>
-                    <Table style={{whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-all'}} columns={detailColumns} dataSource={guideDetail} rowKey='detailType'/>
-                </Modal>
                 <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData}
                     bindedData={props.bindedData} setBindedData={props.setBindedData} />
-                <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
-                    <Button type='primary' disabled={unableCreate} onClick={handleCreate}>绑定事项</Button>
-                    <Button type='primary' disabled={!isBatching}>批量导出</Button>
-                    <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量解绑</Button>
-                </Space>
-                <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='_id'
+                <Table columns={tableColumns} dataSource={tableData} rowKey='_id'
                     pagination={{onChange: changePage, current: current + 1, total: totalSize}} loading={tableLoading}/>
             </Space>
         </>

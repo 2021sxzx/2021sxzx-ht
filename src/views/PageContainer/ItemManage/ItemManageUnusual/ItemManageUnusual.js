@@ -1,15 +1,14 @@
 import React, {cloneElement, useEffect, useState} from 'react'
 import { Dropdown, Space, Menu, message, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
-import { getYMD } from "../../../../../utils/TimeStamp";
-import api from '../../../../../api/rule';
-import SelectForm from './SelectForm'
+import { getYMD } from "../../../../utils/TimeStamp";
+import api from '../../../../api/rule';
+import SelectForm from './components/SelectForm'
 
-export default function ManageProcess(props) {
+export default function ItemManageUnusual(props) {
     // 页面的基础数据
     const [tableData, setTableData] = useState([])
     const [originData, setOriginData] = useState({})
     const [tableLoading, setTableLoading] = useState(true)
-    const [unableCreate, setUnableCreate] = useState(true)
     const [guideDetail, setGuideDetail] = useState({})
     const [isDetailShown, setIsDetailShown] = useState(false)
     // 状态映射表
@@ -17,7 +16,6 @@ export default function ManageProcess(props) {
     const [statusName, setStatusName] = useState({})
     const [statusButtons, setStatusButtons] = useState({})
     // 是否正在删除，以及删除队列
-    const [isDeleting, setIsDeleting] = useState(false)
     const [deletingIds, setDeletingIds] = useState([])
     // 用于获取批量处理的事项规则id
     const [selectedRowKeys, setSelectedRowKeys] = useState([])
@@ -136,7 +134,7 @@ export default function ManageProcess(props) {
                             'detail' in statusButtons[record.item_status] &&
                             <Menu.Item style={{display: 'flex'}} key='2'>
                                 <Button type='primary' onClick={function(){
-                                    getGuideDetail(record._id)
+                                    getGuideDetail(record.task_code)
                                 }}>
                                     查看详情
                                 </Button>
@@ -182,10 +180,6 @@ export default function ManageProcess(props) {
         }
     ]
 
-    const handleCreate = ()=>{
-        props.setPageType(2)
-    }
-
     const getPathByRuleId = (id)=>{
         // 获取规则id对应的规则路径
         let parent = props.ruleNodes[id].parentId
@@ -219,6 +213,7 @@ export default function ManageProcess(props) {
         let data = originData
         data['page_num'] = current
         data['page_size'] = currPageSize
+        data['item_status'] = statusScheme.Failure.id
         // 获取所有事项规则
         api.GetItems(data).then(response=>{
             let items = response.data.data.data
@@ -318,6 +313,7 @@ export default function ManageProcess(props) {
         let totalData = data
         totalData['page_num'] = 0
         totalData['page_size'] = currPageSize
+        totalData['item_status'] = statusScheme.Failure.id
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setCurrent(0)
@@ -345,7 +341,8 @@ export default function ManageProcess(props) {
         // 获取所有事项规则
         api.GetItems({
             page_num: 0,
-            page_size: currPageSize
+            page_size: currPageSize,
+            item_status: statusScheme.Failure.id
         }).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -374,6 +371,7 @@ export default function ManageProcess(props) {
         let totalData = originData
         totalData['page_num'] = page - 1
         totalData['page_size'] = pageSize
+        totalData['item_status'] = statusScheme.Failure.id
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -386,6 +384,7 @@ export default function ManageProcess(props) {
             }
             setTableData(items)
             setTableLoading(false)
+            console.log(response.data.data)
         }).catch(error=>{
             props.showError('换页时获取事项信息失败！')
             setTableLoading(false)
@@ -411,9 +410,9 @@ export default function ManageProcess(props) {
         })
     }
 
-    const getGuideDetail = (_id)=>{
-        api.GetItemGuideAndAuditAdvises({
-            item_id: _id
+    const getGuideDetail = (task_code)=>{
+        api.GetItemGuide({
+            task_code: task_code
         }).then(response=>{
             // 将数据处理为有序格式
             let data = response.data.data
@@ -521,17 +520,6 @@ export default function ManageProcess(props) {
                 'detailType': '服务对象类型',
                 'detailInfo': tempServiceType
             })
-            // 审核意见处理
-            let tempAdvises = ''
-            if ('audit_advises' in data){
-                for (let key in data.audit_advises){
-                    tempAdvises += (data[audit_advises][key] + '\n')
-                }
-            }
-            detailTable.push({
-                'detailType': '审核意见',
-                'detailInfo': tempAdvises
-            })
             setGuideDetail(detailTable)
         }).catch(error=>{
             props.showError('获取事项详情失败！')
@@ -581,7 +569,6 @@ export default function ManageProcess(props) {
         }
         for (let key in statusName){
             setCurrent(0)
-            setUnableCreate(false)
             setOriginData({})
             getItems()
             break
@@ -597,8 +584,7 @@ export default function ManageProcess(props) {
                 </Modal>
                 <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData}
                     bindedData={props.bindedData} setBindedData={props.setBindedData} />
-                <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
-                    <Button type='primary' disabled={unableCreate} onClick={handleCreate}>绑定事项</Button>
+                <Space direction='horizontal' size={12} style={{marginLeft: '82%'}}>
                     <Button type='primary' disabled={!isBatching}>批量导出</Button>
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量解绑</Button>
                 </Space>
