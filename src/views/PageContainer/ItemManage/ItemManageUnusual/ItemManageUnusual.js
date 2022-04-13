@@ -13,8 +13,7 @@ export default function ItemManageUnusual(props) {
     const [isDetailShown, setIsDetailShown] = useState(false)
     // 状态映射表
     const [statusScheme, setStatusScheme] = useState({})
-    const [statusName, setStatusName] = useState({})
-    const [statusButtons, setStatusButtons] = useState({})
+    const [statusId, setStatusId] = useState({})
     // 是否正在删除，以及删除队列
     const [deletingIds, setDeletingIds] = useState([])
     // 用于获取批量处理的事项规则id
@@ -32,6 +31,14 @@ export default function ItemManageUnusual(props) {
     const [current, setCurrent] = useState(0)
     const [currPageSize, setCurrPageSize] = useState(10)
     const [totalSize, setTotalSize] = useState(0)
+
+    const showError = (info)=>{
+        Modal.error({
+            title: '出错啦！',
+            content: info,
+            centered: true
+        })
+    }
 
     const serviceType = {
         '1': '自然人',
@@ -111,7 +118,7 @@ export default function ItemManageUnusual(props) {
                 <Dropdown overlay={
                     <Menu>
                         {
-                            'unbind' in statusButtons[record.item_status] &&
+                            'unbind' in statusScheme[record.item_status].buttons &&
                             <Menu.Item key='0'>
                                 <Button type='primary' style={{width: 88}} onClick={function(){
                                     deleteSingleItem(record._id)
@@ -121,50 +128,51 @@ export default function ItemManageUnusual(props) {
                             </Menu.Item>
                         }
                         {
-                            'submit' in statusButtons[record.item_status] &&
+                            'submit' in statusScheme[record.item_status].buttons &&
                             <Menu.Item style={{display: 'flex'}} key='1'>
                                 <Button type='primary' onClick={function(){
-                                    changeItemStatus(record._id, statusScheme.FirstAudit.id)
+                                    changeItemStatus(record._id, statusScheme[record.item_status].next_status.next)
                                 }}>
                                     提交审核
                                 </Button>
                             </Menu.Item>
                         }
                         {
-                            'detail' in statusButtons[record.item_status] &&
+                            'detail' in statusScheme[record.item_status].buttons &&
                             <Menu.Item style={{display: 'flex'}} key='2'>
                                 <Button type='primary' onClick={function(){
-                                    getGuideDetail(record.task_code)
+                                    getGuideDetail(record._id)
                                 }}>
                                     查看详情
                                 </Button>
                             </Menu.Item>
                         }
                         {
-                            'cancel' in statusButtons[record.item_status] &&
+                            'cancel' in statusScheme[record.item_status].buttons &&
                             <Menu.Item style={{display: 'flex'}} key='3'>
                                 <Button type='primary' onClick={function(){
-                                    changeItemStatus(record._id, statusScheme.WaitAudit.id)
+                                    console.log(statusScheme[record.item_status])
+                                    changeItemStatus(record._id, statusScheme[record.item_status].next_status.cancel)
                                 }}>
                                     取消审核
                                 </Button>
                             </Menu.Item>
                         }
                         {
-                            'recall' in statusButtons[record.item_status] &&
+                            'recall' in statusScheme[record.item_status].buttons &&
                             <Menu.Item style={{display: 'flex'}} key='4'>
                                 <Button style={{backgroundColor: 'red', color: 'white', width: 88}} onClick={function(){
-                                    changeItemStatus(record._id, statusScheme.Recall.id)
+                                    changeItemStatus(record._id, statusScheme[record.item_status].next_status.recall)
                                 }}>
                                     撤回
                                 </Button>
                             </Menu.Item>
                         }
                         {
-                            'cancelRecall' in statusButtons[record.item_status] &&
+                            'cancelRecall' in statusScheme[record.item_status].buttons &&
                             <Menu.Item style={{display: 'flex'}} key='5'>
                                 <Button style={{backgroundColor: 'red', color: 'white'}} onClick={function(){
-                                    changeItemStatus(record._id, statusScheme.Success.id)
+                                    changeItemStatus(record._id, statusScheme[record.item_status].next_status.cancel)
                                 }}>
                                     取消撤回
                                 </Button>
@@ -213,7 +221,7 @@ export default function ItemManageUnusual(props) {
         let data = originData
         data['page_num'] = current
         data['page_size'] = currPageSize
-        data['item_status'] = statusScheme.Failure.id
+        data['item_status'] = statusId.Failure
         // 获取所有事项规则
         api.GetItems(data).then(response=>{
             let items = response.data.data.data
@@ -223,12 +231,12 @@ export default function ItemManageUnusual(props) {
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
-                items[i]['status'] = statusName[items[i].item_status]
+                items[i]['status'] = statusScheme[items[i].item_status].cn_name
             }
             setTableLoading(false)
             setTableData(items)
         }).catch(error=>{
-            props.showError('获取事项失败！')
+            showError('获取事项失败！')
             setTableLoading(false)
         })
     }
@@ -283,7 +291,7 @@ export default function ItemManageUnusual(props) {
             // 删除报错时，弹出报错框并重新加载数据
             getItems()
             setCurrent(0)
-            props.showError('解绑事项失败！')
+            showError('解绑事项失败！')
         })
     }
 
@@ -302,7 +310,7 @@ export default function ItemManageUnusual(props) {
         }).catch(error=>{
             getItems()
             setCurrent(0)
-            props.showError('更新事项状态失败！')
+            showError('更新事项状态失败！')
         })
     }
 
@@ -313,7 +321,7 @@ export default function ItemManageUnusual(props) {
         let totalData = data
         totalData['page_num'] = 0
         totalData['page_size'] = currPageSize
-        totalData['item_status'] = statusScheme.Failure.id
+        totalData['item_status'] = statusId.Failure
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setCurrent(0)
@@ -322,13 +330,13 @@ export default function ItemManageUnusual(props) {
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
-                items[i]['status'] = statusName[items[i].item_status]
+                items[i]['status'] = statusScheme[items[i].item_status].cn_name
             }
             setTotalSize(response.data.data.total)
             setTableData(items)
             setTableLoading(false)
         }).catch(error=>{
-            props.showError('搜索事项失败！')
+            showError('搜索事项失败！')
             setTableLoading(false)
         })
     }
@@ -342,7 +350,7 @@ export default function ItemManageUnusual(props) {
         api.GetItems({
             page_num: 0,
             page_size: currPageSize,
-            item_status: statusScheme.Failure.id
+            item_status: statusId.Failure
         }).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -351,12 +359,12 @@ export default function ItemManageUnusual(props) {
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
-                items[i]['status'] = statusName[items[i].item_status]
+                items[i]['status'] = statusScheme[items[i].item_status].cn_name
             }
             setTableLoading(false)
             setTableData(items)
         }).catch(error=>{
-            props.showError('重置失败！')
+            showError('重置失败！')
             setTableLoading(false)
         })
     }
@@ -371,7 +379,7 @@ export default function ItemManageUnusual(props) {
         let totalData = originData
         totalData['page_num'] = page - 1
         totalData['page_size'] = pageSize
-        totalData['item_status'] = statusScheme.Failure.id
+        totalData['item_status'] = statusId.Failure
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -380,13 +388,13 @@ export default function ItemManageUnusual(props) {
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
-                items[i]['status'] = statusName[items[i].item_status]
+                items[i]['status'] = statusScheme[items[i].item_status].cn_name
             }
             setTableData(items)
             setTableLoading(false)
             console.log(response.data.data)
         }).catch(error=>{
-            props.showError('换页时获取事项信息失败！')
+            showError('换页时获取事项信息失败！')
             setTableLoading(false)
         })
     }
@@ -395,24 +403,21 @@ export default function ItemManageUnusual(props) {
         api.GetItemStatusScheme({}).then(response=>{
             // 获取状态表
             let scheme = response.data.data
-            let keyToWord = {}
-            let buttons = {}
+            let wordToName = {}
             for (let key in scheme){
                 // 状态码对状态名和相关按钮的映射
-                keyToWord[scheme[key].id] = scheme[key].cn_name
-                buttons[scheme[key].id] = scheme[key].buttons
+                wordToName[scheme[key].eng_name] = key
             }
             setStatusScheme(scheme)
-            setStatusButtons(buttons)
-            setStatusName(keyToWord)
+            setStatusId(wordToName)
         }).catch(error=>{
-            props.showError('初始化状态表失败！')
+            showError('初始化状态表失败！')
         })
     }
 
-    const getGuideDetail = (task_code)=>{
-        api.GetItemGuide({
-            task_code: task_code
+    const getGuideDetail = (_id)=>{
+        api.GetItemGuideAndAuditAdvises({
+            item_id: _id
         }).then(response=>{
             // 将数据处理为有序格式
             let data = response.data.data
@@ -520,9 +525,21 @@ export default function ItemManageUnusual(props) {
                 'detailType': '服务对象类型',
                 'detailInfo': tempServiceType
             })
+            // 审核意见处理
+            let tempAdvises = ''
+            if ('audit_advises' in data){
+                for (let i = 0; i < data.audit_advises.length; i++){
+                    tempAdvises += ((i + 1) + '.' + data['audit_advises'][i].user_name + '：' + data['audit_advises'][i].advise + '\n')
+                }
+            }
+            detailTable.push({
+                'detailType': '审核意见',
+                'detailInfo': tempAdvises
+            })
+            setTableLoading(false)
             setGuideDetail(detailTable)
         }).catch(error=>{
-            props.showError('获取事项详情失败！')
+            showError('获取事项详情失败！')
         })
     }
 
@@ -551,7 +568,7 @@ export default function ItemManageUnusual(props) {
     useEffect(()=>{
         // 若是跳转过来进行解绑的，处理绑定数据
         for (let key in props.bindedData){
-            for (let key in statusName){
+            for (let key in statusId){
                 let data = {}
                 if ('rule_id' in props.bindedData){
                     data['rule_id'] = props.bindedData.rule_id
@@ -567,13 +584,13 @@ export default function ItemManageUnusual(props) {
             }
             return
         }
-        for (let key in statusName){
+        for (let key in statusId){
             setCurrent(0)
             setOriginData({})
             getItems()
             break
         }      
-    }, [statusName])
+    }, [statusId])
 
     return (
         <>

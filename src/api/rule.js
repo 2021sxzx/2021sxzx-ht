@@ -185,6 +185,20 @@ const api ={
             url: "/v1/changeItemStatus",
             data
         })
+    },
+    GetItemGuideAndAuditAdvises(data){
+        return service.request({
+            method: "post",
+            url: "/v1/getItemGuideAndAuditAdvises",
+            data
+        })
+    },
+    AddAuditAdvise(data){
+        return service.request({
+            method: "post",
+            url: "/v1/addAuditAdvise",
+            data
+        })
     }
 }
 

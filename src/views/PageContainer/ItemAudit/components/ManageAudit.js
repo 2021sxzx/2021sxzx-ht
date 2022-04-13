@@ -9,9 +9,6 @@ export default function ManageAudit(props) {
     const [tableData, setTableData] = useState([])
     const [originData, setOriginData] = useState({})
     const [tableLoading, setTableLoading] = useState(true)
-    // 状态映射表
-    const [statusScheme, setStatusScheme] = useState({})
-    const [statusName, setStatusName] = useState({})
     // 当前展示的页数，用于重置时归零
     const [current, setCurrent] = useState(0)
     const [currPageSize, setCurrPageSize] = useState(10)
@@ -78,7 +75,7 @@ export default function ManageAudit(props) {
             width: 120,
             render: (text, record)=>(
                 <Button type='primary' style={{width: 88}} onClick={function(){
-                    auditTask(record.task_code, record._id, record.rule_path)
+                    auditTask(record)
                 }}>
                     审核
                 </Button>
@@ -119,7 +116,7 @@ export default function ManageAudit(props) {
         let data = originData
         data['page_num'] = current
         data['page_size'] = currPageSize
-        data['item_status'] = [statusScheme.FirstAudit.id, statusScheme.SecondAudit.id]
+        data['item_status'] = [props.statusId.FirstAudit, props.statusId.SecondAudit]
         // 获取所有事项规则
         api.GetItems(data).then(response=>{
             let items = response.data.data.data
@@ -129,32 +126,14 @@ export default function ManageAudit(props) {
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
-                items[i]['status'] = statusName[items[i].item_status]
+                items[i]['status'] = props.statusScheme[items[i].item_status].cn_name
             }
             setTableLoading(false)
             setTableData(items)
         }).catch(error=>{
             props.showError('获取事项失败！')
+            console.log(error)
             setTableLoading(false)
-        })
-    }
-
-    const changeItemStatus = (item_id, next_status)=>{
-        // 更新事项状态的接口
-        let items = [{
-            item_id: item_id,
-            next_status: next_status
-        }]
-        api.ChangeItemStatus({
-            user_id: props.userId,
-            items: items
-        }).then(response=>{
-            // 更新完毕后重新获取事项
-            getItems()
-        }).catch(error=>{
-            getItems()
-            setCurrent(0)
-            props.showError('更新事项状态失败！')
         })
     }
 
@@ -165,7 +144,7 @@ export default function ManageAudit(props) {
         let totalData = data
         totalData['page_num'] = 0
         totalData['page_size'] = currPageSize
-        totalData['item_status'] = [statusScheme.FirstAudit.id, statusScheme.SecondAudit.id]
+        totalData['item_status'] = [props.statusId.FirstAudit, props.statusId.SecondAudit]
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setCurrent(0)
@@ -174,7 +153,7 @@ export default function ManageAudit(props) {
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
-                items[i]['status'] = statusName[items[i].item_status]
+                items[i]['status'] = props.statusScheme[items[i].item_status].cn_name
             }
             setTotalSize(response.data.data.total)
             setTableData(items)
@@ -194,7 +173,7 @@ export default function ManageAudit(props) {
         api.GetItems({
             page_num: 0,
             page_size: currPageSize,
-            item_status: [statusScheme.FirstAudit.id, statusScheme.SecondAudit.id]
+            item_status: [props.statusId.FirstAudit, props.statusId.SecondAudit]
         }).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -203,7 +182,7 @@ export default function ManageAudit(props) {
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
-                items[i]['status'] = statusName[items[i].item_status]
+                items[i]['status'] = props.statusScheme[items[i].item_status].cn_name
             }
             setTableLoading(false)
             setTableData(items)
@@ -223,7 +202,7 @@ export default function ManageAudit(props) {
         let totalData = originData
         totalData['page_num'] = page - 1
         totalData['page_size'] = pageSize
-        totalData['item_status'] = [statusScheme.FirstAudit.id, statusScheme.SecondAudit.id]
+        totalData['item_status'] = [props.statusId.FirstAudit, props.statusId.SecondAudit]
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -232,7 +211,7 @@ export default function ManageAudit(props) {
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
-                items[i]['status'] = statusName[items[i].item_status]
+                items[i]['status'] = props.statusScheme[items[i].item_status].cn_name
             }
             setTableData(items)
             setTableLoading(false)
@@ -243,9 +222,10 @@ export default function ManageAudit(props) {
         })
     }
 
-    const auditTask = (task_code, id, path)=>{
-        api.GetItemGuide({
-            task_code: task_code
+    const auditTask = (item)=>{
+        setTableLoading(true)
+        api.GetItemGuideAndAuditAdvises({
+            item_id: item._id
         }).then(response=>{
             // 将数据处理为有序格式
             let data = response.data.data
@@ -260,7 +240,7 @@ export default function ManageAudit(props) {
             })
             detailTable.push({
                 'detailType': '事项规则',
-                'detailInfo': path
+                'detailInfo': item.rule_path
             })
             detailTable.push({
                 'detailType': '事项内容',
@@ -357,46 +337,31 @@ export default function ManageAudit(props) {
                 'detailType': '服务对象类型',
                 'detailInfo': tempServiceType
             })
+            // 审核意见处理
+            let tempAdvises = ''
+            if ('audit_advises' in data){
+                for (let i = 0; i < data.audit_advises.length; i++){
+                    tempAdvises += ((i + 1) + '.' + data['audit_advises'][i].user_name + '：' + data['audit_advises'][i].advise + '\n')
+                }
+            }
+            detailTable.push({
+                'detailType': '审核意见',
+                'detailInfo': tempAdvises
+            })
+            setTableLoading(false)
             props.setAuditingData(detailTable)
-            props.setAuditingId(id)
+            props.setAuditingId(item._id)
+            props.setAuditingStatus(item.item_status)
         }).catch(error=>{
+            setTableLoading(false)
             props.showError('获取事项详情失败！')
         })
     }
 
-    const getItemstatusScheme = ()=>{
-        api.GetItemStatusScheme({}).then(response=>{
-            // 获取状态表
-            let scheme = response.data.data
-            let keyToWord = {}
-            let buttons = {}
-            for (let key in scheme){
-                // 状态码对状态名和相关按钮的映射
-                keyToWord[scheme[key].id] = scheme[key].cn_name
-                // buttons[scheme[key].id] = scheme[key].buttons
-            }
-            setStatusScheme(scheme)
-            // setStatusButtons(buttons)
-            setStatusName(keyToWord)
-        }).catch(error=>{
-            props.showError('初始化状态表失败！')
-        })
-    }
-
-    useEffect(()=>{
-        for (let key in props.regionNodes){
-            for (let key in props.ruleNodes){
-                getItemstatusScheme()
-                break
-            }
-            break
-        }
-    }, [props.regionNodes, props.ruleNodes])
-
     useEffect(()=>{
         // 若是跳转过来进行解绑的，处理绑定数据
         for (let key in props.bindedData){
-            for (let key in statusName){
+            for (let key in props.statusId){
                 let data = {}
                 if ('rule_id' in props.bindedData){
                     data['rule_id'] = props.bindedData.rule_id
@@ -412,13 +377,13 @@ export default function ManageAudit(props) {
             }
             return
         }
-        for (let key in statusName){
+        for (let key in props.statusId){
             setCurrent(0)
             setOriginData({})
             getItems()
             break
         }      
-    }, [statusName])
+    }, [props.statusId])
 
     return (
         <>

@@ -243,6 +243,7 @@ export default function ManageRegions(props) {
             }
             setTableData(regions)
             setTableLoading(false)
+            console.log(regions)
         }).catch(error=>{
             props.showError('获取规则失败！')
             setTableLoading(false)

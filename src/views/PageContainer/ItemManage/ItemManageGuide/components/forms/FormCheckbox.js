@@ -4,7 +4,6 @@ import { useState } from 'react'
 const { TextArea } = Input
 
 export default function FormCheckbox(props){
-    console.log(props.value)
     const [data, setData] = useState(props.value)
 
     const serviceType = [
