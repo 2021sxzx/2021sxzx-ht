@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptions, Badge} from 'antd'
+import {DatePicker, Checkbox, Form, Input, Button, Select, Table, Modal,Descriptions, Badge} from 'antd'
 import {getTimeStamp} from "../../../../../utils/TimeStamp";
 const {RangePicker} = DatePicker
 
@@ -14,6 +14,7 @@ export default function SelectForm(props){
     const [creator, setCreator] = useState('')
     const [rule_id, setRuleId] = useState('')
     const [region_code, setRegionCode] = useState('')
+    const [item_status, setItemStatus] = useState([])
 
     const handleTaskCodeChange = (e)=>{
         setTaskCode(e.target.value)
@@ -33,6 +34,9 @@ export default function SelectForm(props){
     const handleRegionCodeChange = (e)=>{
         setRegionCode(e.target.value)
     }
+    const handleItemStatusChange = (value)=>{
+        setItemStatus(value)
+    }
 
     useEffect(function(){
         // 初始化搜索栏中的信息
@@ -48,6 +52,10 @@ export default function SelectForm(props){
             break
         }
     }, [props.bindedData])
+
+    useEffect(function(){
+        setItemStatus(props.fullType)
+    }, [props.fullType])
 
     const splitIds = (id)=>{
         let ids = []
@@ -84,6 +92,7 @@ export default function SelectForm(props){
             let code = splitIds(region_code)
             data['region_code'] = code
         } 
+        data['item_status'] = item_status
         // clear()
         props.setOriginData(data)
         props.getSearch(data)
@@ -103,13 +112,6 @@ export default function SelectForm(props){
     }
 
     const clear = ()=>{
-        document.getElementById('taskCodeInput').value = ''
-        document.getElementById('itemNameInput').value = ''
-        document.getElementById('departmentInput').value = ''
-        document.getElementById('creatorInput').value = ''
-        document.getElementById('ruleIdInput').value = ''
-        document.getElementById('regionCodeInput').value = ''
-        document.getElementById('timeInput').value = [null, null]
         setTaskCode('')
         setItemRuleName('')
         setDepartment('')
@@ -119,6 +121,7 @@ export default function SelectForm(props){
         setStartTime('')
         setEndTime('')
         setTime([null, null])
+        setItemStatus(props.fullType)
     }
 
     const reset = ()=>{
@@ -136,33 +139,36 @@ export default function SelectForm(props){
                 }}
             >
                 <Form.Item label='指南编码' style={{width: '25%'}}>
-                    <Input id='taskCodeInput' value={task_code}
+                    <Input value={task_code}
                         placeholder='请输入编码' size='middle' onChange={handleTaskCodeChange}></Input>
                 </Form.Item>
                 <Form.Item label='指南名称' style={{width: '25%'}}>
-                    <Input id='itemNameInput' value={item_name}
+                    <Input value={item_name}
                         placeholder='请输入名称' size='middle' onChange={handleItemNameChange}></Input>
                 </Form.Item>
                 <Form.Item label='业务部门' style={{width: '22%'}}>
-                    <Input id='departmentInput' value={department}
+                    <Input value={department}
                         placeholder='请输入部门' size='middle' onChange={handleDepartmentChange}></Input>
                 </Form.Item>
                 <Form.Item label='创建人' style={{width: '22%'}}>
-                    <Input id='creatorInput' value={creator}
+                    <Input value={creator}
                         placeholder='请输入创建人' size='middle' onChange={handleCreatorChange}></Input>
                 </Form.Item>
 
                 <Form.Item label='业务规则编码' style={{marginTop: 10, width: '25%'}}>
-                    <Input id='ruleIdInput' value={rule_id}
+                    <Input value={rule_id}
                         placeholder='请输入业务规则编码' size='middle' onChange={handleRuleIdChange}></Input>
                 </Form.Item>
                 <Form.Item label='区划规则编码' style={{marginTop: 10, width: '25%'}}>
-                    <Input id='regionCodeInput' value={region_code}
+                    <Input value={region_code}
                         placeholder='请输入区划规则编码' size='middle' onChange={handleRegionCodeChange}></Input>
                 </Form.Item>
-                <Form.Item label='起始时间' style={{marginTop: 10, width: '32%'}}>
-                    <RangePicker id='timeInput' value={time} style={{width: '100%'}} 
+                <Form.Item label='起始时间' style={{marginTop: 10, width: '45%'}}>
+                    <RangePicker value={time} style={{width: '100%'}} 
                         onChange={handleDateChange}/>      
+                </Form.Item>
+                <Form.Item label='事项状态' style={{marginTop: 10, width: '85%'}}>
+                    <Checkbox.Group options={props.statusType} value={item_status} onChange={handleItemStatusChange}/>
                 </Form.Item>
                 <Form.Item style={{marginTop: 10, width: '5%', minWidth: 62}}>
                     <Button type='default' onClick={reset} style={{width: '100%'}}>重置</Button>

@@ -14,7 +14,8 @@ export default function ManageProcess(props) {
     const [isDetailShown, setIsDetailShown] = useState(false)
     // 状态映射表
     const [statusScheme, setStatusScheme] = useState({})
-    //const [statusId, setStatusId] = useState({})
+    const [statusType, setStatusType] = useState([])
+    const [fullType, setFullType] = useState([])
     // 是否正在删除，以及删除队列
     const [isDeleting, setIsDeleting] = useState(false)
     const [deletingIds, setDeletingIds] = useState([])
@@ -268,6 +269,7 @@ export default function ManageProcess(props) {
 
     const finishDeleting = (id)=>{
         // 确定删除，调用接口，通过hook触发
+        setTableLoading(true)
         setDeletingIds(id)
     }
 
@@ -294,6 +296,7 @@ export default function ManageProcess(props) {
     }
 
     const changeItemStatus = (item_id, next_status)=>{
+        setTableLoading(true)
         // 更新事项状态的接口
         let items = [{
             item_id: item_id,
@@ -346,7 +349,8 @@ export default function ManageProcess(props) {
         // 获取所有事项规则
         api.GetItems({
             page_num: 0,
-            page_size: currPageSize
+            page_size: currPageSize,
+            item_status: fullType
         }).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -361,6 +365,7 @@ export default function ManageProcess(props) {
             setTableData(items)
         }).catch(error=>{
             props.showError('重置失败！')
+            console.log(error)
             setTableLoading(false)
         })
     }
@@ -397,6 +402,20 @@ export default function ManageProcess(props) {
         api.GetItemStatusScheme({}).then(response=>{
             // 获取状态表
             let scheme = response.data.data
+            console.log(scheme)
+            let type = []
+            let fullType = []
+            for (let key in scheme){
+                if (scheme[key].eng_name !== 'Failure'){
+                    type.push({
+                        label: scheme[key].cn_name,
+                        value: key
+                    })
+                    fullType.push(key)
+                }
+            }
+            setStatusType(type)
+            setFullType(fullType)
             setStatusScheme(scheme)
         }).catch(error=>{
             props.showError('初始化状态表失败！')
@@ -578,7 +597,7 @@ export default function ManageProcess(props) {
             setCurrent(0)
             setUnableCreate(false)
             setOriginData({})
-            getItems()
+            resetSearch()
             break
         }      
     }, [statusScheme])
@@ -590,8 +609,8 @@ export default function ManageProcess(props) {
                     destroyOnClose={true} onCancel={endShowing} footer={null}>
                     <Table style={{whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-all'}} columns={detailColumns} dataSource={guideDetail} rowKey='detailType'/>
                 </Modal>
-                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData}
-                    bindedData={props.bindedData} setBindedData={props.setBindedData} />
+                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData} fullType={fullType}
+                    bindedData={props.bindedData} setBindedData={props.setBindedData} statusType={statusType} />
                 <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
                     <Button type='primary' disabled={unableCreate} onClick={handleCreate}>绑定事项</Button>
                     <Button type='primary' disabled={!isBatching}>批量导出</Button>

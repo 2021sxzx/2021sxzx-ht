@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import style from './CreateAudit.module.scss'
-import {Table, Button, Space, Input} from 'antd'
+import {Table, Button, Space, Input, Modal} from 'antd'
 import api from '../../../../api/rule'
 const {TextArea} = Input
 
@@ -34,27 +34,57 @@ export default function CreateAudit(props) {
     }
 
     const handleRejection = ()=>{
-        // 审核不通过
-        api.ChangeItemStatus({
-            user_id: props.userId,
-            items: [{
-                item_id: props.auditingId,
-                next_status: props.statusScheme[props.auditingStatus].next_status.reject
-            }]
-        }).then(response=>{
-            addAuditAdvise()
-        }).catch(error=>{
-            props.showError('变更状态失败！')
-        })
+        if (comment === ''){
+            Modal.warning({
+                title: '未输入意见',
+                content: '请输入审核意见！',
+                centered: true
+            })
+            return
+        }
+        else{
+            Modal.confirm({
+                title: '确认审核',
+                content: '    您的审核意见为“' + comment + '”，\n' + '    确定不通过审核吗？',
+                centered: true,
+                style: {whiteSpace: 'pre-wrap'},
+                onOk: function(){
+                    changeItemStatus(props.statusScheme[props.auditingStatus].next_status.reject)
+                }
+            })
+        }
     }
 
     const handleAuditing = ()=>{
+        if (comment === ''){
+            Modal.warning({
+                title: '未输入意见',
+                content: '请输入审核意见！',
+                centered: true
+            })
+            return
+        }
+        else{
+            Modal.confirm({
+                title: '确认审核',
+                content: '    您的审核意见为“' + comment + '”，\n' + '    确定通过审核吗？',
+                centered: true,
+                style: {whiteSpace: 'pre-wrap'},
+                onOk: function(){
+                    changeItemStatus(props.statusScheme[props.auditingStatus].next_status.next)
+                }
+            })
+        }
+        
+    }
+
+    const changeItemStatus = (next_status)=>{
         // 审核通过
         api.ChangeItemStatus({
             user_id: props.userId,
             items: [{
                 item_id: props.auditingId,
-                next_status: props.statusScheme[props.auditingStatus].next_status.next
+                next_status: next_status
             }]
         }).then(response=>{
             addAuditAdvise()

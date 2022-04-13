@@ -378,6 +378,7 @@ export default function ManageGuide(props) {
     }
 
     const modifyItemGuide = (id)=>{
+        setTableLoading(true)
         api.GetItemGuide({
             task_code: id
         }).then(response=>{
@@ -444,6 +445,7 @@ export default function ManageGuide(props) {
     }
 
     const resetSearch = ()=>{
+        setTableLoading(true)
         // 回 归 本 源
         setOriginData({})
         setCurrent(0)
@@ -495,7 +497,7 @@ export default function ManageGuide(props) {
 
     useEffect(()=>{
         setCurrent(0)
-        getItemGuides()
+        resetSearch()
     }, [])
 
     return (

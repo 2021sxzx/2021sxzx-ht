@@ -136,32 +136,32 @@ export default function SelectForm(props){
                 }}
             >
                 <Form.Item label='指南编码' style={{width: '25%'}}>
-                    <Input id='taskCodeInput' value={task_code}
+                    <Input value={task_code}
                         placeholder='请输入编码' size='middle' onChange={handleTaskCodeChange}></Input>
                 </Form.Item>
                 <Form.Item label='指南名称' style={{width: '25%'}}>
-                    <Input id='itemNameInput' value={item_name}
+                    <Input value={item_name}
                         placeholder='请输入名称' size='middle' onChange={handleItemNameChange}></Input>
                 </Form.Item>
                 <Form.Item label='业务部门' style={{width: '22%'}}>
-                    <Input id='departmentInput' value={department}
+                    <Input value={department}
                         placeholder='请输入部门' size='middle' onChange={handleDepartmentChange}></Input>
                 </Form.Item>
                 <Form.Item label='创建人' style={{width: '22%'}}>
-                    <Input id='creatorInput' value={creator}
+                    <Input value={creator}
                         placeholder='请输入创建人' size='middle' onChange={handleCreatorChange}></Input>
                 </Form.Item>
 
                 <Form.Item label='业务规则编码' style={{marginTop: 10, width: '25%'}}>
-                    <Input id='ruleIdInput' value={rule_id}
+                    <Input value={rule_id}
                         placeholder='请输入业务规则编码' size='middle' onChange={handleRuleIdChange}></Input>
                 </Form.Item>
                 <Form.Item label='区划规则编码' style={{marginTop: 10, width: '25%'}}>
-                    <Input id='regionCodeInput' value={region_code}
+                    <Input value={region_code}
                         placeholder='请输入区划规则编码' size='middle' onChange={handleRegionCodeChange}></Input>
                 </Form.Item>
                 <Form.Item label='起始时间' style={{marginTop: 10, width: '32%'}}>
-                    <RangePicker id='timeInput' value={time} style={{width: '100%'}} 
+                    <RangePicker value={time} style={{width: '100%'}} 
                         onChange={handleDateChange}/>      
                 </Form.Item>
                 <Form.Item style={{marginTop: 10, width: '5%', minWidth: 62}}>

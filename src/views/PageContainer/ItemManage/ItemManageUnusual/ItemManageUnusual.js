@@ -40,6 +40,10 @@ export default function ItemManageUnusual(props) {
         })
     }
 
+    const showSuccess = ()=>{
+        message.success('操作成功！')
+    }
+
     const serviceType = {
         '1': '自然人',
         '2': '企业法人',
@@ -286,7 +290,7 @@ export default function ItemManageUnusual(props) {
         // 根据事项规则id删除事项规则，删除完之后重新载入事项规则
         api.DeleteItems(data).then(response=>{ 
             getItems()
-            props.showSuccess()
+            showSuccess()
         }).catch(error=>{
             // 删除报错时，弹出报错框并重新加载数据
             getItems()

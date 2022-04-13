@@ -342,13 +342,16 @@ export default function ManageRegions(props) {
     useEffect(function(){
         // 避开初始化时执行查询
         for (let key in props.regionTree){
-            setCurrent(0)
-            getRegions()
-            // regionTree初始化完毕前不能进行节点创建，否则会报错
-            setUnableCreate(false)
+            for (let key in props.regionNodes){
+                setCurrent(0)
+                getRegions()
+                // regionTree初始化完毕前不能进行节点创建，否则会报错
+                setUnableCreate(false)
+                break
+            }
             break
         }
-    }, [props.regionTree])
+    }, [props.regionTree, props.regionNodes])
 
     return (
         <>

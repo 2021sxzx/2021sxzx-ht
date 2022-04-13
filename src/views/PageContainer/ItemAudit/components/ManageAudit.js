@@ -132,7 +132,6 @@ export default function ManageAudit(props) {
             setTableData(items)
         }).catch(error=>{
             props.showError('获取事项失败！')
-            console.log(error)
             setTableLoading(false)
         })
     }
@@ -215,7 +214,6 @@ export default function ManageAudit(props) {
             }
             setTableData(items)
             setTableLoading(false)
-            console.log(response.data.data)
         }).catch(error=>{
             props.showError('换页时获取事项信息失败！')
             setTableLoading(false)
