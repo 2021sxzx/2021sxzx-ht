@@ -38,6 +38,8 @@ export default function indexRouter() {
                         return (<PageContainer/>)
                     } else {
                         // 未登录就重定向到登录页面
+                        // return (<PageContainer/>)
+
                         message.warn('请先登录')
                         return (<Redirect to="/login"/>)
                         // return (<PageContainer/>)
