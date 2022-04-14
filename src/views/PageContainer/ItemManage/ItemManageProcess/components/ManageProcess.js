@@ -15,9 +15,9 @@ export default function ManageProcess(props) {
     // 状态映射表
     const [statusScheme, setStatusScheme] = useState({})
     const [statusType, setStatusType] = useState([])
+    // 该身份可处理的事项状态类型
     const [fullType, setFullType] = useState([])
     // 是否正在删除，以及删除队列
-    const [isDeleting, setIsDeleting] = useState(false)
     const [deletingIds, setDeletingIds] = useState([])
     // 用于获取批量处理的事项规则id
     const [selectedRowKeys, setSelectedRowKeys] = useState([])
@@ -146,7 +146,6 @@ export default function ManageProcess(props) {
                             'cancel' in statusScheme[record.item_status].buttons &&
                             <Menu.Item style={{display: 'flex'}} key='3'>
                                 <Button type='primary' onClick={function(){
-                                    console.log(statusScheme[record.item_status])
                                     changeItemStatus(record._id, statusScheme[record.item_status].next_status.cancel)
                                 }}>
                                     取消审核
@@ -344,7 +343,9 @@ export default function ManageProcess(props) {
     const resetSearch = ()=>{
         // 重置搜索，搜索内容清零
         setCurrent(0)
-        setOriginData({})
+        setOriginData({
+            'item_status': fullType
+        })
         setTableLoading(true)
         // 获取所有事项规则
         api.GetItems({
@@ -365,7 +366,6 @@ export default function ManageProcess(props) {
             setTableData(items)
         }).catch(error=>{
             props.showError('重置失败！')
-            console.log(error)
             setTableLoading(false)
         })
     }
@@ -395,30 +395,6 @@ export default function ManageProcess(props) {
         }).catch(error=>{
             props.showError('换页时获取事项信息失败！')
             setTableLoading(false)
-        })
-    }
-
-    const getItemstatusScheme = ()=>{
-        api.GetItemStatusScheme({}).then(response=>{
-            // 获取状态表
-            let scheme = response.data.data
-            console.log(scheme)
-            let type = []
-            let fullType = []
-            for (let key in scheme){
-                if (scheme[key].eng_name !== 'Failure'){
-                    type.push({
-                        label: scheme[key].cn_name,
-                        value: key
-                    })
-                    fullType.push(key)
-                }
-            }
-            setStatusType(type)
-            setFullType(fullType)
-            setStatusScheme(scheme)
-        }).catch(error=>{
-            props.showError('初始化状态表失败！')
         })
     }
 
@@ -564,15 +540,46 @@ export default function ManageProcess(props) {
         }
     }, [guideDetail])
 
+    const getItemstatusScheme = ()=>{
+        api.GetItemStatusScheme({}).then(response=>{
+            // 获取状态表
+            let scheme = response.data.data
+            let type = []
+            let fullType = []
+            for (let key in scheme){
+                // 除了审核不通过之外都是可获取事项
+                if (scheme[key].eng_name !== 'Failure'){
+                    for (let i = 0; i < props.canOperate.length; i++){
+                        if (key == props.canOperate[i]){
+                            type.push({
+                                label: scheme[key].cn_name,
+                                value: key
+                            })
+                            fullType.push(key)
+                        }
+                    }  
+                }
+            }
+            setStatusType(type)
+            setFullType(fullType)
+            setStatusScheme(scheme)
+        }).catch(error=>{
+            props.showError('初始化状态表失败！')
+        })
+    }
+
     useEffect(()=>{
         for (let key in props.regionNodes){
             for (let key in props.ruleNodes){
-                getItemstatusScheme()
+                for (let key in props.canOperate){
+                    getItemstatusScheme()
+                    break
+                }
                 break
             }
             break
         }
-    }, [props.regionNodes, props.ruleNodes])
+    }, [props.regionNodes, props.ruleNodes, props.canOperate])
 
     useEffect(()=>{
         // 若是跳转过来进行解绑的，处理绑定数据

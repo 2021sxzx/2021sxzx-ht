@@ -6,7 +6,6 @@ const {TextArea} = Input
 
 export default function CreateAudit(props) {
     const [comment, setComment] = useState('')
-    const [statusUpdated, setStatusUpdated] = useState(false)
 
     const detailColumns = [
         {
@@ -120,7 +119,7 @@ export default function CreateAudit(props) {
                 <Button onClick={handleCancel}>
                     取消    
                 </Button>
-                <Button className={style.redBtn} onClick={handleRejection}>
+                <Button style={{backgroundColor: 'red', color: 'white'}} onClick={handleRejection}>
                     审核不通过  
                 </Button>
                 <Button type='primary' onClick={handleAuditing}>

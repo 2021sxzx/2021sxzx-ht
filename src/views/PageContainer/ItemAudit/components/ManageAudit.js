@@ -74,7 +74,7 @@ export default function ManageAudit(props) {
             key: 'operation',
             width: 120,
             render: (text, record)=>(
-                <Button type='primary' style={{width: 88}} onClick={function(){
+                <Button disabled={props.canOperate.indexOf(record.item_status) === -1} type='primary' style={{width: 88}} onClick={function(){
                     auditTask(record)
                 }}>
                     审核
@@ -111,31 +111,6 @@ export default function ManageAudit(props) {
         return res
     }
 
-    const getItems = ()=>{
-        setTableLoading(true)
-        let data = originData
-        data['page_num'] = current
-        data['page_size'] = currPageSize
-        data['item_status'] = [props.statusId.FirstAudit, props.statusId.SecondAudit]
-        // 获取所有事项规则
-        api.GetItems(data).then(response=>{
-            let items = response.data.data.data
-            setTotalSize(response.data.data.total)
-            for (let i = 0; i < items.length; i++){
-                // 规则路径生成、状态码转状态名
-                items[i]['creator_name'] = items[i].creator.name
-                items[i]['department_name'] = items[i].creator.department_name
-                items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
-                items[i]['status'] = props.statusScheme[items[i].item_status].cn_name
-            }
-            setTableLoading(false)
-            setTableData(items)
-        }).catch(error=>{
-            props.showError('获取事项失败！')
-            setTableLoading(false)
-        })
-    }
-
     const searchItems = (data)=>{
         setTableLoading(true)
         // 搜索事项
@@ -143,7 +118,6 @@ export default function ManageAudit(props) {
         let totalData = data
         totalData['page_num'] = 0
         totalData['page_size'] = currPageSize
-        totalData['item_status'] = [props.statusId.FirstAudit, props.statusId.SecondAudit]
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setCurrent(0)
@@ -164,15 +138,17 @@ export default function ManageAudit(props) {
     }
 
     const resetSearch = ()=>{
-        // 重置搜索，搜索内容清零
+        // 初始化
         setCurrent(0)
-        setOriginData({})
+        setOriginData({
+            'item_status': props.canSee
+        })
         setTableLoading(true)
         // 获取所有事项规则
         api.GetItems({
             page_num: 0,
             page_size: currPageSize,
-            item_status: [props.statusId.FirstAudit, props.statusId.SecondAudit]
+            item_status: props.canSee
         }).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -193,15 +169,12 @@ export default function ManageAudit(props) {
 
     const changePage = (page, pageSize)=>{
         setTableLoading(true)
-        // 换页时清空选择
-        setSelectedRowKeys([])
         setCurrent(page - 1)
         setCurrPageSize(pageSize)
         // 换页的内容获取
         let totalData = originData
         totalData['page_num'] = page - 1
         totalData['page_size'] = pageSize
-        totalData['item_status'] = [props.statusId.FirstAudit, props.statusId.SecondAudit]
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -357,37 +330,24 @@ export default function ManageAudit(props) {
     }
 
     useEffect(()=>{
-        // 若是跳转过来进行解绑的，处理绑定数据
-        for (let key in props.bindedData){
-            for (let key in props.statusId){
-                let data = {}
-                if ('rule_id' in props.bindedData){
-                    data['rule_id'] = props.bindedData.rule_id
-                }
-                if ('region_code' in props.bindedData){
-                    data['region_code'] = props.bindedData.region_code
-                }
-                setOriginData(data)
-                searchItems(data)
-                // 只设置一次
-                props.setBindedData({})
+        // statusId和canSee都必须有
+        for (let key in props.statusId){
+            for (let key in props.canSee){
+                // 初始化
+                setCurrent(0)
+                setOriginData({})
+                resetSearch()
                 break
             }
-            return
-        }
-        for (let key in props.statusId){
-            setCurrent(0)
-            setOriginData({})
-            getItems()
             break
-        }      
-    }, [props.statusId])
+        }  
+    }, [props.statusId, props.canSee])
 
     return (
         <>
             <Space direction='vertical' size={12} style={{width: '100%'}}>
-                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData}
-                    bindedData={props.bindedData} setBindedData={props.setBindedData} />
+                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData} statusType={props.statusType}
+                    bindedData={props.bindedData} setBindedData={props.setBindedData} fullType={props.canSee} />
                 <Table columns={tableColumns} dataSource={tableData} rowKey='_id'
                     pagination={{onChange: changePage, current: current + 1, total: totalSize}} loading={tableLoading}/>
             </Space>
