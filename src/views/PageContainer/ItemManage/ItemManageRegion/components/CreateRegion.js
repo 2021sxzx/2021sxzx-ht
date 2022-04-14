@@ -179,6 +179,7 @@ export default function CreateRegion(props){
             onOk: function(){
                 setIsLoading(true)
                 createRegions({
+                    user_id: props.userId,
                     region_code: taskCode,
                     region_name: nodeName,
                     region_level: chosenTags.length,
@@ -213,39 +214,6 @@ export default function CreateRegion(props){
         })
     }
 
-    const updateRegion = ()=>{
-        if (newNodeList.length === 0){
-            // 若没有新建节点，则直接进行修改
-            let data = {
-                regions: [{
-                    region_id: props.updatePath[0].nodeId,
-                    region_name: nodeName,
-                    parentId: currRegionId
-                }]
-            }
-            updateRegions(data)
-        }
-        else{
-            // 若有新建节点，则先创建节点，再修改
-            let data = {
-                regions: newNodeList
-            }
-            let tempNodeId = newNodeList[newNodeList.length - 1].temp_id
-            // 获取临时节点的真实id，再用来修改节点
-            api.CreateRegions(data).then(response=>{
-                let dict = response.data.data
-                for (let i = 0; i < dict.length; i++){
-                    if (dict[i].temp_id === tempNodeId){
-                        setRealId(dict[i].region_id)
-                        break
-                    }
-                }
-            }).catch(error=>{
-                returnError()
-            })
-        }
-    }
-
     useEffect(function(){
         if (realId === '') return
         let node = [{
@@ -258,34 +226,6 @@ export default function CreateRegion(props){
         }
         updateRegions(data)
     }, [realId])
-
-    // 自定义节点
-    const handleNodeCreatingInputChange = (e)=>{
-        setNewNode(e.target.value)
-    }
-
-    const startNodeCreating = ()=>{
-        setIsNodeCreating(true)
-    }
-
-    const endNodeCreating = ()=>{
-        setIsNodeCreating(false)
-    }
-
-    const finishNodeCreating = ()=>{
-        // 点击OK则将规则推入待创建队列
-        let tempNode = {
-            nodeId: 'temp' + newNodeList.length,
-            nodeName: newNode,
-            isRegion: false
-        }
-        createNewNode(tempNode)
-        // 然后清空创建窗口
-        document.getElementById('NodeCreatingInput').value = ''
-        setNewNode('')
-        setChooseEnd(true)
-        setIsNodeCreating(false)
-    }
 
     const createNewNode = (node)=>{
         // 放进待处理数组
@@ -301,26 +241,18 @@ export default function CreateRegion(props){
         setCurrRegionId(node.nodeId)
     }
 
-    const returnError = ()=>{
-        // 重新加载规则、返回管理页面并报错
-        props.getRegionTree()
-        props.showError()
-        props.setPageType(1)
-    }
-
     const createRegions = (data)=>{
         // 调用创建规则接口
         api.CreateRegions(data).then(response=>{
             // 应该返回_id
             props.createRegionSimulate(response.data.data)
             props.showSuccess()
-            //props.getRegionTree()
             props.setPageType(1)
-            
         }).catch(error=>{
             // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
-            returnError()
-            console.log(error)
+            props.getRegionTree()
+            setIsLoading(false)
+            props.showError('创建规则失败！')
         })
     }
 
@@ -330,13 +262,14 @@ export default function CreateRegion(props){
         }
         // 调用创建规则接口
         api.UpdateRegions(regions).then(response=>{
-            //props.getRegionTree()
             props.updateRegionSimulate(data)
             props.showSuccess()
             props.setPageType(1)
         }).catch(error=>{
             // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
-            returnError()
+            props.getRegionTree()
+            setIsLoading(false)
+            props.showError('更新规则失败！')
         })
     }
 
@@ -356,10 +289,6 @@ export default function CreateRegion(props){
 
     return (
         <Space direction='vertical' size={15}>
-            <Modal centered destroyOnClose={true} title='自定义节点' visible={isNodeCreating} onCancel={endNodeCreating} onOk={finishNodeCreating}>
-                <Input id='NodeCreatingInput' placeholder='请输入自定义节点名' size='middle' onChange={handleNodeCreatingInputChange}/>
-            </Modal>
-
             <div className={style.regionItem}>
                 <div className={style.itemTitle}>
                     区划编码：
@@ -380,7 +309,7 @@ export default function CreateRegion(props){
             
             <div className={style.regionItem}>
                 <div className={style.itemTitle}>
-                    创建事项规则：
+                    创建区划规则：
                 </div>
                 <div className={style.itemContent}>
                     <div className={style.regionText}>
@@ -427,29 +356,6 @@ export default function CreateRegion(props){
                     <div className={style.enabledTags}>
                         <TagsArea tags={enabledTags} chooseTag={chooseTag} type={'1'}/>
                     </div>
-                    {/*
-                        <div className={style.separator} style={{height: 240 + extraHeight, minHeight: 240}}></div>
-                    
-                        <div className={style.chooseBoxTitle2}>
-                            候选事项规则项：
-                        </div>
-    
-                        <div className={style.chooseBoxSubTitle}>
-                            推荐规则项：
-                        </div>
-                        <div className={style.textRankTags}>
-                            <TagsArea tags={recommendedTags} chooseTag={chooseTag} type={'2'}/>
-                        </div>
-    
-                        <div className={style.chooseBoxSubTitle} style={{top: 120 + extraHeight, display: isUpdatingRoot ? 'none' : 'block'}}>
-                            用户自定义：
-                        </div>
-                        <div className={style.createTag} style={{top: 125 + extraHeight, display: isUpdatingRoot ? 'none' : 'block'}}
-                            onClick={startNodeCreating}>
-                            自定义标签+
-                        </div>
-                    */}
-                    
                 </div>
             </Space>
 

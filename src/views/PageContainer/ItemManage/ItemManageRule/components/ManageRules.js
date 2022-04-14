@@ -1,4 +1,5 @@
 import React, {cloneElement, useEffect, useState} from 'react'
+import { Redirect } from 'react-router-dom'
 import { DatePicker, Space, Dropdown, Menu, Button, Select, Table, Modal,Descriptions, Badge, message  } from 'antd';
 import { getYMD } from "../../../../../utils/TimeStamp";
 import api from '../../../../../api/rule';
@@ -8,6 +9,7 @@ export default function ManageRules(props) {
     // 页面的基础数据
     const [tableData, setTableData] = useState([])
     const [unableCreate, setUnableCreate] = useState(true)
+    const [tableLoading, setTableLoading] = useState(false)
     // 删除队列
     const [deletingIds, setDeletingIds] = useState([])
     // 用于获取批量处理的事项规则id
@@ -42,20 +44,14 @@ export default function ManageRules(props) {
         },
         {
             title: '业务部门',
-            dataIndex: 'department',
-            key: 'department',
+            dataIndex: 'department_name',
+            key: 'department_name',
             width: 125
         },
         {
             title: '创建人',
-            dataIndex: 'creator',
-            key: 'creator',
-            width: 100
-        },
-        {
-            title: '状态',
-            dataIndex: 'status',
-            key: 'status',
+            dataIndex: 'creator_name',
+            key: 'creator_name',
             width: 100
         },
         {
@@ -99,9 +95,8 @@ export default function ManageRules(props) {
                                 </Button>
                             </Menu.Item>
                         }
-                        
                     </Menu>
-                } trigger={['click']}>
+                } trigger={['click']} placement='bottomCenter'>
                     <Button type='primary'>
                         操作
                     </Button>
@@ -190,46 +185,74 @@ export default function ManageRules(props) {
         } 
         // 根据事项规则id删除事项规则，删除完之后重新载入事项规则
         api.DeleteRules(data).then(response=>{ 
-            props.deleteRuleSimulate(deletingIds)
-            getRules()
-            props.showSuccess()
+            if ('code' in response.data.data){
+                Modal.confirm({
+                    title: '规则已绑定',
+                    content: '所选部分规则已被部分事项绑定，若要删除则需要先进行解绑。是否跳转到事项流程管理？',
+                    centered: true,
+                    onOk: function(){
+                        props.setBindedData({
+                            rule_id: deletingIds
+                        })
+                    }
+                })
+            }
+            else{
+                props.deleteRuleSimulate(deletingIds)
+                getRules()
+                props.showSuccess()
+            } 
         }).catch(error=>{
             // 删除报错时，弹出报错框并重新加载数据
-            props.showError()
+            props.showError('删除规则失败！')
             props.getRuleTree()
         })
         setDeletingIds([])
     }
 
+    useEffect(function(){
+        for (let key in props.bindedData){
+            props.jumpToProcess()
+            break
+        }  
+    }, [props.bindedData])
+
     const getRules = ()=>{
         // 无搜索条件获取全数据
         // 由于数据量较小，不进行分页处理，全部拉取
+        setTableLoading(true)
         api.GetRules({}).then(response=>{
             let rules = response.data.data
-            let table = []
             for (let i = 0; i < rules.length; i++){
+                rules[i]['department_name'] = rules[i].creator.department_name
+                rules[i]['creator_name'] = rules[i].creator.name
                 rules[i]['rule_path'] = getPathByRuleId(rules[i].rule_id)
-                table.push(rules[i])
             }
-            setTableData(table)
+            setTableData(rules)
+            setTableLoading(false)
         }).catch(error=>{
+            setTableLoading(false)
             console.log(error)
+            props.showError('获取规则失败！')
         })
     }
 
     const searchRules = (data)=>{
+        setTableLoading(true)
         // 搜索
         api.GetRules(data).then(response=>{
             let rules = response.data.data
             setCurrent(1)
-            let table = []
             for (let i = 0; i < rules.length; i++){
+                rules[i]['department_name'] = rules[i].creator.department_name
+                rules[i]['creator_name'] = rules[i].creator.name
                 rules[i]['rule_path'] = getPathByRuleId(rules[i].rule_id)
-                table.push(rules[i])
             }
-            setTableData(table)
+            setTableLoading(false)
+            setTableData(rules)
         }).catch(error=>{
-
+            setTableLoading(false)
+            props.showError('搜索规则失败！')
         })
     }
 
@@ -249,7 +272,7 @@ export default function ManageRules(props) {
     const resetSearch = ()=>{
         // 回 归 本 源
         setCurrent(1)
-        props.getRuleTree()
+        getRules()
     }
 
     const changePage = (page)=>{
@@ -261,12 +284,16 @@ export default function ManageRules(props) {
     useEffect(function(){
         // 避开初始化时的查询
         for (let key in props.ruleTree){
-            getRules()
-            // ruleTree初始化完毕前不能进行节点创建，否则会报错
-            setUnableCreate(false)
+            for (let key in props.ruleNodes){
+                getRules()
+                setCurrent(1)
+                // ruleTree初始化完毕前不能进行节点创建，否则会报错
+                setUnableCreate(false)
+                break
+            }
             break
         }
-    }, [props.ruleTree])
+    }, [props.ruleTree, props.ruleNodes])
 
     return (
         <>
@@ -278,7 +305,7 @@ export default function ManageRules(props) {
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>
                 </Space>
                 <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='rule_id'
-                    pagination={{onChange: changePage, current: current}}/>
+                    pagination={{onChange: changePage, current: current}} loading={tableLoading} />
             </Space>
         </>
     )

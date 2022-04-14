@@ -1,35 +1,14 @@
-import React, {cloneElement, useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { Dropdown, Space, Menu, message, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
-import { getYMD } from "../../../../../utils/TimeStamp";
-import api from '../../../../../api/rule';
+import { getYMD } from "../../../../utils/TimeStamp";
+import api from '../../../../api/rule';
 import SelectForm from './SelectForm'
 
-export default function ManageProcess(props) {
+export default function ManageAudit(props) {
     // 页面的基础数据
     const [tableData, setTableData] = useState([])
     const [originData, setOriginData] = useState({})
     const [tableLoading, setTableLoading] = useState(true)
-    const [unableCreate, setUnableCreate] = useState(true)
-    const [guideDetail, setGuideDetail] = useState({})
-    const [isDetailShown, setIsDetailShown] = useState(false)
-    // 状态映射表
-    const [statusScheme, setStatusScheme] = useState({})
-    const [statusType, setStatusType] = useState([])
-    const [fullType, setFullType] = useState([])
-    // 是否正在删除，以及删除队列
-    const [isDeleting, setIsDeleting] = useState(false)
-    const [deletingIds, setDeletingIds] = useState([])
-    // 用于获取批量处理的事项规则id
-    const [selectedRowKeys, setSelectedRowKeys] = useState([])
-    const [isBatching, setIsBatching] = useState(false)
-    const onSelectionChange = keys=>{
-        setIsBatching(keys.length > 0)
-        setSelectedRowKeys(keys)
-    }
-    const rowSelection = {
-        selectedRowKeys,
-        onChange: onSelectionChange,
-    }
     // 当前展示的页数，用于重置时归零
     const [current, setCurrent] = useState(0)
     const [currPageSize, setCurrPageSize] = useState(10)
@@ -44,21 +23,6 @@ export default function ManageProcess(props) {
         '6': '行政机关',
         '9': '其他组织'
     }
-
-    const detailColumns = [
-        {
-            title: '数据类型',
-            dataIndex: 'detailType',
-            key: 'detailType',
-            width: '20%'
-        },
-        {
-            title: '详细信息',
-            dataIndex: 'detailInfo',
-            key: 'detailInfo',
-            width: '80%'
-        }
-    ]
 
     const tableColumns = [
         {
@@ -110,82 +74,14 @@ export default function ManageProcess(props) {
             key: 'operation',
             width: 120,
             render: (text, record)=>(
-                <Dropdown overlay={
-                    <Menu>
-                        {
-                            'unbind' in statusScheme[record.item_status].buttons &&
-                            <Menu.Item key='0'>
-                                <Button type='primary' style={{width: 88}} onClick={function(){
-                                    deleteSingleItem(record._id)
-                                }}>
-                                    解绑
-                                </Button>
-                            </Menu.Item>
-                        }
-                        {
-                            'submit' in statusScheme[record.item_status].buttons &&
-                            <Menu.Item style={{display: 'flex'}} key='1'>
-                                <Button type='primary' onClick={function(){
-                                    changeItemStatus(record._id, statusScheme[record.item_status].next_status.next)
-                                }}>
-                                    提交审核
-                                </Button>
-                            </Menu.Item>
-                        }
-                        {
-                            'detail' in statusScheme[record.item_status].buttons &&
-                            <Menu.Item style={{display: 'flex'}} key='2'>
-                                <Button type='primary' onClick={function(){
-                                    getGuideDetail(record._id)
-                                }}>
-                                    查看详情
-                                </Button>
-                            </Menu.Item>
-                        }
-                        {
-                            'cancel' in statusScheme[record.item_status].buttons &&
-                            <Menu.Item style={{display: 'flex'}} key='3'>
-                                <Button type='primary' onClick={function(){
-                                    console.log(statusScheme[record.item_status])
-                                    changeItemStatus(record._id, statusScheme[record.item_status].next_status.cancel)
-                                }}>
-                                    取消审核
-                                </Button>
-                            </Menu.Item>
-                        }
-                        {
-                            'recall' in statusScheme[record.item_status].buttons &&
-                            <Menu.Item style={{display: 'flex'}} key='4'>
-                                <Button style={{backgroundColor: 'red', color: 'white', width: 88}} onClick={function(){
-                                    changeItemStatus(record._id, statusScheme[record.item_status].next_status.recall)
-                                }}>
-                                    撤回
-                                </Button>
-                            </Menu.Item>
-                        }
-                        {
-                            'cancelRecall' in statusScheme[record.item_status].buttons &&
-                            <Menu.Item style={{display: 'flex'}} key='5'>
-                                <Button style={{backgroundColor: 'red', color: 'white'}} onClick={function(){
-                                    changeItemStatus(record._id, statusScheme[record.item_status].next_status.cancel)
-                                }}>
-                                    取消撤回
-                                </Button>
-                            </Menu.Item>
-                        }
-                    </Menu>
-                } placement='bottomCenter' trigger={['click']}>
-                    <Button type='primary' style={{width: 88}}>
-                        操作
-                    </Button>
-                </Dropdown>
+                <Button type='primary' style={{width: 88}} onClick={function(){
+                    auditTask(record)
+                }}>
+                    审核
+                </Button>
             )
         }
     ]
-
-    const handleCreate = ()=>{
-        props.setPageType(2)
-    }
 
     const getPathByRuleId = (id)=>{
         // 获取规则id对应的规则路径
@@ -220,6 +116,7 @@ export default function ManageProcess(props) {
         let data = originData
         data['page_num'] = current
         data['page_size'] = currPageSize
+        data['item_status'] = [props.statusId.FirstAudit, props.statusId.SecondAudit]
         // 获取所有事项规则
         api.GetItems(data).then(response=>{
             let items = response.data.data.data
@@ -229,89 +126,13 @@ export default function ManageProcess(props) {
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
-                items[i]['status'] = statusScheme[items[i].item_status].cn_name
+                items[i]['status'] = props.statusScheme[items[i].item_status].cn_name
             }
             setTableLoading(false)
             setTableData(items)
         }).catch(error=>{
             props.showError('获取事项失败！')
-            console.log(error)
             setTableLoading(false)
-        })
-    }
-
-    const deleteSingleItem = (id)=>{
-        // 删除单个事项，将事项id设为deletingIds
-        let str = '确定解绑该节点吗？'
-        Modal.confirm({
-            centered: true,
-            title: '解绑确认',
-            content: str,
-            onOk: function(){
-                finishDeleting([id])
-            }
-        })
-    }
-
-    const handleBatchDelete = ()=>{
-        // 删除多个事项，将selectedRowKeys全部推进deletingIds
-        let str = '确定解绑该' + selectedRowKeys.length + '个节点吗？'
-        Modal.confirm({
-            centered: true,
-            title: '解绑确认',
-            content: str,
-            onOk: function(){
-                finishDeleting(selectedRowKeys)
-            },
-            style: {whiteSpace: 'pre-wrap'}
-        })
-    }
-
-    const finishDeleting = (id)=>{
-        // 确定删除，调用接口，通过hook触发
-        setTableLoading(true)
-        setDeletingIds(id)
-    }
-
-    useEffect(function(){
-        // 避免初始化触发或误触发
-        if (deletingIds.length === 0) return
-        deleteItems()
-    }, [deletingIds])
-
-    const deleteItems = ()=>{
-        let data = {
-            items: deletingIds
-        } 
-        // 根据事项规则id删除事项规则，删除完之后重新载入事项规则
-        api.DeleteItems(data).then(response=>{ 
-            getItems()
-            props.showSuccess()
-        }).catch(error=>{
-            // 删除报错时，弹出报错框并重新加载数据
-            getItems()
-            setCurrent(0)
-            props.showError('解绑事项失败！')
-        })
-    }
-
-    const changeItemStatus = (item_id, next_status)=>{
-        setTableLoading(true)
-        // 更新事项状态的接口
-        let items = [{
-            item_id: item_id,
-            next_status: next_status
-        }]
-        api.ChangeItemStatus({
-            user_id: props.userId,
-            items: items
-        }).then(response=>{
-            // 更新完毕后重新获取事项
-            getItems()
-        }).catch(error=>{
-            getItems()
-            setCurrent(0)
-            props.showError('更新事项状态失败！')
         })
     }
 
@@ -322,6 +143,7 @@ export default function ManageProcess(props) {
         let totalData = data
         totalData['page_num'] = 0
         totalData['page_size'] = currPageSize
+        totalData['item_status'] = [props.statusId.FirstAudit, props.statusId.SecondAudit]
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setCurrent(0)
@@ -330,7 +152,7 @@ export default function ManageProcess(props) {
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
-                items[i]['status'] = statusScheme[items[i].item_status].cn_name
+                items[i]['status'] = props.statusScheme[items[i].item_status].cn_name
             }
             setTotalSize(response.data.data.total)
             setTableData(items)
@@ -350,7 +172,7 @@ export default function ManageProcess(props) {
         api.GetItems({
             page_num: 0,
             page_size: currPageSize,
-            item_status: fullType
+            item_status: [props.statusId.FirstAudit, props.statusId.SecondAudit]
         }).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -359,13 +181,12 @@ export default function ManageProcess(props) {
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
-                items[i]['status'] = statusScheme[items[i].item_status].cn_name
+                items[i]['status'] = props.statusScheme[items[i].item_status].cn_name
             }
             setTableLoading(false)
             setTableData(items)
         }).catch(error=>{
             props.showError('重置失败！')
-            console.log(error)
             setTableLoading(false)
         })
     }
@@ -380,6 +201,7 @@ export default function ManageProcess(props) {
         let totalData = originData
         totalData['page_num'] = page - 1
         totalData['page_size'] = pageSize
+        totalData['item_status'] = [props.statusId.FirstAudit, props.statusId.SecondAudit]
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -388,7 +210,7 @@ export default function ManageProcess(props) {
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
                 items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
-                items[i]['status'] = statusScheme[items[i].item_status].cn_name
+                items[i]['status'] = props.statusScheme[items[i].item_status].cn_name
             }
             setTableData(items)
             setTableLoading(false)
@@ -398,34 +220,10 @@ export default function ManageProcess(props) {
         })
     }
 
-    const getItemstatusScheme = ()=>{
-        api.GetItemStatusScheme({}).then(response=>{
-            // 获取状态表
-            let scheme = response.data.data
-            console.log(scheme)
-            let type = []
-            let fullType = []
-            for (let key in scheme){
-                if (scheme[key].eng_name !== 'Failure'){
-                    type.push({
-                        label: scheme[key].cn_name,
-                        value: key
-                    })
-                    fullType.push(key)
-                }
-            }
-            setStatusType(type)
-            setFullType(fullType)
-            setStatusScheme(scheme)
-        }).catch(error=>{
-            props.showError('初始化状态表失败！')
-        })
-    }
-
-    const getGuideDetail = (_id)=>{
+    const auditTask = (item)=>{
         setTableLoading(true)
         api.GetItemGuideAndAuditAdvises({
-            item_id: _id
+            item_id: item._id
         }).then(response=>{
             // 将数据处理为有序格式
             let data = response.data.data
@@ -437,6 +235,10 @@ export default function ManageProcess(props) {
             detailTable.push({
                 'detailType': '事项代码',
                 'detailInfo': data.task_code
+            })
+            detailTable.push({
+                'detailType': '事项规则',
+                'detailInfo': item.rule_path
             })
             detailTable.push({
                 'detailType': '事项内容',
@@ -545,39 +347,19 @@ export default function ManageProcess(props) {
                 'detailInfo': tempAdvises
             })
             setTableLoading(false)
-            setGuideDetail(detailTable)
+            props.setAuditingData(detailTable)
+            props.setAuditingId(item._id)
+            props.setAuditingStatus(item.item_status)
         }).catch(error=>{
             setTableLoading(false)
             props.showError('获取事项详情失败！')
         })
     }
 
-    const endShowing = ()=>{
-        setIsDetailShown(false)
-        setGuideDetail({})
-    }
-
-    useEffect(function(){
-        for (let key in guideDetail){
-            setIsDetailShown(true)
-            break
-        }
-    }, [guideDetail])
-
-    useEffect(()=>{
-        for (let key in props.regionNodes){
-            for (let key in props.ruleNodes){
-                getItemstatusScheme()
-                break
-            }
-            break
-        }
-    }, [props.regionNodes, props.ruleNodes])
-
     useEffect(()=>{
         // 若是跳转过来进行解绑的，处理绑定数据
         for (let key in props.bindedData){
-            for (let key in statusScheme){
+            for (let key in props.statusId){
                 let data = {}
                 if ('rule_id' in props.bindedData){
                     data['rule_id'] = props.bindedData.rule_id
@@ -593,30 +375,20 @@ export default function ManageProcess(props) {
             }
             return
         }
-        for (let key in statusScheme){
+        for (let key in props.statusId){
             setCurrent(0)
-            setUnableCreate(false)
             setOriginData({})
-            resetSearch()
+            getItems()
             break
         }      
-    }, [statusScheme])
+    }, [props.statusId])
 
     return (
         <>
             <Space direction='vertical' size={12} style={{width: '100%'}}>
-                <Modal width={800} title={guideDetail.task_name} visible={isDetailShown}
-                    destroyOnClose={true} onCancel={endShowing} footer={null}>
-                    <Table style={{whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-all'}} columns={detailColumns} dataSource={guideDetail} rowKey='detailType'/>
-                </Modal>
-                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData} fullType={fullType}
-                    bindedData={props.bindedData} setBindedData={props.setBindedData} statusType={statusType} />
-                <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
-                    <Button type='primary' disabled={unableCreate} onClick={handleCreate}>绑定事项</Button>
-                    <Button type='primary' disabled={!isBatching}>批量导出</Button>
-                    <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量解绑</Button>
-                </Space>
-                <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='_id'
+                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData}
+                    bindedData={props.bindedData} setBindedData={props.setBindedData} />
+                <Table columns={tableColumns} dataSource={tableData} rowKey='_id'
                     pagination={{onChange: changePage, current: current + 1, total: totalSize}} loading={tableLoading}/>
             </Space>
         </>

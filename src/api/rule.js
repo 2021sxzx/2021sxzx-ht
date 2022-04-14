@@ -104,6 +104,101 @@ const api ={
             url: "/v1/getRegions",
             data
         })
+    },
+    GetItemGuide(data){
+        return service.request({
+            method: "post",
+            url: "/v1/getItemGuide",
+            data
+        })
+    },
+    GetItemGuides(data){
+        return service.request({
+            method: "post",
+            url: "/v1/getItemGuides",
+            data
+        })
+    },
+    CreateItemGuide(data){
+        return service.request({
+            method: "post",
+            url: "/v1/createItemGuide",
+            //processData: false,
+            headers: {
+                contentType: 'multipart/form-data'
+            },
+            data
+        })
+    },
+    DeleteItemGuides(data){
+        return service.request({
+            method: "post",
+            url: "/v1/deleteItemGuides",
+            data
+        })
+    },
+    updateItemGuide(data){
+        return service.request({
+            method: "post",
+            url: "/v1/updateItemGuide",
+            data
+        })
+    },
+    CreateItems(data){
+        return service.request({
+            method: "post",
+            url: "/v1/createItems",
+            data
+        })
+    },
+    DeleteItems(data){
+        return service.request({
+            method: "post",
+            url: "/v1/deleteItems",
+            data
+        })
+    },
+    UpdateItems(data){
+        return service.request({
+            method: "post",
+            url: "/v1/updateItems",
+            data
+        })
+    },
+    GetItems(data){
+        return service.request({
+            method: "post",
+            url: "/v1/getItems",
+            data
+        })
+    },
+    GetItemStatusScheme(data){
+        return service.request({
+            method: "get",
+            url: "/v1/getItemStatusScheme",
+            data
+        })
+    },
+    ChangeItemStatus(data){
+        return service.request({
+            method: "post",
+            url: "/v1/changeItemStatus",
+            data
+        })
+    },
+    GetItemGuideAndAuditAdvises(data){
+        return service.request({
+            method: "post",
+            url: "/v1/getItemGuideAndAuditAdvises",
+            data
+        })
+    },
+    AddAuditAdvise(data){
+        return service.request({
+            method: "post",
+            url: "/v1/addAuditAdvise",
+            data
+        })
     }
 }
 

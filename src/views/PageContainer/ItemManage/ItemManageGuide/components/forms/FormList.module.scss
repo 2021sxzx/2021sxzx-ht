@@ -1,0 +1,36 @@
+.inputLabel {
+    width: 15%; 
+    margin-top: 4px;
+    text-align: right;
+}
+
+.form {
+    display: flex;
+    width: 100%;
+}
+
+.input {
+    display: block;
+    width: 80%;
+}
+
+.textarea {
+    margin-bottom: 10px;
+    width: 95%;
+    margin-right: 2%;
+}
+
+.delete {
+    position: relative;
+    display: inline;
+    top: 8px;
+}
+
+.addBtn {
+    width: 100%;
+}
+
+.singleLine {
+    width: 100%;
+    display: flex;
+}

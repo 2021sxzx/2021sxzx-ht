@@ -10,8 +10,9 @@ import './PageContainer.scss'
 // 导入页面内容
 import Home from './Home/Home'
 import Personal from './Personal/Personal'
-import ItemManage from './ItemManage/ItemManage'
-import CommentManageList from './ComponentManageList/CommentManageList.js'
+import ItemManage from './ItemManage/ItemManage.js'
+import ItemAudit from './ItemAudit/ItemAudit.js'
+import CommentManageList from './CommentManageList/CommentManageList.js'
 import CommentManageReport from './CommentManageReport/CommentManageReport.js'
 import SystemManageBasic from './SystemManage/SystemManageBasic/SystemManageBasic.js'
 import SystemManageJournal
@@ -25,6 +26,7 @@ import SystemManageFailure from './SystemManage/SystemManageFailure/SystemManage
 import MetaData from './SystemManage/MetaData/MetaData.js'
 import SystemManageBackup from './SystemManage/SystemManageBackup/SystemManageBackup.js'
 import NoPermission from './NoPermission/NoPermission.js'
+import DepartmentManagement from "./UserManage/departmentManagement/DepartmentManagement";
 
 const { Content } = Layout
 
@@ -51,6 +53,7 @@ export default function PageContainer() {
               <Route path="/personal" component={Personal} />
               {/* 事项过程管理 */}
               <Route path="/item-manage" component={ItemManage} />
+              <Route path="/item-audit" component={ItemAudit} />
               {/* 日志管理 */}
               <Route path="/system-manage/journal" component={SystemManageJournal} />
               {/* 资源管理 */}
@@ -59,6 +62,8 @@ export default function PageContainer() {
               <Route path="/user-manage/account" component={UserManageAccount} />
               {/* 角色管理 */}
               <Route path="/user-manage/role" component={UserManageRole} />
+              {/* 部门管理 */}
+              <Route path="/user-manage/department" component={DepartmentManagement} />
               <Route path="/system-manage/failure" component={SystemManageFailure}/>
               <Route path="/system-manage/meta-data" component={MetaData}/>
               <Route path="/system-manage/backup" component={SystemManageBackup}/>

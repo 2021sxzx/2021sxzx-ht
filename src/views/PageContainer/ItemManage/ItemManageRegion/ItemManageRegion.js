@@ -10,10 +10,10 @@ export default function ItemManageRegion(props) {
     // 记录正在修改的事项规则的id
     const [updatePath, setUpdatePath] = useState([])
 
-    const showError = ()=>{
+    const showError = (info)=>{
         Modal.error({
             title: '出错啦！',
-            content: '本次操作出现了错误，请稍后重试！',
+            content: info,
             centered: true
         })
     }
@@ -28,12 +28,13 @@ export default function ItemManageRegion(props) {
                 pageType === 1 &&
                 <ManageRegions regionNodes={props.regionNodes} regionDict={props.regionDict} regionTree={props.regionTree}
                     setPageType={setPageType} setUpdatePath={setUpdatePath} getRegionTree={props.getRegionTree} 
+                    bindedData={props.bindedData} setBindedData={props.setBindedData} jumpToProcess={props.jumpToProcess}
                     showError={showError} showSuccess={showSuccess}
                     deleteRegionSimulate={props.deleteRegionSimulate}/>
             }
             {
                 pageType === 2 &&
-                <CreateRegion setPageType={setPageType} regionTree={props.regionTree}
+                <CreateRegion setPageType={setPageType} regionTree={props.regionTree} userId={props.userId}
                     regionRoot={props.regionRoot} getRegionTree={props.getRegionTree} updatePath={updatePath} 
                     showError={showError} showSuccess={showSuccess} updateRegionSimulate={props.updateRegionSimulate}
                     createRegionSimulate={props.createRegionSimulate}/>

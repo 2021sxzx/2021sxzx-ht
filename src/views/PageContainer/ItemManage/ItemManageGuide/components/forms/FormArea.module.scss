@@ -1,13 +1,15 @@
 .inputLabel {
-    width: 150px; 
+    width: 15%; 
     margin-top: 4px;
     text-align: right;
 }
 
 .form {
     display: flex;
+    width: 100%;
 }
 
-.textArea {
-    width: 1000px;
+.input {
+    display: block;
+    width: 80%;
 }

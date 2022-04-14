@@ -7,8 +7,9 @@ import SelectForm from './SelectForm'
 export default function ManageRegions(props) {
     // 页面的基础数据
     const [tableData, setTableData] = useState([])
-    const [originData, setOringinData] = useState({})
+    const [originData, setOriginData] = useState({})
     const [unableCreate, setUnableCreate] = useState(true)
+    const [tableLoading, setTableLoading] = useState(true)
     // 删除队列
     const [deletingIds, setDeletingIds] = useState([])
     // 用于获取批量处理的事项规则id
@@ -33,32 +34,26 @@ export default function ManageRegions(props) {
 
     const tableColumns = [
         {
-            title: '规则编码',
+            title: '区划编码',
             dataIndex: 'region_code',
             key: 'region_code',
             width: 120
         },
         {
-            title: '规则路径',
+            title: '区划路径',
             dataIndex: 'region_path',
             key: 'region_path'
         },
         {
             title: '业务部门',
-            dataIndex: 'department',
-            key: 'department',
+            dataIndex: 'department_name',
+            key: 'department_name',
             width: 125
         },
         {
             title: '创建人',
-            dataIndex: 'creator',
-            key: 'creator',
-            width: 100
-        },
-        {
-            title: '状态',
-            dataIndex: 'status',
-            key: 'status',
+            dataIndex: 'creator_name',
+            key: 'creator_name',
             width: 100
         },
         {
@@ -103,7 +98,7 @@ export default function ManageRegions(props) {
                             </Menu.Item>
                         }  
                     </Menu>
-                } trigger={['click']}>
+                } trigger={['click']} placement='bottomCenter'>
                     <Button type='primary'>
                         操作
                     </Button>
@@ -195,37 +190,70 @@ export default function ManageRegions(props) {
         } 
         // 根据事项规则id删除事项规则，删除完之后重新载入事项规则
         api.DeleteRegions(data).then(response=>{ 
-            props.deleteRegionSimulate(deletingIds)
-            getRegions()
-            props.showSuccess()
+            if ('code' in response.data.data){
+                Modal.confirm({
+                    title: '规则已绑定',
+                    content: '所选部分规则已被部分事项绑定，若要删除则需要先进行解绑。是否跳转到事项流程管理？',
+                    centered: true,
+                    onOk: function(){
+                        let codes = []
+                        for (let i = 0; i < deletingIds.length; i++){
+                            codes.push(props.regionNodes[deletingIds[i]].region_code)
+                        }
+                        props.setBindedData({
+                            region_code: codes
+                        })
+                    }
+                })
+            }
+            else{
+                props.deleteRegionSimulate(deletingIds)
+                getRegions()
+                props.showSuccess()
+            }
+            
         }).catch(error=>{
             // 删除报错时，弹出报错框并重新加载数据
-            props.showError()
+            props.showError('删除规则失败！')
             props.getRegionTree()
+            setCurrent(0)
         })
     }
 
+    useEffect(function(){
+        for (let key in props.bindedData){
+            props.jumpToProcess()
+            break
+        }  
+    }, [props.bindedData])
+
     const getRegions = ()=>{
-        // 无搜索条件获取全数据
-        api.GetRegions({
-            page_num: 0,
-            page_size: currPageSize
-        }).then(response=>{
+        setTableLoading(true)
+        // 获取数据
+        let data = originData
+        data['page_num'] = current
+        data['page_size'] = currPageSize
+        api.GetRegions(data).then(response=>{
             let regions = response.data.data.data
             setTotalSize(response.data.data.total)
-            let table = []
             for (let i = 0; i < regions.length; i++){
+                regions[i]['department_name'] = regions[i].creator.department_name
+                regions[i]['creator_name'] = regions[i].creator.name
                 regions[i]['region_path'] = getPathByRegionId(regions[i]._id)
-                table.push(regions[i])
             }
-            setTableData(table)
+            setTableData(regions)
+            setTableLoading(false)
+            console.log(regions)
         }).catch(error=>{
+            props.showError('获取规则失败！')
+            setTableLoading(false)
         })
     }
 
     const searchRegions = (data)=>{
+        setTableLoading(true)
         // 搜索时重置table
-        setOringinData(data)
+        setOriginData(data)
         let totalData = data
         totalData['page_num'] = 0
         totalData['page_size'] = currPageSize
@@ -233,13 +261,16 @@ export default function ManageRegions(props) {
             let regions = response.data.data.data
             setCurrent(0)
             setTotalSize(response.data.data.total)
-            let table = []
             for (let i = 0; i < regions.length; i++){
+                regions[i]['department_name'] = regions[i].creator.department_name
+                regions[i]['creator_name'] = regions[i].creator.name
                 regions[i]['region_path'] = getPathByRegionId(regions[i]._id)
-                table.push(regions[i])
             }
-            setTableData(table)
+            setTableData(regions)
+            setTableLoading(false)
         }).catch(error=>{
+            props.showError('搜索规则失败！')
+            setTableLoading(false)
         })
     }
 
@@ -258,9 +289,26 @@ export default function ManageRegions(props) {
 
     const resetSearch = ()=>{
         // 回 归 本 源
-        setOringinData({})
+        setOriginData({})
         setCurrent(0)
-        getRegions()
+        setTableLoading(true)
+        api.GetRegions({
+            page_num: 0,
+            page_size: currPageSize
+        }).then(response=>{
+            let regions = response.data.data.data
+            setTotalSize(response.data.data.total)
+            for (let i = 0; i < regions.length; i++){
+                regions[i]['department_name'] = regions[i].creator.department_name
+                regions[i]['creator_name'] = regions[i].creator.name
+                regions[i]['region_path'] = getPathByRegionId(regions[i]._id)
+            }
+            setTableData(regions)
+            setTableLoading(false)
+        }).catch(error=>{
+            props.showError('重置失败！')
+            setTableLoading(false)
+        })
     }
 
     const changePage = (page, pageSize)=>{
@@ -273,40 +321,49 @@ export default function ManageRegions(props) {
         let totalData = originData
         totalData['page_num'] = page - 1
         totalData['page_size'] = pageSize
+        setTableLoading(true)
         api.GetRegions(totalData).then(response=>{
             let regions = response.data.data.data
             let table = []
             for (let i = 0; i < regions.length; i++){
+                regions[i]['department_name'] = regions[i].creator.department_name
+                regions[i]['creator_name'] = regions[i].creator.name
                 regions[i]['region_path'] = getPathByRegionId(regions[i]._id)
                 table.push(regions[i])
             }
             setTableData(table)
+            setTableLoading(false)
         }).catch(error=>{
-
+            props.showError('换页时获取规则失败！')
+            setTableLoading(false)
         })
     }
 
     useEffect(function(){
         // 避开初始化时执行查询
         for (let key in props.regionTree){
-            getRegions()
-            // regionTree初始化完毕前不能进行节点创建，否则会报错
-            setUnableCreate(false)
+            for (let key in props.regionNodes){
+                setCurrent(0)
+                getRegions()
+                // regionTree初始化完毕前不能进行节点创建，否则会报错
+                setUnableCreate(false)
+                break
+            }
             break
         }
-    }, [props.regionTree])
+    }, [props.regionTree, props.regionNodes])
 
     return (
         <>
-            <Space direction='vertical' size={12}>
-                <SelectForm getSearch={searchRegions} reset={resetSearch} setOringinData={setOringinData}></SelectForm>
+            <Space direction='vertical' size={12} style={{width: '100%'}}>
+                <SelectForm getSearch={searchRegions} reset={resetSearch} setOriginData={setOriginData}></SelectForm>
                 <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
                     <Button type='primary' onClick={handleCreate} disabled={unableCreate}>创建规则</Button>
                     <Button type='primary' disabled={!isBatching}>批量导出</Button>
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>
                 </Space>
                 <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='_id'
-                    pagination={{onChange: changePage, current: current + 1, total: totalSize}}/>
+                    pagination={{onChange: changePage, current: current + 1, total: totalSize}} loading={tableLoading}/>
             </Space>
         </>
     )

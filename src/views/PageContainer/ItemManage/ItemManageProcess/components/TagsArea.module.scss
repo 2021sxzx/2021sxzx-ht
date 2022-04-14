@@ -1,19 +1,28 @@
 .tag{
     position: relative;
-    text-align: center;
     background-color: rgba(2, 167, 240, 1);
     border-radius: 2px;
-    height: 27px;
-    line-height: 27px;
+    min-height: 27px;
     font-size: 13px;
     color: #FFFFFF;
-    //margin-bottom: 5px;
     width: fit-content;
+    max-width: 200px;
 
     cursor: pointer;
 }
 
 .tagContent{
-    margin-left: 8px;
-    margin-right: 8px;
+    position: relative;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.tagsArea{
+    position: relative;
+    top: 20px;
+    left: 60px;
+    width: 200px;
+    margin-bottom: 30px;
 }

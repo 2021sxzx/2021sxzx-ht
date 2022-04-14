@@ -32,9 +32,9 @@ export default function SelectForm(props){
         if (end_time !== '') data['end_time'] = end_time
         if (region_code !== '') data['region_code'] = region_code
         if (region_name !== '') data['region_name'] = region_name
-        if (department !== '') data['department'] = department
-        if (creator !== '') data['creator'] = creator
-        clear()
+        if (department !== '') data['department_name'] = department
+        if (creator !== '') data['creator_name'] = creator
+        //clear()
         props.getSearch(data)
     }
 
@@ -52,11 +52,6 @@ export default function SelectForm(props){
     }
 
     const clear = ()=>{
-        document.getElementById('regionCodeInput').value = ''
-        document.getElementById('regionNameInput').value = ''
-        document.getElementById('departmentInput').value = ''
-        document.getElementById('creatorInput').value = ''
-        document.getElementById('timeInput').value = [null, null]
         setRegionCode('')
         setRegionName('')
         setDepartment('')
@@ -81,24 +76,24 @@ export default function SelectForm(props){
                 }}
             >
                 <Form.Item label='规则编码' style={{width: '25%'}}>
-                    <Input id='regionCodeInput' value={region_code}
+                    <Input value={region_code}
                         placeholder='请输入编码' size='middle' onChange={handleTaskCodeChange}></Input>
                 </Form.Item>
                 <Form.Item label='规则名称' style={{width: '25%'}}>
-                    <Input id='regionNameInput' value={region_name}
+                    <Input value={region_name}
                         placeholder='请输入名称' size='middle' onChange={handleTaskregionChange}></Input>
                 </Form.Item>
                 <Form.Item label='业务部门' style={{width: '22%'}}>
-                    <Input id='departmentInput' value={department}
+                    <Input value={department}
                         placeholder='请输入部门' size='middle' onChange={handleDepartmentChange}></Input>
                 </Form.Item>
                 <Form.Item label='创建人' style={{width: '22%'}}>
-                    <Input id='creatorInput' value={creator}
+                    <Input value={creator}
                         placeholder='请输入创建人' size='middle' onChange={handleCreatorChange}></Input>
                 </Form.Item>
 
                 <Form.Item label='起始时间' style={{marginTop: 10, width: '35%'}}>
-                    <RangePicker id='timeInput' value={time} style={{width: '100%'}} 
+                    <RangePicker value={time} style={{width: '100%'}} 
                         onChange={handleDateChange}/>      
                 </Form.Item>
                 <Form.Item style={{marginLeft: '50%', marginTop: 10, width: '5%', minWidth: 62}}>

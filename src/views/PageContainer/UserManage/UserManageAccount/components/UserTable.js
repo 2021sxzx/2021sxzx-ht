@@ -52,7 +52,7 @@ export default function UserTable(props) {
             // dataIndex: 'department',
             key: 'department',
             render: () => (
-                <>缺</>
+                <>财务处</>
             )
         },
 

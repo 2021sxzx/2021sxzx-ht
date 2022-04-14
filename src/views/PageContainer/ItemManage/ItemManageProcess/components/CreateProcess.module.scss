@@ -16,6 +16,14 @@
     display: block;
 }
 
+.guide {
+    display: flex;
+}
+
+.taskName {
+    margin-left: 10px;
+}
+
 .ruleText{
     color: #F59A23;
     width: 1000px;
@@ -43,10 +51,23 @@
     left: 15px;
 }
 
-.chosenTag{
+.chosenRule{
     position: relative;
     text-align: center;
     background-color: rgba(2, 167, 240, 1);
+    border-radius: 2px;
+    height: 27px;
+    line-height: 27px;
+    font-size: 13px;
+    color: #FFFFFF;
+    width: fit-content;
+    cursor: pointer;
+}
+
+.chosenRegion{
+    position: relative;
+    text-align: center;
+    background-color: rgba(183, 167, 241, 1);
     border-radius: 2px;
     height: 27px;
     line-height: 27px;
@@ -70,6 +91,7 @@
 
 .chooseBox{
     position: relative;
+    display: flex;
     border: 1px solid rgba(170, 170, 170, 1);
     border-radius: 2px;
     border-top-left-radius: 0px;
@@ -77,13 +99,29 @@
     width: 915px;
     left: 150px;
     margin-bottom: 20px;
+    min-height: 276px;
 }
 
-.separator{
+.chooseTagArea{
+    display: block;
+    width: 300px;
+}
+
+.separator1{
     position: absolute;
     width: 2px;
-    top: 18px;
-    left: 419px;
+    top: 3%;
+    left: 299px;
+    height: 94%;
+    background-color: rgba(170, 170, 170, 1);
+}
+
+.separator2{
+    position: absolute;
+    width: 2px;
+    top: 3%;
+    left: 599px;
+    height: 94%;
     background-color: rgba(170, 170, 170, 1);
 }
 
@@ -100,8 +138,17 @@
     position: relative;
     color: #333333;
     font-size: 14px;
-    left: 450px;
-    top: -12px;
+    left: 15px;
+    top: 10px;
+    width: 200px;
+}
+
+.chooseBoxTitle3{
+    position: relative;
+    color: #333333;
+    font-size: 14px;
+    left: 15px;
+    top: 10px;
     width: 200px;
 }
 
@@ -109,24 +156,9 @@
     position: relative;
     color: #666666;
     font-size: 13px;
-    left: 470px;
-    top: -12px;
+    left: 35px;
+    top: 10px;
     width: 200px;
-}
-
-.textRankTags{
-    position: relative;
-    top: -10px;
-    left: 500px;
-    width: 380px;
-}
-
-.enabledTags{
-    position: relative;
-    top: 20px;
-    left: 60px;
-    height: 0px;
-    width: 360px;
 }
 
 .createTag{

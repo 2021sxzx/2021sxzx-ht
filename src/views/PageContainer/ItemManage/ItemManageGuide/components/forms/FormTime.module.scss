@@ -1,0 +1,42 @@
+.inputLabel {
+    width: 15%; 
+    margin-top: 4px;
+    text-align: right;
+}
+
+.form {
+    display: flex;
+    width: 100%;
+}
+
+.input {
+    display: block;
+    width: 80%;
+}
+
+.timeItem {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.formName {
+    margin-left: 5px;
+}
+
+.redDot {
+    color: red;
+}
+
+.timeLabel {
+    margin-top: 4px;
+    width: 12%;
+}
+
+.textArea {
+    width: 74%;
+    margin-right: 2%;
+}
+
+.select {
+    width: 12%;
+}
