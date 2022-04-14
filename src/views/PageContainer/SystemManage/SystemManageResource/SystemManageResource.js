@@ -370,7 +370,7 @@ const Chart = (props) => {
   // total=Math.floor(used * 100) / 100;
   var company='';
   var proportion=(used/total);
-  // proportion=Math.floor(proportion * 10000) / 10000;
+  var showProportion=Math.floor(proportion * 10000) / 100;
   console.log("proportion:"+proportion)
   var color='';
   if(proportion<=0.2){
@@ -456,7 +456,7 @@ const Chart = (props) => {
     <div style={{display:"inline-block",width:"80px",height:"170px",float:"left"}}>
       <div style={{height:"50px",textAlign:"center",lineHeight:"50px",fontSize:"15px",fontWeight:"bold"}}>{props.name}</div>
     <div style={{height:"30px",textAlign:"center",lineHeight:"30px",color:"#92b6d9"}}>占用率</div>
-    <div style={{height:"50px",textAlign:"center",lineHeight:"50px",fontSize:"35px",fontWeight:"bold",color:"#1890ff"}}>{(Math.floor(proportion * 10000) / 10000)*100}%</div>
+    <div style={{height:"50px",textAlign:"center",lineHeight:"50px",fontSize:"35px",fontWeight:"bold",color:"#1890ff"}}>{showProportion}%</div>
     <div>{Math.floor(used * 100) / 100}{company}/{Math.floor(total * 100) / 100}{company}</div></div>
   <div id={props.id} style={{ width: "215px", height: "170px",paddingLeft:"10px",display:"inline-block",float:"left" }}></div>
   </div>);
@@ -502,6 +502,7 @@ export default function SystemManageResource() {
     api.GetMemory().then(info=>{
       setMemory(info.data.data);
       console.log("getMemory=", info.data.data)
+      console.log("Memory=", memory)
     }).catch();
   };
   const getDisk = () => {

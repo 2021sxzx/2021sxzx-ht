@@ -262,7 +262,7 @@ const Demo = () => {
             <Upload
                 listType="picture"
                 className="upload-list-inline"
-                accept=".png,.jpg"
+                accept=".png"
                 beforeUpload={(file)=>{       
                   setWebsiteLogoFile(file)
                   console.log(WebsiteLogoFile)
