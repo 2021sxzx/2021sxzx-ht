@@ -274,12 +274,12 @@ const Demo = () => {
                 图片地址
               </Upload>
             </Form.Item>
-            <Form.Item label="后台logo" name="BackstageLogo">
+            <Form.Item label="首页轮播图" name="BackstageLogo">
               <Upload
                 // action="http://localhost:5001/api/v1/logo-upload"
                 listType="picture"
                 className="upload-list-inline"
-                accept=".png,.jpg"
+                accept=".png"
                 beforeUpload={(file)=>{       
                   // console.log(file);
                   // var fileExtension = name.substring(name.lastIndexOf(".") + 1); //截取文件后缀名
