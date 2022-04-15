@@ -1,6 +1,6 @@
 import React, {cloneElement, useEffect, useState} from 'react'
 import { Dropdown, Space, Menu, message, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
-import { getYMD } from "../../../../utils/TimeStamp";
+import { getYMD, getYMDHMS } from "../../../../utils/TimeStamp";
 import api from '../../../../api/rule';
 import SelectForm from './components/SelectForm'
 
@@ -516,7 +516,8 @@ export default function ItemManageUnusual(props) {
             })
             detailTable.push({
                 'detailType': '二维码',
-                'detailInfo': data.qr_code
+                'detailInfo': data.qr_code === '' ? '暂无' : 
+                <img style={{height: 128, width: 128}} src={(api.GetServerIP() === '/api' ? 'http://localhost:5001' : api.GetServerIP()) + data.qr_code}/>
             })
             // 服务对象类型数组处理
             let type = data.service_object_type.split(',')
@@ -532,8 +533,8 @@ export default function ItemManageUnusual(props) {
             // 审核意见处理
             let tempAdvises = ''
             if ('audit_advises' in data){
-                for (let i = 0; i < data.audit_advises.length; i++){
-                    tempAdvises += ((i + 1) + '.' + data['audit_advises'][i].user_name + '：' + data['audit_advises'][i].advise + '\n')
+                for (let i = data.audit_advises.length - 1; i >= 0 ; i--){
+                    tempAdvises += (getYMDHMS(data['audit_advises'][i].time) + '：' + data['audit_advises'][i].user_name + '：' + data['audit_advises'][i].advise + '\n')
                 }
             }
             detailTable.push({
