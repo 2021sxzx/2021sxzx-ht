@@ -18,6 +18,8 @@ const instance = axios.create({
 // 添加请求拦截器
 instance.interceptors.request.use(
     function (config) {
+        let headers = config.headers
+        headers.user_id = localStorage.getItem('_id') ? localStorage.getItem('_id') : ''
         console.log('请求拦截器',config);
         return config;
     },

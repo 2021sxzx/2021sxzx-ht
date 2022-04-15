@@ -132,7 +132,7 @@ export default function CreateGuide(props){
                 <FormArea handleChange={handleGuideSelfmadeAddressChange} formName='自助终端' value={guideSelfmadeAddress}/>
                 <FormListPlus addBtn='添加地址' formName='办事大厅地址' value={guideAddress} other={guidePhone} guideWindow={guideWindow}
                     setOther={setGuidePhone} setData={setGuideAddress} setGuideWindow={setGuideWindow}/>
-                <FormArea setData={setGuideQRCode} handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>
+                <FormImage setData={setGuideQRCode} handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>
                 <FormCheckbox setData={setGuideServiceType} formName='服务对象类型' value={guideServiceType}/>
             </Space>
         }
@@ -339,12 +339,13 @@ export default function CreateGuide(props){
 
     // api调用
     const createItemGuide = (data)=>{
+        console.log(data)
         api.CreateItemGuide(data).then(response=>{
             props.showSuccess()
             props.setPageType(1)
         }).catch(error=>{
             props.showError('创建指南失败！')
-            props.setPageType(1)
+            // props.setPageType(1)
         })
     }
 
@@ -353,9 +354,8 @@ export default function CreateGuide(props){
             props.showSuccess()
             props.setPageType(1)
         }).catch(error=>{
-            console.log(error)
             props.showError('编辑指南失败！')
-            props.setPageType(1)
+            // props.setPageType(1)
         })
     }
 

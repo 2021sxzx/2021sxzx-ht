@@ -6,7 +6,6 @@ const {TextArea} = Input
 
 export default function CreateAudit(props) {
     const [comment, setComment] = useState('')
-    const [statusUpdated, setStatusUpdated] = useState(false)
 
     const detailColumns = [
         {
@@ -49,7 +48,7 @@ export default function CreateAudit(props) {
                 centered: true,
                 style: {whiteSpace: 'pre-wrap'},
                 onOk: function(){
-                    changeItemStatus(props.statusScheme[props.auditingStatus].next_status.reject)
+                    changeItemStatus(props.statusScheme[props.auditingStatus].next_status.reject, 'reject')
                 }
             })
         }
@@ -71,14 +70,13 @@ export default function CreateAudit(props) {
                 centered: true,
                 style: {whiteSpace: 'pre-wrap'},
                 onOk: function(){
-                    changeItemStatus(props.statusScheme[props.auditingStatus].next_status.next)
+                    changeItemStatus(props.statusScheme[props.auditingStatus].next_status.next, 'pass')
                 }
             })
         }
-        
     }
 
-    const changeItemStatus = (next_status)=>{
+    const changeItemStatus = (next_status, choice)=>{
         // 审核通过
         api.ChangeItemStatus({
             user_id: props.userId,
@@ -87,17 +85,17 @@ export default function CreateAudit(props) {
                 next_status: next_status
             }]
         }).then(response=>{
-            addAuditAdvise()
+            addAuditAdvise(choice)
         }).catch(error=>{
             props.showError('变更状态失败！')
         })
     }
 
-    const addAuditAdvise = ()=>{
+    const addAuditAdvise = (choice)=>{
         api.AddAuditAdvise({
             item_id: props.auditingId,
             user_id: props.userId,
-            advise: comment
+            advise: ((choice === 'pass' ? '（通过）' : '（不通过）') + comment)
         }).then(response=>{
             props.showSuccess()
             props.setPageType(1)
@@ -120,7 +118,7 @@ export default function CreateAudit(props) {
                 <Button onClick={handleCancel}>
                     取消    
                 </Button>
-                <Button className={style.redBtn} onClick={handleRejection}>
+                <Button style={{backgroundColor: 'red', color: 'white'}} onClick={handleRejection}>
                     审核不通过  
                 </Button>
                 <Button type='primary' onClick={handleAuditing}>

@@ -9,6 +9,9 @@ export default function ItemAudit() {
     const [userId, setUserId] = useState('')
     const [ruleNodes, setRuleNodes] = useState({})
     const [regionNodes, setRegionNodes] = useState({})
+    const [canOperate, setCanOperate] = useState([])
+    const [canSee, setCanSee] = useState([])
+    const [statusType, setStatusType] = useState([])
     // 点击审核后保存正在审核事项的信息
     const [auditingData, setAuditingData] = useState({})
     const [auditingId, setAuditingId] = useState('')
@@ -70,6 +73,32 @@ export default function ItemAudit() {
     }, [])
 
     useEffect(function(){
+        // 初始化可见和可操作数组
+        for (let key in statusScheme){
+            api.GetUserRank({
+                user_id: localStorage.getItem('_id')
+            }).then(response=>{
+                let data = response.data.data
+                setCanOperate(data.can_operate)
+                // TODO: 加一个类似canAudit的字段取代canSee
+                let temp_can_see = [1, 2, 5]
+                setCanSee(temp_can_see)
+                let types = []
+                for (let i = 0; i < temp_can_see.length; i++){
+                    types.push({
+                        label: statusScheme[temp_can_see[i]].cn_name,
+                        value: temp_can_see[i]
+                    })
+                }
+                setStatusType(types)
+            }).catch(error=>{
+                showError('可操作事项状态获取失败！')
+            })
+            break
+        }
+    }, [statusScheme])
+
+    useEffect(function(){
         for (let key in ruleNodes){
             for (let key in regionNodes){
                 getItemstatusScheme()
@@ -89,10 +118,10 @@ export default function ItemAudit() {
         <>
             {
                 pageType === 1 &&
-                <ManageAudit regionNodes={regionNodes} ruleNodes={ruleNodes}
+                <ManageAudit regionNodes={regionNodes} ruleNodes={ruleNodes} canOperate={canOperate} canSee={canSee}
                     setAuditingData={setAuditingData} setAuditingId={setAuditingId} setAuditingStatus={setAuditingStatus}
                     setPageType={setPageType} showError={showError} showSuccess={showSuccess}
-                    statusId={statusId} statusScheme={statusScheme} />
+                    statusId={statusId} statusScheme={statusScheme} statusType={statusType} />
             }
             {
                 pageType === 2 && 

@@ -199,6 +199,13 @@ const api ={
             url: "/v1/addAuditAdvise",
             data
         })
+    },
+    GetUserRank(data){
+        return service.request({
+            method: "post",
+            url: "/v1/getUserRank",
+            data
+        })
     }
 }
 
