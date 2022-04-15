@@ -83,8 +83,8 @@ export default function ItemManageUnusual(props) {
         },
         {
             title: '事项规则',
-            dataIndex: 'rule_path',
-            key: 'rule_path'
+            dataIndex: 'item_path',
+            key: 'item_path'
         },
         {
             title: '业务部门',
@@ -234,7 +234,7 @@ export default function ItemManageUnusual(props) {
                 // 规则路径生成、状态码转状态名
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
-                items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
+                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
                 items[i]['status'] = statusScheme[items[i].item_status].cn_name
             }
             setTableLoading(false)
@@ -333,7 +333,7 @@ export default function ItemManageUnusual(props) {
                 // 规则路径生成、状态码转状态名
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
-                items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
+                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
                 items[i]['status'] = statusScheme[items[i].item_status].cn_name
             }
             setTotalSize(response.data.data.total)
@@ -362,7 +362,7 @@ export default function ItemManageUnusual(props) {
                 // 规则路径生成、状态码转状态名
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
-                items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
+                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
                 items[i]['status'] = statusScheme[items[i].item_status].cn_name
             }
             setTableLoading(false)
@@ -391,7 +391,7 @@ export default function ItemManageUnusual(props) {
                 // 规则路径生成、状态码转状态名
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
-                items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
+                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
                 items[i]['status'] = statusScheme[items[i].item_status].cn_name
             }
             setTableData(items)

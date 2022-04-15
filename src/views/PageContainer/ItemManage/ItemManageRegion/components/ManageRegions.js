@@ -235,15 +235,14 @@ export default function ManageRegions(props) {
         data['page_size'] = currPageSize
         api.GetRegions(data).then(response=>{
             let regions = response.data.data.data
+            console.log(response)
             setTotalSize(response.data.data.total)
             for (let i = 0; i < regions.length; i++){
                 regions[i]['department_name'] = regions[i].creator.department_name
                 regions[i]['creator_name'] = regions[i].creator.name
-                regions[i]['region_path'] = getPathByRegionId(regions[i]._id)
             }
             setTableData(regions)
             setTableLoading(false)
-            console.log(regions)
         }).catch(error=>{
             props.showError('获取规则失败！')
             setTableLoading(false)
@@ -264,7 +263,6 @@ export default function ManageRegions(props) {
             for (let i = 0; i < regions.length; i++){
                 regions[i]['department_name'] = regions[i].creator.department_name
                 regions[i]['creator_name'] = regions[i].creator.name
-                regions[i]['region_path'] = getPathByRegionId(regions[i]._id)
             }
             setTableData(regions)
             setTableLoading(false)
@@ -301,7 +299,6 @@ export default function ManageRegions(props) {
             for (let i = 0; i < regions.length; i++){
                 regions[i]['department_name'] = regions[i].creator.department_name
                 regions[i]['creator_name'] = regions[i].creator.name
-                regions[i]['region_path'] = getPathByRegionId(regions[i]._id)
             }
             setTableData(regions)
             setTableLoading(false)
@@ -328,7 +325,6 @@ export default function ManageRegions(props) {
             for (let i = 0; i < regions.length; i++){
                 regions[i]['department_name'] = regions[i].creator.department_name
                 regions[i]['creator_name'] = regions[i].creator.name
-                regions[i]['region_path'] = getPathByRegionId(regions[i]._id)
                 table.push(regions[i])
             }
             setTableData(table)

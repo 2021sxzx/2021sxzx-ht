@@ -38,8 +38,8 @@ export default function ManageAudit(props) {
         },
         {
             title: '事项规则',
-            dataIndex: 'rule_path',
-            key: 'rule_path'
+            dataIndex: 'item_path',
+            key: 'item_path'
         },
         {
             title: '业务部门',
@@ -83,34 +83,6 @@ export default function ManageAudit(props) {
         }
     ]
 
-    const getPathByRuleId = (id)=>{
-        // 获取规则id对应的规则路径
-        let parent = props.ruleNodes[id].parentId
-        let currId = id
-        let res = ''
-        while (parent !== '' && parent !== currId){
-            res = props.ruleNodes[currId].rule_name + '\\' + res
-            currId = parent
-            parent = props.ruleNodes[currId].parentId
-        }
-        res = props.ruleNodes[currId].rule_name + '\\' + res
-        return res
-    }
-
-    const getPathByRegionId = (id)=>{
-        // 获取规则id对应的规则路径
-        let parent = props.regionNodes[id].parentId
-        let currId = id
-        let res = ''
-        while (parent !== '' && parent !== currId){
-            res = props.regionNodes[currId].region_name + '\\' + res
-            currId = parent
-            parent = props.regionNodes[currId].parentId
-        }
-        res = props.regionNodes[currId].region_name + '\\' + res
-        return res
-    }
-
     const searchItems = (data)=>{
         setTableLoading(true)
         // 搜索事项
@@ -125,7 +97,7 @@ export default function ManageAudit(props) {
                 // 规则路径生成、状态码转状态名
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
-                items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
+                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
                 items[i]['status'] = props.statusScheme[items[i].item_status].cn_name
             }
             setTotalSize(response.data.data.total)
@@ -156,7 +128,7 @@ export default function ManageAudit(props) {
                 // 规则路径生成、状态码转状态名
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
-                items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
+                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
                 items[i]['status'] = props.statusScheme[items[i].item_status].cn_name
             }
             setTableLoading(false)
@@ -182,7 +154,7 @@ export default function ManageAudit(props) {
                 // 规则路径生成、状态码转状态名
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
-                items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
+                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
                 items[i]['status'] = props.statusScheme[items[i].item_status].cn_name
             }
             setTableData(items)
@@ -211,7 +183,7 @@ export default function ManageAudit(props) {
             })
             detailTable.push({
                 'detailType': '事项规则',
-                'detailInfo': item.rule_path
+                'detailInfo': item.item_path
             })
             detailTable.push({
                 'detailType': '事项内容',
