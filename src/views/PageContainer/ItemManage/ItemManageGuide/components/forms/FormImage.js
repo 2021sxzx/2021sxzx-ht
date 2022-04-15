@@ -17,12 +17,10 @@ export default function FormImage(props){
     }
 
     const handleChange = (e)=>{
-        /*props.setData(e.target.files[0])
-        console.log(e.target.files[0])*/
         getBase64(e.target.files[0], imageUrl=>{
             setData(imageUrl)
             props.setData(imageUrl)
-            //setPath(e.target.value)
+            setPath(e.target.value)
             setQRCodeLoading(false)
         })
     }
@@ -41,8 +39,9 @@ export default function FormImage(props){
                 <span style={{marginLeft: 5}}>{props.formName}：</span>
             </div>
             <div className={style.input}>
-                <input type='file' alt='二维码' name='QRCode' style={{width: 128, height: 128}}
-                    onChange={handleChange}/>
+                <input type='file' alt='二维码' name='QRCode' onChange={handleChange}/>
+                <img className={style.imgContainer} style={{display: path === '' ? 'none' : 'block'}} url={path} />
+                <span className={style.icon} style={{display: path === '' ? 'block' : 'none'}}>上传图片</span>
             </div>
         </div>
     )

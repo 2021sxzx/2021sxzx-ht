@@ -74,7 +74,6 @@ export default function CreateAudit(props) {
                 }
             })
         }
-        
     }
 
     const changeItemStatus = (next_status, choice)=>{
