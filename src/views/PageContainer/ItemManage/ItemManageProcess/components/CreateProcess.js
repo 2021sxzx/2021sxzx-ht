@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import style from './CreateProcess.module.scss'
 import { DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
 import TagsArea from './TagsArea.js'
+import GuideModal from './GuideModal.js';
 import api from '../../../../../api/rule';
 
 export default function CreateProcess(props){
@@ -9,9 +10,6 @@ export default function CreateProcess(props){
     const [taskCode, setTaskCode] = useState('')
     const [taskName, setTaskName] = useState('')
     const [choosingGuide, setChoosingGuide] = useState(false)
-    const [enabledGuides, setEnabledGuides] = useState([])
-    const [guidePageNum, setGuidePageNum] = useState(0)
-    const [guideTableTotal, setGuideTableTotal] = useState(0)
     const [taskRule, setTaskRule] = useState(props.ruleRoot.nodeName + '\\')
     const [taskRegion, setTaskRegion] = useState(props.regionRoot.nodeName + '\\')
     // 选择过程中的已选择、待选择节点
@@ -23,16 +21,6 @@ export default function CreateProcess(props){
         'nodeName': '暂无',
         'nodeId': '12345'
     }])
-    // 已选择节点的规则id以及区划id
-    const [currRuleId, setCurrRuleId] = useState('')
-    const [currRegionId, setCurrRegionId] = useState('')
-    // 创建自定义节点
-    const [isCreating, setIsCreating] = useState(false)
-    const [newNode, setNewNode] = useState('')
-    const [newNodeList, setNewNodeList] = useState([])
-    const [realNewId, setRealNewId] = useState('')
-    // 是否已经可以创建
-    const [chooseEnd, setChooseEnd] = useState(false)
     // 加载效果
     const [isLoading, setIsLoading] = useState(false)
     
@@ -58,74 +46,9 @@ export default function CreateProcess(props){
         setChosenRegions(currRegions)
     },[])
 
-    const guideColumns = [
-        {
-            title: '事项编码',
-            dataIndex: 'task_code',
-            key: 'task_code',
-            width: 320
-        },
-        {
-            title: '事项指南',
-            dataIndex: 'task_name',
-            key: 'task_name'
-        },
-        {
-            title: '选择',
-            key: 'choose',
-            width: 100,
-            render: (text, record)=>(
-                <Button type='primary' onClick={function(){
-                    setTaskCode(record.task_code)
-                    setTaskName(record.task_name)
-                    endChoosingGuide()
-                }}>
-                    选择
-                </Button>
-            )
-        }
-    ]
-
     const startChoosingGuide = ()=>{
         setChoosingGuide(true)
-        api.GetItemGuides({
-            task_status: 0,
-            page_size: 8,
-            page_num: 0
-        }).then(response=>{
-            let data = response.data.data
-            setGuideTableTotal(data.total)
-            setEnabledGuides(data.data)
-        }).catch(error=>{
-            props.showError('选择指南初始化失败')
-        })
     }
-
-    const endChoosingGuide = ()=>{
-        setChoosingGuide(false)
-        setGuidePageNum(0)
-        setEnabledGuides([])
-    }
-
-    const handleGuideTableChange = (page)=>{
-        api.GetItemGuides({
-            task_status: 0,
-            page_size: 8,
-            page_num: page - 1
-        }).then(response=>{
-            setGuidePageNum(page - 1)
-            let data = response.data.data
-            setGuideTableTotal(data.total)
-            setEnabledGuides(data.data)
-        }).catch(error=>{
-            props.showError('选择指南换页失败')
-        })
-    }
-
-    /*useEffect(function(){
-        if (enabledGuides.length === 0) return
-        setChoosingGuide(true)
-    }, [enabledGuides])*/
 
     const chooseTag = (index, type)=>{
         // 暂不处理推荐事项
@@ -275,103 +198,10 @@ export default function CreateProcess(props){
         })
     }
 
-    /*useEffect(function(){
-        if (realNewId == ''){
-            return
-        }
-        // 用获取的规则id进行事项规则的创建
-        // 为了防止state更新的延迟，用hook实现
-        if (props.modifyId == ''){
-            let data = {
-                itemRules: [
-                    {
-                        rule_id: realNewId,
-                        region_id: currRegionId
-                    }
-                ]
-            }
-            createItemRules(data)
-        }
-        else{
-            let data = {
-                itemRules: [
-                    {
-                        item_rule_id: props.modifyId,
-                        rule_id: realNewId,
-                        region_id: currRegionId
-                    }
-                ]
-            }
-            updateItemRules(data)
-        } 
-    },[realNewId])
-
-    const createRules = (data)=>{
-        // 调用创建规则接口
-        api.CreateRules(data).then(response=>{
-            let dict = response.data.data
-            console.log(dict)
-            // 对照字典查询新建节点的正式id并设置state
-            for (let i = 0; i < dict.length; i++){
-                if (dict[i].temp_id == newNodeList[newNodeList.length - 1].temp_id){
-                    setRealNewId(dict[i].rule_id)
-                }
-            }
-        }).catch(error=>{
-            // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
-            returnError()
-        })
-    }
-
-    const handleCreatingInputChange = (e)=>{
-        setNewNode(e.target.value)
-    }
-
-    const startCreating = ()=>{
-        setIsCreating(true)
-    }
-
-    const endCreating = ()=>{
-        setIsCreating(false)
-    }
-
-    const finishCreating = ()=>{
-        // 点击OK则将规则推入待创建队列
-        let tempNode = {
-            nodeId: 'temp' + newNodeList.length,
-            nodeName: newNode,
-            isRegion: false
-        }
-        createNewNode(tempNode)
-        // 然后清空创建窗口
-        document.getElementById('creatingInput').value = ''
-        setNewNode('')
-        setIsCreating(false)
-    }
-
-    const createNewNode = (node)=>{
-        // 放进待处理数组
-        newNodeList.push({
-            temp_id: node.nodeId,
-            rule_name: node.nodeName,
-            parentId: currRuleId
-        })
-        // 处理页面展示内容
-        chosenRules.push(node)
-        setTaskRule(taskRule + node.nodeName + '\\')
-        setRuleTags(props.regionRoot)
-        setCurrRuleId(node.nodeId)
-    }*/
-
     return (
         <Space direction='vertical' size={15}>
-            {/*<Modal centered destroyOnClose={true} title='自定义标签' visible={isCreating} onCancel={endCreating} onOk={finishCreating}>
-                <Input id='creatingInput' placeholder='请输入自定义标签名' size='middle' onChange={handleCreatingInputChange}/>
-            </Modal>*/}
-            <Modal width={800} centered destroyOnClose={true} title='选择指南' visible={choosingGuide} footer={false} onCancel={endChoosingGuide}>
-                <Table class={style.guideTable} columns={guideColumns} dataSource={enabledGuides} rowKey='task_code'
-                    pagination={{total: guideTableTotal, onChange: handleGuideTableChange, current: guidePageNum + 1, showSizeChanger: false, pageSize: 8}}/>
-            </Modal>
+            <GuideModal setTaskCode={setTaskCode} setTaskName={setTaskName} showError={props.showError}
+                choosingGuide={choosingGuide} setChoosingGuide={setChoosingGuide}/>
 
             <div className={style.ruleItem}>
                 <div className={style.itemTitle}>

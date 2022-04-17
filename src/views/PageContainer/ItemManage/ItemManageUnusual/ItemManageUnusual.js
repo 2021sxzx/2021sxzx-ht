@@ -1,22 +1,19 @@
 import React, {cloneElement, useEffect, useState} from 'react'
 import { Dropdown, Space, Menu, message, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
-import { getYMD, getYMDHMS } from "../../../../../utils/TimeStamp";
-import api from '../../../../../api/rule';
-import SelectForm from './SelectForm'
+import { getYMD, getYMDHMS } from "../../../../utils/TimeStamp";
+import api from '../../../../api/rule';
+import SelectForm from './components/SelectForm'
 
-export default function ManageProcess(props) {
+export default function ItemManageUnusual(props) {
     // 页面的基础数据
     const [tableData, setTableData] = useState([])
     const [originData, setOriginData] = useState({})
     const [tableLoading, setTableLoading] = useState(true)
-    const [unableCreate, setUnableCreate] = useState(true)
     const [guideDetail, setGuideDetail] = useState({})
     const [isDetailShown, setIsDetailShown] = useState(false)
     // 状态映射表
     const [statusScheme, setStatusScheme] = useState({})
-    const [statusType, setStatusType] = useState([])
-    // 该身份可处理的事项状态类型
-    const [fullType, setFullType] = useState([])
+    const [statusId, setStatusId] = useState({})
     // 是否正在删除，以及删除队列
     const [deletingIds, setDeletingIds] = useState([])
     // 用于获取批量处理的事项规则id
@@ -34,6 +31,18 @@ export default function ManageProcess(props) {
     const [current, setCurrent] = useState(0)
     const [currPageSize, setCurrPageSize] = useState(10)
     const [totalSize, setTotalSize] = useState(0)
+
+    const showError = (info)=>{
+        Modal.error({
+            title: '出错啦！',
+            content: info,
+            centered: true
+        })
+    }
+
+    const showSuccess = ()=>{
+        message.success('操作成功！')
+    }
 
     const serviceType = {
         '1': '自然人',
@@ -146,6 +155,7 @@ export default function ManageProcess(props) {
                             'cancel' in statusScheme[record.item_status].buttons &&
                             <Menu.Item style={{display: 'flex'}} key='3'>
                                 <Button type='primary' onClick={function(){
+                                    console.log(statusScheme[record.item_status])
                                     changeItemStatus(record._id, statusScheme[record.item_status].next_status.cancel)
                                 }}>
                                     取消审核
@@ -182,10 +192,6 @@ export default function ManageProcess(props) {
         }
     ]
 
-    const handleCreate = ()=>{
-        props.setPageType(2)
-    }
-
     const getPathByRuleId = (id)=>{
         // 获取规则id对应的规则路径
         let parent = props.ruleNodes[id].parentId
@@ -219,6 +225,7 @@ export default function ManageProcess(props) {
         let data = originData
         data['page_num'] = current
         data['page_size'] = currPageSize
+        data['item_status'] = statusId.Failure
         // 获取所有事项规则
         api.GetItems(data).then(response=>{
             let items = response.data.data.data
@@ -233,8 +240,7 @@ export default function ManageProcess(props) {
             setTableLoading(false)
             setTableData(items)
         }).catch(error=>{
-            props.showError('获取事项失败！')
-            console.log(error)
+            showError('获取事项失败！')
             setTableLoading(false)
         })
     }
@@ -268,7 +274,6 @@ export default function ManageProcess(props) {
 
     const finishDeleting = (id)=>{
         // 确定删除，调用接口，通过hook触发
-        setTableLoading(true)
         setDeletingIds(id)
     }
 
@@ -285,17 +290,16 @@ export default function ManageProcess(props) {
         // 根据事项规则id删除事项规则，删除完之后重新载入事项规则
         api.DeleteItems(data).then(response=>{ 
             getItems()
-            props.showSuccess()
+            showSuccess()
         }).catch(error=>{
             // 删除报错时，弹出报错框并重新加载数据
             getItems()
             setCurrent(0)
-            props.showError('解绑事项失败！')
+            showError('解绑事项失败！')
         })
     }
 
     const changeItemStatus = (item_id, next_status)=>{
-        setTableLoading(true)
         // 更新事项状态的接口
         let items = [{
             item_id: item_id,
@@ -310,7 +314,7 @@ export default function ManageProcess(props) {
         }).catch(error=>{
             getItems()
             setCurrent(0)
-            props.showError('更新事项状态失败！')
+            showError('更新事项状态失败！')
         })
     }
 
@@ -321,6 +325,7 @@ export default function ManageProcess(props) {
         let totalData = data
         totalData['page_num'] = 0
         totalData['page_size'] = currPageSize
+        totalData['item_status'] = statusId.Failure
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setCurrent(0)
@@ -335,7 +340,7 @@ export default function ManageProcess(props) {
             setTableData(items)
             setTableLoading(false)
         }).catch(error=>{
-            props.showError('搜索事项失败！')
+            showError('搜索事项失败！')
             setTableLoading(false)
         })
     }
@@ -343,15 +348,13 @@ export default function ManageProcess(props) {
     const resetSearch = ()=>{
         // 重置搜索，搜索内容清零
         setCurrent(0)
-        setOriginData({
-            'item_status': fullType
-        })
+        setOriginData({})
         setTableLoading(true)
         // 获取所有事项规则
         api.GetItems({
             page_num: 0,
             page_size: currPageSize,
-            item_status: fullType
+            item_status: statusId.Failure
         }).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -365,7 +368,7 @@ export default function ManageProcess(props) {
             setTableLoading(false)
             setTableData(items)
         }).catch(error=>{
-            props.showError('重置失败！')
+            showError('重置失败！')
             setTableLoading(false)
         })
     }
@@ -380,6 +383,7 @@ export default function ManageProcess(props) {
         let totalData = originData
         totalData['page_num'] = page - 1
         totalData['page_size'] = pageSize
+        totalData['item_status'] = statusId.Failure
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -392,14 +396,30 @@ export default function ManageProcess(props) {
             }
             setTableData(items)
             setTableLoading(false)
+            console.log(response.data.data)
         }).catch(error=>{
-            props.showError('换页时获取事项信息失败！')
+            showError('换页时获取事项信息失败！')
             setTableLoading(false)
         })
     }
 
+    const getItemstatusScheme = ()=>{
+        api.GetItemStatusScheme({}).then(response=>{
+            // 获取状态表
+            let scheme = response.data.data
+            let wordToName = {}
+            for (let key in scheme){
+                // 状态码对状态名和相关按钮的映射
+                wordToName[scheme[key].eng_name] = key
+            }
+            setStatusScheme(scheme)
+            setStatusId(wordToName)
+        }).catch(error=>{
+            showError('初始化状态表失败！')
+        })
+    }
+
     const getGuideDetail = (_id)=>{
-        setTableLoading(true)
         api.GetItemGuideAndAuditAdvises({
             item_id: _id
         }).then(response=>{
@@ -524,8 +544,7 @@ export default function ManageProcess(props) {
             setTableLoading(false)
             setGuideDetail(detailTable)
         }).catch(error=>{
-            setTableLoading(false)
-            props.showError('获取事项详情失败！')
+            showError('获取事项详情失败！')
         })
     }
 
@@ -541,51 +560,20 @@ export default function ManageProcess(props) {
         }
     }, [guideDetail])
 
-    const getItemstatusScheme = ()=>{
-        api.GetItemStatusScheme({}).then(response=>{
-            // 获取状态表
-            let scheme = response.data.data
-            let type = []
-            let fullType = []
-            for (let key in scheme){
-                // 除了审核不通过之外都是可获取事项
-                if (scheme[key].eng_name !== 'Failure'){
-                    for (let i = 0; i < props.canOperate.length; i++){
-                        if (key == props.canOperate[i]){
-                            type.push({
-                                label: scheme[key].cn_name,
-                                value: key
-                            })
-                            fullType.push(key)
-                        }
-                    }  
-                }
-            }
-            setStatusType(type)
-            setFullType(fullType)
-            setStatusScheme(scheme)
-        }).catch(error=>{
-            props.showError('初始化状态表失败！')
-        })
-    }
-
     useEffect(()=>{
         for (let key in props.regionNodes){
             for (let key in props.ruleNodes){
-                for (let key in props.canOperate){
-                    getItemstatusScheme()
-                    break
-                }
+                getItemstatusScheme()
                 break
             }
             break
         }
-    }, [props.regionNodes, props.ruleNodes, props.canOperate])
+    }, [props.regionNodes, props.ruleNodes])
 
     useEffect(()=>{
         // 若是跳转过来进行解绑的，处理绑定数据
         for (let key in props.bindedData){
-            for (let key in statusScheme){
+            for (let key in statusId){
                 let data = {}
                 if ('rule_id' in props.bindedData){
                     data['rule_id'] = props.bindedData.rule_id
@@ -601,14 +589,13 @@ export default function ManageProcess(props) {
             }
             return
         }
-        for (let key in statusScheme){
+        for (let key in statusId){
             setCurrent(0)
-            setUnableCreate(false)
             setOriginData({})
-            resetSearch()
+            getItems()
             break
         }      
-    }, [statusScheme])
+    }, [statusId])
 
     return (
         <>
@@ -617,10 +604,9 @@ export default function ManageProcess(props) {
                     destroyOnClose={true} onCancel={endShowing} footer={null}>
                     <Table style={{whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-all'}} columns={detailColumns} dataSource={guideDetail} rowKey='detailType'/>
                 </Modal>
-                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData} fullType={fullType}
-                    bindedData={props.bindedData} setBindedData={props.setBindedData} statusType={statusType} />
-                <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
-                    <Button type='primary' disabled={unableCreate} onClick={handleCreate}>绑定事项</Button>
+                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData}
+                    bindedData={props.bindedData} setBindedData={props.setBindedData} />
+                <Space direction='horizontal' size={12} style={{marginLeft: '82%'}}>
                     <Button type='primary' disabled={!isBatching}>批量导出</Button>
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量解绑</Button>
                 </Space>

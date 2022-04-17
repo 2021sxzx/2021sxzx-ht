@@ -9,6 +9,7 @@ export default function ManageRules(props) {
     // 页面的基础数据
     const [tableData, setTableData] = useState([])
     const [unableCreate, setUnableCreate] = useState(true)
+    const [tableLoading, setTableLoading] = useState(false)
     // 删除队列
     const [deletingIds, setDeletingIds] = useState([])
     // 用于获取批量处理的事项规则id
@@ -38,8 +39,8 @@ export default function ManageRules(props) {
         },
         {
             title: '规则路径',
-            dataIndex: 'rule_path',
-            key: 'rule_path'
+            dataIndex: 'item_path',
+            key: 'item_path'
         },
         {
             title: '业务部门',
@@ -219,20 +220,24 @@ export default function ManageRules(props) {
     const getRules = ()=>{
         // 无搜索条件获取全数据
         // 由于数据量较小，不进行分页处理，全部拉取
+        setTableLoading(true)
         api.GetRules({}).then(response=>{
             let rules = response.data.data
             for (let i = 0; i < rules.length; i++){
                 rules[i]['department_name'] = rules[i].creator.department_name
                 rules[i]['creator_name'] = rules[i].creator.name
-                rules[i]['rule_path'] = getPathByRuleId(rules[i].rule_id)
             }
             setTableData(rules)
+            setTableLoading(false)
         }).catch(error=>{
+            setTableLoading(false)
+            console.log(error)
             props.showError('获取规则失败！')
         })
     }
 
     const searchRules = (data)=>{
+        setTableLoading(true)
         // 搜索
         api.GetRules(data).then(response=>{
             let rules = response.data.data
@@ -240,10 +245,11 @@ export default function ManageRules(props) {
             for (let i = 0; i < rules.length; i++){
                 rules[i]['department_name'] = rules[i].creator.department_name
                 rules[i]['creator_name'] = rules[i].creator.name
-                rules[i]['rule_path'] = getPathByRuleId(rules[i].rule_id)
             }
+            setTableLoading(false)
             setTableData(rules)
         }).catch(error=>{
+            setTableLoading(false)
             props.showError('搜索规则失败！')
         })
     }
@@ -264,7 +270,7 @@ export default function ManageRules(props) {
     const resetSearch = ()=>{
         // 回 归 本 源
         setCurrent(1)
-        props.getRuleTree()
+        getRules()
     }
 
     const changePage = (page)=>{
@@ -276,13 +282,16 @@ export default function ManageRules(props) {
     useEffect(function(){
         // 避开初始化时的查询
         for (let key in props.ruleTree){
-            getRules()
-            setCurrent(1)
-            // ruleTree初始化完毕前不能进行节点创建，否则会报错
-            setUnableCreate(false)
+            for (let key in props.ruleNodes){
+                getRules()
+                setCurrent(1)
+                // ruleTree初始化完毕前不能进行节点创建，否则会报错
+                setUnableCreate(false)
+                break
+            }
             break
         }
-    }, [props.ruleTree])
+    }, [props.ruleTree, props.ruleNodes])
 
     return (
         <>
@@ -294,7 +303,7 @@ export default function ManageRules(props) {
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>
                 </Space>
                 <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='rule_id'
-                    pagination={{onChange: changePage, current: current}}/>
+                    pagination={{onChange: changePage, current: current}} loading={tableLoading} />
             </Space>
         </>
     )

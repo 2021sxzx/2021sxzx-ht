@@ -244,7 +244,8 @@ export default function ManageGuide(props) {
             })
             detailTable.push({
                 'detailType': '二维码',
-                'detailInfo': data.qr_code
+                'detailInfo': data.qr_code === '' ? '暂无' : 
+                <img style={{height: 128, width: 128}} src={(api.GetServerIP() === '/api' ? 'http://localhost:5001' : api.GetServerIP()) + data.qr_code}/>
             })
             // 服务对象类型数组处理
             let type = data.service_object_type.split(',')
@@ -378,6 +379,7 @@ export default function ManageGuide(props) {
     }
 
     const modifyItemGuide = (id)=>{
+        setTableLoading(true)
         api.GetItemGuide({
             task_code: id
         }).then(response=>{
@@ -444,6 +446,7 @@ export default function ManageGuide(props) {
     }
 
     const resetSearch = ()=>{
+        setTableLoading(true)
         // 回 归 本 源
         setOriginData({})
         setCurrent(0)
@@ -495,7 +498,7 @@ export default function ManageGuide(props) {
 
     useEffect(()=>{
         setCurrent(0)
-        getItemGuides()
+        resetSearch()
     }, [])
 
     return (

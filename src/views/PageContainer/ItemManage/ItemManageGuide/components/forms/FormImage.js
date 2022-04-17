@@ -1,13 +1,11 @@
-import { Input, Image } from 'antd'
+import { Input, Image, Modal } from 'antd'
 import { useState } from 'react'
+import api from '../../../../../../api/rule'
 import style from './FormImage.module.scss'
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
-const { TextArea } = Input
 
 export default function FormImage(props){
-    const [QRCodeLoading, setQRCodeLoading] = useState(false)
-    const [data, setData] = useState(props.value)
-    const [path, setPath] = useState('')
+    const [data, setData] = useState(props.value === '' ? '' : (api.GetServerIP() === '/api' ? 'http://localhost:5001' : api.GetServerIP()) + props.value)
+    const pattern = /^image/
 
     // 二维码图片处理
     const getBase64 = (img, callback)=>{
@@ -17,22 +15,20 @@ export default function FormImage(props){
     }
 
     const handleChange = (e)=>{
-        /*props.setData(e.target.files[0])
-        console.log(e.target.files[0])*/
+        if (e.target.files.length === 0) return
+        if (!pattern.test(e.target.files[0].type)){
+            Modal.warning({
+                title: '文件类型错误',
+                content: '上传的文件类型错误，请上传二维码图片！',
+                centered: true
+            })
+            return
+        }
         getBase64(e.target.files[0], imageUrl=>{
             setData(imageUrl)
             props.setData(imageUrl)
-            //setPath(e.target.value)
-            setQRCodeLoading(false)
         })
     }
-
-    const uploadButton = (
-        <div>
-            {QRCodeLoading ? <LoadingOutlined /> : <PlusOutlined />}
-            <div style={{ marginTop: 8 }}>Upload</div>
-        </div>
-    )
 
     return(
         <div className={style.form}>
@@ -41,8 +37,16 @@ export default function FormImage(props){
                 <span style={{marginLeft: 5}}>{props.formName}：</span>
             </div>
             <div className={style.input}>
-                <input type='file' alt='二维码' name='QRCode' style={{width: 128, height: 128}}
-                    onChange={handleChange}/>
+                <input type='file' alt='二维码' name='QRCode' onChange={handleChange}/>
+                {
+                    data !== '' && pattern.test(data.type) &&
+                    <img className={style.imgContainer} style={{display: data === '' ? 'none' : 'block'}} src={data} />
+                }
+                {
+                    data !== '' && !pattern.test(data.type) &&
+                    <img className={style.imgContainer} style={{display: data === '' ? 'none' : 'block'}} src={data} />
+                }
+                <span className={style.icon} style={{display: data === '' ? 'block' : 'none'}}>上传图片</span>
             </div>
         </div>
     )

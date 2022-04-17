@@ -11,6 +11,7 @@ import {
   Checkbox,
   Radio,Divider,Modal,Alert,Row,Col,Upload
 } from "antd";
+const { TextArea } = Input;
 import { UploadOutlined } from "@ant-design/icons";
 import api from "../../../../api/log";
 import emitter from "./ev"
@@ -178,29 +179,15 @@ const SubmitFailure=(props)=>{
     setIsModalVisible(true);
   };
 
-  const handleOk = () => {
-    setIsModalVisible(false);
+  const onFinish = (values) => {
+    console.log(form.getFieldsValue(true))
+    // setIsModalVisible(false);
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
   };
 
-  const fileList = [
-    {
-      uid: "-1",
-      name: "xxx.png",
-      status: "done",
-      url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-      thumbUrl:
-        "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-    },
-    {
-      uid: "-2",
-      name: "yyy.png",
-      status: "error",
-    },
-  ];
   return (
     <>
       {/* <Button type="link" style={{color:"yellow",textDecoration:"underline"}}>详情</Button>
@@ -212,27 +199,24 @@ const SubmitFailure=(props)=>{
       <Modal
         title="Basic Modal"
         visible={isModalVisible}
-        onOk={handleOk}
+        onOk={onFinish}
         onCancel={handleCancel}
         okText="确定"
         cancelText="取消"
       >
-        <Form form={form} name="createSystemFailure">
-          <FormItem label="故障名称">
-            <Input></Input>
+        <Form form={form} name="createSystemFailure" onFinish={onFinish}>
+          <FormItem label="故障名称" name="failureName">
+            <Input placeholder="请输入名称" defaultValue="mysite"></Input>
           </FormItem>
-          <FormItem label="故障描述">
-            <Input></Input>
+          <FormItem label="故障描述" name="failureDescription">
+            <TextArea rows={4} showCount maxLength={100} defaultValue="mysite"></TextArea>
           </FormItem>
-          <Form.Item label="故障截图" name="BackstageLogo">
+          <Form.Item label="故障截图" name="failurePicture">
             <Upload
-              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
               listType="picture"
-              defaultFileList={[...fileList]}
-              // className="upload-list-inline"
             >
               <Button icon={<UploadOutlined />}>Upload</Button>
-              图片地址
+              {localStorage.getItem('_id')}
             </Upload>
           </Form.Item>
         </Form>

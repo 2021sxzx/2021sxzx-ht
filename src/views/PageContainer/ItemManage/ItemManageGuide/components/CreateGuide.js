@@ -109,7 +109,7 @@ export default function CreateGuide(props){
             content: 
             <Space className={style.form} direction='vertical' size={15} style={{width: '100%'}}>
                 <FormArea handleChange={handleGuideConditionChange} formName='申办所需审核条件' value={guideCondition}/>
-                <FormList setData={setGuideMaterial} addBtn='添加申办材料' formName='申办材料' value={guideMaterial}/>
+                <FormList setData={setGuideMaterial} addBtn='添加所需申办材料' formName='所需申办材料' value={guideMaterial}/>
                 <FormTime formName='审核时限' legalPeriod={legalPeriod} legalType={legalType} promisedPeriod={promisedPeriod} promisedType={promisedType}
                     setLegalPeriod={setLegalPeriod} setLegalType={setLegalType} setPromisedPeriod={setPromisedPeriod} setPromisedType={setPromisedType}/>
             </Space>
@@ -132,7 +132,7 @@ export default function CreateGuide(props){
                 <FormArea handleChange={handleGuideSelfmadeAddressChange} formName='自助终端' value={guideSelfmadeAddress}/>
                 <FormListPlus addBtn='添加地址' formName='办事大厅地址' value={guideAddress} other={guidePhone} guideWindow={guideWindow}
                     setOther={setGuidePhone} setData={setGuideAddress} setGuideWindow={setGuideWindow}/>
-                <FormArea setData={setGuideQRCode} handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>
+                <FormImage setData={setGuideQRCode} handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>
                 <FormCheckbox setData={setGuideServiceType} formName='服务对象类型' value={guideServiceType}/>
             </Space>
         }
@@ -163,14 +163,14 @@ export default function CreateGuide(props){
             }
         }
         if (guideCondition === '') emptyArea.push('申办所需资格条件')
-        // 申办材料数组处理
+        // 所需申办材料数组处理
         if (guideMaterial.length === 0){
-            emptyArea.push('申办材料')
+            emptyArea.push('所需申办材料')
         }
         else{
             for (let i = 0; i < guideMaterial.length; i++){
                 if (guideMaterial[i] === ''){
-                    emptyArea.push('申办材料')
+                    emptyArea.push('所需申办材料')
                     break
                 }
             }
@@ -189,7 +189,7 @@ export default function CreateGuide(props){
                 if (promisedType !== '0'){
                     promised = parseInt(promisedPeriod)
                 }
-                if (isNaN(legal) || isNaN(promised)){
+                if (isNaN(legal) || isNaN(promised) || legal <= 0 || promised <= 0){
                     notNum = true
                 }
             }  
@@ -256,7 +256,7 @@ export default function CreateGuide(props){
         }
         if (notNum){
             if (empties !== '') empties += '\n'
-            empties += '申办时限处的输入必须是数字，请进行修改！'
+            empties += '申办时限处的输入必须是正整数，请进行修改！'
         }
         
         Modal.error({
@@ -307,7 +307,7 @@ export default function CreateGuide(props){
             })
         }
         data['legal_basis'] = legalBasis
-        // 申办材料处理
+        // 所需申办材料处理
         let submitDocuments = []
         for (let i = 0; i < guideMaterial.length; i++){
             submitDocuments.push({
@@ -339,12 +339,13 @@ export default function CreateGuide(props){
 
     // api调用
     const createItemGuide = (data)=>{
+        console.log(data)
         api.CreateItemGuide(data).then(response=>{
             props.showSuccess()
             props.setPageType(1)
         }).catch(error=>{
             props.showError('创建指南失败！')
-            props.setPageType(1)
+            // props.setPageType(1)
         })
     }
 
@@ -353,9 +354,8 @@ export default function CreateGuide(props){
             props.showSuccess()
             props.setPageType(1)
         }).catch(error=>{
-            console.log(error)
             props.showError('编辑指南失败！')
-            props.setPageType(1)
+            // props.setPageType(1)
         })
     }
 

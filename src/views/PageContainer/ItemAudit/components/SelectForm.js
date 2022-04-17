@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {DatePicker, Checkbox, Form, Input, Button, Select, Table, Modal,Descriptions, Badge} from 'antd'
-import {getTimeStamp} from "../../../../../utils/TimeStamp";
+import {getTimeStamp} from "../../../../utils/TimeStamp";
 const {RangePicker} = DatePicker
 
 export default function SelectForm(props){
