@@ -1,6 +1,6 @@
 import React, {cloneElement, useEffect, useState} from 'react'
 import { Dropdown, Space, Menu, message, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
-import { getYMD } from "../../../../utils/TimeStamp";
+import { getYMD, getYMDHMS } from "../../../../utils/TimeStamp";
 import api from '../../../../api/rule';
 import SelectForm from './components/SelectForm'
 
@@ -83,8 +83,8 @@ export default function ItemManageUnusual(props) {
         },
         {
             title: '事项规则',
-            dataIndex: 'rule_path',
-            key: 'rule_path'
+            dataIndex: 'item_path',
+            key: 'item_path'
         },
         {
             title: '业务部门',
@@ -234,7 +234,7 @@ export default function ItemManageUnusual(props) {
                 // 规则路径生成、状态码转状态名
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
-                items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
+                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
                 items[i]['status'] = statusScheme[items[i].item_status].cn_name
             }
             setTableLoading(false)
@@ -333,7 +333,7 @@ export default function ItemManageUnusual(props) {
                 // 规则路径生成、状态码转状态名
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
-                items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
+                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
                 items[i]['status'] = statusScheme[items[i].item_status].cn_name
             }
             setTotalSize(response.data.data.total)
@@ -362,7 +362,7 @@ export default function ItemManageUnusual(props) {
                 // 规则路径生成、状态码转状态名
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
-                items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
+                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
                 items[i]['status'] = statusScheme[items[i].item_status].cn_name
             }
             setTableLoading(false)
@@ -391,7 +391,7 @@ export default function ItemManageUnusual(props) {
                 // 规则路径生成、状态码转状态名
                 items[i]['creator_name'] = items[i].creator.name
                 items[i]['department_name'] = items[i].creator.department_name
-                items[i]['rule_path'] = getPathByRuleId(items[i].rule_id) + getPathByRegionId(items[i].region_id)
+                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
                 items[i]['status'] = statusScheme[items[i].item_status].cn_name
             }
             setTableData(items)
@@ -516,7 +516,8 @@ export default function ItemManageUnusual(props) {
             })
             detailTable.push({
                 'detailType': '二维码',
-                'detailInfo': data.qr_code
+                'detailInfo': data.qr_code === '' ? '暂无' : 
+                <img style={{height: 128, width: 128}} src={(api.GetServerIP() === '/api' ? 'http://localhost:5001' : api.GetServerIP()) + data.qr_code}/>
             })
             // 服务对象类型数组处理
             let type = data.service_object_type.split(',')
@@ -532,8 +533,8 @@ export default function ItemManageUnusual(props) {
             // 审核意见处理
             let tempAdvises = ''
             if ('audit_advises' in data){
-                for (let i = 0; i < data.audit_advises.length; i++){
-                    tempAdvises += ((i + 1) + '.' + data['audit_advises'][i].user_name + '：' + data['audit_advises'][i].advise + '\n')
+                for (let i = data.audit_advises.length - 1; i >= 0 ; i--){
+                    tempAdvises += (getYMDHMS(data['audit_advises'][i].time) + '：' + data['audit_advises'][i].user_name + '：' + data['audit_advises'][i].advise + '\n')
                 }
             }
             detailTable.push({

@@ -95,7 +95,7 @@ export default function CreateAudit(props) {
         api.AddAuditAdvise({
             item_id: props.auditingId,
             user_id: props.userId,
-            advise: ((choice === 'pass' ? '（通过）' : '（不通过）') + comment)
+            advise: ('（' + props.statusScheme[props.auditingStatus].cn_name + (choice === 'pass' ? '）（通过）' : '）（不通过）') + comment)
         }).then(response=>{
             props.showSuccess()
             props.setPageType(1)

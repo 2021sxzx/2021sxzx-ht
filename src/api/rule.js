@@ -206,6 +206,9 @@ const api ={
             url: "/v1/getUserRank",
             data
         })
+    },
+    GetServerIP(){
+        return service.defaults.baseURL
     }
 }
 

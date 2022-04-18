@@ -39,8 +39,8 @@ export default function ManageRules(props) {
         },
         {
             title: '规则路径',
-            dataIndex: 'rule_path',
-            key: 'rule_path'
+            dataIndex: 'item_path',
+            key: 'item_path'
         },
         {
             title: '业务部门',
@@ -226,7 +226,6 @@ export default function ManageRules(props) {
             for (let i = 0; i < rules.length; i++){
                 rules[i]['department_name'] = rules[i].creator.department_name
                 rules[i]['creator_name'] = rules[i].creator.name
-                rules[i]['rule_path'] = getPathByRuleId(rules[i].rule_id)
             }
             setTableData(rules)
             setTableLoading(false)
@@ -246,7 +245,6 @@ export default function ManageRules(props) {
             for (let i = 0; i < rules.length; i++){
                 rules[i]['department_name'] = rules[i].creator.department_name
                 rules[i]['creator_name'] = rules[i].creator.name
-                rules[i]['rule_path'] = getPathByRuleId(rules[i].rule_id)
             }
             setTableLoading(false)
             setTableData(rules)

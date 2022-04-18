@@ -244,7 +244,8 @@ export default function ManageGuide(props) {
             })
             detailTable.push({
                 'detailType': '二维码',
-                'detailInfo': data.qr_code
+                'detailInfo': data.qr_code === '' ? '暂无' : 
+                <img style={{height: 128, width: 128}} src={(api.GetServerIP() === '/api' ? 'http://localhost:5001' : api.GetServerIP()) + data.qr_code}/>
             })
             // 服务对象类型数组处理
             let type = data.service_object_type.split(',')
