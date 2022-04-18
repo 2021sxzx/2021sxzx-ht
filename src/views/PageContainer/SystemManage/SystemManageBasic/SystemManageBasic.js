@@ -67,6 +67,9 @@ const Demo = () => {
   const [fileList,setFileList]=React.useState(null)
   const [BackstageLogoFile,setBackstageLogoFile]=React.useState(null)
   const [WebsiteLogoFile,setWebsiteLogoFile]=React.useState(null)
+  const [AddressBarIconFile,setAddressBarIconFile]=React.useState(null)
+  const [MobileLogoFile,setMobileLogoFile]=React.useState(null)
+  const [QRCodeFile,setQRCodeFile]=React.useState(null)
   // const handleUpload = () => {
   //   const formData = new FormData();
   //   fileList.forEach(file => {
@@ -129,34 +132,37 @@ const Demo = () => {
     //   })
 
     // })
-    const formData = new FormData();
-    // fileList.forEach(file => {
-      formData.append('file', BackstageLogoFile);
-      formData.append('imgName','logo');
-      formData.append('test','123456');
-    // });
-    // setUploading(true)
-    console.log('formData.file:',formData.get('file'))
-    // console.log('formData.test:',formData.get('test'))
-    // You can use any AJAX library you like
-    fetch('http://localhost:5001/api/v1/backstagelogo-upload', {
-      method: 'POST',
-      body: formData,
-      mode: "cors",
-      // headers: {
-      //   "Content-Type": "multipart/form-data",
-      // },
-    })
-      .then(res => res.json())
-      .then(() => {
-        //上传之后删除浏览器的图片
-        // setFileList(null)
-        message.success('upload successfully.');
+    if (BackstageLogoFile) {
+      const formData = new FormData();
+      // fileList.forEach(file => {
+      formData.append("file", BackstageLogoFile);
+      formData.append("imgName", "logo");
+      formData.append("test", "123456");
+      // });
+      // setUploading(true)
+      console.log("formData.file:", formData.get("file"));
+      // console.log('formData.test:',formData.get('test'))
+      // You can use any AJAX library you like
+      fetch("http://localhost:5001/api/v1/backstagelogo-upload", {
+        method: "POST",
+        body: formData,
+        mode: "cors",
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
       })
-      .catch(() => {
-        message.error('upload failed.');
-      })
-      
+        .then((res) => res.json())
+        .then(() => {
+          //上传之后删除浏览器的图片
+          setBackstageLogoFile(null)
+          message.success("首页轮播图上传成功.");
+        })
+        .catch(() => {
+          message.error("首页轮播图上传失败.");
+        });
+    }
+
+    if (WebsiteLogoFile) {
       const WebsiteLogoFileFormData = new FormData();
       WebsiteLogoFileFormData.append('file', WebsiteLogoFile);
       console.log('WebsiteLogoFileFormData.file:',WebsiteLogoFileFormData.get('file'))
@@ -171,13 +177,79 @@ const Demo = () => {
         .then(res => res.json())
         .then(() => {
           //上传之后删除浏览器的图片
-          // setFileList(null)
-          message.success('upload successfully.');
+          setWebsiteLogoFile(null)
+          message.success('网站logo上传成功.');
         })
         .catch(() => {
-          message.error('upload failed.');
+          message.error('网站logo上传失败.');
         })
-  
+      }
+      if (AddressBarIconFile) {
+        const AddressBarIconFileFormData = new FormData();
+        AddressBarIconFileFormData.append('file', AddressBarIconFile);
+        // console.log('WebsiteLogoFileFormData.file:',WebsiteLogoFileFormData.get('file'))
+        fetch('http://localhost:5001/api/v1/addressbaricon-upload', {
+          method: 'POST',
+          body: AddressBarIconFileFormData,
+          mode: "cors",
+          // headers: {
+          //   "Content-Type": "multipart/form-data",
+          // },
+        })
+          .then(res => res.json())
+          .then(() => {
+            //上传之后删除浏览器的图片
+            setAddressBarIconFile(null)
+            message.success('地址栏图标上传成功.');
+          })
+          .catch(() => {
+            message.error('地址栏图标上传失败.');
+          })
+        }
+        if (MobileLogoFile) {
+          const MobileLogoFileFormData = new FormData();
+          MobileLogoFileFormData.append('file', MobileLogoFile);
+          // console.log('WebsiteLogoFileFormData.file:',WebsiteLogoFileFormData.get('file'))
+          fetch('http://localhost:5001/api/v1/mobilelogo-upload', {
+            method: 'POST',
+            body: MobileLogoFileFormData,
+            mode: "cors",
+            // headers: {
+            //   "Content-Type": "multipart/form-data",
+            // },
+          })
+            .then(res => res.json())
+            .then(() => {
+              //上传之后删除浏览器的图片
+              setMobileLogoFile(null)
+              message.success('手机端logo上传成功.');
+            })
+            .catch(() => {
+              message.error('手机端logo上传失败.');
+            })
+          }
+          if (QRCodeFile) {
+            const QRCodeFileFormData = new FormData();
+            QRCodeFileFormData.append('file', QRCodeFile);
+            // console.log('WebsiteLogoFileFormData.file:',WebsiteLogoFileFormData.get('file'))
+            fetch('http://localhost:5001/api/v1/QRCode-upload', {
+              method: 'POST',
+              body: QRCodeFileFormData,
+              mode: "cors",
+              // headers: {
+              //   "Content-Type": "multipart/form-data",
+              // },
+            })
+              .then(res => res.json())
+              .then(() => {
+                //上传之后删除浏览器的图片
+                setQRCodeFile(null)
+                message.success('二维码上传成功.');
+              })
+              .catch(() => {
+                message.error('二维码上传失败.');
+              })
+            }
     message.success('修改成功')
   };
 
@@ -193,17 +265,6 @@ const Demo = () => {
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
-  };
-
-  const uProps = {
-    // 上传后的文件名
-    name: 'file',
-    headers: {
-    },
-    // 上传文件必须用拦截模式
-    action: '/api/v1/upload',
-    data:{enter:'file',test:'test-data'}
-    // action: 'http://localhost:8080/api/system/protocol/upload'
   };
 
   useEffect(()=>{
@@ -241,7 +302,7 @@ const Demo = () => {
             form={websiteSettingsForm}
             name="websiteSettings"
           >
-            <Form.Item label="网站状态" name="WebsiteStatus">
+            {/* <Form.Item label="网站状态" name="WebsiteStatus">
               <Switch
                 checked={WebsiteStatus}
                 checkedChildren="开"
@@ -250,7 +311,7 @@ const Demo = () => {
                   setWebsiteStatus(!WebsiteStatus);
                 }}
               />{" "}
-            </Form.Item>
+            </Form.Item> */}
             <Form.Item
               label="网站简称"
               name="WebsiteAbbreviation"
@@ -269,6 +330,7 @@ const Demo = () => {
                   return false;
                 }}
                 name="websiteLogo"
+                maxCount={1}
               >
                 <Button icon={<UploadOutlined />}>Upload</Button>
                 图片地址
@@ -294,7 +356,59 @@ const Demo = () => {
                   console.log(BackstageLogoFile)
                   return false;
                 }}
+                maxCount={1}
                 name="logo"
+              >
+                <Button icon={<UploadOutlined />}>Upload</Button>
+                图片地址
+              </Upload>
+            </Form.Item>
+            <Form.Item label="地址栏图标" name="AddressBarIcon" layout="inline">
+            <Upload
+                listType="picture"
+                className="upload-list-inline"
+                accept=".png"
+                beforeUpload={(file)=>{       
+                  setAddressBarIconFile(file)
+                  console.log(AddressBarIconFile)
+                  return false;
+                }}
+                maxCount={1}
+                name="addressBarIconFile"
+              >
+                <Button icon={<UploadOutlined />}>Upload</Button>
+                图片地址
+              </Upload>
+            </Form.Item>
+            <Form.Item label="手机端logo" name="MobileLogo" layout="inline">
+            <Upload
+                listType="picture"
+                className="upload-list-inline"
+                accept=".png"
+                beforeUpload={(file)=>{       
+                  setMobileLogoFile(file)
+                  console.log(MobileLogoFile)
+                  return false;
+                }}
+                maxCount={1}
+                name="mobileLogo"
+              >
+                <Button icon={<UploadOutlined />}>Upload</Button>
+                图片地址
+              </Upload>
+            </Form.Item>
+            <Form.Item label="二维码" name="QRCode" layout="inline">
+            <Upload
+                listType="picture"
+                className="upload-list-inline"
+                accept=".png"
+                beforeUpload={(file)=>{       
+                  setQRCodeFile(file)
+                  console.log(QRCodeFile)
+                  return false;
+                }}
+                maxCount={1}
+                name="QRCode"
               >
                 <Button icon={<UploadOutlined />}>Upload</Button>
                 图片地址
@@ -420,7 +534,7 @@ const Demo = () => {
           <h3>伪静态模式</h3>
           <Form>
           <Form.Item label="测试upload" name="BackstageLogo">
-              <Upload {...uProps}>
+              <Upload>
                 <Button icon={<UploadOutlined />}>Upload</Button>
               </Upload>
             </Form.Item>

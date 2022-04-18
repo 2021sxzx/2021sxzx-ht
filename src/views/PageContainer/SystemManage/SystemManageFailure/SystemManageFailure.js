@@ -13,11 +13,11 @@ import {
 } from "antd";
 const { TextArea } = Input;
 import { UploadOutlined } from "@ant-design/icons";
-import api from "../../../../api/log";
+import api from "../../../../api/systemFailure";
 import emitter from "./ev"
 import FormItem from "antd/lib/form/FormItem";
 
-const tableColumns = [
+const   tableColumns = [
   {
     title: "故障名称",
     dataIndex: "failure_name",
@@ -25,18 +25,18 @@ const tableColumns = [
   },
   {
     title: "时间",
-    dataIndex: "create_time",
-    key: "create_time",
+    dataIndex: "failure_time",
+    key: "failure_time",
   },
   {
     title: "操作描述",
-    dataIndex: "content",
-    key: "content",
+    dataIndex: "failure_des",
+    key: "failure_des",
   },
   {
     title: "提交人",
-    key: "user_name",
-    dataIndex: "user_name",
+    key: "idc",
+    dataIndex: "idc",
   },
   {
     // title:"详情",
@@ -174,14 +174,17 @@ const AlertBox=()=>{//有四种样式 success、info、warning、error。
 const SubmitFailure=(props)=>{
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm(); //用于之后取数据
+  const formRef = React.createRef();
 
   const showModal = () => {
     setIsModalVisible(true);
   };
 
-  const onFinish = (values) => {
-    console.log(form.getFieldsValue(true))
+  const onFinish = async (values) => {
+    // console.log(form.getFieldsValue(true))
+    // console.log(form.getFieldValue('failureName'));
     // setIsModalVisible(false);
+    console.log('Success:', formRef.current?.getFieldsValue());
   };
 
   const handleCancel = () => {
@@ -201,16 +204,16 @@ const SubmitFailure=(props)=>{
         visible={isModalVisible}
         onOk={onFinish}
         onCancel={handleCancel}
-        okText="确定"
+        okText="提交"
         cancelText="取消"
       >
-        <Form form={form} name="createSystemFailure" onFinish={onFinish}>
-          <FormItem label="故障名称" name="failureName">
-            <Input placeholder="请输入名称" defaultValue="mysite"></Input>
-          </FormItem>
-          <FormItem label="故障描述" name="failureDescription">
-            <TextArea rows={4} showCount maxLength={100} defaultValue="mysite"></TextArea>
-          </FormItem>
+        <Form ref={formRef} name="createSystemFailure" onFinish={onFinish}>
+          <Form.Item label="故障名称" name="failureName">
+            <Input placeholder="请输入名称" defaultValue="mysite"/>
+          </Form.Item>
+          <Form.Item label="故障描述" name="failureDescription">
+            <TextArea rows={4} showCount maxLength={100} defaultValue="mysite"/>
+          </Form.Item>
           <Form.Item label="故障截图" name="failurePicture">
             <Upload
               listType="picture"
@@ -230,6 +233,19 @@ const SubmitFailure=(props)=>{
 
 const Demo = () => {
   const [selectionType, setSelectionType] = useState('checkbox');
+  const [failureData, setFailureData] = useState([]);
+  const getFailure = () => {
+    api
+        .GetSystemFailure()
+        .then((response) => {
+          setFailureData(response.data.data);
+          console.log("response.data.data=", response.data.data);
+        })
+        .catch((error) => {});
+  };
+  useEffect(() => {
+    getFailure();
+  }, []);
   return (
     <div>
       <Row>
@@ -247,7 +263,7 @@ const Demo = () => {
           ...rowSelection,
         }}
         columns={tableColumns}
-        dataSource={tableData1}
+        dataSource={failureData}
         pagination={{
           pageSize: 10,
           showQuickJumper: true,
@@ -260,15 +276,6 @@ const Demo = () => {
 };
 export default function SystemManageFailure() {
   const [tableData, setTableData] = useState([]);
-  const getLog = (data) => {
-    api
-      .GetLog(data)
-      .then((response) => {
-        setTableData(response.data.data);
-        console.log("response.data.data=", response.data.data);
-      })
-      .catch((error) => {});
-  };
   const getSearchLog = (data) => {
     console.log(data);
     api.SearchLog(data).then((response) => {
@@ -276,9 +283,6 @@ export default function SystemManageFailure() {
         setTableData(response.data.data);
       }).catch((error) => {});
   };
-  useEffect(() => {
-    getLog({});
-  }, []);
   return (
     <>
       <Demo></Demo>

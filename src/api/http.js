@@ -13,7 +13,6 @@ else if(process.env.NODE_ENV==="production"){
 const instance = axios.create({
     baseURL: BASEURL,
     timeout: 100000,
-    headers:"hhhhhh"
 });
 // 添加请求拦截器
 instance.interceptors.request.use(
