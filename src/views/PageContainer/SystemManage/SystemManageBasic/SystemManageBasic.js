@@ -341,7 +341,7 @@ const Demo = () => {
                 // action="http://localhost:5001/api/v1/logo-upload"
                 listType="picture"
                 className="upload-list-inline"
-                accept=".png"
+                accept=".jpg"
                 beforeUpload={(file)=>{       
                   // console.log(file);
                   // var fileExtension = name.substring(name.lastIndexOf(".") + 1); //截取文件后缀名

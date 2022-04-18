@@ -35,8 +35,8 @@ const   tableColumns = [
   },
   {
     title: "提交人",
-    key: "idc",
-    dataIndex: "idc",
+    key: "user_name",
+    dataIndex: "user_name",
   },
   {
     // title:"详情",
@@ -104,9 +104,10 @@ const HandleModal = (props) => {
       <button style={{textDecoration:"underline"}}>underline</button> */}
       <a style={{textDecoration:"underline"}} onClick={showModal}>详情</a>
       <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} okText="确定" cancelText="取消">
-        <p>{props.record.failure_name}</p>
-        <p>{props.record.user_name}</p>
-        <p>{props.record.create_time}</p>
+        <h2>故障名称：{props.record.failure_name}</h2>
+        <p>故障描述：{props.record.failure_des}</p>
+        <h6>{props.record.failure_time}</h6>
+        {/* <p>{props.record}</p> */}
       </Modal>
     </>
   );
@@ -114,7 +115,8 @@ const HandleModal = (props) => {
 
 //删除操作
 const deleteFuncElem=(aimedRowData)=>{
-  // console.log(aimedRowData);
+  console.log(aimedRowData);
+  api.DeleteSystemFailure(aimedRowData);
   const totalFuncDataList = tableData1;
   // console.log(totalFuncDataList);
   let i;
@@ -184,6 +186,10 @@ const SubmitFailure=(props)=>{
     // console.log(form.getFieldsValue(true))
     // console.log(form.getFieldValue('failureName'));
     // setIsModalVisible(false);
+    let data=formRef.current?.getFieldsValue();
+    data.user_name=localStorage.getItem('role_name');
+    data.create_time=new Date();
+    api.CreateSystemFailure(data);
     console.log('Success:', formRef.current?.getFieldsValue());
   };
 

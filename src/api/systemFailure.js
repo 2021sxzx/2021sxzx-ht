@@ -4,7 +4,7 @@ const api ={
     CreateSystemFailure(data) {
         return service.request({
             method: "post",
-            url: "v1/createSystemFailure",
+            url: "v1/create-system-failure",
             data, //data:data同名可以直接写 data
         });
     },
@@ -14,8 +14,14 @@ const api ={
             url: "v1/failure",
             data
         })
+    },
+    DeleteSystemFailure(data) {
+        return service.request({
+            method: "post",
+            url: "v1/delete-system-failure",
+            data
+        })
     }
-
 }
 
 export default api
