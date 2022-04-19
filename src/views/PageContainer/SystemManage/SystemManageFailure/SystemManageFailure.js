@@ -9,7 +9,7 @@ import {
   Button,
   Table,
   Checkbox,
-  Radio,Divider,Modal,Alert,Row,Col,Upload
+  Radio, Divider, Modal, Alert, Row, Col, Upload, message
 } from "antd";
 const { TextArea } = Input;
 import { UploadOutlined } from "@ant-design/icons";
@@ -177,7 +177,7 @@ const SubmitFailure=(props)=>{
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm(); //用于之后取数据
   const formRef = React.createRef();
-
+const [failurePicture,setFailurePicture]=useState(null);
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -189,7 +189,29 @@ const SubmitFailure=(props)=>{
     let data=formRef.current?.getFieldsValue();
     data.user_name=localStorage.getItem('role_name');
     data.create_time=new Date();
-    api.CreateSystemFailure(data);
+    if (failurePicture) {
+      const FailurePictureFormData = new FormData();
+      FailurePictureFormData.append('file', failurePicture);
+      console.log('FailurePictureFormData.file:',FailurePictureFormData.get('file'))
+      fetch('http://localhost:5001/api/v1/system-failure-picture-upload', {
+        method: 'POST',
+        body: FailurePictureFormData,
+        mode: "cors",
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
+      })
+          .then(res => res.json())
+          .then(() => {
+            //上传之后删除浏览器的图片
+            // setWebsiteLogoFile(null)
+            message.success('网站logo上传成功.');
+          })
+          .catch(() => {
+            message.error('网站logo上传失败.');
+          })
+    }
+    await api.CreateSystemFailure(data);
     console.log('Success:', formRef.current?.getFieldsValue());
   };
 
@@ -223,7 +245,12 @@ const SubmitFailure=(props)=>{
           <Form.Item label="故障截图" name="failurePicture">
             <Upload
               listType="picture"
-            >
+              beforeUpload={(file)=>{
+                setFailurePicture(file)
+                console.log(failurePicture)
+                return false;
+              }}
+              name="failurePicture">
               <Button icon={<UploadOutlined />}>Upload</Button>
               {localStorage.getItem('_id')}
             </Upload>

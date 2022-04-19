@@ -143,7 +143,7 @@ const Demo = () => {
       console.log("formData.file:", formData.get("file"));
       // console.log('formData.test:',formData.get('test'))
       // You can use any AJAX library you like
-      fetch("http://localhost:5001/api/v1/backstagelogo-upload", {
+      fetch("http://8.134.73.52/api/v1/backstagelogo-upload", {
         method: "POST",
         body: formData,
         mode: "cors",
