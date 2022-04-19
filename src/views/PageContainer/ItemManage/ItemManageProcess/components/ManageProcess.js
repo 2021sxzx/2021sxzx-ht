@@ -186,34 +186,6 @@ export default function ManageProcess(props) {
         props.setPageType(2)
     }
 
-    const getPathByRuleId = (id)=>{
-        // 获取规则id对应的规则路径
-        let parent = props.ruleNodes[id].parentId
-        let currId = id
-        let res = ''
-        while (parent !== '' && parent !== currId){
-            res = props.ruleNodes[currId].rule_name + '\\' + res
-            currId = parent
-            parent = props.ruleNodes[currId].parentId
-        }
-        res = props.ruleNodes[currId].rule_name + '\\' + res
-        return res
-    }
-
-    const getPathByRegionId = (id)=>{
-        // 获取规则id对应的规则路径
-        let parent = props.regionNodes[id].parentId
-        let currId = id
-        let res = ''
-        while (parent !== '' && parent !== currId){
-            res = props.regionNodes[currId].region_name + '\\' + res
-            currId = parent
-            parent = props.regionNodes[currId].parentId
-        }
-        res = props.regionNodes[currId].region_name + '\\' + res
-        return res
-    }
-
     const getItems = ()=>{
         setTableLoading(true)
         let data = originData
@@ -570,8 +542,8 @@ export default function ManageProcess(props) {
     }
 
     useEffect(()=>{
-        for (let key in props.regionNodes){
-            for (let key in props.ruleNodes){
+        for (let key in props.regionRoot){
+            for (let key in props.ruleRoot){
                 for (let key in props.canOperate){
                     getItemstatusScheme()
                     break
@@ -580,7 +552,7 @@ export default function ManageProcess(props) {
             }
             break
         }
-    }, [props.regionNodes, props.ruleNodes, props.canOperate])
+    }, [props.regionRoot, props.ruleRoot, props.canOperate])
 
     useEffect(()=>{
         // 若是跳转过来进行解绑的，处理绑定数据

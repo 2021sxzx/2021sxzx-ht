@@ -24,7 +24,7 @@ export default function ManageRules(props) {
         onChange: onSelectionChange,
         getCheckboxProps: (record)=>({
             // 不允许删除中间节点
-            disabled: record.rule_id in props.ruleTree
+            disabled: !(record.is_leaf)
         })
     }
     // 页数处理
@@ -39,8 +39,8 @@ export default function ManageRules(props) {
         },
         {
             title: '规则路径',
-            dataIndex: 'item_path',
-            key: 'item_path'
+            dataIndex: 'rule_path',
+            key: 'rule_path'
         },
         {
             title: '业务部门',
@@ -86,7 +86,7 @@ export default function ManageRules(props) {
                             </Button>
                         </Menu.Item>
                         {
-                            !(record.rule_id in props.ruleTree) &&
+                            record.is_leaf &&
                             <Menu.Item key='2'>
                                 <Button style={{backgroundColor: 'red', color: 'white'}} onClick={function(){
                                     deleteSingleItem(record.rule_id)
@@ -105,42 +105,6 @@ export default function ManageRules(props) {
         }
     ]
 
-    const getPathByRuleId = (id)=>{
-        // 获取规则id对应的规则路径
-        let parent = props.ruleNodes[id].parentId
-        let currId = id
-        let res = ''
-        while (parent !== '' && parent !== currId){
-            res = props.ruleNodes[currId].rule_name + '\\' + res
-            currId = parent
-            parent = props.ruleNodes[currId].parentId
-        }
-        res = props.ruleNodes[currId].rule_name + '\\' + res
-        return res
-    }
-
-    const getNodesByRuleId = (id)=>{
-        // 获取规则id对应的规则路径节点
-        let parent = props.ruleNodes[id].parentId
-        let currId = id
-        let res = []
-        while (parent !== '' && parent !== currId){
-            res.push({
-                nodeId: props.ruleNodes[currId].rule_id,
-                nodeName: props.ruleNodes[currId].rule_name,
-                isRegion: false
-            })
-            currId = parent
-            parent = props.ruleNodes[currId].parentId
-        }
-        res.push({
-            nodeId: props.ruleNodes[currId].rule_id,
-            nodeName: props.ruleNodes[currId].rule_name,
-            isRegion: false
-        })
-        return res
-    }
-
     const deleteSingleItem = (id)=>{
         // 删除单个事项，将事项id设为deletingIds
         let str = '确定删除该节点吗？'
@@ -149,7 +113,7 @@ export default function ManageRules(props) {
             title: '删除确认',
             content: str,
             onOk: function(){
-                finishDeleting([id])
+                setDeletingIds([id])
             }
         })
     }
@@ -162,15 +126,10 @@ export default function ManageRules(props) {
             title: '删除确认',
             content: str,
             onOk: function(){
-                finishDeleting(selectedRowKeys)
+                setDeletingIds(selectedRowKeys)
             },
             style: {whiteSpace: 'pre-wrap'}
         })
-    }
-
-    const finishDeleting = (id)=>{
-        // 确定删除，调用接口，通过hook触发
-        setDeletingIds(id)
     }
 
     useEffect(function(){
@@ -198,14 +157,13 @@ export default function ManageRules(props) {
                 })
             }
             else{
-                props.deleteRuleSimulate(deletingIds)
                 getRules()
                 props.showSuccess()
             } 
         }).catch(error=>{
             // 删除报错时，弹出报错框并重新加载数据
             props.showError('删除规则失败！')
-            props.getRuleTree()
+            getRules()
         })
         setDeletingIds([])
     }
@@ -224,6 +182,7 @@ export default function ManageRules(props) {
         api.GetRules({}).then(response=>{
             let rules = response.data.data
             for (let i = 0; i < rules.length; i++){
+                rules[i]['is_leaf'] = (rules[i].children.length === 0)
                 rules[i]['department_name'] = rules[i].creator.department_name
                 rules[i]['creator_name'] = rules[i].creator.name
             }
@@ -231,8 +190,29 @@ export default function ManageRules(props) {
             setTableLoading(false)
         }).catch(error=>{
             setTableLoading(false)
-            console.log(error)
             props.showError('获取规则失败！')
+        })
+    }
+
+    const modifyRule = (id)=>{
+        api.GetRulePaths({
+            rule_id: [id]
+        }).then(response=>{
+            let data = []
+            for (let key in response.data.data){
+                data = (response.data.data)[key]
+                break
+            }
+            let path = []
+            for (let i = 0; i < data.length; i++){
+                path.push({
+                    'nodeId': data[i].rule_id,
+                    'nodeName': data[i].rule_name
+                })
+            }
+            props.setUpdatePath(path)
+        }).catch(error=>{
+            props.showError('获取规则路径节点失败！')
         })
     }
 
@@ -243,6 +223,7 @@ export default function ManageRules(props) {
             let rules = response.data.data
             setCurrent(1)
             for (let i = 0; i < rules.length; i++){
+                rules[i]['is_leaf'] = rules[i].children.length === 0
                 rules[i]['department_name'] = rules[i].creator.department_name
                 rules[i]['creator_name'] = rules[i].creator.name
             }
@@ -254,21 +235,14 @@ export default function ManageRules(props) {
         })
     }
 
-    const modifyRule = (id)=>{
-        // 获取该节点的整条父子关系路径并存储，供修改界面使用
-        let nodes = getNodesByRuleId(id)
-        props.setUpdatePath(nodes)
-        props.setPageType(2)
-    }
-
     const handleCreate = ()=>{
         // 无路径切换切面即为创建
-        props.setUpdatePath('')
+        props.setUpdatePath([])
         props.setPageType(2)
     }
 
     const resetSearch = ()=>{
-        // 回 归 本 源
+        // 初始化搜索
         setCurrent(1)
         getRules()
     }
@@ -280,18 +254,12 @@ export default function ManageRules(props) {
     }
 
     useEffect(function(){
-        // 避开初始化时的查询
-        for (let key in props.ruleTree){
-            for (let key in props.ruleNodes){
-                getRules()
-                setCurrent(1)
-                // ruleTree初始化完毕前不能进行节点创建，否则会报错
-                setUnableCreate(false)
-                break
-            }
+        for (let key in props.ruleRoot){
+            resetSearch()
+            setUnableCreate(false)
             break
         }
-    }, [props.ruleTree, props.ruleNodes])
+    }, [props.ruleRoot])
 
     return (
         <>
@@ -303,7 +271,7 @@ export default function ManageRules(props) {
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>
                 </Space>
                 <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='rule_id'
-                    pagination={{onChange: changePage, current: current}} loading={tableLoading} />
+                    pagination={{onChange: changePage, current: current}} loading={tableLoading} expandable={{childrenColumnName: 'no'}} />
             </Space>
         </>
     )

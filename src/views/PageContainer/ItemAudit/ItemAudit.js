@@ -7,8 +7,8 @@ import api from '../../../api/rule'
 export default function ItemAudit() {
     const [pageType, setPageType] = useState(1)
     const [userId, setUserId] = useState('')
-    const [ruleNodes, setRuleNodes] = useState({})
-    const [regionNodes, setRegionNodes] = useState({})
+    /*const [ruleNodes, setRuleNodes] = useState({})
+    const [regionNodes, setRegionNodes] = useState({})*/
     const [canOperate, setCanOperate] = useState([])
     const [canSee, setCanSee] = useState([])
     const [statusType, setStatusType] = useState([])
@@ -32,7 +32,7 @@ export default function ItemAudit() {
         message.success('操作成功！')
     }
 
-    const getRuleNodes = ()=>{
+    /*const getRuleNodes = ()=>{
         api.GetRuleTree({}).then(response=>{
             let nodes = response.data.data
             setRuleNodes(nodes)
@@ -48,9 +48,9 @@ export default function ItemAudit() {
         }).catch(error=>{
             
         })
-    }
+    }*/
 
-    const getItemstatusScheme = ()=>{
+    const getItemStatusScheme = ()=>{
         api.GetItemStatusScheme({}).then(response=>{
             // 获取状态表
             let scheme = response.data.data
@@ -67,8 +67,9 @@ export default function ItemAudit() {
     }
 
     useEffect(function(){
-        getRuleNodes()
-        getRegionNodes()
+        /*getRuleNodes()
+        getRegionNodes()*/
+        getItemStatusScheme()
         setUserId(localStorage.getItem('_id'))
     }, [])
 
@@ -98,7 +99,7 @@ export default function ItemAudit() {
         }
     }, [statusScheme])
 
-    useEffect(function(){
+    /*useEffect(function(){
         for (let key in ruleNodes){
             for (let key in regionNodes){
                 getItemstatusScheme()
@@ -106,7 +107,7 @@ export default function ItemAudit() {
             }
             break
         }
-    }, [ruleNodes, regionNodes])
+    }, [ruleNodes, regionNodes])*/
 
     useEffect(function(){
         if (auditingId === '') return
@@ -118,7 +119,7 @@ export default function ItemAudit() {
         <>
             {
                 pageType === 1 &&
-                <ManageAudit regionNodes={regionNodes} ruleNodes={ruleNodes} canOperate={canOperate} canSee={canSee}
+                <ManageAudit canOperate={canOperate} canSee={canSee}
                     setAuditingData={setAuditingData} setAuditingId={setAuditingId} setAuditingStatus={setAuditingStatus}
                     setPageType={setPageType} showError={showError} showSuccess={showSuccess}
                     statusId={statusId} statusScheme={statusScheme} statusType={statusType} />
