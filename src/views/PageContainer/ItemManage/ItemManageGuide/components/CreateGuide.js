@@ -189,11 +189,15 @@ export default function CreateGuide(props){
                 if (promisedType !== '0'){
                     promised = parseInt(promisedPeriod)
                 }
-                if (isNaN(legal) || isNaN(promised) || legal <= 0 || promised <= 0){
+                if (isNaN(legal) || isNaN(promised) || (legalType !== '0' && legal <= 0) || (promisedType !== '0' && promised <= 0)){
                     notNum = true
+                    console.log(legal, promised)
                 }
             }  
         } 
+        else{
+            emptyArea.push('申办时限')
+        }
         // 咨询电话数组处理
         if (guidePhone.length === 0){
             emptyArea.push('咨询电话')
