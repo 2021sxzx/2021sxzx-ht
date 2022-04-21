@@ -198,7 +198,7 @@ const api ={
         })
     },
     GetServerIP(){
-        return service.defaults.baseURL
+        return (service.defaults.baseURL === '/api' ? '/api' : 'http://8.134.73.52:5001')
     }
 }
 
