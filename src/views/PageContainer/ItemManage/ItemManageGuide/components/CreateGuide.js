@@ -34,6 +34,10 @@ export default function CreateGuide(props){
         useState(isUpdating ? props.modifyContent.guidePEAddress : '')
     const [guideSelfmadeAddress, setGuideSelfmadeAddress] = 
         useState(isUpdating ? props.modifyContent.guideSelfmadeAddress : '')
+    const [guideOnlineProcess, setGuideOnlineProcess] = 
+        useState(isUpdating ? props.modifyContent.guideOnlineProcess : '')
+    const [guideOfflineProcess, setGuideOfflineProcess] = 
+        useState(isUpdating ? props.modifyContent.guideOfflineProcess : '')
     const [guideQRCode, setGuideQRCode] = 
         useState(isUpdating ? props.modifyContent.guideQRCode : '')
     const [guideServiceType, setGuideServiceType] = 
@@ -87,6 +91,12 @@ export default function CreateGuide(props){
     const handleGuideSelfmadeAddressChange = (e)=>{
         setGuideSelfmadeAddress(e.target.value)
     }
+    const handleGuideOnlineProcessChange = (e)=>{
+        setGuideOnlineProcess(e.target.value)
+    }
+    const handleGuideOfflineProcessChange = (e)=>{
+        setGuideOfflineProcess(e.target.value)
+    }
     const handleGuideQRCodeChange = (e)=>{
         setGuideQRCode(e.target.value) 
     }
@@ -130,6 +140,8 @@ export default function CreateGuide(props){
             content: 
             <Space className={style.form} direction='vertical' size={15} style={{width: '100%'}}>
                 <FormArea handleChange={handleGuideSelfmadeAddressChange} formName='自助终端' value={guideSelfmadeAddress}/>
+                <FormArea handleChange={handleGuideOnlineProcessChange} formName='网上办理流程' value={guideOnlineProcess}/>
+                <FormArea handleChange={handleGuideOfflineProcessChange} formName='线下办理流程' value={guideOfflineProcess}/>
                 <FormListPlus addBtn='添加地址' formName='办事大厅地址' value={guideAddress} other={guidePhone} guideWindow={guideWindow}
                     setOther={setGuidePhone} setData={setGuideAddress} setGuideWindow={setGuideWindow}/>
                 <FormImage setData={setGuideQRCode} handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>
@@ -191,7 +203,6 @@ export default function CreateGuide(props){
                 }
                 if (isNaN(legal) || isNaN(promised) || (legalType !== '0' && legal <= 0) || (promisedType !== '0' && promised <= 0)){
                     notNum = true
-                    console.log(legal, promised)
                 }
             }  
         } 
@@ -214,6 +225,8 @@ export default function CreateGuide(props){
         if (guidePCAddress === '') emptyArea.push('网办PC端')
         if (guidePEAddress === '') emptyArea.push('网办移动端')
         if (guideSelfmadeAddress === '') emptyArea.push('自助终端')
+        if (guideOnlineProcess === '') emptyArea.push('网上办理流程')
+        if (guideOfflineProcess === '') emptyArea.push('线下办理流程')
         // 办事大厅地址数组处理
         if (guideAddress.length === 0){
             emptyArea.push('办事大厅地址')
@@ -301,6 +314,8 @@ export default function CreateGuide(props){
             mobile_applt_website: guidePEAddress,
             zxpt: guidePlatform,
             zzzd: guideSelfmadeAddress,
+            ckbllc: guideOfflineProcess,
+            wsbllc: guideOnlineProcess,
             qr_code: guideQRCode
         }
         // 政策依据处理
@@ -417,7 +432,7 @@ export default function CreateGuide(props){
             tempStatus[2] = 'wait'
         }
         // 业务办理信息
-        if (guideSelfmadeAddress !== '' && guideAddress.length !== 0 && guideQRCode !== ''){
+        if (guideSelfmadeAddress !== '' && guideOnlineProcess !== '' && guideOfflineProcess !== '' && guideAddress.length !== 0 && guideQRCode !== ''){
             tempStatus[3] = 'finish'
             for (let i = 0; i < guideAddress.length; i++){
                 if (guideAddress[i] === '' || guideWindow[i] === ''){

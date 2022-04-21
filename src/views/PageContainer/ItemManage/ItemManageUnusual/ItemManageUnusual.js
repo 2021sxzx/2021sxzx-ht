@@ -483,6 +483,14 @@ export default function ItemManageUnusual(props) {
                 'detailInfo': data.zzzd
             })
             detailTable.push({
+                'detailType': '网上办理流程',
+                'detailInfo': data.wsbllc
+            })
+            detailTable.push({
+                'detailType': '线下办理流程',
+                'detailInfo': data.ckbllc
+            })
+            detailTable.push({
                 'detailType': '办事大厅地址',
                 'detailInfo': tempAddress
             })
