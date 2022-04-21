@@ -51,13 +51,14 @@ export default function CreateGuide(props){
         useState(isUpdating ? props.modifyContent.promisedPeriod : '')
     const [promisedType, setPromisedType] = 
         useState(isUpdating ? props.modifyContent.promisedType : '1')
-    // FormListPlus需要处理的电话和地址，有公用的tag
-    const [guideWindow, setGuideWindow] = 
-        useState(isUpdating ? props.modifyContent.guideWindow : [''])
-    const [guidePhone, setGuidePhone] = 
-        useState(isUpdating ? props.modifyContent.guidePhone : [''])
-    const [guideAddress, setGuideAddress] = 
-        useState(isUpdating ? props.modifyContent.guideAddress : [''])
+    // 办理点信息
+    const [guideWindows, setGuideWindows] = 
+        useState(isUpdating ? props.modifyContent.guideWindows : [{
+            'name': '',
+            'phone': '',
+            'address': '',
+            'office_hour': ''
+        }])
     // 判断指南输入状态
     const [stepStatus, setStepStatus] = useState(['process', 'wait', 'wait', 'wait'])
     const [current, setCurrent] = useState(0);
@@ -128,8 +129,6 @@ export default function CreateGuide(props){
             title: '业务咨询信息',
             content: 
             <Space className={style.form} direction='vertical' size={15} style={{width: '100%'}}>
-                <FormListPlus addBtn='添加电话' formName='咨询电话' value={guidePhone} guideWindow={guideWindow} other={guideAddress}
-                    setOther={setGuideAddress} setData={setGuidePhone} setGuideWindow={setGuideWindow}/>
                 <FormArea handleChange={handleGuidePlatformChange} formName='咨询平台' value={guidePlatform}/>
                 <FormArea handleChange={handleGuidePCAddressChange} formName='网办PC端' value={guidePCAddress}/>
                 <FormArea handleChange={handleGuidePEAddressChange} formName='网办移动端' value={guidePEAddress}/>
@@ -142,8 +141,8 @@ export default function CreateGuide(props){
                 <FormArea handleChange={handleGuideSelfmadeAddressChange} formName='自助终端' value={guideSelfmadeAddress}/>
                 <FormArea handleChange={handleGuideOnlineProcessChange} formName='网上办理流程' value={guideOnlineProcess}/>
                 <FormArea handleChange={handleGuideOfflineProcessChange} formName='线下办理流程' value={guideOfflineProcess}/>
-                <FormListPlus addBtn='添加地址' formName='办事大厅地址' value={guideAddress} other={guidePhone} guideWindow={guideWindow}
-                    setOther={setGuidePhone} setData={setGuideAddress} setGuideWindow={setGuideWindow}/>
+                <FormListPlus addBtn='添加办理点' formName='办理点信息' 
+                    data={guideWindows} setData={setGuideWindows} />
                 <FormImage setData={setGuideQRCode} handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>
                 <FormCheckbox setData={setGuideServiceType} formName='服务对象类型' value={guideServiceType}/>
             </Space>
@@ -209,50 +208,32 @@ export default function CreateGuide(props){
         else{
             emptyArea.push('申办时限')
         }
-        // 咨询电话数组处理
-        if (guidePhone.length === 0){
-            emptyArea.push('咨询电话')
-        }
-        else{
-            for (let i = 0; i < guidePhone.length; i++){
-                if (guidePhone[i] === ''){
-                    emptyArea.push('咨询电话')
-                    break
-                }
-            }
-        }
         if (guidePlatform === '') emptyArea.push('咨询平台')
         if (guidePCAddress === '') emptyArea.push('网办PC端')
         if (guidePEAddress === '') emptyArea.push('网办移动端')
         if (guideSelfmadeAddress === '') emptyArea.push('自助终端')
+        if (guideWindows.length === 0){
+            emptyArea.push('办理点信息')
+        }
+        else{
+            for (let i = 0; i < guideWindows.length; i++){
+                let empty = false
+                for (let key in guideWindows[i]){
+                    if (guideWindows[i].key === ''){
+                        empty = true
+                        break
+                    }
+                }
+                if (empty){
+                    emptyArea.push('办理点信息')
+                    break
+                }
+            }
+        }
         if (guideOnlineProcess === '') emptyArea.push('网上办理流程')
         if (guideOfflineProcess === '') emptyArea.push('线下办理流程')
-        // 办事大厅地址数组处理
-        if (guideAddress.length === 0){
-            emptyArea.push('办事大厅地址')
-        }
-        else{
-            for (let i = 0; i < guideAddress.length; i++){
-                if (guideAddress[i] === ''){
-                    emptyArea.push('办事大厅地址')
-                    break
-                }
-            }
-        }
         if (guideQRCode === '') emptyArea.push('二维码')
         if (guideServiceType.length === 0) emptyArea.push('服务对象类型')
-        // 办理点名称数组处理
-        if (guideWindow.length === 0){
-            emptyArea.push('咨询电话或办事大厅地址的办理点名称')
-        }
-        else{
-            for (let i = 0; i < guideWindow.length; i++){
-                if (guideWindow[i] === ''){
-                    emptyArea.push('咨询电话或办事大厅地址的办理点名称')
-                    break
-                }
-            }
-        }
         if (emptyArea.length === 0 && !notNum){
             showConfirm()
         }
@@ -314,6 +295,7 @@ export default function CreateGuide(props){
             mobile_applt_website: guidePEAddress,
             zxpt: guidePlatform,
             zzzd: guideSelfmadeAddress,
+            windows: guideWindows,
             ckbllc: guideOfflineProcess,
             wsbllc: guideOnlineProcess,
             qr_code: guideQRCode
@@ -334,16 +316,6 @@ export default function CreateGuide(props){
             })
         }
         data['submit_documents'] = submitDocuments
-        // 把窗口地址和联系电话组合在一起提交
-        let windows = []
-        for (let i = 0; i < guideWindow.length; i++){
-            windows.push({
-                'name': guideWindow[i],
-                'address': guideAddress[i],
-                'phone': guidePhone[i]
-            })
-        }
-        data['windows'] = windows
 
         if (isUpdating){
             data['task_code'] = props.modifyId
@@ -358,7 +330,6 @@ export default function CreateGuide(props){
 
     // api调用
     const createItemGuide = (data)=>{
-        console.log(data)
         api.CreateItemGuide(data).then(response=>{
             props.showSuccess()
             props.setPageType(1)
@@ -418,26 +389,20 @@ export default function CreateGuide(props){
             tempStatus[1] = 'wait'
         }
         // 业务咨询信息
-        if (guidePhone.length !== 0 && guidePlatform !== '' && guidePCAddress !== '' && guidePEAddress !== ''){
-            tempStatus[2] = 'finish'
-            for (let i = 0; i < guidePhone.length; i++){
-                if (guidePhone[i] === '' || guideWindow[i] === ''){
-                    tempStatus[2] = 'wait'
-                    break
-                }
-            }
-            
+        if (guidePlatform !== '' && guidePCAddress !== '' && guidePEAddress !== ''){
+            tempStatus[2] = 'finish'   
         }
         else{
             tempStatus[2] = 'wait'
         }
         // 业务办理信息
-        if (guideSelfmadeAddress !== '' && guideOnlineProcess !== '' && guideOfflineProcess !== '' && guideAddress.length !== 0 && guideQRCode !== ''){
+        if (guideSelfmadeAddress !== '' && guideOnlineProcess !== '' && guideOfflineProcess !== '' && guideWindows.length !== 0 && guideQRCode !== ''){
             tempStatus[3] = 'finish'
-            for (let i = 0; i < guideAddress.length; i++){
-                if (guideAddress[i] === '' || guideWindow[i] === ''){
-                    tempStatus[3] = 'wait'
-                    break
+            for (let i = 0; i < guideWindows.length; i++){
+                for (let key in guideWindows[i]){
+                    if (guideWindows[i].key === ''){
+                        tempStatus[3] = 'wait'
+                    }
                 }
             } 
         }

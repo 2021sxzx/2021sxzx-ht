@@ -1,5 +1,6 @@
 import React, {cloneElement, useEffect, useState} from 'react'
-import { Dropdown, Space, Menu, Input, Button, Select, Table, Modal,Descriptions, Badge, message  } from 'antd';
+import { Dropdown, Space, Menu, Tabs, Button, Table, Modal,Descriptions, Badge, message  } from 'antd';
+const { TabPane } = Tabs
 import { getYMD } from "../../../../../utils/TimeStamp";
 import api from '../../../../../api/rule';
 import SelectForm from './SelectForm'
@@ -208,20 +209,6 @@ export default function ManageGuide(props) {
                 'detailType': '审核时限',
                 'detailInfo': tempTimeLimit
             })
-            // 咨询电话、办事大厅地址数组处理
-            let tempPhone = ''
-            let tempAddress = ''
-            if (data.windows){
-                for (let i = 0; i < data.windows.length; i++){
-                    tempPhone += ((i + 1) + '.' + data.windows[i].name + '：' + data.windows[i].phone + '\n')
-                    tempAddress += ((i + 1) + '.' + data.windows[i].name + '：' + data.windows[i].address + '\n')
-                }
-            }
-            detailTable.push({
-                'detailType': '咨询电话',
-                'detailInfo': tempPhone
-            })
-
             detailTable.push({
                 'detailType': '咨询平台',
                 'detailInfo': data.zxpt
@@ -247,8 +234,22 @@ export default function ManageGuide(props) {
                 'detailInfo': data.ckbllc
             })
             detailTable.push({
-                'detailType': '咨询电话',
-                'detailInfo': tempAddress
+                'detailType': '办理点信息',
+                'detailInfo': (!data.windows || data.windows.length === 0) ? '' :
+                <Tabs defaultActiveKey='1' tabPosition='left' style={{whiteSpace: 'pre-wrap'}}>
+                    {
+                        data.windows.map((item, index)=>(
+                            'name' in data.windows[index] &&
+                            <TabPane tab={data.windows[index].name} key={index}>
+                                {
+                                    '办理地点： ' + data.windows[index].address +
+                                    '\n\n咨询及投诉电话： ' + data.windows[index].phone + 
+                                    '\n\n办公时间： ' + data.windows[index].office_hour
+                                }
+                            </TabPane>
+                        ))
+                    }
+                </Tabs>
             })
             detailTable.push({
                 'detailType': '二维码',
@@ -269,6 +270,7 @@ export default function ManageGuide(props) {
             setGuideDetail(detailTable)
         }).catch(error=>{
             props.showError('获取事项详情失败！')
+            console.log(error)
         })
     }
 
@@ -415,23 +417,13 @@ export default function ManageGuide(props) {
             tempGuideContent['legalType'] = data.legal_period_type ? data.legal_period_type : '0'
             tempGuideContent['promisedPeriod'] = data.promised_period
             tempGuideContent['promisedType'] = data.promised_period_type ? data.promised_period_type : '0'
-            let tempWindow = []
-            let tempPhone = []
-            let tempAddress = []
-            if (data.windows){
-                for (let i = 0; i < data.windows.length; i++){
-                    tempWindow.push(data.windows[i].name)
-                    tempPhone.push(data.windows[i].phone)
-                    tempAddress.push(data.windows[i].address)
-                }
-            }
-            tempGuideContent['guidePhone'] = tempPhone
-            tempGuideContent['guideWindow'] = tempWindow
-            tempGuideContent['guideAddress'] = tempAddress
             tempGuideContent['guidePlatform'] = data.zxpt
             tempGuideContent['guidePCAddress'] = data.wsyy
             tempGuideContent['guidePEAddress'] = data.mobile_applt_website
             tempGuideContent['guideSelfmadeAddress'] = data.zzzd
+            tempGuideContent['guideOnlineProcess'] = data.wsbllc
+            tempGuideContent['guideOfflineProcess'] = data.ckbllc
+            tempGuideContent['guideWindows'] = data.windows
             tempGuideContent['guideQRCode'] = data.qr_code
             let type = data.service_object_type.split(',')
             let tempServiceType = []
