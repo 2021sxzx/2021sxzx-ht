@@ -80,15 +80,13 @@ export default function ItemAudit() {
                 user_id: localStorage.getItem('_id')
             }).then(response=>{
                 let data = response.data.data
-                setCanOperate(data.can_operate)
-                // TODO: 加一个类似canAudit的字段取代canSee
-                let temp_can_see = [1, 2, 5]
-                setCanSee(temp_can_see)
+                setCanOperate(data.operate_status)
+                setCanSee(data.audit_status)
                 let types = []
-                for (let i = 0; i < temp_can_see.length; i++){
+                for (let i = 0; i < data.audit_status.length; i++){
                     types.push({
-                        label: statusScheme[temp_can_see[i]].cn_name,
-                        value: temp_can_see[i]
+                        label: statusScheme[data.audit_status[i]].cn_name,
+                        value: data.audit_status[i]
                     })
                 }
                 setStatusType(types)
@@ -98,16 +96,6 @@ export default function ItemAudit() {
             break
         }
     }, [statusScheme])
-
-    /*useEffect(function(){
-        for (let key in ruleNodes){
-            for (let key in regionNodes){
-                getItemstatusScheme()
-                break
-            }
-            break
-        }
-    }, [ruleNodes, regionNodes])*/
 
     useEffect(function(){
         if (auditingId === '') return
