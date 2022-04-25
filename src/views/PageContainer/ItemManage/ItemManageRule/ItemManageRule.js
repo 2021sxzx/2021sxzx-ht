@@ -22,22 +22,24 @@ export default function ItemManageRule(props) {
         message.success('操作成功！')
     }
 
+    useEffect(function(){
+        if (updatePath.length === 0) return
+        setPageType(2)
+    }, [updatePath])
+
     return (
         <>
             {
                 pageType === 1 &&
-                <ManageRules ruleNodes={props.ruleNodes} ruleTree={props.ruleTree} getRuleTree={props.getRuleTree} 
-                    bindedData={props.bindedData} setBindedData={props.setBindedData} jumpToProcess={props.jumpToProcess}
-                    setPageType={setPageType} setUpdatePath={setUpdatePath} 
-                    showError={showError} showSuccess={showSuccess}
-                    deleteRuleSimulate={props.deleteRuleSimulate}/>
+                <ManageRules bindedData={props.bindedData} setBindedData={props.setBindedData} jumpToProcess={props.jumpToProcess}
+                    setPageType={setPageType} setUpdatePath={setUpdatePath} ruleRoot={props.ruleRoot}
+                    showError={showError} showSuccess={showSuccess}/>
             }
             {
                 pageType === 2 &&
-                <CreateRule ruleTree={props.ruleTree} ruleNodes={props.ruleNodes} ruleRoot={props.ruleRoot} 
-                    getRuleTree={props.getRuleTree} setPageType={setPageType} updatePath={updatePath} 
-                    showError={showError} showSuccess={showSuccess} userId={props.userId}
-                    createRuleSimulate={props.createRuleSimulate} updateRuleSimulate={props.updateRuleSimulate}/>
+                <CreateRule ruleRoot={props.ruleRoot} userId={props.userId}
+                    setPageType={setPageType} updatePath={updatePath} 
+                    showError={showError} showSuccess={showSuccess} />
             }
         </>
     )

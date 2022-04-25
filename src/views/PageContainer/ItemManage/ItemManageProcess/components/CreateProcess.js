@@ -10,8 +10,8 @@ export default function CreateProcess(props){
     const [taskCode, setTaskCode] = useState('')
     const [taskName, setTaskName] = useState('')
     const [choosingGuide, setChoosingGuide] = useState(false)
-    const [taskRule, setTaskRule] = useState(props.ruleRoot.nodeName + '\\')
-    const [taskRegion, setTaskRegion] = useState(props.regionRoot.nodeName + '\\')
+    const [taskRule, setTaskRule] = useState('')
+    const [taskRegion, setTaskRegion] = useState('')
     // 选择过程中的已选择、待选择节点
     const [chosenRules, setChosenRules] = useState([])
     const [chosenRegions, setChosenRegions] = useState([])
@@ -25,25 +25,9 @@ export default function CreateProcess(props){
     const [isLoading, setIsLoading] = useState(false)
     
     useEffect(()=>{
-        // 初始化分类规则树的根节点
-        let currRuleTags = []
-        let currRegionTags = []
-        let currRules = []
-        let currRegions = []
-        // 根节点默认为已选择
-        currRules.push(props.ruleRoot)
-        currRegions.push(props.regionRoot)
         // 两种类型的子节点处理
-        for (let i = 0; i < (props.ruleTree[props.ruleRoot.nodeId]).length; i++){
-            currRuleTags.push((props.ruleTree[props.ruleRoot.nodeId])[i])
-        }
-        for (let i = 0; i < (props.regionTree[props.regionRoot.nodeId]).length; i++){
-            currRegionTags.push((props.regionTree[props.regionRoot.nodeId])[i])
-        }
-        setRuleTags(currRuleTags)
-        setRegionTags(currRegionTags)
-        setChosenRules(currRules)
-        setChosenRegions(currRegions)
+        chooseRuleApi(props.ruleRoot)
+        chooseRegionApi(props.regionRoot)
     },[])
 
     const startChoosingGuide = ()=>{
@@ -63,77 +47,144 @@ export default function CreateProcess(props){
         let currTags = []
         if (type === 'rule'){
             let tag = ruleTags[index]
-            // 将当前节点推入已选择队列
-            chosenRules.push(tag)
-            if (tag.nodeId in props.ruleTree){
-                // 处理子节点
-                for (let i = 0; i < props.ruleTree[tag.nodeId].length; i++){
-                    currTags.push(props.ruleTree[tag.nodeId][i])
-                }
-            }
-            let currRule = taskRule + tag.nodeName + '\\'
-            setTaskRule(currRule)
-            setRuleTags(currTags)
+            chooseRuleApi(tag)
         }
         else if (type === 'region'){
             let tag = regionTags[index]
-            // 将当前节点推入已选择队列
-            chosenRegions.push(tag)
-            if (tag.nodeId in props.regionTree){
-                // 处理子节点
-                for (let i = 0; i < props.regionTree[tag.nodeId].length; i++){
-                    currTags.push(props.regionTree[tag.nodeId][i])
-                }
-            }
-            let currRegion = taskRegion + tag.nodeName + '\\'
-            setTaskRegion(currRegion)
-            setRegionTags(currTags)
+            chooseRegionApi(tag)
         }   
+    }
+
+    const chooseRuleApi = (tag)=>{
+        // 点击某个节点
+        api.GetRules({
+            parentId: tag.nodeId
+        }).then(response=>{
+            let data = response.data.data
+            // 子节点处理
+            let children = []
+            for (let i = 0; i < data.length; i++){
+                children.push({
+                    nodeId: data[i].rule_id,
+                    nodeName: data[i].rule_name
+                })
+            }
+            // 已选择节点处理
+            let chosen = []
+            for (let i = 0; i < chosenRules.length; i++){
+                chosen.push(chosenRules[i])
+            }
+            chosen.push(tag)
+            // 规则名称处理
+            let path = taskRule + tag.nodeName + '\\'
+            // 更新state
+            setChosenRules(chosen)
+            setTaskRule(path)
+            setRuleTags(children)
+        }).catch(error=>{
+            props.showError('获取规则子节点失败！')
+        })
+    }
+
+    const chooseRegionApi = (tag)=>{
+        api.GetRegions({
+            parentId: tag.nodeId
+        }).then(response=>{
+            let data = response.data.data
+            // 子节点处理
+            let children = []
+            for (let i = 0; i < data.length; i++){
+                children.push({
+                    nodeId: data[i]._id,
+                    nodeCode: data[i].region_code,
+                    nodeName: data[i].region_name
+                })
+            }
+            // 已选择节点处理
+            let chosen = []
+            for (let i = 0; i < chosenRegions.length; i++){
+                chosen.push(chosenRegions[i])
+            }
+            chosen.push(tag)
+            // 规则名称处理
+            let path = taskRegion + tag.nodeName + '\\'
+            // 更新state
+            setRegionTags(children)
+            setChosenRegions(chosen)
+            setTaskRegion(path)
+        }).catch(error=>{
+            props.showError('获取子节点失败！')
+        })
+    }
+
+    const getBackRuleApi = (index)=>{
+        api.GetRules({
+            parentId: chosenRules[index].nodeId
+        }).then(response=>{
+            let data = response.data.data
+            // 子节点处理
+            let children = []
+            for (let i = 0; i < data.length; i++){
+                children.push({
+                    nodeId: data[i].rule_id,
+                    nodeName: data[i].rule_name
+                })
+            }
+            // 已选择节点与规则名称处理
+            let chosen = []
+            let path = ''
+            for (let i = 0; i <= index; i++){
+                chosen.push(chosenRules[i])
+                path += (chosenRules[i].nodeName + '\\')
+            }
+            // 更新state
+            setChosenRules(chosen)
+            setTaskRule(path)
+            setRuleTags(children)
+        }).catch(error=>{
+            props.showError('获取子节点失败！')
+        })
+    }
+
+    const getBackRegionApi = (index)=>{
+        api.GetRegions({
+            parentId: chosenRegions[index].nodeId
+        }).then(response=>{
+            let data = response.data.data
+            // 子节点处理
+            let children = []
+            for (let i = 0; i < data.length; i++){
+                children.push({
+                    nodeId: data[i]._id,
+                    nodeCode: data[i].region_code,
+                    nodeName: data[i].region_name
+                })
+            }
+            // 已选择节点与规则名称处理
+            let chosen = []
+            let path = ''
+            for (let i = 0; i <= index; i++){
+                chosen.push(chosenRegions[i])
+                path += (chosenRegions[i].nodeName + '\\')
+            }
+            // 更新state
+            setChosenRegions(chosen)
+            setTaskRegion(path)
+            setRegionTags(children)
+        }).catch(error=>{
+            props.showError('撤回失败！')
+        })
     }
 
     const getBack = (index, type)=>{
         // 已选择节点的回退
         if (type === 'rule'){
             if (index === chosenRules.length - 1) return
-
-            let currRules = []
-            let currChildren = []
-            let currTaskRule = ''
-
-            for (let i = 0; i <= index; i++){
-                // 已选择节点的放入
-                currRules.push(chosenRules[i])
-                currTaskRule += (chosenRules[i].nodeName + '\\')
-            }
-            for (let i = 0; i < props.ruleTree[chosenRules[index].nodeId].length; i++){
-                // 将当前节点的子节点放入队列
-                currChildren.push(props.ruleTree[chosenRules[index].nodeId][i])
-            }
-
-            setChosenRules(currRules)
-            setRuleTags(currChildren)
-            setTaskRule(currTaskRule)
+            getBackRuleApi(index)
         }
         else{
             if (index === chosenRegions.length - 1) return
-
-            let currRegions = []
-            let currChildren = []
-            let currTaskRegion = ''
-
-            for (let i = 0; i <= index; i++){
-                // 已选择节点的放入
-                currRegions.push(chosenRegions[i])
-                currTaskRegion += (chosenRegions[i].nodeName + '\\')
-            }
-            for (let i = 0; i < props.regionTree[chosenRegions[index].nodeId].length; i++){
-                // 将当前节点的子节点放入队列
-                currChildren.push(props.regionTree[chosenRegions[index].nodeId][i])
-            }
-
-            setChosenRegions(currRegions)
-            setRegionTags(currChildren)
-            setTaskRegion(currTaskRegion)
+            getBackRegionApi(index)
         }
     }
 

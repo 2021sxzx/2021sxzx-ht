@@ -19,35 +19,6 @@ const api ={
             data
         });
     },
-    // 暂留
-    GetItemRules(data){
-        return service.request({
-            method: "post",
-            url: "/v1/getItemRules/",
-            data,
-        })
-    },
-    DeleteItemRules(data){
-        return service.request({
-            method: "post",
-            url: "/v1/deleteItemRules/",
-            data
-        })
-    },
-    CreateItemRules(data){
-        return service.request({
-            method: "post",
-            url: "/v1/createItemRules",
-            data
-        })
-    },
-    UpdateItemRules(data){
-        return service.request({
-            method: "post",
-            url: "/v1/updateItemRules",
-            data
-        })
-    },
     // 业务规则管理
     CreateRules(data){
         return service.request({
@@ -77,6 +48,14 @@ const api ={
             data
         })
     },
+    GetRulePaths(data){
+        return service.request({
+            method: "post",
+            url: "/v1/getRulePaths",
+            data
+        })
+    },
+    // 区划规则管理
     CreateRegions(data){
         return service.request({
             method: "post",
@@ -105,6 +84,14 @@ const api ={
             data
         })
     },
+    GetRegionPaths(data){
+        return service.request({
+            method: "post",
+            url: "/v1/getRegionPaths",
+            data
+        })
+    },
+    // 事项指南管理
     GetItemGuide(data){
         return service.request({
             method: "post",
@@ -144,6 +131,7 @@ const api ={
             data
         })
     },
+    // 事项流程管理
     CreateItems(data){
         return service.request({
             method: "post",
@@ -172,13 +160,6 @@ const api ={
             data
         })
     },
-    GetItemStatusScheme(data){
-        return service.request({
-            method: "get",
-            url: "/v1/getItemStatusScheme",
-            data
-        })
-    },
     ChangeItemStatus(data){
         return service.request({
             method: "post",
@@ -200,6 +181,15 @@ const api ={
             data
         })
     },
+    // 事项状态表
+    GetItemStatusScheme(data){
+        return service.request({
+            method: "get",
+            url: "/v1/getItemStatusScheme",
+            data
+        })
+    },
+    // 初始化通用
     GetUserRank(data){
         return service.request({
             method: "post",
@@ -208,7 +198,7 @@ const api ={
         })
     },
     GetServerIP(){
-        return service.defaults.baseURL
+        return (service.defaults.baseURL === '/api' ? '/api' : 'http://8.134.73.52:5001')
     }
 }
 

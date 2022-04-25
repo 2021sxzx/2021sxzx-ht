@@ -24,7 +24,7 @@ export default function ManageRegions(props) {
         onChange: onSelectionChange,
         getCheckboxProps: (record)=>({
             // 不允许删除中间节点
-            disabled: record._id in props.regionTree
+            disabled: !(record.is_leaf)
         })
     }
     // 页数处理
@@ -88,7 +88,7 @@ export default function ManageRegions(props) {
                             </Button>
                         </Menu.Item>
                         {
-                            !(record._id in props.regionTree) &&
+                            record.is_leaf &&
                             <Menu.Item key='2'>
                                 <Button style={{backgroundColor: 'red', color: 'white'}} onClick={function(){
                                     deleteSingleItem(record._id)
@@ -106,44 +106,6 @@ export default function ManageRegions(props) {
             )
         }
     ]
-
-    const getPathByRegionId = (id)=>{
-        // 获取规则id对应的规则路径
-        let parent = props.regionNodes[id].parentId
-        let currId = id
-        let res = ''
-        while (parent !== '' && parent !== currId){
-            res = props.regionNodes[currId].region_name + '\\' + res
-            currId = parent
-            parent = props.regionNodes[currId].parentId
-        }
-        res = props.regionNodes[currId].region_name + '\\' + res
-        return res
-    }
-
-    const getNodesByRegionId = (id)=>{
-        // 获取规则id对应的规则路径节点
-        let parent = props.regionNodes[id].parentId
-        let currId = id
-        let res = []
-        while (parent !== '' && parent !== currId){
-            res.push({
-                nodeId: props.regionNodes[currId]._id,
-                nodeCode: props.regionNodes[currId].region_code,
-                nodeName: props.regionNodes[currId].region_name,
-                isRegion: false
-            })
-            currId = parent
-            parent = props.regionNodes[currId].parentId
-        }
-        res.push({
-            nodeId: props.regionNodes[currId]._id,
-            nodeCode: props.regionNodes[currId].region_code,
-            nodeName: props.regionNodes[currId].region_name,
-            isRegion: false
-        })
-        return res
-    }
 
     const deleteSingleItem = (id)=>{
         // 删除单个事项，将事项id设为deletingIds
@@ -207,7 +169,6 @@ export default function ManageRegions(props) {
                 })
             }
             else{
-                props.deleteRegionSimulate(deletingIds)
                 getRegions()
                 props.showSuccess()
             }
@@ -235,9 +196,9 @@ export default function ManageRegions(props) {
         data['page_size'] = currPageSize
         api.GetRegions(data).then(response=>{
             let regions = response.data.data.data
-            console.log(response)
             setTotalSize(response.data.data.total)
             for (let i = 0; i < regions.length; i++){
+                regions[i]['is_leaf'] = (regions[i].children.length === 0)
                 regions[i]['department_name'] = regions[i].creator.department_name
                 regions[i]['creator_name'] = regions[i].creator.name
             }
@@ -261,6 +222,7 @@ export default function ManageRegions(props) {
             setCurrent(0)
             setTotalSize(response.data.data.total)
             for (let i = 0; i < regions.length; i++){
+                regions[i]['is_leaf'] = (regions[i].children.length === 0)
                 regions[i]['department_name'] = regions[i].creator.department_name
                 regions[i]['creator_name'] = regions[i].creator.name
             }
@@ -274,9 +236,26 @@ export default function ManageRegions(props) {
 
     const modifyRegion = (id)=>{
         // 获取该节点的整条父子关系路径并存储，供修改界面使用
-        let nodes = getNodesByRegionId(id)
-        props.setUpdatePath(nodes)
-        props.setPageType(2)
+        api.GetRegionPaths({
+            region_id: [id]
+        }).then(response=>{
+            let data = []
+            for (let key in response.data.data){
+                data = (response.data.data)[key]
+                break
+            }
+            let path = []
+            for (let i = 0; i < data.length; i++){
+                path.push({
+                    'nodeCode': data[i].region_code,
+                    'nodeId': data[i]._id,
+                    'nodeName': data[i].region_name
+                })
+            }
+            props.setUpdatePath(path)
+        }).catch(error=>{
+            props.showError('获取规则路径节点失败！')
+        })
     }
 
     const handleCreate = ()=>{
@@ -297,6 +276,7 @@ export default function ManageRegions(props) {
             let regions = response.data.data.data
             setTotalSize(response.data.data.total)
             for (let i = 0; i < regions.length; i++){
+                regions[i]['is_leaf'] = (regions[i].children.length === 0)
                 regions[i]['department_name'] = regions[i].creator.department_name
                 regions[i]['creator_name'] = regions[i].creator.name
             }
@@ -323,6 +303,7 @@ export default function ManageRegions(props) {
             let regions = response.data.data.data
             let table = []
             for (let i = 0; i < regions.length; i++){
+                regions[i]['is_leaf'] = (regions[i].children.length === 0)
                 regions[i]['department_name'] = regions[i].creator.department_name
                 regions[i]['creator_name'] = regions[i].creator.name
                 table.push(regions[i])
@@ -337,17 +318,14 @@ export default function ManageRegions(props) {
 
     useEffect(function(){
         // 避开初始化时执行查询
-        for (let key in props.regionTree){
-            for (let key in props.regionNodes){
-                setCurrent(0)
-                getRegions()
-                // regionTree初始化完毕前不能进行节点创建，否则会报错
-                setUnableCreate(false)
-                break
-            }
+        for (let key in props.regionRoot){
+            setCurrent(0)
+            getRegions()
+            // regionTree初始化完毕前不能进行节点创建，否则会报错
+            setUnableCreate(false)
             break
         }
-    }, [props.regionTree, props.regionNodes])
+    }, [props.regionRoot])
 
     return (
         <>
@@ -358,7 +336,7 @@ export default function ManageRegions(props) {
                     <Button type='primary' disabled={!isBatching}>批量导出</Button>
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>
                 </Space>
-                <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='_id'
+                <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='_id' expandable={{childrenColumnName: 'no'}}
                     pagination={{onChange: changePage, current: current + 1, total: totalSize}} loading={tableLoading}/>
             </Space>
         </>

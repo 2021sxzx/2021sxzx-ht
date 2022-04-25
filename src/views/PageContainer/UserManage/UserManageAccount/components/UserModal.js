@@ -43,7 +43,19 @@ export default function UserModal(props) {
 
     // 查看详情按钮的触发函数，展示详情弹窗
     const showModal = () => {
+        const {
+          user_name,
+          account,
+          role_name,
+          department,
+          password
+        } = props.detailData;
         setIsModalVisible(true);
+        setUserName(user_name);
+        setAccount(account);
+        setRoleName(role_name);
+        setDepartment(department);
+        setPassword(password);
     };
     // 保存按钮的触发函数，关闭详情弹窗并保存信息的修改
     const handleOk = () => {//  保存信息的修改
@@ -146,7 +158,7 @@ export default function UserModal(props) {
                             },
                         ]}
                     >
-                        <Input defaultValue={userName} placeholder={'请输入用户名'}
+                        <Input placeholder={'请输入用户名'} defaultValue={userName}
                                onChange={handleInputChangeUserName} allowClear={true}/>
                     </Form.Item>
 

@@ -7,8 +7,8 @@ import api from '../../../api/rule'
 export default function ItemAudit() {
     const [pageType, setPageType] = useState(1)
     const [userId, setUserId] = useState('')
-    const [ruleNodes, setRuleNodes] = useState({})
-    const [regionNodes, setRegionNodes] = useState({})
+    /*const [ruleNodes, setRuleNodes] = useState({})
+    const [regionNodes, setRegionNodes] = useState({})*/
     const [canOperate, setCanOperate] = useState([])
     const [canSee, setCanSee] = useState([])
     const [statusType, setStatusType] = useState([])
@@ -32,7 +32,7 @@ export default function ItemAudit() {
         message.success('操作成功！')
     }
 
-    const getRuleNodes = ()=>{
+    /*const getRuleNodes = ()=>{
         api.GetRuleTree({}).then(response=>{
             let nodes = response.data.data
             setRuleNodes(nodes)
@@ -48,9 +48,9 @@ export default function ItemAudit() {
         }).catch(error=>{
             
         })
-    }
+    }*/
 
-    const getItemstatusScheme = ()=>{
+    const getItemStatusScheme = ()=>{
         api.GetItemStatusScheme({}).then(response=>{
             // 获取状态表
             let scheme = response.data.data
@@ -67,8 +67,9 @@ export default function ItemAudit() {
     }
 
     useEffect(function(){
-        getRuleNodes()
-        getRegionNodes()
+        /*getRuleNodes()
+        getRegionNodes()*/
+        getItemStatusScheme()
         setUserId(localStorage.getItem('_id'))
     }, [])
 
@@ -79,15 +80,13 @@ export default function ItemAudit() {
                 user_id: localStorage.getItem('_id')
             }).then(response=>{
                 let data = response.data.data
-                setCanOperate(data.can_operate)
-                // TODO: 加一个类似canAudit的字段取代canSee
-                let temp_can_see = [1, 2, 5]
-                setCanSee(temp_can_see)
+                setCanOperate(data.operate_status)
+                setCanSee(data.audit_status)
                 let types = []
-                for (let i = 0; i < temp_can_see.length; i++){
+                for (let i = 0; i < data.audit_status.length; i++){
                     types.push({
-                        label: statusScheme[temp_can_see[i]].cn_name,
-                        value: temp_can_see[i]
+                        label: statusScheme[data.audit_status[i]].cn_name,
+                        value: data.audit_status[i]
                     })
                 }
                 setStatusType(types)
@@ -99,16 +98,6 @@ export default function ItemAudit() {
     }, [statusScheme])
 
     useEffect(function(){
-        for (let key in ruleNodes){
-            for (let key in regionNodes){
-                getItemstatusScheme()
-                break
-            }
-            break
-        }
-    }, [ruleNodes, regionNodes])
-
-    useEffect(function(){
         if (auditingId === '') return
         if (auditingData.length === 0) return
         setPageType(2)
@@ -118,7 +107,7 @@ export default function ItemAudit() {
         <>
             {
                 pageType === 1 &&
-                <ManageAudit regionNodes={regionNodes} ruleNodes={ruleNodes} canOperate={canOperate} canSee={canSee}
+                <ManageAudit canOperate={canOperate} canSee={canSee}
                     setAuditingData={setAuditingData} setAuditingId={setAuditingId} setAuditingStatus={setAuditingStatus}
                     setPageType={setPageType} showError={showError} showSuccess={showSuccess}
                     statusId={statusId} statusScheme={statusScheme} statusType={statusType} />

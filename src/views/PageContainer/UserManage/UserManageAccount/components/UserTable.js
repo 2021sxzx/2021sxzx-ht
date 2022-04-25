@@ -76,6 +76,6 @@ export default function UserTable(props) {
     ]
 
     return (
-        <Table columns={tableColumns} dataSource={props.tableData}/>
+        <Table columns={tableColumns} dataSource={props.tableData} rowKey={record => record._id}/>
     )
 }

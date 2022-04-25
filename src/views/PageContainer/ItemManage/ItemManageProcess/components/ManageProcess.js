@@ -1,8 +1,9 @@
 import React, {cloneElement, useEffect, useState} from 'react'
-import { Dropdown, Space, Menu, message, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
+import { Dropdown, Space, Menu, Tabs, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
 import { getYMD, getYMDHMS } from "../../../../../utils/TimeStamp";
 import api from '../../../../../api/rule';
 import SelectForm from './SelectForm'
+const { TabPane } = Tabs
 
 export default function ManageProcess(props) {
     // 页面的基础数据
@@ -184,34 +185,6 @@ export default function ManageProcess(props) {
 
     const handleCreate = ()=>{
         props.setPageType(2)
-    }
-
-    const getPathByRuleId = (id)=>{
-        // 获取规则id对应的规则路径
-        let parent = props.ruleNodes[id].parentId
-        let currId = id
-        let res = ''
-        while (parent !== '' && parent !== currId){
-            res = props.ruleNodes[currId].rule_name + '\\' + res
-            currId = parent
-            parent = props.ruleNodes[currId].parentId
-        }
-        res = props.ruleNodes[currId].rule_name + '\\' + res
-        return res
-    }
-
-    const getPathByRegionId = (id)=>{
-        // 获取规则id对应的规则路径
-        let parent = props.regionNodes[id].parentId
-        let currId = id
-        let res = ''
-        while (parent !== '' && parent !== currId){
-            res = props.regionNodes[currId].region_name + '\\' + res
-            currId = parent
-            parent = props.regionNodes[currId].parentId
-        }
-        res = props.regionNodes[currId].region_name + '\\' + res
-        return res
     }
 
     const getItems = ()=>{
@@ -460,20 +433,6 @@ export default function ManageProcess(props) {
                 'detailType': '审核时限',
                 'detailInfo': tempTimeLimit
             })
-            // 咨询电话、办事大厅地址数组处理
-            let tempPhone = ''
-            let tempAddress = ''
-            if (data.windows){
-                for (let i = 0; i < data.windows.length; i++){
-                    tempPhone += ((i + 1) + '.' + data.windows[i].name + '：' + data.windows[i].phone + '\n')
-                    tempAddress += ((i + 1) + '.' + data.windows[i].name + '：' + data.windows[i].address + '\n')
-                }
-            }
-            detailTable.push({
-                'detailType': '咨询电话',
-                'detailInfo': tempPhone
-            })
-
             detailTable.push({
                 'detailType': '咨询平台',
                 'detailInfo': data.zxpt
@@ -491,8 +450,30 @@ export default function ManageProcess(props) {
                 'detailInfo': data.zzzd
             })
             detailTable.push({
-                'detailType': '办事大厅地址',
-                'detailInfo': tempAddress
+                'detailType': '网上办理流程',
+                'detailInfo': data.wsbllc
+            })
+            detailTable.push({
+                'detailType': '线下办理流程',
+                'detailInfo': data.ckbllc
+            })
+            detailTable.push({
+                'detailType': '办理点信息',
+                'detailInfo': (!data.windows || data.windows.length === 0) ? '' :
+                <Tabs defaultActiveKey='1' tabPosition='left' style={{whiteSpace: 'pre-wrap'}}>
+                    {
+                        data.windows.map((item, index)=>(
+                            'name' in data.windows[index] &&
+                            <TabPane tab={data.windows[index].name} key={index}>
+                                {
+                                    '办理地点： ' + data.windows[index].address +
+                                    '\n\n咨询及投诉电话： ' + data.windows[index].phone + 
+                                    '\n\n办公时间： ' + data.windows[index].office_hour
+                                }
+                            </TabPane>
+                        ))
+                    }
+                </Tabs>
             })
             detailTable.push({
                 'detailType': '二维码',
@@ -570,8 +551,8 @@ export default function ManageProcess(props) {
     }
 
     useEffect(()=>{
-        for (let key in props.regionNodes){
-            for (let key in props.ruleNodes){
+        for (let key in props.regionRoot){
+            for (let key in props.ruleRoot){
                 for (let key in props.canOperate){
                     getItemstatusScheme()
                     break
@@ -580,7 +561,7 @@ export default function ManageProcess(props) {
             }
             break
         }
-    }, [props.regionNodes, props.ruleNodes, props.canOperate])
+    }, [props.regionRoot, props.ruleRoot, props.canOperate])
 
     useEffect(()=>{
         // 若是跳转过来进行解绑的，处理绑定数据
