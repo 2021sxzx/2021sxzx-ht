@@ -22,22 +22,25 @@ export default function ItemManageRegion(props) {
         message.success('操作成功！')
     }
 
+    useEffect(function(){
+        if (updatePath.length === 0) return
+        setPageType(2)
+    }, [updatePath])
+
     return (
         <>
             {
                 pageType === 1 &&
-                <ManageRegions regionNodes={props.regionNodes} regionDict={props.regionDict} regionTree={props.regionTree}
-                    setPageType={setPageType} setUpdatePath={setUpdatePath} getRegionTree={props.getRegionTree} 
-                    bindedData={props.bindedData} setBindedData={props.setBindedData} jumpToProcess={props.jumpToProcess}
-                    showError={showError} showSuccess={showSuccess}
-                    deleteRegionSimulate={props.deleteRegionSimulate}/>
+                <ManageRegions regionRoot={props.regionRoot} setPageType={setPageType} setUpdatePath={setUpdatePath}
+                    bindedData={props.bindedData} setBindedData={props.setBindedData} 
+                    jumpToProcess={props.jumpToProcess} jumpToUnusual={props.jumpToUnusual}
+                    showError={showError} showSuccess={showSuccess}/>
             }
             {
                 pageType === 2 &&
-                <CreateRegion setPageType={setPageType} regionTree={props.regionTree} userId={props.userId}
-                    regionRoot={props.regionRoot} getRegionTree={props.getRegionTree} updatePath={updatePath} 
-                    showError={showError} showSuccess={showSuccess} updateRegionSimulate={props.updateRegionSimulate}
-                    createRegionSimulate={props.createRegionSimulate}/>
+                <CreateRegion setPageType={setPageType}  userId={props.userId}
+                    regionRoot={props.regionRoot} updatePath={updatePath} 
+                    showError={showError} showSuccess={showSuccess} />
             }
         </>
     )

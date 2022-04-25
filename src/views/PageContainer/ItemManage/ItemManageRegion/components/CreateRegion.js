@@ -14,7 +14,7 @@ export default function CreateRegion(props){
     const handleNameInputChange = (e)=>{
         setNodeName(e.target.value)
     }
-    const [pathName, setPathName] = useState(props.regionRoot.nodeName + '\\')
+    const [pathName, setPathName] = useState('')
     const [extraHeight, setExtraHeight] = useState(0)
     // 加载效果
     const [isLoading, setIsLoading] = useState(false)
@@ -27,69 +27,133 @@ export default function CreateRegion(props){
         'nodeId': '12345'
     }])
 
-    /* 创建自定义节点 */
-    const [isNodeCreating, setIsNodeCreating] = useState(false)
-    const [newNode, setNewNode] = useState('')
-    const [newNodeList, setNewNodeList] = useState([])
-    
-    /* 处理修改功能 */
-    const [isUpdatingRoot, setIsUpdatingRoot] = useState(false)
     // 原节点的路径
     const [originPath, setOriginPath] = useState('')
-    // 自定义节点后当前节点的真实parentId
-    const [realId, setRealId] = useState('')
-
-    /* 创建或修改功能的总处理 */
-    // 已选择节点的规则id以及区划id
-    const [currRegionId, setCurrRegionId] = useState(null)
-    // 是否已经可以创建
-    const [chooseEnd, setChooseEnd] = useState(false)
 
     useEffect(()=>{
         // 初始化分类规则树的根节点
-        let currChildren = []
+        let len = props.updatePath.length
         let currChosen = []
-        if (props.updatePath.length === 0){
+        if (len === 0){
             // 若是创建，则用规则树根节点进行处理
-            currChosen.push(props.regionRoot)
-            // 初始化可选节点
-            for (let i = 0; i < (props.regionTree[props.regionRoot.nodeId]).length; i++){
-                let node = props.regionTree[props.regionRoot.nodeId][i]
-                currChildren.push(node)
-            }  
-            setCurrRegionId(props.regionRoot.nodeCode) 
+            chooseTagApi(props.regionRoot)
         }
-        else if (props.updatePath.length === 1){
+        else if (len === 1){
             // 特殊情况处理：修改根节点
             // 只允许修改名字，其他的啥也别干
             setOriginPath(props.regionRoot.nodeName + '\\')
-            setTaskCode(props.updatePath[0].nodeCode)
-            setNodeName(props.updatePath[0].nodeName)
-            setIsUpdatingRoot(true)
+            setTaskCode(props.updatePath[len - 1].nodeCode)
+            setNodeName(props.updatePath[len - 1].nodeName)
         } 
         else{
             // 若是修改，用传进来的路径进行处理
-            let pathName = ''
-            // 已选择节点
-            for (let i = props.updatePath.length - 1; i > 0; i--){
-                currChosen.push(props.updatePath[i])
-                pathName = pathName + props.updatePath[i].nodeName + '\\'
-            }
-            // 子节点处理
-            for (let i = 0; i < props.regionTree[props.updatePath[1].nodeId].length; i++){
-                let node = props.regionTree[props.updatePath[1].nodeId][i]
-                if (node.nodeId !== props.updatePath[0].nodeId)
-                    currChildren.push(node)
-            }
-            setCurrRegionId(props.updatePath[1].nodeCode)
-            setTaskCode(props.updatePath[0].nodeCode)
-            setNodeName(props.updatePath[0].nodeName)
-            setPathName(pathName)
-            setOriginPath(pathName + props.updatePath[0].nodeName)
+            initUpdatePath(props.updatePath)   
+            setTaskCode(props.updatePath[len - 1].nodeCode)
+            setNodeName(props.updatePath[len - 1].nodeName) 
         }   
-        setEnabledTags(currChildren)
         setChosenTags(currChosen)
     }, [])
+
+    const initUpdatePath = (path)=>{
+        // 正在修改的节点id，需要被跳过
+        let len = path.length
+        let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
+        api.GetRegions({
+            parentId: path[len - 2].nodeId
+        }).then(response=>{
+            let data = response.data.data
+            let tempPath = ''
+            let chosen = []
+            let children = []
+            for (let i = 0; i < len - 1; i++){
+                chosen.push({
+                    'nodeId': path[i].nodeId,
+                    'nodeName': path[i].nodeName
+                })
+                tempPath += (path[i].nodeName + '\\')
+            }
+            for (let i = 0; i < data.length; i++){
+                if (data[i]._id === skip) continue
+                children.push({
+                    'nodeId': data[i]._id,
+                    'nodeName': data[i].region_name
+                })
+            }
+            setChosenTags(chosen)
+            setEnabledTags(children)
+            setPathName(tempPath)
+            setOriginPath(tempPath + path[len - 1].nodeName + '\\')
+        }).catch(error=>{
+            props.showError('初始化修改节点失败！')
+        })
+    }
+
+    const chooseTagApi = (tag)=>{
+        // 正在修改的节点id，需要被跳过
+        let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
+        // 点击某个节点
+        api.GetRegions({
+            parentId: tag.nodeId
+        }).then(response=>{
+            let data = response.data.data
+            // 子节点处理
+            let children = []
+            for (let i = 0; i < data.length; i++){
+                if (data[i]._id === skip) continue
+                children.push({
+                    nodeId: data[i]._id,
+                    nodeName: data[i].region_name
+                })
+            }
+            // 已选择节点处理
+            let chosen = []
+            for (let i = 0; i < chosenTags.length; i++){
+                chosen.push(chosenTags[i])
+            }
+            chosen.push(tag)
+            // 规则名称处理
+            let path = pathName + tag.nodeName + '\\'
+            // 更新state
+            setEnabledTags(children)
+            setChosenTags(chosen)
+            setPathName(path)
+        }).catch(error=>{
+            props.showError('获取子节点失败！')
+        })
+    }
+
+    const getBackApi = (tag, index)=>{
+        // 正在修改的节点id，需要被跳过
+        let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
+        // 点击回归某个节点
+        api.GetRegions({
+            parentId: tag.nodeId
+        }).then(response=>{
+            let data = response.data.data
+            // 子节点处理
+            let children = []
+            for (let i = 0; i < data.length; i++){
+                if (data[i]._id === skip) continue
+                children.push({
+                    nodeId: data[i]._id,
+                    nodeName: data[i].region_name
+                })
+            }
+            // 已选择节点与规则名称处理
+            let chosen = []
+            let path = ''
+            for (let i = 0; i <= index; i++){
+                chosen.push(chosenTags[i])
+                path += (chosenTags[i].nodeName + '\\')
+            }
+            // 更新state
+            setChosenTags(chosen)
+            setPathName(path)
+            setEnabledTags(children)
+        }).catch(error=>{
+            props.showError('撤回失败！')
+        })
+    }
 
     const chooseTag = (index, type)=>{
         // 选择了一个待选择节点
@@ -98,22 +162,7 @@ export default function CreateRegion(props){
         
         // 获取选取的节点，渲染其子节点并处理规则路径
         let tag = enabledTags[index]
-        let currRegion = pathName + tag.nodeName + '\\'
-        chosenTags.push(tag)
-        
-        let currChildren = []
-        if (tag.nodeId in props.regionTree){
-            // 选择的节点有子节点，则处理子节点
-            for (let i = 0; i < props.regionTree[tag.nodeId].length; i++){
-                let node = props.regionTree[tag.nodeId][i]
-                if (props.updatePath.length === 0 || node.nodeId !== props.updatePath[0].nodeId)
-                    currChildren.push(node)
-            }
-        }
-
-        setCurrRegionId(tag.nodeCode)
-        setEnabledTags(currChildren)
-        setPathName(currRegion)
+        chooseTagApi(tag)
     }
 
     const getBack = (index)=>{
@@ -121,39 +170,9 @@ export default function CreateRegion(props){
             // 原地tp
             return
         }
-        let currChosen = []
-        let currChildren = []
-        //let currNewNodeList = []
-        //let listIndex = 0
-        let currRegion = ''
         
         let returnTag = chosenTags[index]
-        for (let i = 0; i <= index; i++){
-            // 把现在已选择的节点列表还原到选中的节点为止
-            currChosen.push(chosenTags[i])
-            currRegion += (chosenTags[i].nodeName + '\\')
-            /*if (chosenTags[i].nodeId[0] == 't'){
-                // 若其中有待创建队列，则重新推入队列，同时可以完成创建
-                currNewNodeList.push(newNodeList[listIndex++])
-            }*/
-        }
-        
-        if (returnTag.nodeId in props.regionTree){
-            // 若回退节点有子节点，则显示
-            for (let i = 0; i < props.regionTree[returnTag.nodeId].length; i++){
-                let child = props.regionTree[returnTag.nodeId][i]
-                // 不显示正在修改的节点本身
-                if (props.updatePath.length === 0 || child.nodeId !== props.updatePath[0].nodeId)
-                    currChildren.push(child)
-            }
-        }
-
-        // 将新的状态返回
-        setCurrRegionId(returnTag.nodeCode)
-        //setNewNodeList(currNewNodeList)
-        setChosenTags(currChosen)
-        setPathName(currRegion)
-        setEnabledTags(currChildren)
+        getBackApi(returnTag, index)
     }
 
     const handleCancel = ()=>{
@@ -171,6 +190,62 @@ export default function CreateRegion(props){
             })
             return
         }
+        else{
+            api.GetRegions({
+                region_code: taskCode
+            }).then(response=>{
+                if (response.data.data.length === 0){
+                    // 若非已有区划编码，则确认创建
+                    confirmCreate()
+                }
+                else{
+                    Modal.warning({
+                        centered: true,
+                        title: '已有编码',
+                        content: '该规则编码已存在，请重新输入！'
+                    })
+                }
+            })
+        }
+    }
+
+    const handleUpdate = ()=>{
+        // 点击修改按钮
+        if (taskCode === '' || nodeName === ''){
+            Modal.warning({
+                centered: true,
+                title: '信息不全',
+                content: '请将区划编码和区划名称填写完毕后再进行创建！'
+            })
+            return
+        }
+        else{
+            if (taskCode === props.updatePath[props.updatePath.length - 1].nodeCode){
+                // 若区划编码没有变更，则直接确认更改
+                confirmUpdate()
+            }
+            else{
+                // 否则需要查询是否已有该编码
+                api.GetRegions({
+                    region_code: taskCode
+                }).then(response=>{
+                    if (response.data.data.length === 0){
+                        // 若非已有区划编码，则确认修改
+                        confirmUpdate()
+                    }
+                    else{
+                        Modal.warning({
+                            centered: true,
+                            title: '已有编码',
+                            content: '该规则编码已存在，请重新输入！'
+                        })
+                    }
+                })
+            }
+        }
+    }
+
+    const confirmCreate = ()=>{
         let str = '确认创建规则：“' + pathName + nodeName + '\\”吗？'
         Modal.confirm({
             centered: true,
@@ -189,8 +264,7 @@ export default function CreateRegion(props){
         })
     }
 
-    const handleUpdate = ()=>{
-        // 点击修改按钮
+    const confirmUpdate = ()=>{
         let str = '正在将规则：\n' +
                   '    “' + originPath + '\\”\n\n' + 
                   '修改为：\n' + 
@@ -203,7 +277,7 @@ export default function CreateRegion(props){
             onOk: function(){
                 setIsLoading(true)
                 updateRegions({
-                    _id: props.updatePath[0].nodeId,
+                    _id: props.updatePath[props.updatePath.length - 1].nodeId,
                     region_code: taskCode,
                     region_name: nodeName,
                     region_level: chosenTags.length,
@@ -214,43 +288,14 @@ export default function CreateRegion(props){
         })
     }
 
-    useEffect(function(){
-        if (realId === '') return
-        let node = [{
-            region_id: props.updatePath[0].nodeId,
-            region_name: nodeName,
-            parentId: realId
-        }]
-        let data = {
-            regions: node
-        }
-        updateRegions(data)
-    }, [realId])
-
-    const createNewNode = (node)=>{
-        // 放进待处理数组
-        newNodeList.push({
-            temp_id: node.nodeId,
-            region_name: node.nodeName,
-            parentId: currRegionId
-        })
-        // 处理页面展示内容
-        chosenTags.push(node)
-        setPathName(pathName + node.nodeName + '\\')
-        setEnabledTags([])
-        setCurrRegionId(node.nodeId)
-    }
-
     const createRegions = (data)=>{
         // 调用创建规则接口
         api.CreateRegions(data).then(response=>{
             // 应该返回_id
-            props.createRegionSimulate(response.data.data)
             props.showSuccess()
             props.setPageType(1)
         }).catch(error=>{
             // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
-            props.getRegionTree()
             setIsLoading(false)
             props.showError('创建规则失败！')
         })
@@ -262,12 +307,10 @@ export default function CreateRegion(props){
         }
         // 调用创建规则接口
         api.UpdateRegions(regions).then(response=>{
-            props.updateRegionSimulate(data)
             props.showSuccess()
             props.setPageType(1)
         }).catch(error=>{
             // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
-            props.getRegionTree()
             setIsLoading(false)
             props.showError('更新规则失败！')
         })

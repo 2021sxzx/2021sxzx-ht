@@ -5,45 +5,28 @@ const { TextArea } = Input
 import { MinusCircleOutlined } from '@ant-design/icons';
 
 export default function FormListPlus(props){
-    const [window, setWindow] = useState(props.guideWindow)
-    const [data, setData] = useState(props.value)
+    const [windows, setWindows] = useState(props.data)
 
     const handleChange = (input, type, index)=>{
-        if (type === 'data'){
-            let tempData = []
-            for (let i = 0; i < data.length; i++){
-                tempData.push(data[i])
+        let tempData = []
+        for (let i = 0; i < windows.length; i++){
+            tempData.push(windows[i])
+            if (i === index){
+                tempData[i][type] = input
             }
-            tempData[index] = input
-            setData(tempData)
-            props.setData(tempData)
         }
-        else{
-            let tempWindow = []
-            for (let i = 0; i < window.length; i++){
-                tempWindow.push(window[i])
-            }
-            tempWindow[index] = input
-            setWindow(tempWindow)
-            props.setGuideWindow(tempWindow)
-        }
+        setWindows(tempData)
+        props.setData(tempData)
     }
 
     const handleDelete = (index)=>{
         let tempData = []
-        let tempWindow = []
-        let tempOther = []
-        for (let i = 0; i < data.length; i++){
+        for (let i = 0; i < windows.length; i++){
             if (i === index) continue
-            tempData.push(data[i])
-            tempWindow.push(window[i])
-            tempOther.push(props.other[i])
+            tempData.push(windows[i])
         }
-        setData(tempData)
-        setWindow(tempWindow)
-        props.setGuideWindow(tempWindow)
+        setWindows(tempData)
         props.setData(tempData)
-        props.setOther(tempOther)
     }
 
     return(
@@ -54,37 +37,47 @@ export default function FormListPlus(props){
             </div>
             <div className={style.input}>
                 {
-                    window.map((item, index)=>
+                    windows.map((item, index)=>
                         <div className={style.singleLine}>
-                            <TextArea className={style.textarea1} onChange={function(e){
-                                handleChange(e.target.value, 'window', index)
-                            }} value={window[index]} autoSize={true} placeholder='请输入办理点名称'/>
-                            <TextArea className={style.textarea2} onChange={function(e){
-                                handleChange(e.target.value, 'data', index)
-                            }} value={data[index]} autoSize={true} placeholder={'请输入' + props.formName}/>
-                            <MinusCircleOutlined className={style.delete} onClick={function(){
-                                handleDelete(index)
-                            }}/>
+                            <TextArea className={style.windowName} onChange={function(e){
+                                handleChange(e.target.value, 'name', index)
+                            }} value={windows[index].name} autoSize={true} placeholder='请输入办理点名称'/>
+                            <div className={style.otherDatas}>
+                                <div className={style.oneRow}>
+                                    <TextArea className={style.shortTextArea} onChange={function(e){
+                                        handleChange(e.target.value, 'address', index)
+                                    }} value={windows[index].address} autoSize={true} placeholder='请输入办理地点'/>
+                                    <MinusCircleOutlined className={style.delete} onClick={function(){
+                                        handleDelete(index)
+                                    }}/>
+                                </div>
+                                <div className={style.oneRow}>
+                                    <TextArea className={style.longTextArea} onChange={function(e){
+                                        handleChange(e.target.value, 'phone', index)
+                                    }} value={windows[index].phone} autoSize={true} placeholder='请输入咨询及投诉电话' />
+                                </div>
+                                <div className={style.oneRow}>
+                                    <TextArea className={style.longTextArea} onChange={function(e){
+                                        handleChange(e.target.value, 'office_hour', index)
+                                    }} value={windows[index].office_hour} autoSize={true} placeholder='请输入咨询及投诉电话' />
+                                </div>
+                            </div>
                         </div>
                     )
                 }
                 <Button className={style.addBtn} type='dashed' onClick={()=>{
                     let tempData = []
-                    let tempWindow = []
-                    let tempOther = []
-                    for (let i = 0; i < data.length; i++){
-                        tempData.push(data[i])
-                        tempWindow.push(window[i])
-                        tempOther.push(props.other[i])
+                    for (let i = 0; i < windows.length; i++){
+                        tempData.push(windows[i])
                     }
-                    tempData.push('')
-                    tempWindow.push('')
-                    tempOther.push('')
-                    setData(tempData)
-                    setWindow(tempWindow)
-                    props.setGuideWindow(tempWindow)
+                    tempData.push({
+                        'name': '',
+                        'phone': '',
+                        'address': '',
+                        'office_hour': ''
+                    })
+                    setWindows(tempData)
                     props.setData(tempData)
-                    props.setOther(tempOther)
                 }}>{props.addBtn}</Button>
             </div>
         </div>

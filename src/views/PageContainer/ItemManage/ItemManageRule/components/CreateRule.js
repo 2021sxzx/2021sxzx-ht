@@ -6,8 +6,7 @@ import api from '../../../../../api/rule';
 
 export default function CreateRule(props){
     /* 页面中用以展示的基础数据 */
-    const [taskCode, setTaskCode] = useState('-')
-    const [pathName, setPathName] = useState(props.ruleRoot.nodeName + '\\')
+    const [pathName, setPathName] = useState('')
     const [extraHeight, setExtraHeight] = useState(0)
     // 加载效果
     const [isLoading, setIsLoading] = useState(false)
@@ -41,32 +40,18 @@ export default function CreateRule(props){
     const [realId, setRealId] = useState('')
 
     /* 创建或修改功能的总处理 */
-    // 已选择节点的规则id以及区划id
-    const [currRuleId, setCurrRuleId] = useState(null)
     // 是否已经可以创建
     const [chooseEnd, setChooseEnd] = useState(false)
 
     useEffect(()=>{
         // 初始化分类规则树的根节点
-        let currChildren = []
         let currChosen = []
-        if (props.updatePath.length === 0){
+        let len = props.updatePath.length
+        if (len === 0){
             // 若是创建，则用规则树根节点进行处理
-            currChosen.push(props.ruleRoot)
-            // 初始化可选节点
-            for (let i = 0; i < (props.ruleTree[props.ruleRoot.nodeId]).length; i++){
-                let node = props.ruleTree[props.ruleRoot.nodeId][i]
-                if (node.nodeId in props.ruleTree){
-                    node['disabled'] = false
-                }
-                else{
-                    node['disabled'] = true
-                }
-                currChildren.push(node)
-            }  
-            setCurrRuleId(props.ruleRoot.nodeId) 
+            chooseTagApi(props.ruleRoot)
         }
-        else if (props.updatePath.length === 1){
+        else if (len === 1){
             // 特殊情况处理：修改根节点
             // 只允许修改名字，其他的啥也别干
             setOriginPath(props.ruleRoot.nodeName + '\\')
@@ -75,33 +60,118 @@ export default function CreateRule(props){
             setIsUpdatingRoot(true)
         } 
         else{
-            // 若是修改，用传进来的路径进行处理
-            let pathName = ''
-            // 已选择节点
-            for (let i = props.updatePath.length - 1; i > 0; i--){
-                currChosen.push(props.updatePath[i])
-                pathName = pathName + props.updatePath[i].nodeName + '\\'
-            }
-            // 子节点处理
-            for (let i = 0; i < props.ruleTree[props.updatePath[1].nodeId].length; i++){
-                let node = props.ruleTree[props.updatePath[1].nodeId][i]
-                if (node.nodeId in props.ruleTree){
-                    node['disabled'] = false
-                }
-                else{
-                    node['disabled'] = true
-                }
-                if (node.nodeId !== props.updatePath[0].nodeId)
-                    currChildren.push(node)
-            }
-            setCurrRuleId(props.updatePath[1].nodeId)
-            setUpdatingNode(props.updatePath[0])
-            setPathName(pathName)
-            setOriginPath(pathName + props.updatePath[0].nodeName)
+            initUpdatePath(props.updatePath)
         }   
-        setEnabledTags(currChildren)
         setChosenTags(currChosen)
     }, [])
+
+    const initUpdatePath = (path)=>{
+        // 正在修改的节点id，需要被跳过
+        let len = path.length
+        let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
+        api.GetRules({
+            parentId: path[len - 2].nodeId
+        }).then(response=>{
+            let data = response.data.data
+            let tempPath = ''
+            let chosen = []
+            let children = []
+            for (let i = 0; i < len - 1; i++){
+                chosen.push(path[i])
+                tempPath += (path[i].nodeName + '\\')
+            }
+            for (let i = 0; i < data.length; i++){
+                if (data[i].rule_id === skip) continue
+                children.push({
+                    'nodeId': data[i].rule_id,
+                    'nodeName': data[i].rule_name
+                })
+            }
+            setChosenTags(chosen)
+            setEnabledTags(children)
+            setUpdatingNode(path[len - 1])
+            setPathName(tempPath)
+            setOriginPath(tempPath + path[len - 1].nodeName + '\\')
+        }).catch(error=>{
+            props.showError('初始化修改节点失败！')
+        })
+    }
+
+    const chooseTagApi = (tag)=>{
+        // 正在修改的节点id，需要被跳过
+        let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
+        // 点击某个节点
+        api.GetRules({
+            parentId: tag.nodeId
+        }).then(response=>{
+            let data = response.data.data
+            // 子节点处理
+            let children = []
+            for (let i = 0; i < data.length; i++){
+                if (data[i].rule_id === skip) continue
+                children.push({
+                    nodeId: data[i].rule_id,
+                    nodeName: data[i].rule_name
+                })
+            }
+            // 已选择节点处理
+            let chosen = []
+            for (let i = 0; i < chosenTags.length; i++){
+                chosen.push(chosenTags[i])
+            }
+            chosen.push(tag)
+            // 规则名称处理
+            let path = pathName + tag.nodeName + '\\'
+            // 更新state
+            setChosenTags(chosen)
+            setPathName(path)
+            setEnabledTags(children)
+        }).catch(error=>{
+            props.showError('获取子节点失败！')
+        })
+    }
+
+    const getBackApi = (tag, index)=>{
+        // 正在修改的节点id，需要被跳过
+        let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
+        // 点击回归某个节点
+        api.GetRules({
+            parentId: tag.nodeId
+        }).then(response=>{
+            let data = response.data.data
+            // 子节点处理
+            let children = []
+            for (let i = 0; i < data.length; i++){
+                if (data[i].rule_id === skip) continue
+                children.push({
+                    nodeId: data[i].rule_id,
+                    nodeName: data[i].rule_name
+                })
+            }
+            // 已选择节点与规则名称处理
+            let chosen = []
+            let tempNew = []
+            let newNodeIndex = 0
+            let end = false
+            let path = ''
+            for (let i = 0; i <= index; i++){
+                chosen.push(chosenTags[i])
+                path += (chosenTags[i].nodeName + '\\')
+                if (chosenTags[i].nodeId[0] === 't'){
+                    tempNew.push(newNodeList[newNodeIndex++])
+                    end = true
+                }
+            }
+            // 更新state
+            setChosenTags(chosen)
+            setPathName(path)
+            setEnabledTags(children)
+            setNewNodeList(tempNew)
+            setChooseEnd(end)
+        }).catch(error=>{
+            props.showError('获取子节点失败！')
+        })
+    }
 
     const chooseTag = (index, type)=>{
         // 选择了一个待选择节点
@@ -110,70 +180,18 @@ export default function CreateRule(props){
         
         // 获取选取的节点，渲染其子节点并处理规则路径
         let tag = enabledTags[index]
-        let currRule = pathName + tag.nodeName + '\\'
-        chosenTags.push(tag)
-        
-        let currChildren = []
-        if (tag.nodeId in props.ruleTree){
-            // 选择的节点有子节点，则处理子节点
-            for (let i = 0; i < props.ruleTree[tag.nodeId].length; i++){
-                let node = props.ruleTree[tag.nodeId][i]
-                if (node.nodeId in props.ruleTree){
-                    node['disabled'] = false
-                }
-                else{
-                    node['disabled'] = true
-                }
-                if (props.updatePath.length === 0 || node.nodeId !== props.updatePath[0].nodeId)
-                    currChildren.push(node)
-            }
-        }
-
-        setCurrRuleId(tag.nodeId)
-        setEnabledTags(currChildren)
-        setPathName(currRule)
+        chooseTagApi(tag)
     }
 
     const getBack = (index)=>{
+        // 选择了一个已选择节点
         if (index === chosenTags.length - 1){
             // 原地tp
             return
         }
-        let currChosen = []
-        let currChildren = []
-        let currNewNodeList = []
-        let listIndex = 0
-        let currRule = ''
-        let end = false
         
         let returnTag = chosenTags[index]
-        for (let i = 0; i <= index; i++){
-            // 把现在已选择的节点列表还原到选中的节点为止
-            currChosen.push(chosenTags[i])
-            currRule += (chosenTags[i].nodeName + '\\')
-            if (chosenTags[i].nodeId[0] == 't'){
-                // 若其中有待创建队列，则重新推入队列，同时可以完成创建
-                currNewNodeList.push(newNodeList[listIndex++])
-                end = true
-            }
-        }
-        
-        if (returnTag.nodeId in props.ruleTree){
-            // 若回退节点有子节点，则显示
-            for (let i = 0; i < props.ruleTree[returnTag.nodeId].length; i++){
-                let child = props.ruleTree[returnTag.nodeId][i]
-                if (props.updatePath.length === 0 || child.nodeId !== props.updatePath[0].nodeId)
-                    currChildren.push(child)
-            }
-        }
-
-        // 将新的状态返回
-        setChooseEnd(end)
-        setCurrRuleId(returnTag.nodeId)
-        setNewNodeList(currNewNodeList)
-        setChosenTags(currChosen)
-        setPathName(currRule)
-        setEnabledTags(currChildren)
+        getBackApi(returnTag, index)
     }
 
     const handleCancel = ()=>{
@@ -210,7 +228,10 @@ export default function CreateRule(props){
             centered: true,
             title: '确认修改',
             content: str,
-            onOk: updateRule,
+            onOk: function(){
+                setIsLoading(true)
+                updateRule()
+            },
             style: {whiteSpace: 'pre-wrap'}
         })
     }
@@ -222,7 +243,7 @@ export default function CreateRule(props){
                 rules: [{
                     rule_id: updatingNode.nodeId,
                     rule_name: updatingNode.nodeName,
-                    parentId: currRuleId
+                    parentId: chosenTags[chosenTags.length - 1].nodeId
                 }]
             }
             updateRules(data)
@@ -237,25 +258,14 @@ export default function CreateRule(props){
             // 获取临时节点的真实id，再用来修改节点
             api.CreateRules(data).then(response=>{
                 let dict = response.data.data
-                let rules = []
-                for (let i = 0; i < newNodeList.length; i++){
-                    let rule = {
-                        rule_id: dict[newNodeList[i].temp_id].rule_id,
-                        rule_name: newNodeList[i].rule_name,
-                        parentId: (newNodeList[i].parentId in dict ?
-                            dict[newNodeList[i].parentId].rule_id : newNodeList[i].parentId)
-                    }
-                    rules.push(rule)
-                }
-                props.createRuleSimulate(rules)
                 setRealId(dict[tempNodeId].rule_id)
             }).catch(error=>{
-                props.getRuleTree()
                 props.showError('创建规则节点失败！')
             })
         }
     }
 
+    // 获取到了创建后节点的id后，再进行父节点修改
     useEffect(function(){
         if (realId === '') return
         let nodes = [{
@@ -302,13 +312,12 @@ export default function CreateRule(props){
         newNodeList.push({
             temp_id: node.nodeId,
             rule_name: node.nodeName,
-            parentId: currRuleId
+            parentId: chosenTags[chosenTags.length - 1].nodeId
         })
         // 处理页面展示内容
         chosenTags.push(node)
         setPathName(pathName + node.nodeName + '\\')
         setEnabledTags([])
-        setCurrRuleId(node.nodeId)
     }
 
     // 修改节点名字
@@ -316,7 +325,7 @@ export default function CreateRule(props){
         setNewName(e.target.value)
     }
 
-    const startupdateing = ()=>{
+    const startUpdating = ()=>{
         setIsUpdating(true)
     }
 
@@ -337,26 +346,11 @@ export default function CreateRule(props){
     const createRules = (data)=>{
         // 调用创建规则接口
         api.CreateRules(data).then(response=>{
-            let dict = response.data.data
-            let rules = []
-            for (let i = 0; i < newNodeList.length; i++){
-                let rule = {
-                    rule_id: dict[newNodeList[i].temp_id].rule_id,
-                    rule_name: newNodeList[i].rule_name,
-                    parentId: (newNodeList[i].parentId in dict ?
-                        dict[newNodeList[i].parentId].rule_id : newNodeList[i].parentId)
-                }
-                rules.push(rule)
-            }
-            props.createRuleSimulate(rules)
             props.showSuccess()
-            // props.getRuleTree()
             props.setPageType(1)
         }).catch(error=>{
             // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
-            props.getRuleTree()
             setIsLoading(false)
-            console.log(error)
             props.showError('创建规则失败！')
         })
     }
@@ -365,11 +359,9 @@ export default function CreateRule(props){
         // 调用创建规则接口
         api.UpdateRules(data).then(response=>{
             props.showSuccess()
-            props.updateRuleSimulate(data.rules)
             props.setPageType(1)
         }).catch(error=>{
             // 若创建过程出错，可能是库已经发生改变，树和事项都刷新
-            props.getRuleTree()
             setIsLoading(false)
             props.showError('修改规则失败！')
         })
@@ -405,7 +397,7 @@ export default function CreateRule(props){
                     </div>
                     <div className={style.itemContent} style={{display: 'flex'}}>
                         <div className={style.btnText}>{updatingNode.nodeName}</div>
-                        <Button size='small' type='primary' onClick={startupdateing}>修改节点名称</Button>
+                        <Button size='small' type='primary' onClick={startUpdating}>修改节点名称</Button>
                     </div>
                 </div>
             }
@@ -443,7 +435,7 @@ export default function CreateRule(props){
                                 </div>
                             )
                         }
-                        <div className={style.chosenTag} onClick={startupdateing}
+                        <div className={style.chosenTag} onClick={startUpdating}
                             style={{backgroundColor: 'orange', display: updatingNode.nodeId === 'none' ? 'none' : 'flex'}}>
                             <div className={style.tagContent}>
                                 {updatingNode.nodeName}
@@ -488,7 +480,8 @@ export default function CreateRule(props){
                     onClick={handleCancel}>取消</Button>
                 <Button type='primary' size='middle' style={{width: 100}}
                     onClick={props.updatePath.length === 0 ? handleCreate : handleUpdate} 
-                    disabled={!(chooseEnd || isNameUpdated || (props.updatePath.length > 1 && currRuleId !== props.updatePath[1].nodeId))} loading={isLoading}>
+                    disabled={!(chooseEnd || isNameUpdated || (props.updatePath.length > 1 && chosenTags.length > 0 && chosenTags[chosenTags.length - 1].nodeId !== props.updatePath[props.updatePath.length - 1].rule_id))} 
+                    loading={isLoading}>
                     {props.updatePath.length === 0 ? '创建' : '修改'}
                 </Button>
             </div>

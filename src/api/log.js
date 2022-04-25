@@ -1,7 +1,4 @@
 import service from "./http";
-/**
- * 获取验证码
- */
 
 const api ={
     GetLog(data) {

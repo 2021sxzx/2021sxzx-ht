@@ -9,15 +9,15 @@ import {
   Button,
   Table,
   Checkbox,
-  Radio,Divider,Modal,Alert,Row,Col,Upload
+  Radio, Divider, Modal, Alert, Row, Col, Upload, message
 } from "antd";
 const { TextArea } = Input;
 import { UploadOutlined } from "@ant-design/icons";
-import api from "../../../../api/log";
+import api from "../../../../api/systemFailure";
 import emitter from "./ev"
 import FormItem from "antd/lib/form/FormItem";
 
-const tableColumns = [
+const   tableColumns = [
   {
     title: "故障名称",
     dataIndex: "failure_name",
@@ -25,13 +25,13 @@ const tableColumns = [
   },
   {
     title: "时间",
-    dataIndex: "create_time",
-    key: "create_time",
+    dataIndex: "failure_time",
+    key: "failure_time",
   },
   {
     title: "操作描述",
-    dataIndex: "content",
-    key: "content",
+    dataIndex: "failure_des",
+    key: "failure_des",
   },
   {
     title: "提交人",
@@ -104,9 +104,10 @@ const HandleModal = (props) => {
       <button style={{textDecoration:"underline"}}>underline</button> */}
       <a style={{textDecoration:"underline"}} onClick={showModal}>详情</a>
       <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} okText="确定" cancelText="取消">
-        <p>{props.record.failure_name}</p>
-        <p>{props.record.user_name}</p>
-        <p>{props.record.create_time}</p>
+        <h2>故障名称：{props.record.failure_name}</h2>
+        <p>故障描述：{props.record.failure_des}</p>
+        <h6>{props.record.failure_time}</h6>
+        {/* <p>{props.record}</p> */}
       </Modal>
     </>
   );
@@ -114,7 +115,8 @@ const HandleModal = (props) => {
 
 //删除操作
 const deleteFuncElem=(aimedRowData)=>{
-  // console.log(aimedRowData);
+  console.log(aimedRowData);
+  api.DeleteSystemFailure(aimedRowData);
   const totalFuncDataList = tableData1;
   // console.log(totalFuncDataList);
   let i;
@@ -174,14 +176,43 @@ const AlertBox=()=>{//有四种样式 success、info、warning、error。
 const SubmitFailure=(props)=>{
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm(); //用于之后取数据
-
+  const formRef = React.createRef();
+const [failurePicture,setFailurePicture]=useState(null);
   const showModal = () => {
     setIsModalVisible(true);
   };
 
-  const onFinish = (values) => {
-    console.log(form.getFieldsValue(true))
+  const onFinish = async (values) => {
+    // console.log(form.getFieldsValue(true))
+    // console.log(form.getFieldValue('failureName'));
     // setIsModalVisible(false);
+    let data=formRef.current?.getFieldsValue();
+    data.user_name=localStorage.getItem('role_name');
+    data.create_time=new Date();
+    if (failurePicture) {
+      const FailurePictureFormData = new FormData();
+      FailurePictureFormData.append('file', failurePicture);
+      console.log('FailurePictureFormData.file:',FailurePictureFormData.get('file'))
+      fetch('http://localhost:5001/api/v1/system-failure-picture-upload', {
+        method: 'POST',
+        body: FailurePictureFormData,
+        mode: "cors",
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
+      })
+          .then(res => res.json())
+          .then(() => {
+            //上传之后删除浏览器的图片
+            // setWebsiteLogoFile(null)
+            message.success('网站logo上传成功.');
+          })
+          .catch(() => {
+            message.error('网站logo上传失败.');
+          })
+    }
+    await api.CreateSystemFailure(data);
+    console.log('Success:', formRef.current?.getFieldsValue());
   };
 
   const handleCancel = () => {
@@ -201,20 +232,25 @@ const SubmitFailure=(props)=>{
         visible={isModalVisible}
         onOk={onFinish}
         onCancel={handleCancel}
-        okText="确定"
+        okText="提交"
         cancelText="取消"
       >
-        <Form form={form} name="createSystemFailure" onFinish={onFinish}>
-          <FormItem label="故障名称" name="failureName">
-            <Input placeholder="请输入名称" defaultValue="mysite"></Input>
-          </FormItem>
-          <FormItem label="故障描述" name="failureDescription">
-            <TextArea rows={4} showCount maxLength={100} defaultValue="mysite"></TextArea>
-          </FormItem>
+        <Form ref={formRef} name="createSystemFailure" onFinish={onFinish}>
+          <Form.Item label="故障名称" name="failureName">
+            <Input placeholder="请输入名称" defaultValue="mysite"/>
+          </Form.Item>
+          <Form.Item label="故障描述" name="failureDescription">
+            <TextArea rows={4} showCount maxLength={100} defaultValue="mysite"/>
+          </Form.Item>
           <Form.Item label="故障截图" name="failurePicture">
             <Upload
               listType="picture"
-            >
+              beforeUpload={(file)=>{
+                setFailurePicture(file)
+                console.log(failurePicture)
+                return false;
+              }}
+              name="failurePicture">
               <Button icon={<UploadOutlined />}>Upload</Button>
               {localStorage.getItem('_id')}
             </Upload>
@@ -230,6 +266,19 @@ const SubmitFailure=(props)=>{
 
 const Demo = () => {
   const [selectionType, setSelectionType] = useState('checkbox');
+  const [failureData, setFailureData] = useState([]);
+  const getFailure = () => {
+    api
+        .GetSystemFailure()
+        .then((response) => {
+          setFailureData(response.data.data);
+          console.log("response.data.data=", response.data.data);
+        })
+        .catch((error) => {});
+  };
+  useEffect(() => {
+    getFailure();
+  }, []);
   return (
     <div>
       <Row>
@@ -247,7 +296,7 @@ const Demo = () => {
           ...rowSelection,
         }}
         columns={tableColumns}
-        dataSource={tableData1}
+        dataSource={failureData}
         pagination={{
           pageSize: 10,
           showQuickJumper: true,
@@ -260,15 +309,6 @@ const Demo = () => {
 };
 export default function SystemManageFailure() {
   const [tableData, setTableData] = useState([]);
-  const getLog = (data) => {
-    api
-      .GetLog(data)
-      .then((response) => {
-        setTableData(response.data.data);
-        console.log("response.data.data=", response.data.data);
-      })
-      .catch((error) => {});
-  };
   const getSearchLog = (data) => {
     console.log(data);
     api.SearchLog(data).then((response) => {
@@ -276,9 +316,6 @@ export default function SystemManageFailure() {
         setTableData(response.data.data);
       }).catch((error) => {});
   };
-  useEffect(() => {
-    getLog({});
-  }, []);
   return (
     <>
       <Demo></Demo>

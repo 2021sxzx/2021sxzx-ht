@@ -14,16 +14,29 @@
     width: 80%;
 }
 
-.textarea1 {
-    margin-bottom: 10px;
+.windowName {
     width: 30%;
     margin-right: 2%;
 }
 
-.textarea2 {
+.otherDatas {
+    width: 68%;
+}
+
+.oneRow {
+    display: flex;
+    text-align: left;
+    width: 100%;
     margin-bottom: 10px;
-    width: 63%;
+}
+
+.shortTextArea {
+    width: 95%;
     margin-right: 2%;
+}
+
+.longTextArea {
+    width: 100%;
 }
 
 .delete {
