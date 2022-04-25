@@ -21,6 +21,13 @@ const api ={
             url: "v1/delete-system-failure",
             data
         })
+    },
+    GetImage(data){
+        return service.request({
+            method: "get",
+            url:"v1/get-picture",
+            data
+        })
     }
 }
 

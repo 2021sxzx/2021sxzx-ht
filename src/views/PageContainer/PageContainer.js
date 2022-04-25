@@ -14,7 +14,7 @@ import ItemManage from './ItemManage/ItemManage.js'
 import ItemAudit from './ItemAudit/ItemAudit.js'
 import CommentManageList from './CommentManageList/CommentManageList.js'
 import CommentManageReport from './CommentManageReport/CommentManageReport.js'
-import SystemManageBasic from './SystemManage/SystemManageBasic/SystemManageBasic.js'
+import MetaData from './SystemManage/MetaData/MetaData.js'
 import SystemManageJournal
   from "./SystemManage/SystemManageJournal/SystemManageJournal.js";
 import SystemManageResource
@@ -23,7 +23,7 @@ import UserManageAccount
   from './UserManage/UserManageAccount/UserManageAccount'
 import UserManageRole from './UserManage/UserManageRole/UserManageRole'
 import SystemManageFailure from './SystemManage/SystemManageFailure/SystemManageFailure.js';
-import MetaData from './SystemManage/MetaData/MetaData.js'
+import SystemManageBasic from './SystemManage/SystemManageBasic/SystemManageBasic.js'
 import SystemManageBackup from './SystemManage/SystemManageBackup/SystemManageBackup.js'
 import NoPermission from './NoPermission/NoPermission.js'
 import DepartmentManagement from "./UserManage/departmentManagement/DepartmentManagement";
