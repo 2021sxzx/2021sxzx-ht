@@ -9,7 +9,7 @@ import {
   Button,
   Table,
   Checkbox,
-  Radio, Divider, Modal, Alert, Row, Col, Upload, message
+  Radio, Divider, Modal, Alert, Row, Col, Upload, message,Image
 } from "antd";
 const { TextArea } = Input;
 import { UploadOutlined } from "@ant-design/icons";
@@ -85,7 +85,8 @@ const tableData1=[
 //详情的弹窗Modal
 const HandleModal = (props) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  const [pictureList,setPictureList]=useState(props.record.failure_picture);
+  // console.log(pictureList);
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -97,7 +98,7 @@ const HandleModal = (props) => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-
+  // import img from "../../../../../../2021sxzx-server/upload/14549661650612887195.jpg";
   return (
     <>
       {/* <Button type="link" style={{color:"yellow",textDecoration:"underline"}}>详情</Button>
@@ -106,6 +107,14 @@ const HandleModal = (props) => {
       <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} okText="确定" cancelText="取消">
         <h2>故障名称：{props.record.failure_name}</h2>
         <p>故障描述：{props.record.failure_des}</p>
+        <Image.PreviewGroup>根据数据动态加图片缩略图
+          {
+            pictureList.map(item => {
+              // return (<><h6>{item.url}</h6><Image src={require().default}/></>)
+              return (<><h6>{item.url}</h6><Image src={"http://localhost:5001/api/v1/get-picture"+"?url="+item.url.replace(new RegExp("+",("gm")),"%2B")}/></>)
+            })
+          }
+        </Image.PreviewGroup>
         <h6>{props.record.failure_time}</h6>
         {/* <p>{props.record}</p> */}
       </Modal>
@@ -177,7 +186,9 @@ const SubmitFailure=(props)=>{
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm(); //用于之后取数据
   const formRef = React.createRef();
-const [failurePicture,setFailurePicture]=useState(null);
+  const [failurePicture,setFailurePicture]=useState([]);
+  // const [pictureList,setPictureList]=useState([]);
+  const [failure,setFailure]=useState({});
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -186,13 +197,22 @@ const [failurePicture,setFailurePicture]=useState(null);
     // console.log(form.getFieldsValue(true))
     // console.log(form.getFieldValue('failureName'));
     // setIsModalVisible(false);
-    let data=formRef.current?.getFieldsValue();
+    let data=form.getFieldsValue();
     data.user_name=localStorage.getItem('role_name');
     data.create_time=new Date();
-    if (failurePicture) {
+    data.fileSizeList=[];
+    setFailure(data);
+    console.log('failure')
+    console.log(failure)
+    // console.log('Success:', form.getFieldsValue());
+    if (failurePicture!=[]) {
       const FailurePictureFormData = new FormData();
-      FailurePictureFormData.append('file', failurePicture);
-      console.log('FailurePictureFormData.file:',FailurePictureFormData.get('file'))
+      failurePicture.forEach(file=>{
+        FailurePictureFormData.append('file', file);
+        data.fileSizeList.push(file.size)
+      })
+      // console.log('FailurePictureFormData.file:',FailurePictureFormData.get('file'))
+      // console.log('fileSizeList:',data.fileSizeList)
       fetch('http://localhost:5001/api/v1/system-failure-picture-upload', {
         method: 'POST',
         body: FailurePictureFormData,
@@ -201,21 +221,34 @@ const [failurePicture,setFailurePicture]=useState(null);
         //   "Content-Type": "multipart/form-data",
         // },
       })
-          .then(res => res.json())
+          .then(res => {console.log('res:::');res.json().then((res)=>{console.log(res);data.pictureList=res;api.CreateSystemFailure(data);
+          })})//上传图片接口返回的res信息，有需要就返回
           .then(() => {
-            //上传之后删除浏览器的图片
-            // setWebsiteLogoFile(null)
-            message.success('网站logo上传成功.');
+            //上传之后删除浏览器的图片，这里好像失败了没清除也没关闭弹窗
+            setFailurePicture([]);
+            form.resetFields();
+            // console.log("form.getFieldsValue()")
+            // console.log(form.getFieldsValue())
+            // console.log(formRef.current.resetFields())
+            // formRef.current.resetFields();
+            // FailurePictureFormData = new FormData();
+            setIsModalVisible(false);
+            message.success('提交故障成功.');
           })
-          .catch(() => {
-            message.error('网站logo上传失败.');
+          .catch((e) => {
+            console.log(e)
+            message.error('提交故障失败.');
           })
     }
-    await api.CreateSystemFailure(data);
-    console.log('Success:', formRef.current?.getFieldsValue());
+    // data.pictureList=pictureList
+    // console.log('setPictureList')
+    // data.test='Test'
+    // console.log('Finish:', formRef.current?.getFieldsValue());
   };
 
   const handleCancel = () => {
+    setFailurePicture([]);
+    form.resetFields();
     setIsModalVisible(false);
   };
 
@@ -235,22 +268,38 @@ const [failurePicture,setFailurePicture]=useState(null);
         okText="提交"
         cancelText="取消"
       >
-        <Form ref={formRef} name="createSystemFailure" onFinish={onFinish}>
+        <Form ref={formRef} form={form} name="createSystemFailure" onFinish={onFinish}>
           <Form.Item label="故障名称" name="failureName">
-            <Input placeholder="请输入名称" defaultValue="mysite"/>
+            <Input placeholder="请输入名称" />
           </Form.Item>
           <Form.Item label="故障描述" name="failureDescription">
-            <TextArea rows={4} showCount maxLength={100} defaultValue="mysite"/>
+            <TextArea rows={4} showCount maxLength={100}/>
           </Form.Item>
           <Form.Item label="故障截图" name="failurePicture">
             <Upload
               listType="picture"
               beforeUpload={(file)=>{
-                setFailurePicture(file)
+                console.log("--------")
                 console.log(failurePicture)
+                setFailurePicture([...failurePicture,file])
                 return false;
               }}
-              name="failurePicture">
+              onRemove={(file)=>{
+                console.log('remove')
+                // console.log(failurePicture)
+                const index = failurePicture.indexOf(file);
+                console.log(index)
+                const newFileList = failurePicture.slice();    
+                newFileList.splice(index, 1);
+                // failurePicture.slice(index, 1);
+                // console.log(newFileList)
+                // console.log(failurePicture)
+                setFailurePicture(newFileList)
+                console.log(failurePicture)
+              }}
+              fileList={failurePicture}
+              name="failurePicture"
+              maxCount={6}>
               <Button icon={<UploadOutlined />}>Upload</Button>
               {localStorage.getItem('_id')}
             </Upload>
@@ -307,15 +356,7 @@ const Demo = () => {
     </div>
   );
 };
-export default function SystemManageFailure() {
-  const [tableData, setTableData] = useState([]);
-  const getSearchLog = (data) => {
-    console.log(data);
-    api.SearchLog(data).then((response) => {
-        console.log("searchData=", response.data.data);
-        setTableData(response.data.data);
-      }).catch((error) => {});
-  };
+export default function SystemFailure() {
   return (
     <>
       <Demo></Demo>

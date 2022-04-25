@@ -14,7 +14,7 @@ import {
   Checkbox,
   Tooltip,
   Progress,
-  Row,Col,PageHeader,Slider,Card
+  Row,Col,PageHeader,Slider,Card,Divider
 } from "antd";
 import { getYMD, getTimeStamp } from "../../../../utils/TimeStamp";
 import api from "../../../../api/systemResource";
@@ -371,6 +371,12 @@ const Chart = (props) => {
   var company='';
   var proportion=(used/total);
   var showProportion=Math.floor(proportion * 10000) / 100;
+  if(props.id==='CPU'){
+    // console.log("proportion:"+proportion)
+    showProportion=props.used;
+    total=100;
+    proportion=(used/total);
+  }
   console.log("proportion:"+proportion)
   var color='';
   if(proportion<=0.2){
@@ -383,8 +389,8 @@ const Chart = (props) => {
     }
   }
   switch(props.id){
-    case "CPU":company="Ghz";break;
-    case "Users":company="";break;
+    case "CPU":company="%";break;
+    case "Users":company="人";break;
     case "ServerMemory":company="MB";break;
     default:company="GB";break;
   }
@@ -413,7 +419,7 @@ const Chart = (props) => {
       series: [
         //系列列表
         {
-          name: "内存占用", //系列名称
+          name: props.id+"占用", //系列名称
           type: "pie", //类型 pie表示饼图
           center: ["70%", "50%"], //设置饼的原心坐标 不设置就会默认在中心的位置
           radius: ["50%", "70%"], //饼图的半径,第一项是内半径,第二项是外半径,内半径为0就是真的饼,不是环形
@@ -482,7 +488,7 @@ function getPromise(a,b){
 }
 
 export default function SystemManageResource() {
-  const [test, setTest] = useState(false);
+  const [cpuPercentage, setCpuPercentage] = useState(false);
   const [memory, setMemory] = useState(false);
   const [disk, setDisk] = useState(false);
   // const [test, setTest] = useState(false);
@@ -494,7 +500,7 @@ export default function SystemManageResource() {
   // console.log("p:",test);
   const getCpuPercentage = () => {
     api.GetCpuPercentage().then(info=>{
-      setTest(info.data.data);
+      setCpuPercentage(info.data.data);
       console.log("cpuPercentage=", info.data.data)
     }).catch();
   };
@@ -529,10 +535,10 @@ export default function SystemManageResource() {
   }, []);
   return (
     <>
-      <div>
-        {/* <Memory></Memory> */}
-        {/* <StorageSpace></StorageSpace> */}
-        {/* <Bing></Bing> */}
+      {/* <Memory></Memory> */}
+      {/* <StorageSpace></StorageSpace> */}
+      {/* <Bing></Bing> */}
+      {/* <div>
         <PageHeader title="虚拟机"></PageHeader>
         <Space size={50}>
           {" "}
@@ -540,21 +546,31 @@ export default function SystemManageResource() {
           <Chart id="Memory" name="内存" used={0.4} total={16}></Chart>
           <Chart id="StorageSpace" name="存储空间" used={60} total={100}></Chart>
         </Space>
-      </div>
-      <div>
+      </div> */}
         <PageHeader title="服务器"></PageHeader>
-        <Space size={50}>
-          {" "}
-          <Chart id="Users" name="用户并发数" used={82} total={100}></Chart>
-          <Chart id="ServerMemory" name="内存" used={memory.usedMemMb} total={memory.totalMemMb}></Chart>
+          <Row>
+            <Col span={8} offset={3}>
+              <Chart id="CPU" name="CPU" used={cpuPercentage} total={2}></Chart>
+            </Col>
+            <Col span={8} offset={2}>
+              <Chart id="Users" name="用户并发数" used={82} total={100}></Chart>
+            </Col>
+          </Row>
+          <Divider></Divider>
+          <Row>
+          <Col span={8} offset={3}>
+              <Chart id="ServerMemory" name="内存" used={memory.usedMemMb} total={memory.totalMemMb}></Chart>
+            </Col>
+            <Col span={8} offset={2}>
+              <Chart id="ServerStorageSpace" name="存储空间" used={disk.used} total={disk.sum}></Chart>{" "}
+            </Col>
+          </Row>
           {/* <Chart id="ServerStorageSpace" name="存储空间" used={30} total={100}></Chart> */}
-          <Chart id="ServerStorageSpace" name="存储空间" used={disk.used} total={disk.sum}></Chart>
-        </Space>
-      </div>
-      <div>
+      {/* <div>
         <PageHeader title="报警阈值"></PageHeader>
         <Slider defaultValue={30} style={{width:"600px",strokeWidth:"40px"}}/>
-      </div>
+      </div> */}
+
       {/* <div>
         <Resource></Resource>
       </div> */}
