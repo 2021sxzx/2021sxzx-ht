@@ -22,7 +22,7 @@ export default function ItemManage(props) {
     const getRuleRoots = ()=>{
         // 获取规则树根节点，用来初始化规则创建
         api.GetRules({
-            parentId: ''
+            parentId: ['']
         }).then(response=>{
             let data = response.data.data
             if (data.length !== 1){
@@ -42,7 +42,7 @@ export default function ItemManage(props) {
     const getRegionRoots = ()=>{
         // 获取区划树根节点，用来初始化区划创建
         api.GetRegions({
-            parentId: ''
+            parentId: ['']
         }).then(response=>{
             let data = response.data.data
             if (data.length !== 1){
