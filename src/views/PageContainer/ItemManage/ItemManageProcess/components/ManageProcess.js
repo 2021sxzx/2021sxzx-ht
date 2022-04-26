@@ -207,7 +207,6 @@ export default function ManageProcess(props) {
             setTableData(items)
         }).catch(error=>{
             props.showError('获取事项失败！')
-            console.log(error)
             setTableLoading(false)
         })
     }
@@ -535,9 +534,9 @@ export default function ManageProcess(props) {
                         if (key == props.canOperate[i]){
                             type.push({
                                 label: scheme[key].cn_name,
-                                value: key
+                                value: parseInt(key)
                             })
-                            fullType.push(key)
+                            fullType.push(parseInt(key))
                         }
                     }  
                 }

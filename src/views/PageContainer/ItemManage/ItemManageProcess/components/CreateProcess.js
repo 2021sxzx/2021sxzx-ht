@@ -58,7 +58,7 @@ export default function CreateProcess(props){
     const chooseRuleApi = (tag)=>{
         // 点击某个节点
         api.GetRules({
-            parentId: tag.nodeId
+            parentId: [tag.nodeId]
         }).then(response=>{
             let data = response.data.data
             // 子节点处理
@@ -88,7 +88,7 @@ export default function CreateProcess(props){
 
     const chooseRegionApi = (tag)=>{
         api.GetRegions({
-            parentId: tag.nodeId
+            parentId: [tag.nodeId]
         }).then(response=>{
             let data = response.data.data
             // 子节点处理

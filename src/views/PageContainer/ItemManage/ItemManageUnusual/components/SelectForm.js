@@ -51,7 +51,7 @@ export default function SelectForm(props){
 
     const splitIds = (id)=>{
         let ids = []
-        let noEmpty = id.replace(/\s*/g, '')
+        let noEmpty = id.replace(/\s*/g, '').replace('，', ',')
         ids = noEmpty.split(',')
         return ids
     }
@@ -67,8 +67,8 @@ export default function SelectForm(props){
 
     const Search = ()=>{
         const data = {}
-        if (start_time !== '') data['start_time'] = start_time
-        if (end_time !== '') data['end_time'] = end_time
+        if (start_time !== '') data['create_start_time'] = start_time
+        if (end_time !== '') data['create_end_time'] = end_time
         if (task_code !== ''){
             let code = splitIds(task_code)
             data['task_code'] = code
