@@ -18,12 +18,12 @@ export default function DepartmentTable(props) {
         api.UpdateDepartment(data).then(response => {
             console.log('UpdateDepartment = ', response.data)
             message.success('修改部门信息成功')
+            // 刷新表格内容
+            props.refreshTableData()
         }).catch(error => {
             message.error('修改部门信息发生错误').then()
             console.log("UpdateDepartment error",error)
         })
-        // 刷新表格内容
-        setTimeout(props.refreshTableData,1000)
     }
 
     // 表格的属性/列名

@@ -41,13 +41,12 @@ export default function SelectForm(props) {
         }).then(response => {
             console.log('AddDepartment=', response.data)
             message.success('新增部门成功')
+            // 刷新表格内容
+            props.refreshTableData()
         }).catch(error => {
             message.error('新增部门出现错误')
             console.log("AddRole error", error)
         })
-
-        // 刷新表格数据
-        setTimeout(props.refreshTableData, 1000)
     }
 
     return (
