@@ -353,6 +353,11 @@ const Demo = () => {
                   // this.setState((state) => ({
                   //   fileList: [file],
                   // }));
+                  const isPNG = file.type === 'image/jpeg';
+                  if (!isPNG) {
+                    message.error(`${file.name}不是jpg格式`);
+                    return Upload.LIST_IGNORE
+                  }
                   setBackstageLogoFile(file);
                   console.log(BackstageLogoFile);
                   return false;

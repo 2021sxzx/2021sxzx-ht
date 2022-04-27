@@ -90,6 +90,9 @@ const HandleModal = (props) => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
+  useEffect(() => {
+    setPictureList(props.record.failure_picture)
+  },[props.record])
   // import img from "../../../../../../2021sxzx-server/upload/14549661650612887195.jpg";
   return (
     <>
@@ -116,7 +119,7 @@ const HandleModal = (props) => {
 };
 
 //删除操作
-const deleteFuncElem=(aimedRowData)=>{
+const deleteFuncElem=async (aimedRowData)=>{
   console.log("+++++++++++")
   console.log(aimedRowData);
   api.DeleteSystemFailure(aimedRowData).then(message.success('删除故障成功.'));
@@ -218,7 +221,7 @@ const SubmitFailure=(props)=>{
         // },
       })
           .then(res => {console.log('res:::');res.json().then((res)=>{
-            console.log(res);data.pictureList=res;api.CreateSystemFailure(data);props.getFailure()
+            console.log(res);data.pictureList=res;api.CreateSystemFailure(data).then(props.getFailure());
           })})//上传图片接口返回的res信息，有需要就返回
           .then(() => {
             //上传之后删除浏览器的图片，这里好像失败了没清除也没关闭弹窗
@@ -279,8 +282,13 @@ const SubmitFailure=(props)=>{
             <Upload
               listType="picture"
               beforeUpload={(file)=>{
-                console.log("--------")
+                console.log("--------",file.type)
                 console.log(failurePicture)
+                // const isPNG = file.type === 'image/png';
+                // if (!isPNG) {
+                //   message.error(`${file.name}不是jpg格式`);
+                //   return Upload.LIST_IGNORE
+                // }
                 setFailurePicture([...failurePicture,file])
                 return false;
               }}
@@ -352,7 +360,7 @@ const Demo = () => {
       dataIndex: "delete",
       render: (_,record) => (
         <Space size="middle">
-          <Button style={{border:"1px solid blue"}} onClick={()=>{deleteFuncElem(record);getFailure();
+          <Button style={{border:"1px solid blue"}} onClick={()=>{deleteFuncElem(record).then(getFailure());
 }}>删除</Button>
         </Space>)
     }
