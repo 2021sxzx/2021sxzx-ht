@@ -2,7 +2,7 @@ import ActivationStatusSwitch from "./ActivationStatusSwitch";
 import UserModal from "./UserModal";
 import api from "../../../../../api/user";
 import React from "react";
-import {message, Table} from "antd";
+import {Button, message, Space, Table} from "antd";
 
 /**
  * 后台账号管理的表格
@@ -20,13 +20,22 @@ export default function UserTable(props) {
             // log 服务端返回的搜索结果
             console.log('updateUserAndRefresh =', response.data)
             message.success('修改用户信息成功');
+            // 刷新表格内容
+            props.refreshTableData()
         }).catch(error => {
-            console.log("error = ",error)
+            console.log("error = ", error)
             message.error('修改用户信息发生错误');
+            // 刷新表格内容
+            props.refreshTableData()
         });
+    }
 
-        // 刷新表格内容
-        setTimeout(props.refreshTableData,1000)
+    const deleteUser = (data) => {
+        api.DeleteUser(data).then((() => {
+            message.success('删除用户成功')
+            // 刷新表格内容
+            props.refreshTableData()
+        }))
     }
 
     // 表格的属性/列名
@@ -69,8 +78,15 @@ export default function UserTable(props) {
             title: '操作',
             key: 'detail',
             render: (text, record) => (//修改用户信息按钮
-                <UserModal buttonText={'修改用户信息'} title={'修改用户信息'}
-                          detailData={record} saveInfoFunction={updateUserAndRefresh} accountReadOnly={false}/>
+                <Space>
+                    <UserModal buttonText={'修改用户信息'} title={'修改用户信息'}
+                               detailData={record} saveInfoFunction={updateUserAndRefresh} accountReadOnly={false}/>
+                    <Button disabled={record.activation_status !== 0}
+                        onClick={() => {
+                            deleteUser({account: record.account})
+                        }}
+                    >删除</Button>
+                </Space>
             ),
         },
     ]
