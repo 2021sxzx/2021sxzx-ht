@@ -1,9 +1,9 @@
 /**
  * 用户管理/角色管理页面
  */
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 
-import { Space, message } from 'antd';
+import {Space, message} from 'antd';
 
 import api from "../../../../api/department";
 import SelectForm from "./components/SelectForm";
@@ -16,6 +16,7 @@ export default function DepartmentManagement() {
     useEffect(() => {
         getDepartment()
     }, [])
+
     // 从服务器获取角色表格的数据，保存到 tableData 中
     const getDepartment = () => {
         api.GetDepartment().then(response => {
@@ -25,6 +26,7 @@ export default function DepartmentManagement() {
             console.log('GetDepartment error:', error)
         })
     }
+
     // 从服务器中获取搜索结果，保存到 tableData 中
     const getSearchDepartment = (data) => {
         // log 搜索值
@@ -42,11 +44,11 @@ export default function DepartmentManagement() {
 
     return (
         <div>
-            <Space direction="vertical" size={12} style={{width:100+'%'}}>
+            <Space direction="vertical" size={12} style={{width: 100 + '%'}}>
                 {/* 搜索 */}
-                <SelectForm getSearch={getSearchDepartment} refreshTableData={getDepartment} />
+                <SelectForm getSearch={getSearchDepartment} refreshTableData={getDepartment}/>
                 {/* 部门信息的表格 */}
-                <DepartmentTable tableData={tableData} refreshTableData={getDepartment} />
+                <DepartmentTable tableData={tableData} refreshTableData={getDepartment}/>
             </Space>
         </div>
     )

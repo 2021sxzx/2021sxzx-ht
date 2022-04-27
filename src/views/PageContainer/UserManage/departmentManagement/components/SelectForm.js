@@ -29,8 +29,7 @@ export default function SelectForm(props) {
         const data = {
             searchValue: searchValue
         }
-        // TODO(钟卓江）：这个 API 暂时有问题，会引起服务器崩溃，先注释掉
-        // props.getSearch(data)
+        props.getSearch(data)
     }
 
     const AddDepartmentAndRefresh = (data) => {
