@@ -58,11 +58,8 @@ export default function UserTable(props) {
         // TODO（钟卓江）：部门表的信息还没完善，API也欠缺
         {
             title: '部门',
-            // dataIndex: 'department',
-            key: 'department',
-            render: () => (
-                <>财务处</>
-            )
+            dataIndex: 'department_name',
+            key: 'department_name',
         },
 
         {
@@ -80,7 +77,9 @@ export default function UserTable(props) {
             render: (text, record) => (//修改用户信息按钮
                 <Space>
                     <UserModal buttonText={'修改用户信息'} title={'修改用户信息'}
-                               detailData={record} saveInfoFunction={updateUserAndRefresh} accountReadOnly={false}/>
+                               detailData={record}
+                               saveInfoFunction={updateUserAndRefresh}
+                               accountReadOnly={false}/>
                     <Button disabled={record.activation_status !== 0}
                         onClick={() => {
                             deleteUser({account: record.account})

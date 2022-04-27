@@ -28,7 +28,7 @@ export default function UserModal(props) {
     const [userName, setUserName] = useState(props.detailData.user_name);
     const [account, setAccount] = useState(props.detailData.account);
     const [roleName, setRoleName] = useState(props.detailData.role_name);
-    const [department, setDepartment] = useState(props.detailData.department);
+    const [department, setDepartment] = useState(props.detailData.department_name);
     const [password, setPassword] = useState(props.detailData.password);
 
     // 开关弹窗的时候自动刷新表单内容
@@ -182,8 +182,10 @@ export default function UserModal(props) {
                             },
                         ]}
                     >
-                        <Input defaultValue={props.detailData.password} placeholder={'请输入用户密码'}
-                               onChange={handleInputChangePassword} allowClear={true}/>
+                        <Input defaultValue={props.detailData.password}
+                               placeholder={'请输入用户密码'}
+                               onChange={handleInputChangePassword}
+                               allowClear={true}/>
                     </Form.Item>
 
                     <Form.Item
@@ -196,7 +198,8 @@ export default function UserModal(props) {
                             },
                         ]}
                     >
-                        <RoleMultiSelect defaultValue={props.detailData.role_name} placeholder={'请选择角色'}
+                        <RoleMultiSelect defaultValue={props.detailData.role_name}
+                                         placeholder={'请选择角色'}
                                          onChange={handleInputChangeRoleName}/>
                     </Form.Item>
 
@@ -211,7 +214,8 @@ export default function UserModal(props) {
                         ]}
                     >
                         {/* TODO（钟卓江）：等获取部门种类的 API 完成之后完善这里,还需要换成多选*/}
-                        <Input defaultValue={props.detailData.department} placeholder={'请选择部门' + '，这里应该是下拉列表'}
+                        <Input defaultValue={props.detailData.department_name}
+                               placeholder={'请选择部门' + '，这里应该是下拉列表'}
                                onChange={handleInputChangeDepartment} allowClear={true}/>
                     </Form.Item>
                 </Form>
