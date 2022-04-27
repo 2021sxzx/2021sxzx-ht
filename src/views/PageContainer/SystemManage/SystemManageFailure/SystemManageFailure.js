@@ -17,75 +17,67 @@ import api from "../../../../api/systemFailure";
 import emitter from "./ev"
 import FormItem from "antd/lib/form/FormItem";
 
-const   tableColumns = [
-  {
-    title: "故障名称",
-    dataIndex: "failure_name",
-    key: "failure_name",
-  },
-  {
-    title: "时间",
-    dataIndex: "failure_time",
-    key: "failure_time",
-  },
-  {
-    title: "操作描述",
-    dataIndex: "failure_des",
-    key: "failure_des",
-  },
-  {
-    title: "提交人",
-    key: "user_name",
-    dataIndex: "user_name",
-  },
-  {
-    // title:"详情",
-    key:"detail",
-    dataIndex: "detail",
-    render: (_,record,index) => (
-      <Space size="middle">
-      <HandleModal record={record}></HandleModal>
-      </Space>)
-  },{
-    key:"handle",
-    dataIndex: "handle",
-    render: (_,record,index) => (//参数分别为当前行的值，当前行数据，行索引
-      <>
-      <Space size="middle">
-        <Button style={{border:"1px solid blue"}} onClick={()=>{console.log(tableData1[index].content);tableData1[index].content='已处理'}}>
-        处理
-        </Button>
-      </Space>
-      {/* <HandleModal record={record}></HandleModal> */}
-    </>
-      )
-  },{
-    key:"delete",
-    dataIndex: "delete",
-    render: (_,record) => (
-      <Space size="middle">
-        <Button style={{border:"1px solid blue"}} onClick={()=>{deleteFuncElem(record)}}>删除</Button>
-      </Space>)
-  }
-];
-const tableData1=[
-  {key:1,failure_name:"闪退",create_time:"2017-01-01",content:"闪选",user_name:"zyk"}
-,  {key:2,failure_name:"重启",create_time:"2017-08-01",content:"dddd",user_name:"wlz"}
-,  {key:3,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
-,  {key:4,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
-,  {key:5,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
-,  {key:6,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
-,  {key:7,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
-,  {key:8,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
-,  {key:9,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
-,  {key:10,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
-,  {key:11,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
-,  {key:12,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
-]
+// const   tableColumns = [
+//   {
+//     title: "故障名称",
+//     dataIndex: "failure_name",
+//     key: "failure_name",
+//   },
+//   {
+//     title: "时间",
+//     dataIndex: "failure_time",
+//     key: "failure_time",
+//   },
+//   {
+//     title: "操作描述",
+//     dataIndex: "failure_des",
+//     key: "failure_des",
+//   },
+//   {
+//     title: "提交人",
+//     key: "user_name",
+//     dataIndex: "user_name",
+//   },
+//   {
+//     // title:"详情",
+//     key:"detail",
+//     dataIndex: "detail",
+//     render: (_,record,index) => (
+//       <Space size="middle">
+//       <HandleModal record={record}></HandleModal>
+//       </Space>)
+//   },
+//   // {
+//   //   key:"handle",
+//   //   dataIndex: "handle",
+//   //   render: (_,record,index) => (//参数分别为当前行的值，当前行数据，行索引
+//   //     <>
+//   //     <Space size="middle">
+//   //       <Button style={{border:"1px solid blue"}} onClick={()=>{console.log(tableData1[index].content);tableData1[index].content='已处理'}}>
+//   //       处理
+//   //       </Button>
+//   //     </Space>
+//   //     {/* <HandleModal record={record}></HandleModal> */}
+//   //   </>
+//   //     )
+//   // },
+//   {
+//     key:"delete",
+//     dataIndex: "delete",
+//     render: (_,record) => (
+//       <Space size="middle">
+//         <Button style={{border:"1px solid blue"}} onClick={()=>{deleteFuncElem(record);console.log(failureData)}}>删除</Button>
+//       </Space>)
+//   }
+// ];
+
+// var fresh=true;//用来检测是否刷新
+
 //详情的弹窗Modal
 const HandleModal = (props) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [pictureList,setPictureList]=useState(props.record.failure_picture);
+  const [failureData, setFailureData] = useState([]);
   // console.log(pictureList);
   const showModal = () => {
     setIsModalVisible(true);
@@ -107,11 +99,12 @@ const HandleModal = (props) => {
       <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} okText="确定" cancelText="取消">
         <h2>故障名称：{props.record.failure_name}</h2>
         <p>故障描述：{props.record.failure_des}</p>
-        <Image.PreviewGroup>根据数据动态加图片缩略图
+        <Image.PreviewGroup>
           {
             pictureList.map(item => {
+              // return (<><h6>{item.url}</h6></>)
               // return (<><h6>{item.url}</h6><Image src={require().default}/></>)
-              return (<><h6>{item.url}</h6><Image src={"http://localhost:5001/api/v1/get-picture"+"?url="+item.url.replace(new RegExp("+",("gm")),"%2B")}/></>)
+              return (<><h6>{item.url}</h6><Image src={"http://localhost:5001/api/v1/get-picture"+"?url="+item.url}/></>)
             })
           }
         </Image.PreviewGroup>
@@ -124,20 +117,21 @@ const HandleModal = (props) => {
 
 //删除操作
 const deleteFuncElem=(aimedRowData)=>{
+  console.log("+++++++++++")
   console.log(aimedRowData);
-  api.DeleteSystemFailure(aimedRowData);
-  const totalFuncDataList = tableData1;
+  api.DeleteSystemFailure(aimedRowData).then(message.success('删除故障成功.'));
+  // const totalFuncDataList = tableData1;
   // console.log(totalFuncDataList);
-  let i;
-  let indexOfFuncList;
-  for(i = 0; i <totalFuncDataList.length;i++) {
-    if(aimedRowData.index=== totalFuncDataList[i].index) {
-      break;
-    }
-  }
+  // let i;
+  // let indexOfFuncList;
+  // for(i = 0; i <totalFuncDataList.length;i++) {
+  //   if(aimedRowData.index=== totalFuncDataList[i].index) {
+  //     break;
+  //   }
+  // }
   // console.log(totalFuncDataList[i]);
-  totalFuncDataList.splice(i+1,1);
-  console.log(totalFuncDataList);
+  // totalFuncDataList.splice(i+1,1);
+  // console.log(totalFuncDataList);
   // this.setState({
   //   data:totalFuncDataList
   // });
@@ -201,9 +195,11 @@ const SubmitFailure=(props)=>{
     data.user_name=localStorage.getItem('role_name');
     data.create_time=new Date();
     data.fileSizeList=[];
-    setFailure(data);
-    console.log('failure')
-    console.log(failure)
+    // props.setFresh(!props.fresh)
+    // console.log('fresh:',props.fresh)
+    // setFailure(data);
+    // console.log('failure')
+    // console.log(failure)
     // console.log('Success:', form.getFieldsValue());
     if (failurePicture!=[]) {
       const FailurePictureFormData = new FormData();
@@ -221,7 +217,8 @@ const SubmitFailure=(props)=>{
         //   "Content-Type": "multipart/form-data",
         // },
       })
-          .then(res => {console.log('res:::');res.json().then((res)=>{console.log(res);data.pictureList=res;api.CreateSystemFailure(data);
+          .then(res => {console.log('res:::');res.json().then((res)=>{
+            console.log(res);data.pictureList=res;api.CreateSystemFailure(data);props.getFailure()
           })})//上传图片接口返回的res信息，有需要就返回
           .then(() => {
             //上传之后删除浏览器的图片，这里好像失败了没清除也没关闭弹窗
@@ -233,8 +230,11 @@ const SubmitFailure=(props)=>{
             // formRef.current.resetFields();
             // FailurePictureFormData = new FormData();
             setIsModalVisible(false);
+            // console.log('first')
+            // props.getFailure();
             message.success('提交故障成功.');
           })
+          // .then(() => {console.log('second');props.getFailure()})
           .catch((e) => {
             console.log(e)
             message.error('提交故障失败.');
@@ -316,6 +316,47 @@ const SubmitFailure=(props)=>{
 const Demo = () => {
   const [selectionType, setSelectionType] = useState('checkbox');
   const [failureData, setFailureData] = useState([]);
+  const [fresh, setFresh] = useState(true);
+  const   tableColumns = [
+    {
+      title: "故障名称",
+      dataIndex: "failure_name",
+      key: "failure_name",
+    },
+    {
+      title: "时间",
+      dataIndex: "failure_time",
+      key: "failure_time",
+    },
+    {
+      title: "操作描述",
+      dataIndex: "failure_des",
+      key: "failure_des",
+    },
+    {
+      title: "提交人",
+      key: "user_name",
+      dataIndex: "user_name",
+    },
+    {
+      // title:"详情",
+      key:"detail",
+      dataIndex: "detail",
+      render: (_,record,index) => (
+        <Space size="middle">
+        <HandleModal record={record}></HandleModal>
+        </Space>)
+    },
+    {
+      key:"delete",
+      dataIndex: "delete",
+      render: (_,record) => (
+        <Space size="middle">
+          <Button style={{border:"1px solid blue"}} onClick={()=>{deleteFuncElem(record);getFailure();
+}}>删除</Button>
+        </Space>)
+    }
+  ];
   const getFailure = () => {
     api
         .GetSystemFailure()
@@ -335,15 +376,15 @@ const Demo = () => {
           <AlertBox></AlertBox>
         </Col>
         <Col span={2.5} offset={1}>
-          <SubmitFailure></SubmitFailure>
+          <SubmitFailure fresh={fresh} setFresh={setFresh} getFailure={getFailure} ></SubmitFailure>
         </Col>
       </Row>
       <Divider />
       <Table
-        rowSelection={{
-          type: selectionType,
-          ...rowSelection,
-        }}
+        // rowSelection={{全选框
+        //   type: selectionType,
+        //   ...rowSelection,
+        // }}
         columns={tableColumns}
         dataSource={failureData}
         pagination={{
@@ -352,6 +393,8 @@ const Demo = () => {
           pageSizeOptions: [10, 20, 50],
           showSizeChanger: true,
         }} //,position:['bottomLeft']
+        fresh={fresh} 
+        setFresh={setFresh}
       />
     </div>
   );
