@@ -7,6 +7,7 @@ import RoleMultiSelect from "./RoleMultiSelect";
  * @param props = {
  *     buttonText:String, // 按钮文字
  *     buttonType:String, // 按钮类型，如"primary"
+ *     disable:Boolean, // 设置弹窗触发的按钮能否被使用，默认 false
  *     title:String, // 标题
  *     detailData:{ // 默认表单内容
  *         user_name: userName,
@@ -75,12 +76,8 @@ export default function UserModal(props) {
             role_name: roleName,
             account: props.detailData.account ? props.detailData.account : account,// 如果初始值为 ‘’ 说明是创建用户，否则为修改用户
             new_account: account,
-            // department: department, //TODO：等后台的部门 API 做好之后再来修改
+            department_name: department,
         })
-
-        // Cookie.setCookie('roleName', roleName);
-        localStorage.removeItem('role_name');
-        localStorage.setItem('role_name', roleName)
     };
 
     // Cancel按钮的触发函数，关闭详情弹窗
@@ -110,7 +107,7 @@ export default function UserModal(props) {
             <Button
                 type={props.buttonType}
                 onClick={showModal}
-                disabled={!(props.detailData._id === localStorage.getItem('_id')) && props.detailData.role_name === localStorage.getItem('role_name')}
+                disabled={props.disable}
             >
                 {props.buttonText}
             </Button>
@@ -205,7 +202,7 @@ export default function UserModal(props) {
 
                     <Form.Item
                         label="部门"
-                        name="department"
+                        name="department_name"
                         rules={[
                             {
                                 required: true,

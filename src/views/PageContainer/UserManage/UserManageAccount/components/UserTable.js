@@ -38,6 +38,11 @@ export default function UserTable(props) {
         }))
     }
 
+    // 设置用户不能修改其他同名角色的非自己的账号信息
+    const disableModal = (record) => {
+        return record._id !== localStorage.getItem('_id') && record.role_name === localStorage.getItem('role_name')
+    }
+
     // 表格的属性/列名
     const tableColumns = [//  修改dataIndex和key，以便和服务器进行数据对接
         {
@@ -55,7 +60,7 @@ export default function UserTable(props) {
             dataIndex: 'role_name',
             key: 'role_name',
         },
-        // TODO（钟卓江）：部门表的信息还没完善，API也欠缺
+
         {
             title: '部门',
             dataIndex: 'department_name',
@@ -76,14 +81,16 @@ export default function UserTable(props) {
             key: 'detail',
             render: (text, record) => (//修改用户信息按钮
                 <Space>
-                    <UserModal buttonText={'修改用户信息'} title={'修改用户信息'}
+                    <UserModal buttonText={'修改用户信息'}
+                               title={'修改用户信息'}
+                               disable={disableModal(record)}
                                detailData={record}
                                saveInfoFunction={updateUserAndRefresh}
                                accountReadOnly={false}/>
                     <Button disabled={record.activation_status !== 0}
-                        onClick={() => {
-                            deleteUser({account: record.account})
-                        }}
+                            onClick={() => {
+                                deleteUser({account: record.account})
+                            }}
                     >删除</Button>
                 </Space>
             ),
