@@ -102,7 +102,7 @@ export default function CreateRule(props){
         let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
         // 点击某个节点
         api.GetRules({
-            parentId: tag.nodeId
+            parentId: [tag.nodeId]
         }).then(response=>{
             let data = response.data.data
             // 子节点处理
@@ -136,7 +136,7 @@ export default function CreateRule(props){
         let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
         // 点击回归某个节点
         api.GetRules({
-            parentId: tag.nodeId
+            parentId: [tag.nodeId]
         }).then(response=>{
             let data = response.data.data
             // 子节点处理

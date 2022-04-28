@@ -93,7 +93,7 @@ export default function CreateRegion(props){
         let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
         // 点击某个节点
         api.GetRegions({
-            parentId: tag.nodeId
+            parentId: [tag.nodeId]
         }).then(response=>{
             let data = response.data.data
             // 子节点处理
@@ -127,7 +127,7 @@ export default function CreateRegion(props){
         let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
         // 点击回归某个节点
         api.GetRegions({
-            parentId: tag.nodeId
+            parentId: [tag.nodeId]
         }).then(response=>{
             let data = response.data.data
             // 子节点处理
@@ -180,6 +180,18 @@ export default function CreateRegion(props){
         props.setPageType(1)
     }
 
+    const inj_judge = (str)=>{
+        // 输入检测
+        let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
+            'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
+        for (let i = 0; i < inj_str.length; i++){
+            if (str.indexOf(inj_str[i]) >= 0){
+                return true
+            }
+        }
+        return false
+    }
+
     const handleCreate = ()=>{
         // 点击创建按钮
         if (taskCode === '' || nodeName === ''){
@@ -188,11 +200,17 @@ export default function CreateRegion(props){
                 title: '信息不全',
                 content: '请将区划编码和区划名称填写完毕后再进行创建！'
             })
-            return
+        }
+        else if (inj_judge(taskCode) || inj_judge(nodeName)){
+            Modal.warning({
+                centered: true,
+                title: '非法输入',
+                content: '输入信息中有非法输入内容，请检查输入！'
+            })
         }
         else{
             api.GetRegions({
-                region_code: taskCode
+                region_code: [taskCode]
             }).then(response=>{
                 if (response.data.data.length === 0){
                     // 若非已有区划编码，则确认创建
@@ -219,6 +237,13 @@ export default function CreateRegion(props){
             })
             return
         }
+        else if (inj_judge(taskCode) || inj_judge(nodeName)){
+            Modal.warning({
+                centered: true,
+                title: '非法输入',
+                content: '输入信息中有非法输入内容，请检查输入！'
+            })
+        }
         else{
             if (taskCode === props.updatePath[props.updatePath.length - 1].nodeCode){
                 // 若区划编码没有变更，则直接确认更改
@@ -227,7 +252,7 @@ export default function CreateRegion(props){
             else{
                 // 否则需要查询是否已有该编码
                 api.GetRegions({
-                    region_code: taskCode
+                    region_code: [taskCode]
                 }).then(response=>{
                     if (response.data.data.length === 0){
                         // 若非已有区划编码，则确认修改

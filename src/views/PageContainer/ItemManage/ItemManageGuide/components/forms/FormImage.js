@@ -24,10 +24,20 @@ export default function FormImage(props){
             })
             return
         }
-        getBase64(e.target.files[0], imageUrl=>{
-            setData(imageUrl)
-            props.setData(imageUrl)
-        })
+        else if (e.target.files[0].size >= (2 * 1024 * 1024)){
+            Modal.warning({
+                title: '图片过大',
+                content: '上传的图片大小不能超过2M！',
+                centered: true
+            })
+            return
+        }
+        else{
+            getBase64(e.target.files[0], imageUrl=>{
+                setData(imageUrl)
+                props.setData(imageUrl)
+            })
+        } 
     }
 
     return(

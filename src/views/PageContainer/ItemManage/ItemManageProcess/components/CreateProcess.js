@@ -119,7 +119,7 @@ export default function CreateProcess(props){
 
     const getBackRuleApi = (index)=>{
         api.GetRules({
-            parentId: chosenRules[index].nodeId
+            parentId: [chosenRules[index].nodeId]
         }).then(response=>{
             let data = response.data.data
             // 子节点处理
@@ -148,7 +148,7 @@ export default function CreateProcess(props){
 
     const getBackRegionApi = (index)=>{
         api.GetRegions({
-            parentId: chosenRegions[index].nodeId
+            parentId: [chosenRegions[index].nodeId]
         }).then(response=>{
             let data = response.data.data
             // 子节点处理
@@ -223,8 +223,8 @@ export default function CreateProcess(props){
             return
         }
         api.GetItems({
-            rule_id: chosenRules[chosenRules.length - 1].nodeId,
-            region_id: chosenRegions[chosenRegions.length - 1].nodeId
+            rule_id: [chosenRules[chosenRules.length - 1].nodeId],
+            region_id: [chosenRegions[chosenRegions.length - 1].nodeId]
         }).then(response=>{
             let rules = response.data.data
             if (rules.length !== 0){

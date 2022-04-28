@@ -41,6 +41,13 @@ export default function CreateAudit(props) {
             })
             return
         }
+        else if (inj_judge(comment)){
+            Modal.warning({
+                centered: true,
+                title: '非法输入',
+                content: '输入信息中有非法输入内容，请检查输入！'
+            })
+        }
         else{
             Modal.confirm({
                 title: '确认审核',
@@ -62,6 +69,13 @@ export default function CreateAudit(props) {
                 centered: true
             })
             return
+        }
+        else if (inj_judge(comment)){
+            Modal.warning({
+                centered: true,
+                title: '非法输入',
+                content: '输入信息中有非法输入内容，请检查输入！'
+            })
         }
         else{
             Modal.confirm({
@@ -89,6 +103,17 @@ export default function CreateAudit(props) {
         }).catch(error=>{
             props.showError('变更状态失败！')
         })
+    }
+
+    const inj_judge = (str)=>{
+        let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
+            'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
+        for (let i = 0; i < inj_str.length; i++){
+            if (str.indexOf(inj_str[i]) >= 0){
+                return true
+            }
+        }
+        return false
     }
 
     const addAuditAdvise = (choice)=>{

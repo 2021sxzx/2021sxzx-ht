@@ -99,6 +99,7 @@ const SelectForm = (props) => {
 			type,
 			typeData
 		}
+		props.getParam(data)
 		props.getSearch(data)
 	}
 	const handleDateChange = (value, dateString) => {
@@ -208,13 +209,23 @@ const DetailModal = (props) => {
 export default function CommentManageList() {
 	// 用 [] 初始化 useState，第一项（tableData）用于保存状态值（表格数据），第二项（setTableData）用于保存更新状态的函数，
 	const [tableData, setTableData] = useState([])
+	const [loading,setLoading]=useState(false)
+	const [page, setPage] = useState({
+		current: 1,
+		pageSize: 10,
+		total: 100
+	})
 	// 从服务器获取评论表格的数据，保存到 tableData 中
+	const [searchParam,setSearchParam]=useState({})
 	const getComment = (data) => {
+		setLoading(true)
 		api
 			.GetComment(data)
 			.then((response) => {
 				setTableData(response.data.data)
+				setLoading(false)
 				console.log('response.data.data=', response.data.data)
+
 			})
 			.catch((error) => {
 				// catch
@@ -233,17 +244,26 @@ export default function CommentManageList() {
 				// catch
 			})
 	}
+	const handlePageChange=(pagination, filters, sorter)=>{
+
+		setPage(pagination)
+		getComment({
+			pageNum:pagination
+		})
+	}
 	// 获取所有评论表格的数据，组件每渲染一次，该函数就自动执行一次。
 	useEffect(() => {
-		getComment({})
+		getComment({
+			pageNum: 1
+		})
 	}, [])
 	return (
 		<div>
 			<Space direction='vertical' size={12}>
 				{/* 搜索 */}
-				<SelectForm getSearch={getSearchComment}></SelectForm>
+				<SelectForm getSearch={getSearchComment} getParam={setSearchParam}></SelectForm>
 				{/* 用户评价的表格 */}
-				<Table columns={tableColumns} dataSource={tableData} />
+				<Table columns={tableColumns} dataSource={tableData} pagination={page} loading={loading} showSizeChanger={false} onChange={handlePageChange}/>
 			</Space>
 			,
 		</div>
