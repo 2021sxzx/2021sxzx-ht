@@ -14,26 +14,37 @@ import RoleModal from "./RoleModal";
  */
 export default function RoleTable(props) {
     const UpdateRoleInfoAndRefresh = (data) => {
+        // 用于判断所有信息是否都完成更新
+        let canRefresh = false
+
+        // 自动决定是否刷新表格
+        const autoRefresh = () => {
+            if (canRefresh) {
+                message.success('修改角色信息成功')
+                // 刷新表格
+                props.refreshTableData()
+            } else {
+                canRefresh = true
+            }
+        }
+
         // 更新非权限相关的信息
         api.UpdateRole(data).then(response => {
             console.log('UpdateRole = ', response.data)
+            autoRefresh()
         }).catch(error => {
-            message.error('修改角色信息发生错误').then()
-            console.log("UpdateRole error",error)
+            message.error('修改角色信息发生错误')
+            console.log("UpdateRole error", error)
         })
 
         // 更新权限相关的信息
         api.UpdateRolePermission(data).then(response => {
             console.log('UpdatePermission = ', response.data)
+            autoRefresh()
         }).catch(error => {
-            message.error('修改角色信息发生错误').then()
-            console.log("UpdateRolePermission error",error)
+            message.error('修改角色信息发生错误')
+            console.log("UpdateRolePermission error", error)
         })
-
-        message.success('修改角色信息成功')
-
-        // 刷新表格内容
-        setTimeout(props.refreshTableData,1000)
     }
 
     // 表格的属性/列名
@@ -79,6 +90,7 @@ export default function RoleTable(props) {
     ]
 
     return (
-        <Table columns={tableColumns} dataSource={props.tableData !== {} ? props.tableData : {}} rowKey={record=>record.role_name}/>
+        <Table columns={tableColumns} dataSource={props.tableData !== {} ? props.tableData : {}}
+               rowKey={record => record.role_name}/>
     )
 }

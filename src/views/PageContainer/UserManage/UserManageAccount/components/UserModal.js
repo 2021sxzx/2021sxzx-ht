@@ -1,7 +1,6 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Form, Input, Modal} from "antd";
 import RoleMultiSelect from "./RoleMultiSelect";
-import Cookie from "../../../../../utils/Cookie";
 
 /**
  * 用户管理相关的弹窗
@@ -29,8 +28,18 @@ export default function UserModal(props) {
     const [userName, setUserName] = useState(props.detailData.user_name);
     const [account, setAccount] = useState(props.detailData.account);
     const [roleName, setRoleName] = useState(props.detailData.role_name);
-    const [department, setDepartment] = useState(props.detailData.department);
+    const [department, setDepartment] = useState(props.detailData.department_name);
     const [password, setPassword] = useState(props.detailData.password);
+
+    // 开关弹窗的时候自动刷新表单内容
+    useEffect(() => {
+        if(isModalVisible){
+            const formDom = document.getElementById(props.detailData.account)
+            if (formDom) {
+                formDom.reset()
+            }
+        }
+    }, [isModalVisible])
 
     //表单提交的成功、失败反馈
     const onFinish = (values) => {
@@ -44,11 +53,11 @@ export default function UserModal(props) {
     // 查看详情按钮的触发函数，展示详情弹窗
     const showModal = () => {
         const {
-          user_name,
-          account,
-          role_name,
-          department,
-          password
+            user_name,
+            account,
+            role_name,
+            department,
+            password
         } = props.detailData;
         setIsModalVisible(true);
         setUserName(user_name);
@@ -64,8 +73,8 @@ export default function UserModal(props) {
             user_name: userName,
             password: password,
             role_name: roleName,
-            account: props.detailData.account?props.detailData.account:account,// 如果初始值为 ‘’ 说明是创建用户，否则为修改用户
-            new_account:account,
+            account: props.detailData.account ? props.detailData.account : account,// 如果初始值为 ‘’ 说明是创建用户，否则为修改用户
+            new_account: account,
             // department: department, //TODO：等后台的部门 API 做好之后再来修改
         })
 
@@ -98,8 +107,8 @@ export default function UserModal(props) {
 
     return (
         <>
-            <Button 
-                type={props.buttonType} 
+            <Button
+                type={props.buttonType}
                 onClick={showModal}
                 disabled={!(props.detailData._id === localStorage.getItem('_id')) && props.detailData.role_name === localStorage.getItem('role_name')}
             >
@@ -117,6 +126,7 @@ export default function UserModal(props) {
                    ]}
             >
                 <Form
+                    id={props.detailData.account}
                     name="basic"
                     labelCol={{
                         span: 8,
@@ -142,8 +152,8 @@ export default function UserModal(props) {
                         ]}
                     >
                         {props.accountReadOnly ?
-                            <div>account</div> :
-                            <Input defaultValue={account} placeholder={'请输入用户账号（手机号码）'}
+                            <div>{props.detailData.account}</div> :
+                            <Input defaultValue={props.detailData.account} placeholder={'请输入用户账号（手机号码）'}
                                    onChange={handleInputChangeAccount} allowClear={true}/>}
 
                     </Form.Item>
@@ -158,7 +168,7 @@ export default function UserModal(props) {
                             },
                         ]}
                     >
-                        <Input placeholder={'请输入用户名'} defaultValue={userName}
+                        <Input defaultValue={props.detailData.user_name} placeholder={'请输入用户名'}
                                onChange={handleInputChangeUserName} allowClear={true}/>
                     </Form.Item>
 
@@ -172,8 +182,10 @@ export default function UserModal(props) {
                             },
                         ]}
                     >
-                        <Input defaultValue={password} placeholder={'请输入用户密码'}
-                               onChange={handleInputChangePassword} allowClear={true}/>
+                        <Input defaultValue={props.detailData.password}
+                               placeholder={'请输入用户密码'}
+                               onChange={handleInputChangePassword}
+                               allowClear={true}/>
                     </Form.Item>
 
                     <Form.Item
@@ -186,7 +198,9 @@ export default function UserModal(props) {
                             },
                         ]}
                     >
-                        <RoleMultiSelect defaultValue={roleName} placeholder={'请选择角色'} onChange={handleInputChangeRoleName}/>
+                        <RoleMultiSelect defaultValue={props.detailData.role_name}
+                                         placeholder={'请选择角色'}
+                                         onChange={handleInputChangeRoleName}/>
                     </Form.Item>
 
                     <Form.Item
@@ -200,7 +214,8 @@ export default function UserModal(props) {
                         ]}
                     >
                         {/* TODO（钟卓江）：等获取部门种类的 API 完成之后完善这里,还需要换成多选*/}
-                        <Input defaultValue={department} placeholder={'请选择部门' + '，这里应该是下拉列表'}
+                        <Input defaultValue={props.detailData.department_name}
+                               placeholder={'请选择部门' + '，这里应该是下拉列表'}
                                onChange={handleInputChangeDepartment} allowClear={true}/>
                     </Form.Item>
                 </Form>

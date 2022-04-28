@@ -66,8 +66,8 @@ const api = {
     SearchDepartment(data) {
         return service.request({
             method: "get",
-            url: "/v1/searchDepartment",
-            data, //data:data同名可以直接写 data
+            url: "/v1/searchDepartment?searchValue="+data.searchValue,
+            // data, //data:data同名可以直接写 data
         });
     },
 
