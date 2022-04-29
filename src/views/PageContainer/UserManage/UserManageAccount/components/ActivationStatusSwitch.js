@@ -42,9 +42,9 @@ export default function ActivationStatusSwitch (props){
         })
     }
 
-    if (activationStatus === 0 || activationStatus === 1) {
+    if (activationStatus == 0 || activationStatus == 1) {
         // console.log("roleName === Cookie.getCookie('roleName')", roleName === Cookie.getCookie('roleName'), roleName)
-        console.log('role_name', localStorage.getItem('role_name'))
+        // console.log('role_name', localStorage.getItem('role_name'))
         return <Switch
             disabled={record._id === localStorage.getItem('_id') || roleName === localStorage.getItem('role_name')}
             checkedChildren={"已激活"}
@@ -53,6 +53,7 @@ export default function ActivationStatusSwitch (props){
             onChange={handleSwitchChangeActivationState}
         />
     } else {
+      console.log(activationStatus)
         return <div>error status</div>
     }
 }

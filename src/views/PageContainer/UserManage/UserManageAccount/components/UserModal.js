@@ -79,9 +79,9 @@ export default function UserModal(props) {
         })
 
         // Cookie.setCookie('roleName', roleName);
-        localStorage.removeItem('role_name');
-        localStorage.setItem('role_name', roleName)
-    };
+        // localStorage.removeItem('role_name');
+        // localStorage.setItem('role_name', roleName)
+    };  
 
     // Cancel按钮的触发函数，关闭详情弹窗
     const handleCancel = () => {
