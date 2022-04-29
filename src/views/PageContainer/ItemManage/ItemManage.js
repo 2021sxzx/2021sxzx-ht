@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import api from '../../../api/rule';
-//import { Route, Switch } from 'react-router'
+import { Modal } from 'antd'
 import { HashRouter as Router, Route, Link, Switch, useRouteMatch, useParams } from 'react-router-dom'
 import ItemManageRule from './ItemManageRule/ItemManageRule'
 import ItemManageRegion from './ItemManageRegion/ItemManageRegion'
@@ -18,7 +18,15 @@ export default function ItemManage(props) {
     const [regionRoot, setRegionRoot] = useState({})
     // 处理需要展示的绑定信息，一般是已绑定的规则或区划id
     const [bindedData, setBindedData] = useState({})
+    const [jumpCode, setJumpCode] = useState(props.location.task_code)
 
+    const showError = (str)=>{
+        Modal.warning({
+            title: '初始化失败',
+            content: str,
+            centered: true
+        })
+    }
     const getRuleRoots = ()=>{
         // 获取规则树根节点，用来初始化规则创建
         api.GetRules({
@@ -26,7 +34,7 @@ export default function ItemManage(props) {
         }).then(response=>{
             let data = response.data.data
             if (data.length !== 1){
-                console.log('规则树根节点不唯一')
+                showError('规则树根节点不唯一')
                 return
             }
             else{
@@ -46,7 +54,7 @@ export default function ItemManage(props) {
         }).then(response=>{
             let data = response.data.data
             if (data.length !== 1){
-                console.log('区划树根节点不唯一')
+                showError('区划树根节点不唯一')
                 return
             }
             else{
@@ -88,8 +96,8 @@ export default function ItemManage(props) {
         <div>
             <Switch>
                 <Route path={`${path}/process`} 
-                    render={()=>(<ItemManageProcess userId={userId} 
-                        bindedData={bindedData} setBindedData={setBindedData}
+                    render={()=>(<ItemManageProcess userId={userId} jumpCode={jumpCode}
+                        bindedData={bindedData} setBindedData={setBindedData} setJumpCode={setJumpCode}
                         regionRoot={regionRoot} ruleRoot={ruleRoot}/>)}/>
 
                 <Route path={`${path}/guide`} 
