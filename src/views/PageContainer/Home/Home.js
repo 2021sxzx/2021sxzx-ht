@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import { Link } from 'react-router-dom'
-import { Button, Tabs, List, Typography } from 'antd'
+import { Button, Tabs, List } from 'antd'
 import api from '../../../api/rule'
 import style from './Home.module.scss'
 import VirtualList from 'rc-virtual-list'
@@ -40,6 +39,10 @@ export default function Home(props) {
         props.history.push({pathname: '/item-manage/process', task_code: item})
     }
 
+    const jumpToGuides = ()=>{
+        props.history.push({pathname: '/item-manage/guide'})
+    }
+
     useEffect(function(){
        getCheckResult()
        getEveryItemStatusCount() 
@@ -58,15 +61,18 @@ export default function Home(props) {
                                         data={item.guides}
                                     >
                                         {
-                                            item=>(
+                                            code=>(
                                                 <List.Item className={style.listItem}>
                                                     <div>
                                                         {'    指南编码：'}
                                                     </div>
                                                     <div className={style.jumpCode} onClick={function(){
-                                                        jumpToProcess(item)
+                                                        if (item.type === '省政务新增'){
+                                                            jumpToGuides()
+                                                        }
+                                                        else jumpToProcess(code)
                                                     }}>
-                                                        {item}
+                                                        {code}
                                                     </div>
                                                 </List.Item>
                                             )

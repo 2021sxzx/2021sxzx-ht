@@ -1,15 +1,14 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import style from './CreateGuide.module.scss'
-import { Steps, Space, message, Form, Input, Button, Table, Modal,Descriptions, Badge  } from 'antd';
-import api from '../../../../../api/rule';
-import FormArea from './forms/FormArea.js';
-import FormListPlus from './forms/FormListPlus.js';
+import { Steps, Space, Button, Modal } from 'antd'
+import api from '../../../../../api/rule'
+import FormArea from './forms/FormArea.js'
+import FormListPlus from './forms/FormListPlus.js'
 import FormTime from './forms/FormTime.js'
 import FormList from './forms/FormList.js'
-import FormImage from './forms/FormImage.js';
+import FormImage from './forms/FormImage.js'
 import FormCheckbox from './forms/FormCheckbox.js'
-const {Step} = Steps
-const {TextArea} = Input
+const { Step } = Steps
 
 export default function CreateGuide(props){
     // 各个事项指南输入项的值

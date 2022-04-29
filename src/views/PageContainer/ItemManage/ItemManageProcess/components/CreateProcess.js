@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import style from './CreateProcess.module.scss'
-import { DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
+import { Space, Button, Modal } from 'antd'
 import TagsArea from './TagsArea.js'
-import GuideModal from './GuideModal.js';
-import api from '../../../../../api/rule';
+import GuideModal from './GuideModal.js'
+import api from '../../../../../api/rule'
 
 export default function CreateProcess(props){
     // 页面中用以展示的基础数据
@@ -353,15 +353,6 @@ export default function CreateProcess(props){
                         </div>
                         <TagsArea tags={recommendedTags} chooseTag={chooseTag} type={'3'}/>
                     </div>
-                    
-
-                    {/*<div className={style.chooseBoxSubTitle} style={{top: 120 + extraHeight, display: currRegionId == '' ? 'block' : 'none'}}>
-                        用户自定义：
-                    </div>
-                    <div className={style.createTag} style={{display: currRegionId == '' ? 'block' : 'none', top: 125 + extraHeight}}
-                        onClick={startCreating}>
-                        自定义标签+
-                    </div>*/}
                 </div>
             </Space>
 

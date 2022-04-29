@@ -1,7 +1,7 @@
-import React, {cloneElement, useEffect, useState} from 'react'
-import { Dropdown, Space, Menu, Tabs, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
-import { getYMD, getYMDHMS } from "../../../../../utils/TimeStamp";
-import api from '../../../../../api/rule';
+import React, { useEffect, useState } from 'react'
+import { Dropdown, Space, Menu, Tabs, Button, Table, Modal } from 'antd'
+import { getYMD, getYMDHMS } from "../../../../../utils/TimeStamp"
+import api from '../../../../../api/rule'
 import SelectForm from './SelectForm'
 const { TabPane } = Tabs
 
@@ -309,7 +309,6 @@ export default function ManageProcess(props) {
         }).catch(error=>{
             props.showError('搜索事项失败！')
             setTableLoading(false)
-            console.log(error)
         })
     }
 
@@ -582,7 +581,6 @@ export default function ManageProcess(props) {
             }
             return
         }
-        console.log(props.jumpCode)
         if (props.jumpCode && props.jumpCode !== ''){
             for (let key in statusScheme){
                 let data = {

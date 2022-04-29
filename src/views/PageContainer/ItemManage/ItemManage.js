@@ -1,12 +1,11 @@
 import React, {useEffect, useState} from 'react'
 import api from '../../../api/rule';
 import { Modal } from 'antd'
-import { HashRouter as Router, Route, Link, Switch, useRouteMatch, useParams } from 'react-router-dom'
+import { HashRouter as Router, Route, Switch, useRouteMatch } from 'react-router-dom'
 import ItemManageRule from './ItemManageRule/ItemManageRule'
 import ItemManageRegion from './ItemManageRegion/ItemManageRegion'
 import ItemManageGuide from './ItemManageGuide/ItemManageGuide'
 import ItemManageProcess from './ItemManageProcess/ItemManageProcess'
-import Cookie from '../../../utils/Cookie'
 import ItemManageUnusual from './ItemManageUnusual/ItemManageUnusual';
 
 export default function ItemManage(props) {
@@ -27,6 +26,7 @@ export default function ItemManage(props) {
             centered: true
         })
     }
+
     const getRuleRoots = ()=>{
         // 获取规则树根节点，用来初始化规则创建
         api.GetRules({
@@ -44,6 +44,7 @@ export default function ItemManage(props) {
                 })
             }
         }).catch(error=>{
+            showError('初始化规则树根节点失败！')
         })
     }
 
@@ -65,7 +66,7 @@ export default function ItemManage(props) {
                 })
             }
         }).catch(error=>{
-
+            showError('初始化区划树根节点失败！')
         })
     }
 
@@ -115,7 +116,6 @@ export default function ItemManage(props) {
                     render={()=>(<ItemManageUnusual userId={userId} 
                         bindedData={bindedData} setBindedData={setBindedData}
                         regionRoot={regionRoot} ruleRoot={ruleRoot}/>)}/>
-
             </Switch>
         </div>
         

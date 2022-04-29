@@ -1,7 +1,6 @@
 import { Input, Checkbox } from 'antd'
 import style from './FormCheckbox.module.scss'
 import { useState } from 'react'
-const { TextArea } = Input
 
 export default function FormCheckbox(props){
     const [data, setData] = useState(props.value)
