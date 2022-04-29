@@ -236,7 +236,7 @@ export default function ManageGuide(props) {
             detailTable.push({
                 'detailType': '办理点信息',
                 'detailInfo': (!data.windows || data.windows.length === 0) ? '' :
-                <Tabs defaultActiveKey='1' tabPosition='left' style={{whiteSpace: 'pre-wrap'}}>
+                <Tabs defaultActiveKey='0' tabPosition='left' style={{whiteSpace: 'pre-wrap'}}>
                     {
                         data.windows.map((item, index)=>(
                             'name' in data.windows[index] &&

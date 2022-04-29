@@ -29,8 +29,7 @@ export default function SelectForm(props) {
         const data = {
             searchValue: searchValue
         }
-        // TODO(钟卓江）：这个 API 暂时有问题，会引起服务器崩溃，先注释掉
-        // props.getSearch(data)
+        props.getSearch(data)
     }
 
     const AddDepartmentAndRefresh = (data) => {
@@ -41,13 +40,12 @@ export default function SelectForm(props) {
         }).then(response => {
             console.log('AddDepartment=', response.data)
             message.success('新增部门成功')
+            // 刷新表格内容
+            props.refreshTableData()
         }).catch(error => {
             message.error('新增部门出现错误')
             console.log("AddRole error", error)
         })
-
-        // 刷新表格数据
-        setTimeout(props.refreshTableData, 1000)
     }
 
     return (

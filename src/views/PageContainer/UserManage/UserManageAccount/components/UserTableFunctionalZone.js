@@ -31,13 +31,16 @@ export default function UserTableFunctionalZone(props) {
             // log 服务端返回的搜索结果
             console.log('addUserAndRefresh =', response.data)
             message.success('账号创建成功');
+            // 刷新表格数据
+            props.refreshTableData()
         }).catch(error => {
             console.log('error = ', error)
             message.error('账号创建发生错误');
+            // 刷新表格数据
+            props.refreshTableData()
         });
 
-        // 刷新表格数据
-        setTimeout(props.refreshTableData,1000)
+
     }
 
     return (

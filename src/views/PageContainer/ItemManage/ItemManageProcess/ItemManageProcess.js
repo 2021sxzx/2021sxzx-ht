@@ -26,7 +26,8 @@ export default function ItemManageProcess(props) {
         api.GetUserRank({
             user_id: localStorage.getItem('_id')
         }).then(response=>{
-            setCanOperate(response.data.data.manage_status)
+            let data = response.data.data.manage_status
+            setCanOperate(data)
         }).catch(error=>{
             showError('获取可操作事项状态失败！')
         })

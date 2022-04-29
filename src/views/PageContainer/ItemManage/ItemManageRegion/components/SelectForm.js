@@ -26,16 +26,42 @@ export default function SelectForm(props){
         setCreator(e.target.value)
     }
 
+    const splitIds = (id)=>{
+        let ids = []
+        let noEmpty = id.replace(/\s*/g, '').replace('，', ',')
+        ids = noEmpty.split(',')
+        return ids
+    }
+
+    const inj_judge = (str)=>{
+        let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
+            'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
+        for (let i = 0; i < inj_str.length; i++){
+            if (str.indexOf(inj_str[i]) >= 0){
+                return true
+            }
+        }
+        return false
+    }
+
     const Search = ()=>{
         const data = {}
-        if (start_time !== '') data['start_time'] = start_time
-        if (end_time !== '') data['end_time'] = end_time
-        if (region_code !== '') data['region_code'] = region_code
-        if (region_name !== '') data['region_name'] = region_name
-        if (department !== '') data['department_name'] = department
-        if (creator !== '') data['creator_name'] = creator
-        //clear()
-        props.getSearch(data)
+        if (inj_judge(region_code) || inj_judge(region_name) || inj_judge(creator) || inj_judge(department)){
+            Modal.warning({
+                centered: true,
+                title: '非法输入',
+                content: '输入信息中有非法输入内容，请检查输入！'
+            })
+        }
+        else{
+            if (start_time !== '') data['start_time'] = start_time
+            if (end_time !== '') data['end_time'] = end_time
+            if (region_code !== '') data['region_code'] = splitIds(region_code)
+            if (region_name !== '') data['region_name'] = region_name
+            if (department !== '') data['department_name'] = department
+            if (creator !== '') data['creator_name'] = creator
+            props.getSearch(data)
+        }  
     }
 
     const handleDateChange = (value, dataString)=>{

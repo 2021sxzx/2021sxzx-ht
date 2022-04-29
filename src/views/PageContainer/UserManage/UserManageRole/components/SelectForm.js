@@ -35,7 +35,20 @@ export default function SelectForm(props) {
     }
 
     const AddRoleAndRefresh = (data) => {
-        // TODO(zzj):新增角色有bug，服务器会崩溃！！！
+        // 用于判断所有信息是否都完成更新
+        let canRefresh = false
+
+        // 自动决定是否刷新表格
+        const autoRefresh = () => {
+            if (canRefresh) {
+                message.success('新增角色成功')
+                // 刷新表格
+                props.refreshTableData()
+            } else {
+                canRefresh = true
+            }
+        }
+
         // 新增角色非权限信息
         api.AddRole({
             role_name: data.role_name,
@@ -44,10 +57,10 @@ export default function SelectForm(props) {
         }).then(response => {
             // log 服务端返回的搜索结果
             console.log('addRoleResult=', response.data)
-            message.success('新增角色成功')
+            autoRefresh()
         }).catch(error => {
             message.error('新增角色出现错误')
-            console.log("AddRole error",error)
+            console.log("AddRole error", error)
         })
 
         // 新增角色权限信息
@@ -57,15 +70,11 @@ export default function SelectForm(props) {
         }).then(response => {
             // log 服务端返回的搜索结果
             console.log('addRolePermissionResult=', response.data)
-            message.success('新增角色权限成功')
+            autoRefresh()
         }).catch(error => {
             message.error('新增角色权限出现错误')
-            console.log("AddRolePermission error",error)
+            console.log("AddRolePermission error", error)
         })
-
-        // 刷新表格数据
-        setTimeout(props.refreshTableData,1000)
-
     }
 
     return (
@@ -83,7 +92,7 @@ export default function SelectForm(props) {
                                    role_name: '',
                                    role_describe: '',
                                    permission: [],
-                                   permission_identifier_array:[],
+                                   permission_identifier_array: [],
                                }} callback={AddRoleAndRefresh}/>
                 </Form.Item>
                 <Form.Item>

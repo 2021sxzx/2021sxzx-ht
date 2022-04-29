@@ -7,95 +7,22 @@ import {
   Button,
   Table,
   Checkbox,
-  Radio,Divider,Modal,Tabs,Image,Switch,Row,Col
+  Radio,
+  Divider,
+  Modal,
+  Tabs,
+  Image,
+  Switch,
+  Select,
+  Upload,Row,Col,message
 } from "antd";
-import { SyncOutlined } from "@ant-design/icons";
-import api from "../../../../api/log";
+import { SyncOutlined, UploadOutlined } from "@ant-design/icons";
+import api from "../../../../api/systemBasic";
+import "./MetaData.css";
+import SystemManageBasic from "../SystemManageBasic/SystemManageBasic";
 // import './FileMetaData.css'
 const { TabPane } = Tabs;
-// const { RangePicker } = DatePicker;
-// const { Option } = Select;
-// function onChange(e) {
-//   console.log(`checked = ${e.target.checked}`);
-// }
 
-
-const SelectForm = (props) => {
-  const [form] = Form.useForm();
-  const [myself, setMyself] = useState(false);
-  const [today, setToday] = useState(false);
-  const [thisWeek, setThisWeek] = useState(false);
-
-  const handleToday=e=>{
-    setToday(true);
-    setThisWeek(false);
-    console.log("today:",today,".week:",thisWeek)
-  }
-  const handleWeek=e=>{
-    setToday(false);
-    setThisWeek(true);
-    console.log("week:",thisWeek,".today:",today)
-  }
-  const handleRadio=e=>{
-    console.log('radio checked',e.target.value)
-    if(e.target.value===1){
-      handleToday()
-    }
-    else if(e.target.value===2){
-      handleWeek()
-    }
-  }
-  const Search = () => {
-    const data = {
-      myself,
-      today,
-      thisWeek,
-    };
-    props.getSearch(data);
-  };
-  return (
-    <>
-      <Form form={form}>
-        <Form.Item>
-          <Button type="">查询日志</Button>
-          <Input style={{ width: 600 }}></Input>
-          {/* <Input style={{ width: 600 }} enterButton="查询日志"></Input> */}
-        </Form.Item>
-      </Form>
-      <Form layout={"inline"} form={form}>
-        <Form.Item>
-          <Space>
-            {/* <DataBindCheckbox></DataBindCheckbox> */}
-          <Checkbox onChange={(e)=>{setMyself(e.target.checked)}}>
-              查询操作人为您
-            </Checkbox>
-            <Radio.Group onChange={handleRadio}>
-            <Radio value={1}>
-              查询今天创建更新
-            </Radio>
-            <Radio value={2}>
-              查询本周创建更新
-            </Radio>
-            </Radio.Group>
-            <Button icon={<SyncOutlined />}>
-              高级查询
-            </Button>
-            <Button onClick={()=>{setMyself(false);setToday(false);setThisWeek(false);Search();}}>重置</Button>
-            <Button type="primary" onClick={Search}>
-              查询
-            </Button>
-          </Space>
-        </Form.Item>
-      </Form>
-    </>
-  );
-};
-
-const tableData1=[
-  {key:1,failure_name:"闪退",create_time:"2017-01-01",content:"闪选",user_name:"zyk"}
-,  {key:2,failure_name:"重启",create_time:"2017-08-01",content:"dddd",user_name:"wlz"}
-,  {key:3,failure_name:"崩溃",create_time:"2017-10-01",content:"噢哟",user_name:"lyh"}
-]
 //弹窗Modal
 const HandleModal = (props) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -114,10 +41,17 @@ const HandleModal = (props) => {
 
   return (
     <>
-      <Button style={{border:"1px solid blue"}} onClick={showModal}>
+      <Button style={{ border: "1px solid blue" }} onClick={showModal}>
         处理
       </Button>
-      <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} okText="确定" cancelText="取消">
+      <Modal
+        title="Basic Modal"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="确定"
+        cancelText="取消"
+      >
         <p>{props.record.failure_name}</p>
         <p>{props.record.user_name}</p>
         <p>{props.record.create_time}</p>
@@ -126,115 +60,250 @@ const HandleModal = (props) => {
   );
 };
 
-//删除操作
-const deleteFuncElem=(aimedRowData)=>{
-  // console.log(aimedRowData);
-  const totalFuncDataList = tableData1;
-  // console.log(totalFuncDataList);
-  let i;
-  let indexOfFuncList;
-  for(i = 0; i <totalFuncDataList.length;i++) {
-    if(aimedRowData.index=== totalFuncDataList[i].index) {
-      break;
-    }
-  }
-  // console.log(totalFuncDataList[i]);
-  totalFuncDataList.splice(i+1,1);
-  console.log(totalFuncDataList);
-  // this.setState({
-  //   data:totalFuncDataList
-  // });
-  // this.showTable(this.state.data);
-}
-
-const tableColumns = [
-  {
-    title: "故障名称",
-    dataIndex: "failure_name",
-    key: "failure_name",
-  },
-  {
-    title: "时间",
-    dataIndex: "create_time",
-    key: "create_time",
-  },
-  {
-    title: "操作描述",
-    dataIndex: "content",
-    key: "content",
-  },
-  {
-    title: "提交人",
-    key: "user_name",
-    dataIndex: "user_name",
-  },
-  {
-    // title:"详情",
-    key:"detail",
-    dataIndex: "detail",
-    render: () => (
-      <Space size="middle">
-        <a style={{textDecoration:"underline"}}>详情</a>
-      </Space>)
-  },{
-    key:"handle",
-    dataIndex: "handle",
-    render: (_,record,index) => (//参数分别为当前行的值，当前行数据，行索引
-      <>
-      {/* <Space size="middle">
-        <button onClick={()=>{console.log(index)}}>处理</button>
-      </Space> */}
-      <HandleModal record={record}></HandleModal>
-    </>
-      )
-  },{
-    key:"delete",
-    dataIndex: "delete",
-    render: (_,record) => (
-      <Space size="middle">
-        <Button style={{border:"1px solid blue"}} onClick={()=>{deleteFuncElem(record)}}>删除</Button>
-      </Space>)
-  }
-];
-
-const rowSelection = {
-  onChange: (selectedRowKeys, selectedRows) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-  },
-  getCheckboxProps: (record) => ({
-    disabled: record.name === 'Disabled User',
-    // Column configuration not to be checked
-    name: record.name,
-  }),
-};
-
 const Demo = () => {
+  const [websiteSettingsForm]=Form.useForm()
+  const [coreSettingsForm]=Form.useForm()
+  const [interfaceConfigurationForm]=Form.useForm()
   const [WebsiteStatus, setWebsiteStatus] = React.useState(true);
+  const [fileList,setFileList]=React.useState(null)
+  const [BackstageLogoFile,setBackstageLogoFile]=React.useState(null)
+  const [WebsiteLogoFile,setWebsiteLogoFile]=React.useState(null)
+  const [AddressBarIconFile,setAddressBarIconFile]=React.useState(null)
+  const [MobileLogoFile,setMobileLogoFile]=React.useState(null)
+  const [QRCodeFile,setQRCodeFile]=React.useState(null)
+  // const handleUpload = () => {
+  //   const formData = new FormData();
+  //   fileList.forEach(file => {
+  //     formData.append('files[]', file);
+  //   });
+  //   setUploading(true)
+  //   // You can use any AJAX library you like
+  //   fetch('https://www.mocky.io/v2/5cc8019d300000980a055e76', {
+  //     method: 'POST',
+  //     body: formData,
+  //   })
+  //     .then(res => res.json())
+  //     .then(() => {
+  //       setFileList([])
+  //       message.success('upload successfully.');
+  //     })
+  //     .catch(() => {
+  //       message.error('upload failed.');
+  //     })
+  // };
+
+  // const fileList = [
+  //   {
+  //     uid: "-1",
+  //     name: "xxx.png",
+  //     status: "done",
+  //     url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+  //     thumbUrl:
+  //       "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+  //   },
+  //   {
+  //     uid: "-2",
+  //     name: "yyy.png",
+  //     status: "error",
+  //   },
+  // ];
   const onFinish = (values) => {
-    console.log('Success:', values);
-    alert('ok')
+    api.ChangeSiteSettings(values)
+    // let formData = new FormData();
+    // fileList.forEach(file => {
+    //   formData.append('file', file);
+    // });
+    // websiteSettingsForm.validateFields((err,data)=>{
+    //   let { filename, filetype, describe } = values;
+    //   formData.append('name', filename);
+    //   formData.append('type', filetype);
+
+    //   UploadFile(formData).then(res => { //这个是请求
+    //     if (res.status == 200 && res.data != undefined) {
+    //       notification.success({
+    //         message: "上传成功",
+    //         description: res.data,
+    //       });
+    //     } else {
+    //       notification.error({
+    //         message: "上传失败",
+    //         description: res.status,
+    //       });
+    //     }
+    //   })
+
+    // })
+    if (BackstageLogoFile) {
+      const formData = new FormData();
+      // fileList.forEach(file => {
+      formData.append("file", BackstageLogoFile);
+      formData.append("imgName", "logo");
+      formData.append("test", "123456");
+      // });
+      // setUploading(true)
+      console.log("formData.file:", formData.get("file"));
+      // console.log('formData.test:',formData.get('test'))
+      // You can use any AJAX library you like
+      fetch("http://8.134.73.52/api/v1/backstagelogo-upload", {
+        method: "POST",
+        body: formData,
+        mode: "cors",
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
+      })
+        .then((res) => res.json())
+        .then(() => {
+          //上传之后删除浏览器的图片
+          setBackstageLogoFile(null)
+          message.success("首页轮播图上传成功.");
+        })
+        .catch(() => {
+          message.error("首页轮播图上传失败.");
+        });
+    }
+
+    if (WebsiteLogoFile) {
+      const WebsiteLogoFileFormData = new FormData();
+      WebsiteLogoFileFormData.append('file', WebsiteLogoFile);
+      console.log('WebsiteLogoFileFormData.file:',WebsiteLogoFileFormData.get('file'))
+      fetch('http://localhost:5001/api/v1/websitelogo-upload', {
+        method: 'POST',
+        body: WebsiteLogoFileFormData,
+        mode: "cors",
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
+      })
+        .then(res => res.json())
+        .then(() => {
+          //上传之后删除浏览器的图片
+          setWebsiteLogoFile(null)
+          message.success('网站logo上传成功.');
+        })
+        .catch(() => {
+          message.error('网站logo上传失败.');
+        })
+      }
+      if (AddressBarIconFile) {
+        const AddressBarIconFileFormData = new FormData();
+        AddressBarIconFileFormData.append('file', AddressBarIconFile);
+        // console.log('WebsiteLogoFileFormData.file:',WebsiteLogoFileFormData.get('file'))
+        fetch('http://localhost:5001/api/v1/addressbaricon-upload', {
+          method: 'POST',
+          body: AddressBarIconFileFormData,
+          mode: "cors",
+          // headers: {
+          //   "Content-Type": "multipart/form-data",
+          // },
+        })
+          .then(res => res.json())
+          .then(() => {
+            //上传之后删除浏览器的图片
+            setAddressBarIconFile(null)
+            message.success('地址栏图标上传成功.');
+          })
+          .catch(() => {
+            message.error('地址栏图标上传失败.');
+          })
+        }
+        if (MobileLogoFile) {
+          const MobileLogoFileFormData = new FormData();
+          MobileLogoFileFormData.append('file', MobileLogoFile);
+          // console.log('WebsiteLogoFileFormData.file:',WebsiteLogoFileFormData.get('file'))
+          fetch('http://localhost:5001/api/v1/mobilelogo-upload', {
+            method: 'POST',
+            body: MobileLogoFileFormData,
+            mode: "cors",
+            // headers: {
+            //   "Content-Type": "multipart/form-data",
+            // },
+          })
+            .then(res => res.json())
+            .then(() => {
+              //上传之后删除浏览器的图片
+              setMobileLogoFile(null)
+              message.success('手机端logo上传成功.');
+            })
+            .catch(() => {
+              message.error('手机端logo上传失败.');
+            })
+          }
+          if (QRCodeFile) {
+            const QRCodeFileFormData = new FormData();
+            QRCodeFileFormData.append('file', QRCodeFile);
+            // console.log('WebsiteLogoFileFormData.file:',WebsiteLogoFileFormData.get('file'))
+            fetch('http://localhost:5001/api/v1/QRCode-upload', {
+              method: 'POST',
+              body: QRCodeFileFormData,
+              mode: "cors",
+              // headers: {
+              //   "Content-Type": "multipart/form-data",
+              // },
+            })
+              .then(res => res.json())
+              .then(() => {
+                //上传之后删除浏览器的图片
+                setQRCodeFile(null)
+                message.success('二维码上传成功.');
+              })
+              .catch(() => {
+                message.error('二维码上传失败.');
+              })
+            }
+    message.success('修改成功')
   };
+
+  const ChangeCoreSettings=(values)=>{
+    api.ChangeCoreSettings(values)
+    message.success('核心设置修改成功')
+  }
+
+  const ChangeInterfaceConfiguration=(values)=>{
+    api.ChangeInterfaceConfiguration(values)
+    message.success('接口修改成功')
+  }
 
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
-  //互斥单选框
-  const [value, setValue] = React.useState(1);
 
-  const onChange = e => {
-    console.log('radio checked', e.target.value);
-    setValue(e.target.value);
-  };
+  useEffect(()=>{
+    api.SiteSettings().then((response)=>{
+      websiteSettingsForm.setFieldsValue({
+        WebsiteAbbreviation:response.data.WebsiteAbbreviation,
+        WebsiteDomainName:response.data.WebsiteDomainName,
+        CopyrightInformation:response.data.CopyrightInformation,
+        RecordNumber:response.data.RecordNumber,
+        ServiceHotline:response.data.ServiceHotline,
+        Address:response.data.Address,
+        Disclaimers:response.data.Disclaimers
+      })
+    })
+    api.CoreSettings().then((response)=>{coreSettingsForm.setFieldsValue({
+      MobileDomainName: response.data.MobileDomainName,
+      PCDomainName:response.data.PCDomainName
+    })})
+    api.InterfaceConfiguration().then((response)=>{
+      interfaceConfigurationForm.setFieldsValue({
+        OfficialWebsite:response.data.OfficialWebsite,
+        OfficialAccount:response.data.OfficialAccount
+      })
+    })
+  })
+
   return (
     <div className="card-container">
       <Tabs type="card">
-        <TabPane tab="图片处理" key="1">
+        <TabPane tab="网站设置" key="1">
           <Form
             labelCol={{ span: 4 }}
             onFinish={onFinish}
             onFinishFailed={onFinishFailed}
+            form={websiteSettingsForm}
+            name="websiteSettings"
           >
-            <Form.Item label="缩略图功能" name="WebsiteStatus">
+            {/* <Form.Item label="网站状态" name="WebsiteStatus">
               <Switch
                 checked={WebsiteStatus}
                 checkedChildren="开"
@@ -243,48 +312,152 @@ const Demo = () => {
                   setWebsiteStatus(!WebsiteStatus);
                 }}
               />{" "}
+            </Form.Item> */}
+            <Form.Item
+              label="网站简称"
+              name="WebsiteAbbreviation"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
             </Form.Item>
-            <Form.Item label="生成方式" name="WebsiteStatus">
-              <Radio.Group onChange={onChange} value={value}>
-                <Radio value={1}>拉伸</Radio>
-                <Radio value={2}>留白</Radio>
-                <Radio value={3}>裁切</Radio>
-              </Radio.Group>
-            </Form.Item>
-            <Form.Item label="缩略图大小" name="WebsiteStatus">
-              <Input.Group size="large">
-                <Row gutter={8}>
-                  <Col span={2}>
-                    <Input defaultValue="571" />
-                  </Col>
-                  <Col>X</Col>
-                  <Col span={2}>
-                    <Input defaultValue="268" />
-                  </Col>
-                  <Col>(宽)x(高)(像素)</Col>
-                </Row>
-              </Input.Group>
-            </Form.Item>
-            <Form.Item label="压缩功能" name="WebsiteStatus">
-              <Switch
-                checked={WebsiteStatus}
-                checkedChildren="开"
-                unCheckedChildren="关"
-                onChange={() => {
-                  setWebsiteStatus(!WebsiteStatus);
+            <Form.Item label="网站logo" name="WebsiteLogo" layout="inline">
+              <Upload
+                listType="picture"
+                className="upload-list-inline"
+                accept=".png"
+                beforeUpload={(file) => {
+                  setWebsiteLogoFile(file);
+                  console.log(WebsiteLogoFile);
+                  return false;
                 }}
-              />{" "}
+                name="websiteLogo"
+                maxCount={1}
+              >
+                <Button icon={<UploadOutlined />}>Upload</Button>
+                图片地址
+              </Upload>
+            </Form.Item>
+            <Form.Item label="首页轮播图" name="BackstageLogo">
+              <Upload
+                // action="http://localhost:5001/api/v1/logo-upload"
+                listType="picture"
+                className="upload-list-inline"
+                accept=".jpg"
+                beforeUpload={(file) => {
+                  // console.log(file);
+                  // var fileExtension = name.substring(name.lastIndexOf(".") + 1); //截取文件后缀名
+                  // this.props.form.setFieldsValue({
+                  //   filename: name,
+                  //   filetype: fileExtension,
+                  // }); //选择完文件后把文件名和后缀名自动填入表单
+                  // this.setState((state) => ({
+                  //   fileList: [file],
+                  // }));
+                  const isPNG = file.type === 'image/jpeg';
+                  if (!isPNG) {
+                    message.error(`${file.name}不是jpg格式`);
+                    return Upload.LIST_IGNORE
+                  }
+                  setBackstageLogoFile(file);
+                  console.log(BackstageLogoFile);
+                  return false;
+                }}
+                maxCount={1}
+                name="logo"
+              >
+                <Button icon={<UploadOutlined />}>Upload</Button>
+                图片地址
+              </Upload>
+            </Form.Item>
+            <Form.Item label="地址栏图标" name="AddressBarIcon" layout="inline">
+              <Upload
+                listType="picture"
+                className="upload-list-inline"
+                accept=".png"
+                beforeUpload={(file) => {
+                  setAddressBarIconFile(file);
+                  console.log(AddressBarIconFile);
+                  return false;
+                }}
+                maxCount={1}
+                name="addressBarIconFile"
+              >
+                <Button icon={<UploadOutlined />}>Upload</Button>
+                图片地址
+              </Upload>
+            </Form.Item>
+            <Form.Item label="手机端logo" name="MobileLogo" layout="inline">
+              <Upload
+                listType="picture"
+                className="upload-list-inline"
+                accept=".png"
+                beforeUpload={(file) => {
+                  setMobileLogoFile(file);
+                  console.log(MobileLogoFile);
+                  return false;
+                }}
+                maxCount={1}
+                name="mobileLogo"
+              >
+                <Button icon={<UploadOutlined />}>Upload</Button>
+                图片地址
+              </Upload>
+            </Form.Item>
+            <Form.Item label="二维码" name="QRCode" layout="inline">
+              <Upload
+                listType="picture"
+                className="upload-list-inline"
+                accept=".png"
+                beforeUpload={(file) => {
+                  setQRCodeFile(file);
+                  console.log(QRCodeFile);
+                  return false;
+                }}
+                maxCount={1}
+                name="QRCode"
+              >
+                <Button icon={<UploadOutlined />}>Upload</Button>
+                图片地址
+              </Upload>
             </Form.Item>
             <Form.Item
-              label="压缩条件"
+              label="网站域名"
+              name="WebsiteDomainName"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="版权信息"
               name="CopyrightInformation"
               rules={[{ message: "Please input your username!" }]}
             >
-              <Input style={{ width: "70px" }} />KB
+              <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
-              label="压缩质量"
+              label="备案号"
               name="RecordNumber"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="服务热线"
+              name="ServiceHotline"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="地址"
+              name="Address"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="免责声明"
+              name="Disclaimers"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
@@ -296,53 +469,64 @@ const Demo = () => {
             </Form.Item>
           </Form>
         </TabPane>
-        <TabPane tab="附件设置" key="2">
-        <Form
+        <TabPane tab="核心设置" key="2">
+          <Form
             labelCol={{ span: 4 }}
-            onFinish={onFinish}
+            onFinish={ChangeCoreSettings}
             onFinishFailed={onFinishFailed}
+            form={coreSettingsForm}
+            name="CoreSettings"
           >
             <Form.Item
-              label="主页链接名"
-              name="RecordNumber"
+              label="移动端域名"
+              name="MobileDomainName"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
-              label="栏目设置间隔符"
-              name="RecordNumber"
+              label="PC端域名"
+              name="PCDomainName"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item label="使用DigicertSSL" name="DigicertSSL">
+              <Switch
+                checked={WebsiteStatus}
+                checkedChildren="开"
+                unCheckedChildren="关"
+                onChange={() => {
+                  setWebsiteStatus(!WebsiteStatus);
+                }}
+              />{" "}
+            </Form.Item>
+            <Form.Item label="DigicertSSL证书" name="WebsiteStatus">
+              <Button>配置证书</Button>
+            </Form.Item>
+            <Form.Item label="使用https" name="httpsService">
+              <Switch
+                checked={WebsiteStatus}
+                checkedChildren="开"
+                unCheckedChildren="关"
+                onChange={() => {
+                  setWebsiteStatus(!WebsiteStatus);
+                }}
+              />{" "}
+            </Form.Item>
+            <Form.Item
+              label="后台路径"
+              name="BackgroundPath"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
-              label="上传图片类型"
-              name="RecordNumber"
+              label="数据库备份目录"
+              name="DatabaseBackupDirectory"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
-            </Form.Item>
-            <Form.Item
-              label="上传文件类型"
-              name="RecordNumber"
-              rules={[{ message: "Please input your username!" }]}
-            >
-              <Input style={{ width: "700px" }} />
-            </Form.Item>
-            <Form.Item
-              label="图片上传路径"
-              name="RecordNumber"
-              rules={[{ message: "Please input your username!" }]}
-            >
-              <Input style={{ width: "700px" }} />
-            </Form.Item>
-            <Form.Item
-              label="上传图片大小"
-              name="CopyrightInformation"
-              rules={[{ message: "Please input your username!" }]}
-            >
-              最大<Input style={{ width: "40px" }} />MB
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 10, span: 16 }}>
               <Button type="primary" htmlType="submit">
@@ -351,35 +535,117 @@ const Demo = () => {
             </Form.Item>
           </Form>
         </TabPane>
-        <TabPane tab="业务数据" key="3">
-          <p>咨询电话</p>
-          <p>事项状态</p>
+        <TabPane tab="URL配置" key="3">
+          <h3>URL模式</h3>
+          <h3>伪静态模式</h3>
+          <Form>
+            <Form.Item label="测试upload" name="BackstageLogo">
+              <Upload>
+                <Button icon={<UploadOutlined />}>Upload</Button>
+              </Upload>
+            </Form.Item>
+            <Form.Item label="后台logo" name="BackstageLogo">
+              <Upload
+                action="http://localhost:5001/api/v1/picture-upload"
+                listType="picture"
+                className="upload-list-inline"
+                accept=".png,.jpg"
+              >
+                <Button icon={<UploadOutlined />}>Upload</Button>
+                图片地址
+              </Upload>
+            </Form.Item>
+            <Form.Item wrapperCol={{ offset: 10, span: 16 }}>
+              <Button type="primary" htmlType="submit">
+                确认更改
+              </Button>
+            </Form.Item>
+          </Form>
+        </TabPane>
+        <TabPane tab="接口配置" key="4">
+          <Row>
+            <Col span={18}> <Form
+            labelCol={{ span: 4 }}
+            onFinish={ChangeInterfaceConfiguration}
+            onFinishFailed={onFinishFailed}
+            form={interfaceConfigurationForm}
+          >
+            <h2>入口配置</h2>
+            <Form.Item
+              label="广州市人社局官网"
+              name="OfficialWebsite"
+              rules={[{ message: "Please input your username!" }]}
+              // validateStatus="success"
+              // hasFeedback
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="广州市人社局微信公众号"
+              name="OfficialAccount"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="穗好办APP"
+              name="APP"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="智能服务机器人云平台"
+              name="CloudPlatform"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <h2>出口配置</h2>
+            <Form.Item
+              label="广东省政务综合服务平台"
+              name="ServicePlatform"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <h2>其他配置</h2>
+            <Form.Item
+              label="百度地图"
+              name="BaiduMaps"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="QQ客服咨询"
+              name="QQCustomerService"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item wrapperCol={{ offset: 10, span: 16 }}>
+              <Button type="primary" htmlType="submit">
+                确认更改
+              </Button>
+            </Form.Item>
+          </Form>
+          </Col>
+            <Col span={6}>
+            <Image src={require("./2.png").default} />
+            </Col>
+          </Row>
+        </TabPane>
+        <TabPane tab="元数据查看" key="5">
+          <Image width={800} src={require("./1.png").default} />
+          <Image width={400} src={require("./2.png").default} />
+          {/* <img src="./1.png"></img> */}
         </TabPane>
       </Tabs>
     </div>
   );
 };
 export default function MetaData() {
-  const [tableData, setTableData] = useState([]);
-  const getLog = (data) => {
-    api
-      .GetLog(data)
-      .then((response) => {
-        setTableData(response.data.data);
-        console.log("response.data.data=", response.data.data);
-      })
-      .catch((error) => {});
-  };
-  const getSearchLog = (data) => {
-    console.log(data);
-    api.SearchLog(data).then((response) => {
-        console.log("searchData=", response.data.data);
-        setTableData(response.data.data);
-      }).catch((error) => {});
-  };
-  useEffect(() => {
-    getLog({});
-  }, []);
   return (
     <>
       <Demo></Demo>

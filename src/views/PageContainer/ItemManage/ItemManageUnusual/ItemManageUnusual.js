@@ -198,7 +198,7 @@ export default function ItemManageUnusual(props) {
         let data = originData
         data['page_num'] = current
         data['page_size'] = currPageSize
-        data['item_status'] = statusId.Failure
+        data['item_status'] = [parseInt(statusId.Failure)]
         // 获取所有事项规则
         api.GetItems(data).then(response=>{
             let items = response.data.data.data
@@ -298,7 +298,7 @@ export default function ItemManageUnusual(props) {
         let totalData = data
         totalData['page_num'] = 0
         totalData['page_size'] = currPageSize
-        totalData['item_status'] = statusId.Failure
+        totalData['item_status'] = [parseInt(statusId.Failure)]
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setCurrent(0)
@@ -327,7 +327,7 @@ export default function ItemManageUnusual(props) {
         api.GetItems({
             page_num: 0,
             page_size: currPageSize,
-            item_status: statusId.Failure
+            item_status: [parseInt(statusId.Failure)]
         }).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)
@@ -356,7 +356,7 @@ export default function ItemManageUnusual(props) {
         let totalData = originData
         totalData['page_num'] = page - 1
         totalData['page_size'] = pageSize
-        totalData['item_status'] = statusId.Failure
+        totalData['item_status'] = [parseInt(statusId.Failure)]
         api.GetItems(totalData).then(response=>{
             let items = response.data.data.data
             setTotalSize(response.data.data.total)

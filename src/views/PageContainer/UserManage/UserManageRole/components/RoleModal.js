@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Form, Input, Modal} from "antd";
 import PermissionMultipleSelect from "./PermissionMultipleSelect";
 
@@ -27,12 +27,20 @@ export default function RoleModal(props) {
     const [isModalVisible, setIsModalVisible] = useState(false);
 
     // 储存角色信息
-    const defaultPermissionID = props.detailData.permission_identifier_array
     const [roleName, setRoleName] = useState(props.detailData.role_name)
     const [roleDescribe, setRoleDescribe] = useState(props.detailData.role_describe)
-    const [permissionIdentifierArray, setPermissionIdentifierArray] = useState(defaultPermissionID)
+    const [permissionIdentifierArray, setPermissionIdentifierArray] = useState(props.detailData.permission_identifier_array)
     // const permissions = props.detailData.permission
 
+    // 每次打开弹窗重置表单内容
+    useEffect(()=>{
+        if(isModalVisible){
+            const formDom = document.getElementById(props.detailData.role_name)
+            if(formDom){
+                formDom.reset()
+            }
+        }
+    },[isModalVisible])
 
     //表单提交的成功、失败反馈
     const onFinish = (values) => {
@@ -95,6 +103,7 @@ export default function RoleModal(props) {
                    ]}
             >
                 <Form
+                    id={props.detailData.role_name}
                     name="basic"
                     labelCol={{
                         span: 8,
@@ -119,7 +128,9 @@ export default function RoleModal(props) {
                             },
                         ]}
                     >
-                        <Input defaultValue={roleName} placeholder={'请输入角色名'} onChange={handleInputChangeRoleName}/>
+                        <Input defaultValue={props.detailData.role_name}
+                               placeholder={'请输入角色名'}
+                               onChange={handleInputChangeRoleName}/>
                     </Form.Item>
                     <Form.Item
                         label="角色描述"
@@ -131,7 +142,9 @@ export default function RoleModal(props) {
                             },
                         ]}
                     >
-                        <Input defaultValue={roleDescribe} placeholder={'请输入角色描述'} onChange={handleInputChangeRoleDescribe}/>
+                        <Input defaultValue={props.detailData.role_describe}
+                               placeholder={'请输入角色描述'}
+                               onChange={handleInputChangeRoleDescribe}/>
                     </Form.Item>
                     <Form.Item
                         label="角色权限"
@@ -143,7 +156,7 @@ export default function RoleModal(props) {
                             },
                         ]}
                     >
-                        <PermissionMultipleSelect defaultValue={defaultPermissionID}
+                        <PermissionMultipleSelect defaultValue={props.detailData.permission_identifier_array}
                                                   placeholder={'请选择角色权限'}
                                                   onChange={handleMultipleSelectChange}/>
                     </Form.Item>

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, Form, Input, Modal} from "antd";
 
 /**
@@ -28,6 +28,15 @@ export default function DepartmentModal(props) {
     const [departmentName, setDepartmentName] = useState(props.detailData.department_name)
     const [departmentDescribe, setDepartmentDescribe] = useState(props.detailData.department_describe)
 
+    // 开关弹窗的时候自动刷新表单内容
+    useEffect(() => {
+        if(isModalVisible){
+            const formDom = document.getElementById(props.detailData.department_name)
+            if (formDom) {
+                formDom.reset()
+            }
+        }
+    }, [isModalVisible])
 
     //表单提交的成功、失败反馈
     const onFinish = (values) => {
@@ -85,6 +94,7 @@ export default function DepartmentModal(props) {
                    ]}
             >
                 <Form
+                    id={props.detailData.department_name}
                     name="basic"
                     labelCol={{
                         span: 8,
@@ -109,7 +119,9 @@ export default function DepartmentModal(props) {
                             },
                         ]}
                     >
-                        <Input defaultValue={departmentName} placeholder={'请输入部门名称'} onChange={handleInputChangeRoleName}/>
+                        <Input defaultValue={props.detailData.department_name}
+                               placeholder={'请输入部门名称'}
+                               onChange={handleInputChangeRoleName}/>
                     </Form.Item>
                     <Form.Item
                         label="部门描述"
@@ -121,7 +133,9 @@ export default function DepartmentModal(props) {
                             },
                         ]}
                     >
-                        <Input defaultValue={departmentDescribe} placeholder={'请输入部门描述'} onChange={handleInputChangeRoleDescribe}/>
+                        <Input defaultValue={props.detailData.department_describe}
+                               placeholder={'请输入部门描述'}
+                               onChange={handleInputChangeRoleDescribe}/>
                     </Form.Item>
                 </Form>
             </Modal>
