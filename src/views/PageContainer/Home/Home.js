@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react'
+import { Link } from 'react-router-dom'
 import { Button, Tabs, List, Typography } from 'antd'
 import api from '../../../api/rule'
 import style from './Home.module.scss'
@@ -6,7 +7,7 @@ import VirtualList from 'rc-virtual-list'
 const { TabPane } = Tabs
 import UploadButton from "./uploadButton/UploadButton";
 
-export default function Home() {
+export default function Home(props) {
     /*const showFileInfo=(file,fileList)=>{
         console.log('showFileInfo',file,'fileList',fileList)
     }
@@ -35,6 +36,10 @@ export default function Home() {
         })
     }
 
+    const jumpToProcess = (item)=>{
+        props.history.push({pathname: '/item-manage/process', task_code: item})
+    }
+
     useEffect(function(){
        getCheckResult()
        getEveryItemStatusCount() 
@@ -55,7 +60,14 @@ export default function Home() {
                                         {
                                             item=>(
                                                 <List.Item className={style.listItem}>
-                                                    {'    指南编码：' + item}
+                                                    <div>
+                                                        {'    指南编码：'}
+                                                    </div>
+                                                    <div className={style.jumpCode} onClick={function(){
+                                                        jumpToProcess(item)
+                                                    }}>
+                                                        {item}
+                                                    </div>
                                                 </List.Item>
                                             )
                                         }

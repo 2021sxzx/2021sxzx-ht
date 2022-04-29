@@ -51,7 +51,10 @@ export default function SelectForm(props){
             }
             break
         }
-    }, [props.bindedData])
+        if (props.jumpCode && props.jumpCode !== ''){
+            setTaskCode(props.jumpCode)
+        }
+    }, [props.bindedData, props.jumpCode])
 
     useEffect(function(){
         setItemStatus(props.fullType)

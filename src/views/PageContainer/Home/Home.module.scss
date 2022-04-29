@@ -25,9 +25,11 @@
 }
 
 .listItem {
+    display: flex;
     height: 47px;
     line-height: 47px;
     white-space: pre;
+    justify-content: left;
 }
 
 .statusCount {
@@ -53,4 +55,11 @@
 .header {
     font-size: 16px;
     font-weight: bold;
+}
+
+.jumpCode {
+    position: relative;
+    cursor: pointer;
+    color: rgb(48, 162, 215);
+    text-align: left;
 }

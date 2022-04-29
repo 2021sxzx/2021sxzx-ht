@@ -309,6 +309,7 @@ export default function ManageProcess(props) {
         }).catch(error=>{
             props.showError('搜索事项失败！')
             setTableLoading(false)
+            console.log(error)
         })
     }
 
@@ -581,13 +582,28 @@ export default function ManageProcess(props) {
             }
             return
         }
-        for (let key in statusScheme){
-            setCurrent(0)
-            setUnableCreate(false)
-            setOriginData({})
-            resetSearch()
-            break
-        }      
+        console.log(props.jumpCode)
+        if (props.jumpCode && props.jumpCode !== ''){
+            for (let key in statusScheme){
+                let data = {
+                    'task_code': [props.jumpCode]
+                }
+                setOriginData(data)
+                searchItems(data)
+                props.setJumpCode('')
+                setUnableCreate(false)
+                return
+            }
+        }
+        else{
+            for (let key in statusScheme){
+                setCurrent(0)
+                setUnableCreate(false)
+                setOriginData({})
+                resetSearch()
+                break
+            } 
+        }     
     }, [statusScheme])
 
     return (
@@ -597,7 +613,7 @@ export default function ManageProcess(props) {
                     destroyOnClose={true} onCancel={endShowing} footer={null}>
                     <Table style={{whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-all'}} columns={detailColumns} dataSource={guideDetail} rowKey='detailType'/>
                 </Modal>
-                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData} fullType={fullType}
+                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData} fullType={fullType} jumpCode={props.jumpCode}
                     bindedData={props.bindedData} setBindedData={props.setBindedData} statusType={statusType} />
                 <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
                     <Button type='primary' disabled={unableCreate} onClick={handleCreate}>绑定事项</Button>
