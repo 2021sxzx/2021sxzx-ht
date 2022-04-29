@@ -35,6 +35,7 @@ export default function ActivationStatusSwitch (props){
             // log 服务端返回的搜索结果
             // console.log('SetActivation=', response.data)
             setActivationStatus(response.data.data.activation_status)
+            console.log(response.data.data.activation_status)
         }).catch(error => {
             console.log("error: handleSwitchChangeActivationState",error)
         })
@@ -47,7 +48,7 @@ export default function ActivationStatusSwitch (props){
             disabled={record._id === localStorage.getItem('_id') || roleName === localStorage.getItem('role_name')}
             checkedChildren={"已激活"}
             unCheckedChildren={"未激活"}
-            defaultChecked={activationStatus==1}
+            defaultChecked={activationStatus == 1}
             onChange={handleSwitchChangeActivationState}
         />
     } else {
