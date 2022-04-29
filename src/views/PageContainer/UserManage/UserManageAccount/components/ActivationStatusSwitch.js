@@ -34,10 +34,11 @@ export default function ActivationStatusSwitch (props){
         api.SetActivation(data).then(response => {
             // log 服务端返回的搜索结果
             // console.log('SetActivation=', response.data)
-            setActivationStatus(response.data.data.activation_status)
-            console.log(response.data.data.activation_status)
+            console.log(checked);
+            setActivationStatus(checked);
+            // console.log(response.data.data);
         }).catch(error => {
-            console.log("error: handleSwitchChangeActivationState",error)
+            console.log("error: handleSwitchChangeActivationState", error);
         })
     }
 
