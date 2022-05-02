@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import style from './CreateRegion.module.scss'
-import { DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
+import { Space, Input, Button, Modal } from 'antd'
 import TagsArea from './TagsArea.js'
-import api from '../../../../../api/rule';
+import api from '../../../../../api/rule'
 
 export default function CreateRegion(props){
     /* 页面中用以展示的基础数据 */
@@ -15,17 +15,12 @@ export default function CreateRegion(props){
         setNodeName(e.target.value)
     }
     const [pathName, setPathName] = useState('')
-    const [extraHeight, setExtraHeight] = useState(0)
     // 加载效果
     const [isLoading, setIsLoading] = useState(false)
 
     /* 选择过程中的已选择、待选择节点 */
     const [chosenTags, setChosenTags] = useState([])
     const [enabledTags, setEnabledTags] = useState([])
-    const [recommendedTags, setRecommendedTags] = useState([{
-        'nodeName': '暂无',
-        'nodeId': '12345'
-    }])
 
     // 原节点的路径
     const [originPath, setOriginPath] = useState('')
@@ -93,7 +88,7 @@ export default function CreateRegion(props){
         let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
         // 点击某个节点
         api.GetRegions({
-            parentId: tag.nodeId
+            parentId: [tag.nodeId]
         }).then(response=>{
             let data = response.data.data
             // 子节点处理
@@ -127,7 +122,7 @@ export default function CreateRegion(props){
         let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
         // 点击回归某个节点
         api.GetRegions({
-            parentId: tag.nodeId
+            parentId: [tag.nodeId]
         }).then(response=>{
             let data = response.data.data
             // 子节点处理
@@ -180,6 +175,18 @@ export default function CreateRegion(props){
         props.setPageType(1)
     }
 
+    const inj_judge = (str)=>{
+        // 输入检测
+        let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
+            'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
+        for (let i = 0; i < inj_str.length; i++){
+            if (str.indexOf(inj_str[i]) >= 0){
+                return true
+            }
+        }
+        return false
+    }
+
     const handleCreate = ()=>{
         // 点击创建按钮
         if (taskCode === '' || nodeName === ''){
@@ -188,11 +195,17 @@ export default function CreateRegion(props){
                 title: '信息不全',
                 content: '请将区划编码和区划名称填写完毕后再进行创建！'
             })
-            return
+        }
+        else if (inj_judge(taskCode) || inj_judge(nodeName)){
+            Modal.warning({
+                centered: true,
+                title: '非法输入',
+                content: '输入信息中有非法输入内容，请检查输入！'
+            })
         }
         else{
             api.GetRegions({
-                region_code: taskCode
+                region_code: [taskCode]
             }).then(response=>{
                 if (response.data.data.length === 0){
                     // 若非已有区划编码，则确认创建
@@ -219,6 +232,13 @@ export default function CreateRegion(props){
             })
             return
         }
+        else if (inj_judge(taskCode) || inj_judge(nodeName)){
+            Modal.warning({
+                centered: true,
+                title: '非法输入',
+                content: '输入信息中有非法输入内容，请检查输入！'
+            })
+        }
         else{
             if (taskCode === props.updatePath[props.updatePath.length - 1].nodeCode){
                 // 若区划编码没有变更，则直接确认更改
@@ -227,7 +247,7 @@ export default function CreateRegion(props){
             else{
                 // 否则需要查询是否已有该编码
                 api.GetRegions({
-                    region_code: taskCode
+                    region_code: [taskCode]
                 }).then(response=>{
                     if (response.data.data.length === 0){
                         // 若非已有区划编码，则确认修改
@@ -316,20 +336,6 @@ export default function CreateRegion(props){
         })
     }
 
-    useEffect(function(){
-        // 根据节点数量动态调整选择框高度
-        let height = 0
-        if (enabledTags.length > 7 || recommendedTags.length > 4){
-            if (enabledTags.length - 7 > recommendedTags.length - 4){
-                height = enabledTags.length - 7
-            }
-            else{
-                height = recommendedTags.length - 4
-            }
-        }
-        setExtraHeight(height * 32)
-    },[enabledTags, recommendedTags])
-
     return (
         <Space direction='vertical' size={15}>
             <div className={style.regionItem}>
@@ -392,11 +398,11 @@ export default function CreateRegion(props){
                     </Space>
                 </div>
 
-                <div className={style.chooseBox} style={{height: 276 + extraHeight, minHeight: 276}}>
-                    <div className={style.chooseBoxTitle1}>
-                        可选事项规则项：
-                    </div>
-                    <div className={style.enabledTags}>
+                <div className={style.chooseBox}>
+                    <div className={style.chooseTagArea}>
+                        <div className={style.chooseBoxTitle1}>
+                            可选业务规则项：
+                        </div>
                         <TagsArea tags={enabledTags} chooseTag={chooseTag} type={'1'}/>
                     </div>
                 </div>

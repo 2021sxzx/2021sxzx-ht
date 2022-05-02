@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react'
-import { Tabs, Space, Menu, message, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
-import { getYMD, getYMDHMS } from "../../../../utils/TimeStamp";
-import api from '../../../../api/rule';
+import React, { useEffect, useState } from 'react'
+import { Tabs, Space, Button, Table } from 'antd'
+import { getYMD, getYMDHMS } from "../../../../utils/TimeStamp"
+import api from '../../../../api/rule'
 import SelectForm from './SelectForm'
 const { TabPane } = Tabs
 

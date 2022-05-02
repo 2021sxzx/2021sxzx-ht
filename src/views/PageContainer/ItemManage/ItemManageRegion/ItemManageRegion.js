@@ -1,8 +1,7 @@
-import React, {useEffect, useState} from 'react'
-import api from '../../../../api/rule';
+import React, { useEffect, useState } from 'react'
 import ManageRegions from './components/ManageRegions'
 import CreateRegion from './components/CreateRegion'
-import {Modal, message} from 'antd'
+import { Modal, message } from 'antd'
 
 export default function ItemManageRegion(props) {
     // 页面的基础数据

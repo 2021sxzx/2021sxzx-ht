@@ -1,15 +1,14 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import style from './CreateGuide.module.scss'
-import { Steps, Space, message, Form, Input, Button, Table, Modal,Descriptions, Badge  } from 'antd';
-import api from '../../../../../api/rule';
-import FormArea from './forms/FormArea.js';
-import FormListPlus from './forms/FormListPlus.js';
+import { Steps, Space, Button, Modal } from 'antd'
+import api from '../../../../../api/rule'
+import FormArea from './forms/FormArea.js'
+import FormListPlus from './forms/FormListPlus.js'
 import FormTime from './forms/FormTime.js'
 import FormList from './forms/FormList.js'
-import FormImage from './forms/FormImage.js';
+import FormImage from './forms/FormImage.js'
 import FormCheckbox from './forms/FormCheckbox.js'
-const {Step} = Steps
-const {TextArea} = Input
+const { Step } = Steps
 
 export default function CreateGuide(props){
     // 各个事项指南输入项的值
@@ -279,30 +278,77 @@ export default function CreateGuide(props){
         })
     }
 
+    const inj_judge = (str)=>{
+        let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
+            'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
+        for (let i = 0; i < inj_str.length; i++){
+            if (str.indexOf(inj_str[i]) >= 0){
+                return true
+            }
+        }
+        return false
+    }
+
+    const showInlegal = ()=>{
+        Modal.warning({
+            centered: true,
+            title: '非法输入',
+            content: '输入信息中有非法输入内容，请检查输入！'
+        })
+    }
+
     // 数据预处理
     const dataProcessing = ()=>{
-        let data = {
-            user_id: props.userId,
-            task_name: guideName,
-            wsyy: guidePCAddress,
-            service_object_type: guideServiceType,
-            conditions: guideCondition,
-            legal_period: parseInt(legalPeriod),
-            legal_period_type: legalType === '0' ? null : legalType,
-            promised_period: parseInt(promisedPeriod),
-            promised_period_type: promisedType === '0' ? null : promisedType,
-            apply_content: guideContent,
-            mobile_applt_website: guidePEAddress,
-            zxpt: guidePlatform,
-            zzzd: guideSelfmadeAddress,
-            windows: guideWindows,
-            ckbllc: guideOfflineProcess,
-            wsbllc: guideOnlineProcess,
-            qr_code: guideQRCode
+        let data = {}
+        if (inj_judge(guideName) || inj_judge(guidePCAddress) || inj_judge(guideCondition)
+            || inj_judge(guideContent) || inj_judge(guidePEAddress) || inj_judge(guidePlatform)
+            || inj_judge(guideSelfmadeAddress) || inj_judge(guideOfflineProcess) || inj_judge(guideOnlineProcess)){
+            showInlegal()
+            return
         }
+        else{
+            data = {
+                user_id: props.userId,
+                task_name: guideName,
+                wsyy: guidePCAddress,
+                service_object_type: guideServiceType,
+                conditions: guideCondition,
+                legal_period: parseInt(legalPeriod),
+                legal_period_type: legalType === '0' ? null : legalType,
+                promised_period: parseInt(promisedPeriod),
+                promised_period_type: promisedType === '0' ? null : promisedType,
+                apply_content: guideContent,
+                mobile_applt_website: guidePEAddress,
+                zxpt: guidePlatform,
+                zzzd: guideSelfmadeAddress,
+                //windows: guideWindows,
+                ckbllc: guideOfflineProcess,
+                wsbllc: guideOnlineProcess,
+                qr_code: guideQRCode
+            }
+        }
+        
+        // 办理点信息处理
+        let tempWindows = []
+        for (let i = 0; i < guideWindows.length; i++){
+            let tempWindow = {}
+            for (let key in guideWindows[i]){
+                if (inj_judge(guideWindows[i][key])){
+                   showInlegal() 
+                   return
+                } 
+                tempWindow[key] = guideWindows[i][key]
+            }
+            tempWindows.push(tempWindow)
+        }
+        data['windows'] = tempWindows
         // 政策依据处理
         let legalBasis = []
         for (let i = 0; i < guideAccord.length; i++){
+            if (inj_judge(guideAccord[i])){
+                showInlegal() 
+                return
+             } 
             legalBasis.push({
                 'name': guideAccord[i]
             })
@@ -311,12 +357,20 @@ export default function CreateGuide(props){
         // 所需申办材料处理
         let submitDocuments = []
         for (let i = 0; i < guideMaterial.length; i++){
+            if (inj_judge(guideMaterial[i])){
+                showInlegal() 
+                return
+             } 
             submitDocuments.push({
                 'materials_name': guideMaterial[i]
             })
         }
         data['submit_documents'] = submitDocuments
-
+        // 指南编码处理
+        if (inj_judge(guideCode)){
+            showInlegal()
+            return
+        }
         if (isUpdating){
             data['task_code'] = props.modifyId
             data['new_task_code'] = guideCode

@@ -1,7 +1,7 @@
-import React, {cloneElement, useEffect, useState} from 'react'
-import { Dropdown, Space, Menu, Tabs, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
-import { getYMD, getYMDHMS } from "../../../../../utils/TimeStamp";
-import api from '../../../../../api/rule';
+import React, { useEffect, useState } from 'react'
+import { Dropdown, Space, Menu, Tabs, Button, Table, Modal } from 'antd'
+import { getYMD, getYMDHMS } from "../../../../../utils/TimeStamp"
+import api from '../../../../../api/rule'
 import SelectForm from './SelectForm'
 const { TabPane } = Tabs
 
@@ -581,13 +581,27 @@ export default function ManageProcess(props) {
             }
             return
         }
-        for (let key in statusScheme){
-            setCurrent(0)
-            setUnableCreate(false)
-            setOriginData({})
-            resetSearch()
-            break
-        }      
+        if (props.jumpCode && props.jumpCode !== ''){
+            for (let key in statusScheme){
+                let data = {
+                    'task_code': [props.jumpCode]
+                }
+                setOriginData(data)
+                searchItems(data)
+                props.setJumpCode('')
+                setUnableCreate(false)
+                return
+            }
+        }
+        else{
+            for (let key in statusScheme){
+                setCurrent(0)
+                setUnableCreate(false)
+                setOriginData({})
+                resetSearch()
+                break
+            } 
+        }     
     }, [statusScheme])
 
     return (
@@ -597,7 +611,7 @@ export default function ManageProcess(props) {
                     destroyOnClose={true} onCancel={endShowing} footer={null}>
                     <Table style={{whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-all'}} columns={detailColumns} dataSource={guideDetail} rowKey='detailType'/>
                 </Modal>
-                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData} fullType={fullType}
+                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData} fullType={fullType} jumpCode={props.jumpCode}
                     bindedData={props.bindedData} setBindedData={props.setBindedData} statusType={statusType} />
                 <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
                     <Button type='primary' disabled={unableCreate} onClick={handleCreate}>绑定事项</Button>

@@ -1,7 +1,7 @@
-import React, {cloneElement, useEffect, useState} from 'react'
-import { Dropdown, Space, Menu, message, Button, Tabs, Table, Modal,Descriptions, Badge  } from 'antd';
-import { getYMD, getYMDHMS } from "../../../../utils/TimeStamp";
-import api from '../../../../api/rule';
+import React, { useEffect, useState } from 'react'
+import { Dropdown, Space, Menu, message, Button, Tabs, Table, Modal } from 'antd'
+import { getYMD, getYMDHMS } from "../../../../utils/TimeStamp"
+import api from '../../../../api/rule'
 import SelectForm from './components/SelectForm'
 const { TabPane } = Tabs
 

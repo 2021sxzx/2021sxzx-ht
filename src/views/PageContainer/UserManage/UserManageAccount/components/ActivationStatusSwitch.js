@@ -34,23 +34,26 @@ export default function ActivationStatusSwitch (props){
         api.SetActivation(data).then(response => {
             // log 服务端返回的搜索结果
             // console.log('SetActivation=', response.data)
-            setActivationStatus(response.data.data.activation_status)
+            console.log(checked);
+            setActivationStatus(checked);
+            // console.log(response.data.data);
         }).catch(error => {
-            console.log("error: handleSwitchChangeActivationState",error)
+            console.log("error: handleSwitchChangeActivationState", error);
         })
     }
 
-    if (activationStatus === 0 || activationStatus === 1) {
+    if (activationStatus == 0 || activationStatus == 1) {
         // console.log("roleName === Cookie.getCookie('roleName')", roleName === Cookie.getCookie('roleName'), roleName)
-        console.log('role_name', localStorage.getItem('role_name'))
+        // console.log('role_name', localStorage.getItem('role_name'))
         return <Switch
             disabled={record._id === localStorage.getItem('_id') || roleName === localStorage.getItem('role_name')}
             checkedChildren={"已激活"}
             unCheckedChildren={"未激活"}
-            defaultChecked={activationStatus==1}
+            defaultChecked={activationStatus == 1}
             onChange={handleSwitchChangeActivationState}
         />
     } else {
+      console.log(activationStatus)
         return <div>error status</div>
     }
 }

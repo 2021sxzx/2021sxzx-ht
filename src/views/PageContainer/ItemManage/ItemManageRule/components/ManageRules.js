@@ -1,8 +1,7 @@
-import React, {cloneElement, useEffect, useState} from 'react'
-import { Redirect } from 'react-router-dom'
-import { DatePicker, Space, Dropdown, Menu, Button, Select, Table, Modal,Descriptions, Badge, message  } from 'antd';
-import { getYMD } from "../../../../../utils/TimeStamp";
-import api from '../../../../../api/rule';
+import React, { useEffect, useState } from 'react'
+import { Space, Dropdown, Menu, Button, Table, Modal, message  } from 'antd'
+import { getYMD } from "../../../../../utils/TimeStamp"
+import api from '../../../../../api/rule'
 import SelectForm from './SelectForm'
 
 export default function ManageRules(props) {

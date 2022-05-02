@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import ManageAudit from './components/ManageAudit'
 import CreateAudit from './components/CreateAudit'
-import {Modal, message} from 'antd'
+import { Modal, message } from 'antd'
 import api from '../../../api/rule'
 
 export default function ItemAudit() {
     const [pageType, setPageType] = useState(1)
     const [userId, setUserId] = useState('')
-    /*const [ruleNodes, setRuleNodes] = useState({})
-    const [regionNodes, setRegionNodes] = useState({})*/
     const [canOperate, setCanOperate] = useState([])
     const [canSee, setCanSee] = useState([])
     const [statusType, setStatusType] = useState([])
@@ -32,24 +30,6 @@ export default function ItemAudit() {
         message.success('操作成功！')
     }
 
-    /*const getRuleNodes = ()=>{
-        api.GetRuleTree({}).then(response=>{
-            let nodes = response.data.data
-            setRuleNodes(nodes)
-        }).catch(error=>{
-
-        })
-    }
-
-    const getRegionNodes = ()=>{
-        api.GetRegionTree({}).then(response=>{
-            let nodes = response.data.data
-            setRegionNodes(nodes)
-        }).catch(error=>{
-            
-        })
-    }*/
-
     const getItemStatusScheme = ()=>{
         api.GetItemStatusScheme({}).then(response=>{
             // 获取状态表
@@ -67,8 +47,6 @@ export default function ItemAudit() {
     }
 
     useEffect(function(){
-        /*getRuleNodes()
-        getRegionNodes()*/
         getItemStatusScheme()
         setUserId(localStorage.getItem('_id'))
     }, [])

@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react'
-import { DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
-import api from '../../../../../api/rule';
+import React, { useEffect, useState } from 'react'
+import { Form, Input, Button, Table, Modal } from 'antd'
+import api from '../../../../../api/rule'
 
 export default function GuideModal(props){
     const [enabledGuides, setEnabledGuides] = useState([])

@@ -107,7 +107,8 @@ const HandleModal = (props) => {
             pictureList.map(item => {
               // return (<><h6>{item.url}</h6></>)
               // return (<><h6>{item.url}</h6><Image src={require().default}/></>)
-              return (<><h6>{item.url}</h6><Image src={"http://localhost:5001/api/v1/get-picture"+"?url="+item.url}/></>)
+              return (<><Image src={"http://localhost:5001/api/v1/get-picture"+"?url="+item.url}/></>)
+              // return (<><h6>{item.url}</h6><Image src={"http://localhost:5001/api/v1/get-picture"+"?url="+item.url}/></>)
             })
           }
         </Image.PreviewGroup>
@@ -120,7 +121,6 @@ const HandleModal = (props) => {
 
 //删除操作
 const deleteFuncElem=async (aimedRowData)=>{
-  console.log("+++++++++++")
   console.log(aimedRowData);
   api.DeleteSystemFailure(aimedRowData).then(message.success('删除故障成功.'));
   // const totalFuncDataList = tableData1;
@@ -195,6 +195,13 @@ const SubmitFailure=(props)=>{
     // console.log(form.getFieldValue('failureName'));
     // setIsModalVisible(false);
     let data=form.getFieldsValue();
+    // console.log(data)
+    // console.log('data.failure_name:',data.failureName,'||data.failure_des:',data.failureDes)
+    if (data.failureName===undefined||data.failureDescription===undefined||data.failureName===''||data.failureDescription===''){
+      // console.log('data.failure_name:',data.failureName,'||data.failure_des:',data.failureDes)
+      message.error('请完善故障名称或者故障描述')
+      return false;
+    }
     data.user_name=localStorage.getItem('role_name');
     data.create_time=new Date();
     data.fileSizeList=[];
@@ -220,9 +227,11 @@ const SubmitFailure=(props)=>{
         //   "Content-Type": "multipart/form-data",
         // },
       })
-          .then(res => {console.log('res:::');res.json().then((res)=>{
-            console.log(res);data.pictureList=res;api.CreateSystemFailure(data).then(props.getFailure());
+          .then(res => {res.json().then((res)=>{
+            // console.log("res:");console.log(res);
+            data.pictureList=res;api.CreateSystemFailure(data).then(props.getFailure());
           })})//上传图片接口返回的res信息，有需要就返回
+          // .then(res => console.log('res:',res.json()))//上传图片接口返回的res信息，有需要就返回
           .then(() => {
             //上传之后删除浏览器的图片，这里好像失败了没清除也没关闭弹窗
             setFailurePicture([]);
@@ -264,7 +273,7 @@ const SubmitFailure=(props)=>{
         故障提交
       </Button>
       <Modal
-        title="Basic Modal"
+        title="故障提交"
         visible={isModalVisible}
         onOk={onFinish}
         onCancel={handleCancel}
@@ -272,18 +281,20 @@ const SubmitFailure=(props)=>{
         cancelText="取消"
       >
         <Form ref={formRef} form={form} name="createSystemFailure" onFinish={onFinish}>
-          <Form.Item label="故障名称" name="failureName">
+          <Form.Item label="故障名称" name="failureName" 
+          rules={[{ required: true, message: '请输入故障名称!' }]}>
             <Input placeholder="请输入名称" />
           </Form.Item>
-          <Form.Item label="故障描述" name="failureDescription">
+          <Form.Item label="故障描述" name="failureDescription"
+          rules={[{ required: true, message: '请输入故障描述!' }]}>
             <TextArea rows={4} showCount maxLength={100}/>
           </Form.Item>
-          <Form.Item label="故障截图" name="failurePicture">
+          <Form.Item label="故障截图" name="failurePicture" rules={[{ required: true, message: '请输入故障描述!' }]}>
             <Upload
               listType="picture"
               beforeUpload={(file)=>{
-                console.log("--------",file.type)
-                console.log(failurePicture)
+                // console.log("--------",file.type)
+                // console.log(failurePicture)
                 // const isPNG = file.type === 'image/png';
                 // if (!isPNG) {
                 //   message.error(`${file.name}不是jpg格式`);
@@ -293,23 +304,23 @@ const SubmitFailure=(props)=>{
                 return false;
               }}
               onRemove={(file)=>{
-                console.log('remove')
+                // console.log('remove')
                 // console.log(failurePicture)
                 const index = failurePicture.indexOf(file);
-                console.log(index)
+                // console.log(index)
                 const newFileList = failurePicture.slice();    
                 newFileList.splice(index, 1);
                 // failurePicture.slice(index, 1);
                 // console.log(newFileList)
                 // console.log(failurePicture)
                 setFailurePicture(newFileList)
-                console.log(failurePicture)
+                // console.log(failurePicture)
               }}
               fileList={failurePicture}
               name="failurePicture"
               maxCount={6}>
               <Button icon={<UploadOutlined />}>Upload</Button>
-              {localStorage.getItem('_id')}
+              {/* {localStorage.getItem('_id')} */}
             </Upload>
           </Form.Item>
         </Form>

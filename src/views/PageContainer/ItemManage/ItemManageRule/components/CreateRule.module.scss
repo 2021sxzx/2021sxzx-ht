@@ -1,8 +1,8 @@
-.ruleItem{
+.ruleItem {
     display: flex;
 }
 
-.itemTitle{
+.itemTitle {
     font-size: 16px;
     height: 20px;
     line-height: 20px;
@@ -10,28 +10,28 @@
     text-align: right;
 }
 
-.itemContent{
+.itemContent {
     font-size: 16px;
     line-height: 20px;
     display: block;
 }
 
-.btnText{
+.btnText {
     margin-right: 10px;
 }
 
-.ruleText{
+.ruleText {
     color: #F59A23;
     width: 1000px;
 }
 
-.ps{
+.ps {
     font-size: 13px;
     font-style: normal;
     color: #7F7F7F;
 }
 
-.createBox{
+.createBox {
     display: flex;
     border: 4px solid rgba(223, 234, 247, 1);
     border-radius: 3px;
@@ -39,7 +39,7 @@
     margin-left: 25px;
 }
 
-.createTitle{
+.createTitle {
     font-size: 16px;
     font-weight: 400;
     position: relative;
@@ -47,7 +47,7 @@
     left: 15px;
 }
 
-.chosenTag{
+.chosenTag {
     position: relative;
     text-align: center;
     background-color: rgba(2, 167, 240, 1);
@@ -60,20 +60,21 @@
     cursor: pointer;
 }
 
-.chosenTags{
+.chosenTags {
     position: relative;
     display: flex;
     width: 915px;
     left: 150px;
 }
 
-.tagContent{
+.tagContent {
     margin-left: 8px;
     margin-right: 8px;
 }
 
-.chooseBox{
+.chooseBox {
     position: relative;
+    display: flex;
     border: 1px solid rgba(170, 170, 170, 1);
     border-radius: 2px;
     border-top-left-radius: 0px;
@@ -81,17 +82,23 @@
     width: 915px;
     left: 150px;
     margin-bottom: 20px;
+    min-height: 276px;
 }
 
-.separator{
+.chooseTagArea {
+    display: block;
+    width: 50%;
+}
+.separator1 {
     position: absolute;
     width: 2px;
-    top: 18px;
-    left: 419px;
+    top: 3%;
+    left: 50%;
+    height: 94%;
     background-color: rgba(170, 170, 170, 1);
 }
 
-.chooseBoxTitle1{
+.chooseBoxTitle1 {
     position: relative;
     color: #333333;
     font-size: 14px;
@@ -100,32 +107,16 @@
     width: 200px;
 }
 
-.chooseBoxTitle2{
+.chooseBoxTitle3 {
     position: relative;
     color: #333333;
     font-size: 14px;
-    left: 450px;
-    top: -12px;
+    left: 15px;
+    top: 10px;
     width: 200px;
 }
 
-.chooseBoxSubTitle{
-    position: relative;
-    color: #666666;
-    font-size: 13px;
-    left: 470px;
-    top: -12px;
-    width: 200px;
-}
-
-.textRankTags{
-    position: relative;
-    top: -10px;
-    left: 500px;
-    width: 380px;
-}
-
-.enabledTags{
+.enabledTags {
     position: relative;
     top: 20px;
     left: 60px;
@@ -133,7 +124,7 @@
     width: 360px;
 }
 
-.createTag{
+.createTag {
     position: relative;
     text-align: center;
     background-color: rgba(2, 167, 240, 1);
@@ -146,36 +137,6 @@
     cursor: pointer;
     position: 'absolute';
     width: 90px;  
-    left: 500px;
+    left: 60px;
+    top: 20px;
 }
-
-.ruleUploadBtn{
-    position: absolute;
-    top: 60px;
-    left: 170px;
-    height: 22px;
-    width: 65px;
-    //background-color: rgba(2, 167, 240, 1);
-    color: #FFFFFF;
-    font-size: 12px;
-    border-radius: 2px;
-    text-align: center;
-    line-height: 22px;
-}
-
-.ruleName{
-    position: absolute;
-    top: 58px;
-    left: 245px;
-    height: 22px;
-    font-size: 16px;
-}
-
-.ruleNumber{
-    position: absolute;
-    top: 19px;
-    left: 170px;
-    height: 22px;
-    font-size: 16px;
-}
-

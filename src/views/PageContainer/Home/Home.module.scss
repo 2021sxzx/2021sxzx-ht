@@ -1,0 +1,65 @@
+.flex {
+    display: flex;
+}
+
+.checkResult {
+    position: relative;
+    border-radius: 1px;
+    border: 2px;
+    width: 60%;
+    left: 2%;
+    box-shadow: darkgray 2px 2px 10px 2px;
+}
+
+.tabs {
+    width: 96%;
+    margin-left: 2%;
+    margin-right: 2%;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.list {
+    width: 100%;
+    padding-bottom: 20px;
+}
+
+.listItem {
+    display: flex;
+    height: 47px;
+    line-height: 47px;
+    white-space: pre;
+    justify-content: left;
+}
+
+.statusCount {
+    position: relative;
+    width: 25%;
+    left: 10%;
+    border-radius: 1px;
+    border: 2px;
+    box-shadow: darkgray 2px 2px 10px 2px;
+    height: 350px;
+}
+
+.countList {
+    position: relative;
+    width: 94%;
+    margin-left: 4%;
+    margin-right: 2%;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    //height: 400px;
+}
+
+.header {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.jumpCode {
+    position: relative;
+    cursor: pointer;
+    color: rgb(48, 162, 215);
+    text-align: left;
+}
