@@ -23,9 +23,8 @@ const api = {
             data: data,//{role_name}
         })
     },
-    // 判断是否成功登录
+    // 前端简单判断是否成功登录
     IsLogin(data) {
-        // TODO(zzj):等后端API完善
         return !!localStorage.getItem('_id')
     },
 
@@ -45,22 +44,12 @@ const api = {
     /**
      * 登出效果的统一实现
      */
-    logout(){
-        // TODO test
-        // 清除 token
-        localStorage.removeItem('loginToken')
-        // 清除角色
-        localStorage.removeItem('roleName')
-        message.success('您已成功登出')
-        UrlJump.goto('#/login')
-        //TODO(zzj):等一个后端实现
-        api.Logout({account: localStorage.getItem('account')}).then(() => {
-                // // 清除 token
-                // localStorage.removeItem('loginToken')
-                // // 清除角色
-                // localStorage.removeItem('roleName')
-                // message.success('您已成功登出')
-                // UrlJump.goto('#/login')
+    logout() {
+        api.Logout({logoutData: {account: localStorage.getItem('account')}}).then(() => {
+                // 清除本地保存的所有信息
+                localStorage.clear()
+                message.success('您已成功登出')
+                UrlJump.goto('#/login')
             }
         ).catch(() => {
             // message.error('登出失败，请检查网络')
