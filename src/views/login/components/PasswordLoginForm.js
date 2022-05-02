@@ -3,7 +3,6 @@ import {LockOutlined, UserOutlined} from "@ant-design/icons";
 import React, {useState} from "react";
 import QuickLogin from "./QuickLogin";
 import api from "../../../api/login";
-import Cookie from "../../../utils/Cookie";
 import UrlJump from "../../../utils/UrlJump";
 
 /**
@@ -12,7 +11,7 @@ import UrlJump from "../../../utils/UrlJump";
  * @constructor
  */
 export default function PasswordLoginForm() {
-    const rememberPassword = !!localStorage.getItem('rememberPassword') // 是否选择记住密码（Boolean）
+    // const rememberPassword = !!localStorage.getItem('rememberPassword') // 是否选择记住密码（Boolean）
     const historyAccount = localStorage.getItem('account')
     const historyPassword = localStorage.getItem('password')
 
@@ -32,51 +31,50 @@ export default function PasswordLoginForm() {
             account: account,
             password: password
         }).then(async response => {
-            console.log('login response', response.data)
-            // 存 token
-            Cookie.setCookie('loginToken', response.data.data.jwt.token)
-            // 存角色
-            Cookie.setCookie('roleName', response.data.data.role_name)
-            // // 根据登录角色获取侧边栏并保存到 sessionStorage 中
-            // MenuList.getAndStorageMenuList(()=>{},response.data.data.role_name)
-
-            // 保存账号密码
-            saveAccountPassword()
-
-            // 保存用户id
-            if (localStorage.getItem('_id')) {
-              localStorage.removeItem('_id');
-              localStorage.removeItem('role_name');
-              localStorage.setItem('_id', response.data.data._id);
-              localStorage.setItem('role_name', response.data.data.role_name);
-            } else {
-              localStorage.setItem('_id', response.data.data._id);
-              localStorage.setItem('role_name', response.data.data.role_name);
-            }
+            // 保存用户信息：账号密码用户id
+            await saveUserInfo(response)
 
             // 展现 0.1s 的登录成功操作提示并自动跳转到首页
             message.success('登录成功', 0.1, () => {
-                UrlJump.goto('#/home') // 不行
+                UrlJump.goto('#/home')
             })
         }).catch(() => {
-            message.error('账号或密码错误，请尝试重新登录')
+            // TODO（钟卓江）：细化报错信息
+            message.error('请尝试重新登录，或者检查账号密码或者网络状态')
         })
     }
 
-    const handleCheckboxChange = (e) => {
-        // 将是否记住账号密码保存到 localStorage：true 存非空字符串，false 存空字符串 ''
-        localStorage.setItem('rememberPassword',e.target.checked?'rememberPassword':'')
-    }
+    /**
+     * HACK：出于安全考虑，不再需要保存密码
+     * 是否记住账号密码。
+     * 信息保存到 localStorage：true 存非空字符串，false 存空字符串 ''
+     * @param event
+     */
+    // const handleCheckboxChange = (event) => {
+    //     // 将是否记住账号密码保存到 localStorage：true 存非空字符串，false 存空字符串 ''
+    //     localStorage.setItem('rememberPassword',event.target.checked?'rememberPassword':'')
+    // }
 
-    const saveAccountPassword = ()=>{
+    /**
+     * 在 localstorage
+     * @param response 响应报文
+     */
+    const saveUserInfo = (response) => {
+        // 保存账号
+        localStorage.setItem('account', account)
+        localStorage.setItem('_id', response.data.data._id);
+        // localStorage.setItem('loginToken', response.data.data.jwt.token)
+        // localStorage.setItem('role_name', response.data.data.role_name)
+        localStorage.setItem('roleName', response.data.data.role_name)
+
+        // HACK：出于安全考虑，不再需要保存密码
         // 从 localStorage 中获取是否记住密码（boolean）
-        let rememberPassword = !!localStorage.getItem('rememberPassword')
-        localStorage.setItem('account',account)
-        if(rememberPassword){
-            localStorage.setItem('password',password)
-        }else{
-            localStorage.setItem('password','')
-        }
+        // let rememberPassword = !!localStorage.getItem('rememberPassword')
+        // if(rememberPassword){
+        //     localStorage.setItem('password',password)
+        // }else{
+        //     localStorage.removeItem('password')
+        // }
     }
 
     return (
@@ -138,16 +136,19 @@ export default function PasswordLoginForm() {
                     span: 8,
                 }}
             >
-                <Row>
-                    <Col span={8}>
-                        <Checkbox defaultChecked={rememberPassword} onChange={handleCheckboxChange}>记住密码</Checkbox>
-                    </Col>
-                    <Col span={3} offset={13}>
-                        <a className="login-form-forgot" href="">
-                            忘记密码
-                        </a>
-                    </Col>
-                </Row>
+                {/*<Row>*/}
+                {/*    <Col span={8}>*/}
+                {/*        <Checkbox defaultChecked={rememberPassword} onChange={handleCheckboxChange}>记住密码</Checkbox>*/}
+                {/*    </Col>*/}
+                {/*    <Col span={3} offset={13}>*/}
+                {/*        <a className="login-form-forgot" href="">*/}
+                {/*            忘记密码*/}
+                {/*        </a>*/}
+                {/*    </Col>*/}
+                {/*</Row>*/}
+                <a className="login-form-forgot" href="">
+                    忘记密码
+                </a>
             </Form.Item>
             {/*登录按钮*/}
             <Form.Item>
