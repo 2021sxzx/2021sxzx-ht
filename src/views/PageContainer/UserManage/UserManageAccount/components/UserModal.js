@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Button, Form, Input, Modal} from "antd";
+import {Button, Form, Input, Modal, Tooltip} from "antd";
 import RoleMultiSelect from "./RoleMultiSelect";
 
 /**
@@ -104,13 +104,27 @@ export default function UserModal(props) {
 
     return (
         <>
-            <Button
-                type={props.buttonType}
-                onClick={showModal}
-                disabled={props.disable}
-            >
-                {props.buttonText}
-            </Button>
+            {
+                props.disable === false
+                    ?
+                    <Button
+                        type={props.buttonType}
+                        onClick={showModal}
+                        disabled={props.disable}
+                    >
+                        {props.buttonText}
+                    </Button>
+                    :
+                    <Tooltip title="禁止修改同级别角色的其他账号信息" mouseEnterDelay={0.5}>
+                        <Button
+                            type={props.buttonType}
+                            onClick={showModal}
+                            disabled={props.disable}
+                        >
+                            {props.buttonText}
+                        </Button>
+                    </Tooltip>
+            }
 
             <Modal title={props.title} visible={isModalVisible} onSave={handleOk} onCancel={handleCancel}
                    footer={[

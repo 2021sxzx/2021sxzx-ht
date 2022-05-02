@@ -2,7 +2,7 @@ import ActivationStatusSwitch from "./ActivationStatusSwitch";
 import UserModal from "./UserModal";
 import api from "../../../../../api/user";
 import React from "react";
-import {Button, message, Space, Table} from "antd";
+import {Button, message, Space, Table, Tooltip} from "antd";
 
 /**
  * 后台账号管理的表格
@@ -77,7 +77,7 @@ export default function UserTable(props) {
             dataIndex: 'activation_status',
             key: 'activation_status',
             render: (text, record) => (
-                <ActivationStatusSwitch record={record}/>
+                <ActivationStatusSwitch record={record} refreshTableData={props.refreshTableData}/>
             )
         },
 
@@ -86,17 +86,44 @@ export default function UserTable(props) {
             key: 'detail',
             render: (text, record) => (//修改用户信息按钮
                 <Space>
+
                     <UserModal buttonText={'修改用户信息'}
                                title={'修改用户信息'}
                                disable={disableModal(record)}
                                detailData={record}
                                saveInfoFunction={updateUserAndRefresh}
                                accountReadOnly={false}/>
-                    <Button disabled={disableDeleteButton(record)}
-                            onClick={() => {
-                                deleteUser({account: record.account})
-                            }}
-                    >删除</Button>
+
+                    {
+                        disableDeleteButton(record) === false
+                            ?
+                            <Button disabled={disableDeleteButton(record)}
+                                    onClick={() => {
+                                        deleteUser({account: record.account})
+                                    }}
+                            >删除</Button>
+                            :
+                            <Tooltip title="如果要删除账号请先将账号设置为未激活" mouseEnterDelay={0.5}>
+                                <Button disabled={disableDeleteButton(record)}
+                                        onClick={() => {
+                                            deleteUser({account: record.account})
+                                        }}
+                                >删除</Button>
+                            </Tooltip>
+                    }
+                    {/*<Tooltip title="Tips: 1. 如果要删除账号请先将账号设置为未激活。2. 禁止修改相同角色的其他账号信息">*/}
+                    {/*    <UserModal buttonText={'修改用户信息'}*/}
+                    {/*               title={'修改用户信息'}*/}
+                    {/*               disable={disableModal(record)}*/}
+                    {/*               detailData={record}*/}
+                    {/*               saveInfoFunction={updateUserAndRefresh}*/}
+                    {/*               accountReadOnly={false}/>*/}
+                    {/*    <Button disabled={disableDeleteButton(record)}*/}
+                    {/*            onClick={() => {*/}
+                    {/*                deleteUser({account: record.account})*/}
+                    {/*            }}*/}
+                    {/*    >删除</Button>*/}
+                    {/*</Tooltip>*/}
                 </Space>
             ),
         },
@@ -104,9 +131,6 @@ export default function UserTable(props) {
 
     return (
         <div>
-            <p>Tips: </p>
-            <p>1. 如果要删除账号请先将账号设置为未激活。</p>
-            <p>2. 禁止修改相同角色的其他账号信息</p>
             <Table columns={tableColumns} dataSource={props.tableData} rowKey={record => record._id}/>
         </div>
     )
