@@ -119,7 +119,10 @@ export default function UserTable(props) {
 
     return (
         <div>
-            <Table columns={tableColumns} dataSource={props.tableData} rowKey={record => record._id} loading={props.loading}/>
+            <Table columns={tableColumns}
+                   dataSource={props.tableData !== {} ? props.tableData : {}}
+                   rowKey={record => record._id}
+                   loading={props.loading}/>
         </div>
     )
 }

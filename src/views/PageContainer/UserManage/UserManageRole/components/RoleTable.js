@@ -8,6 +8,7 @@ import RoleModal from "./RoleModal";
  * @param props = {
  *     tableData:[],// 表格内的数据
  *     refreshTableData:function,// 用于刷新表格数据
+ *     loading:boolean,// 是否处于加载状态
  * }
  * @returns {JSX.Element}
  * @constructor
@@ -90,7 +91,9 @@ export default function RoleTable(props) {
     ]
 
     return (
-        <Table columns={tableColumns} dataSource={props.tableData !== {} ? props.tableData : {}}
-               rowKey={record => record.role_name}/>
+        <Table columns={tableColumns}
+               dataSource={props.tableData !== {} ? props.tableData : {}}
+               rowKey={record => record.role_name}
+               loading={props.loading}/>
     )
 }
