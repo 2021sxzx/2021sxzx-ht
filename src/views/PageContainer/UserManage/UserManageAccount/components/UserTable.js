@@ -8,7 +8,8 @@ import {Button, message, Space, Table, Tooltip} from "antd";
  * 后台账号管理的表格
  * @param props = {
  *     tableData:[],// 表格内的数据
- *     refreshTableData:function,// 用于刷新表格数据
+ *     refreshTableData:function(),// 用于刷新表格数据
+ *     loading:boolean, //是否处于加载状态
  * }
  * @returns {JSX.Element}
  * @constructor
@@ -111,19 +112,6 @@ export default function UserTable(props) {
                                 >删除</Button>
                             </Tooltip>
                     }
-                    {/*<Tooltip title="Tips: 1. 如果要删除账号请先将账号设置为未激活。2. 禁止修改相同角色的其他账号信息">*/}
-                    {/*    <UserModal buttonText={'修改用户信息'}*/}
-                    {/*               title={'修改用户信息'}*/}
-                    {/*               disable={disableModal(record)}*/}
-                    {/*               detailData={record}*/}
-                    {/*               saveInfoFunction={updateUserAndRefresh}*/}
-                    {/*               accountReadOnly={false}/>*/}
-                    {/*    <Button disabled={disableDeleteButton(record)}*/}
-                    {/*            onClick={() => {*/}
-                    {/*                deleteUser({account: record.account})*/}
-                    {/*            }}*/}
-                    {/*    >删除</Button>*/}
-                    {/*</Tooltip>*/}
                 </Space>
             ),
         },
@@ -131,7 +119,7 @@ export default function UserTable(props) {
 
     return (
         <div>
-            <Table columns={tableColumns} dataSource={props.tableData} rowKey={record => record._id}/>
+            <Table columns={tableColumns} dataSource={props.tableData} rowKey={record => record._id} loading={props.loading}/>
         </div>
     )
 }
