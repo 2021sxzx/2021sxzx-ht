@@ -40,7 +40,12 @@ export default function UserTable(props) {
 
     // 设置用户不能修改其他同名角色的非自己的账号信息
     const disableModal = (record) => {
-        return record._id !== localStorage.getItem('_id') && record.role_name === localStorage.getItem('role_name')
+        return record._id !== localStorage.getItem('_id') && record.role_name === localStorage.getItem('roleName')
+    }
+
+    // 设置删除按钮 disable 逻辑: 已激活的或者没有修改权限的不能删除
+    const disableDeleteButton = (record) => {
+        return record.activation_status !== 0 || disableModal(record)
     }
 
     // 表格的属性/列名
@@ -87,7 +92,7 @@ export default function UserTable(props) {
                                detailData={record}
                                saveInfoFunction={updateUserAndRefresh}
                                accountReadOnly={false}/>
-                    <Button disabled={record.activation_status !== 0}
+                    <Button disabled={disableDeleteButton(record)}
                             onClick={() => {
                                 deleteUser({account: record.account})
                             }}
@@ -98,6 +103,11 @@ export default function UserTable(props) {
     ]
 
     return (
-        <Table columns={tableColumns} dataSource={props.tableData} rowKey={record => record._id}/>
+        <div>
+            <p>Tips: </p>
+            <p>1. 如果要删除账号请先将账号设置为未激活。</p>
+            <p>2. 禁止修改相同角色的其他账号信息</p>
+            <Table columns={tableColumns} dataSource={props.tableData} rowKey={record => record._id}/>
+        </div>
     )
 }
