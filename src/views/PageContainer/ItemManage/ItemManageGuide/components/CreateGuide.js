@@ -4,6 +4,7 @@ import { Steps, Space, Button, Modal } from 'antd'
 import api from '../../../../../api/rule'
 import FormArea from './forms/FormArea.js'
 import FormListPlus from './forms/FormListPlus.js'
+import FormListMaterial from './forms/FormListMaterial.js'
 import FormTime from './forms/FormTime.js'
 import FormList from './forms/FormList.js'
 import FormImage from './forms/FormImage.js'
@@ -13,6 +14,7 @@ const { Step } = Steps
 export default function CreateGuide(props){
     // 各个事项指南输入项的值
     const isUpdating = 'guideCode' in props.modifyContent
+    const [imageUpdated, setImageUpdated] = useState(false)
     const [guideName, setGuideName] = 
         useState(isUpdating ? props.modifyContent.guideName : '')
     const [guideCode, setGuideCode] = 
@@ -24,7 +26,16 @@ export default function CreateGuide(props){
     const [guideCondition, setGuideCondition] = 
         useState(isUpdating ? props.modifyContent.guideCondition : '')
     const [guideMaterial, setGuideMaterial] = 
-        useState(isUpdating ? props.modifyContent.guideMaterial : [''])
+        useState(isUpdating ? props.modifyContent.guideMaterial : [{
+            'materials_name': '',
+            'origin': '',
+            'copy': '',
+            'material_form': '1',
+            'material_necessity': '1',
+            'material_type': '1',
+            'page_format': '',
+            'submissionrequired': '0'
+        }])
     const [guidePlatform, setGuidePlatform] = 
         useState(isUpdating ? props.modifyContent.guidePlatform : '')
     const [guidePCAddress, setGuidePCAddress] = 
@@ -119,7 +130,8 @@ export default function CreateGuide(props){
             content: 
             <Space className={style.form} direction='vertical' size={15} style={{width: '100%'}}>
                 <FormArea handleChange={handleGuideConditionChange} formName='申办所需审核条件' value={guideCondition}/>
-                <FormList setData={setGuideMaterial} addBtn='添加所需申办材料' formName='所需申办材料' value={guideMaterial}/>
+                <FormListMaterial addBtn='添加申办所需材料' formName='申办所需材料'
+                    data={guideMaterial} setData={setGuideMaterial} />
                 <FormTime formName='审核时限' legalPeriod={legalPeriod} legalType={legalType} promisedPeriod={promisedPeriod} promisedType={promisedType}
                     setLegalPeriod={setLegalPeriod} setLegalType={setLegalType} setPromisedPeriod={setPromisedPeriod} setPromisedType={setPromisedType}/>
             </Space>
@@ -142,7 +154,7 @@ export default function CreateGuide(props){
                 <FormArea handleChange={handleGuideOfflineProcessChange} formName='线下办理流程' value={guideOfflineProcess}/>
                 <FormListPlus addBtn='添加办理点' formName='办理点信息' 
                     data={guideWindows} setData={setGuideWindows} />
-                <FormImage setData={setGuideQRCode} handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>
+                <FormImage setImageUpdated={setImageUpdated} setData={setGuideQRCode} handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>
                 <FormCheckbox setData={setGuideServiceType} formName='服务对象类型' value={guideServiceType}/>
             </Space>
         }
@@ -157,6 +169,7 @@ export default function CreateGuide(props){
     const handleChange = ()=>{
         let emptyArea = []
         let notNum = false
+        let notGood = false
         if (guideName === '') emptyArea.push('事项名称')
         if (guideCode === '') emptyArea.push('事项编码')
         if (guideContent === '') emptyArea.push('事项内容')
@@ -175,12 +188,34 @@ export default function CreateGuide(props){
         if (guideCondition === '') emptyArea.push('申办所需资格条件')
         // 所需申办材料数组处理
         if (guideMaterial.length === 0){
-            emptyArea.push('所需申办材料')
+            emptyArea.push('申办所需材料')
         }
         else{
             for (let i = 0; i < guideMaterial.length; i++){
-                if (guideMaterial[i] === ''){
-                    emptyArea.push('所需申办材料')
+                let empty = false
+                let origin = -1
+                let copy = -1
+                for (let key in guideMaterial[i]){
+                    if (guideMaterial[i][key] === ''){ 
+                        // 只有当非电子版时需要检测page_format
+                        if (key === 'page_format' && guideMaterial[i].material_form === '2') continue
+                        empty = true
+                        break
+                    }
+                    else{
+                        if (key === 'origin'){
+                            origin = parseInt(guideMaterial[i][key])
+                        }
+                        if (key === 'copy'){
+                            copy = parseInt(guideMaterial[i][key])
+                        }
+                    }
+                }
+                if (isNaN(origin) || isNaN(copy) || origin < 0 || copy < 0){
+                    notGood = true
+                } 
+                if (empty){
+                    emptyArea.push('申办所需材料')
                     break
                 }
             }
@@ -233,17 +268,17 @@ export default function CreateGuide(props){
         if (guideOfflineProcess === '') emptyArea.push('线下办理流程')
         if (guideQRCode === '') emptyArea.push('二维码')
         if (guideServiceType.length === 0) emptyArea.push('服务对象类型')
-        if (emptyArea.length === 0 && !notNum){
+        if (emptyArea.length === 0 && !notNum && !notGood){
             showConfirm()
         }
         else{
-            showEnterFull(emptyArea, notNum)
+            showEnterFull(emptyArea, notNum, notGood)
         }
     }
 
     // 点击创建后根据表单是否填写完毕触发不同函数
     // 未完成提示
-    const showEnterFull = (emptyArea, notNum)=>{
+    const showEnterFull = (emptyArea, notNum, notGood)=>{
         let empties = ''
         if (emptyArea.length !== 0){
             for (let i = 0; i < emptyArea.length; i++){
@@ -254,6 +289,10 @@ export default function CreateGuide(props){
         if (notNum){
             if (empties !== '') empties += '\n'
             empties += '申办时限处的输入必须是正整数，请进行修改！'
+        }
+        if (notGood){
+            if (empties !== '') empties += '\n'
+            empties += '申办所需材料处的材料份数必须是非负数，请进行修改！'
         }
         
         Modal.error({
@@ -323,11 +362,14 @@ export default function CreateGuide(props){
                 zzzd: guideSelfmadeAddress,
                 //windows: guideWindows,
                 ckbllc: guideOfflineProcess,
-                wsbllc: guideOnlineProcess,
-                qr_code: guideQRCode
+                wsbllc: guideOnlineProcess
             }
         }
-        
+
+        // 只在图片上传完成后处理二维码图片
+        if (imageUpdated){
+            data['qr_code'] = guideQRCode
+        }
         // 办理点信息处理
         let tempWindows = []
         for (let i = 0; i < guideWindows.length; i++){
@@ -355,17 +397,21 @@ export default function CreateGuide(props){
         }
         data['legal_basis'] = legalBasis
         // 所需申办材料处理
-        let submitDocuments = []
+        let tempMaterials = []
         for (let i = 0; i < guideMaterial.length; i++){
-            if (inj_judge(guideMaterial[i])){
-                showInlegal() 
-                return
-             } 
-            submitDocuments.push({
-                'materials_name': guideMaterial[i]
-            })
+            let tempMaterial = {}
+            for (let key in guideMaterial[i]){
+                if (key !== 'origin' && key !== 'copy' && inj_judge(guideMaterial[i][key])){
+                   showInlegal() 
+                   return
+                } 
+                // 若没有page_format则跳过
+                if (key === 'page_format' && guideMaterial[i].material_form === '2') continue
+                tempMaterial[key] = guideMaterial[i][key]
+            }
+            tempMaterials.push(tempMaterial)
         }
-        data['submit_documents'] = submitDocuments
+        data['submit_documents'] = tempMaterials
         // 指南编码处理
         if (inj_judge(guideCode)){
             showInlegal()
@@ -374,20 +420,25 @@ export default function CreateGuide(props){
         if (isUpdating){
             data['task_code'] = props.modifyId
             data['new_task_code'] = guideCode
-            api.GetItemGuides({
-                task_code: guideCode
-            }).then(response=>{
-                if (response.data.data.length === 0){
-                    updateItemGuide(data)
-                }
-                else{
-                    Modal.warning({
-                        title: '已有指南',
-                        content: '该指南编码已存在，请重新输入！',
-                        centered: true
-                    })
-                }
-            }) 
+            if (props.modifyId !== guideCode){
+                api.GetItemGuides({
+                    task_code: guideCode
+                }).then(response=>{
+                    if (response.data.data.length === 0){
+                        updateItemGuide(data)
+                    }
+                    else{
+                        Modal.warning({
+                            title: '已有指南',
+                            content: '该指南编码已存在，请重新输入！',
+                            centered: true
+                        })
+                    }
+                }) 
+            }
+            else{
+                updateItemGuide(data)
+            }
         }
         else{
             data['task_code'] = guideCode
@@ -414,6 +465,7 @@ export default function CreateGuide(props){
             props.showSuccess()
             props.setPageType(1)
         }).catch(error=>{
+            console.log(error)
             props.showError('创建指南失败！')
         })
     }
@@ -455,9 +507,11 @@ export default function CreateGuide(props){
                 else{
                     tempStatus[1] = 'finish'
                     for (let i = 0; i < guideMaterial.length; i++){
-                        if (guideMaterial[i] === ''){
-                            tempStatus[1] = 'wait'
-                            break
+                        for (let key in guideMaterial[i]){
+                            if (guideMaterial[i][key] === ''){
+                                if (key === 'page_format' && guideMaterial[i].material_form === '2') continue
+                                else tempStatus[1] = 'wait'
+                            }
                         }
                     }
                 }

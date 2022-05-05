@@ -1,0 +1,88 @@
+.inputLabel {
+    width: 15%; 
+    margin-top: 4px;
+    text-align: right;
+}
+
+.form {
+    display: flex;
+    width: 100%;
+}
+
+.input {
+    display: block;
+    width: 80%;
+}
+
+.windowName {
+    width: 30%;
+    //margin-right: 2%;
+}
+
+.otherDatas {
+    width: 70%;
+}
+
+.oneRow {
+    display: flex;
+    text-align: left;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.numTitle {
+    display: flex;
+    width: 13%;
+    margin-top: 4px;
+    text-align: right;
+    justify-content: right;
+}
+
+.shortTextArea {
+    width: 33%;
+    margin-right: 2%;
+}
+
+.longTextArea {
+    width: 100%;
+}
+
+.delete {
+    position: relative;
+    display: inline;
+    top: 8px;
+}
+
+.addBtn {
+    width: 100%;
+}
+
+.singleLine {
+    width: 100%;
+    display: flex;
+}
+
+.select {
+    width: 20%;
+    margin-right: 2%;
+}
+
+.formTitle {
+    width: 13%;
+    text-align: right;
+    margin-top: 4px;
+}
+
+.pageFormat {
+    width: 50%;
+}
+
+.pageFormatTitle {
+    width: 15%;
+    margin-top: 4px;
+    text-align: right;
+}
+
+.smallSelect {
+    width: 17%;
+}
