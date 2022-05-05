@@ -1,7 +1,7 @@
 // 页面上方使用条件搜索和角色创建导入的表单
 import {Button, Space, message} from "antd";
 import UserModal from "./UserModal";
-import BatchImportUserButton from "./BatchImportUserButton";
+import BatchImportUserButton from "../components/BatchImportUserButton/BatchImportUserButton";
 import api from "../../../../../api/user";
 import SearchForm from "./SearchForm";
 import React from "react";
@@ -65,7 +65,7 @@ export default function UserTableFunctionalZone(props) {
 
                 {/*搜索表单*/}
                 <SearchForm getSearch={props.getSearch}/>
-                <BatchImportUserButton />
+                {/* <BatchImportUserButton /> */}
             </Space>
         </div>
     )
