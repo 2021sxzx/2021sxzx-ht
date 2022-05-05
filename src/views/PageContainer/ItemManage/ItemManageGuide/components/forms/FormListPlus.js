@@ -1,8 +1,8 @@
 import { Input, Button } from 'antd'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import style from './FormListPlus.module.scss'
 const { TextArea } = Input
-import { MinusCircleOutlined } from '@ant-design/icons';
+import { MinusCircleOutlined } from '@ant-design/icons'
 
 export default function FormListPlus(props){
     const [windows, setWindows] = useState(props.data)

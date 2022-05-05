@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ManageProcess from './components/ManageProcess'
 import CreateProcess from './components/CreateProcess'
-import {Modal, message} from 'antd'
+import { Modal, message } from 'antd'
 import api from '../../../../api/rule'
 
 export default function ItemManageProcess(props) {

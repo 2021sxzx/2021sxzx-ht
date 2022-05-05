@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import style from './CreateRegion.module.scss'
-import { DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
+import { Space, Input, Button, Modal } from 'antd'
 import TagsArea from './TagsArea.js'
-import api from '../../../../../api/rule';
+import api from '../../../../../api/rule'
 
 export default function CreateRegion(props){
     /* 页面中用以展示的基础数据 */
@@ -15,17 +15,12 @@ export default function CreateRegion(props){
         setNodeName(e.target.value)
     }
     const [pathName, setPathName] = useState('')
-    const [extraHeight, setExtraHeight] = useState(0)
     // 加载效果
     const [isLoading, setIsLoading] = useState(false)
 
     /* 选择过程中的已选择、待选择节点 */
     const [chosenTags, setChosenTags] = useState([])
     const [enabledTags, setEnabledTags] = useState([])
-    const [recommendedTags, setRecommendedTags] = useState([{
-        'nodeName': '暂无',
-        'nodeId': '12345'
-    }])
 
     // 原节点的路径
     const [originPath, setOriginPath] = useState('')
@@ -341,20 +336,6 @@ export default function CreateRegion(props){
         })
     }
 
-    useEffect(function(){
-        // 根据节点数量动态调整选择框高度
-        let height = 0
-        if (enabledTags.length > 7 || recommendedTags.length > 4){
-            if (enabledTags.length - 7 > recommendedTags.length - 4){
-                height = enabledTags.length - 7
-            }
-            else{
-                height = recommendedTags.length - 4
-            }
-        }
-        setExtraHeight(height * 32)
-    },[enabledTags, recommendedTags])
-
     return (
         <Space direction='vertical' size={15}>
             <div className={style.regionItem}>
@@ -417,11 +398,11 @@ export default function CreateRegion(props){
                     </Space>
                 </div>
 
-                <div className={style.chooseBox} style={{height: 276 + extraHeight, minHeight: 276}}>
-                    <div className={style.chooseBoxTitle1}>
-                        可选事项规则项：
-                    </div>
-                    <div className={style.enabledTags}>
+                <div className={style.chooseBox}>
+                    <div className={style.chooseTagArea}>
+                        <div className={style.chooseBoxTitle1}>
+                            可选业务规则项：
+                        </div>
                         <TagsArea tags={enabledTags} chooseTag={chooseTag} type={'1'}/>
                     </div>
                 </div>

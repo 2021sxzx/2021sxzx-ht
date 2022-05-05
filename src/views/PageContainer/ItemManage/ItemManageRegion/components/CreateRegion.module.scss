@@ -74,6 +74,7 @@
 
 .chooseBox{
     position: relative;
+    display: flex;
     border: 1px solid rgba(170, 170, 170, 1);
     border-radius: 2px;
     border-top-left-radius: 0px;
@@ -81,14 +82,12 @@
     width: 915px;
     left: 150px;
     margin-bottom: 20px;
+    min-height: 276px;
 }
 
-.separator{
-    position: absolute;
-    width: 2px;
-    top: 18px;
-    left: 419px;
-    background-color: rgba(170, 170, 170, 1);
+.chooseTagArea{
+    display: block;
+    width: 300px;
 }
 
 .chooseBoxTitle1{

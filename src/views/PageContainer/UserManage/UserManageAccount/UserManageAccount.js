@@ -12,14 +12,17 @@ import UserTable from "./components/UserTable";
 
 //  修改页面 UI 样式
 export default function UserManageAccount() {
-    // 用 [] 初始化 useState，第一项（tableData）用于保存状态值（表格数据），第二项（setTableData）用于保存更新状态的函数，
     const [tableData, setTableData] = useState([])
+    const [loading,setLoading] = useState(true)
 
     // 从服务器获取用户表格的数据，保存到 tableData 中
     const getUser = (data) => {
+        setLoading(true)
+
         api.GetUser(data).then(response => {
             setTableData(response.data.data)
-            // console.log('getUser response.data.data=', response.data.data)
+            console.log('getUser response.data.data=', response.data.data)
+            setLoading(false)
         }).catch(error => {
             console.log("error = ", error)
         })
@@ -27,11 +30,13 @@ export default function UserManageAccount() {
 
     // 从服务器中获取搜索结果，保存到 tableData 中
     const getSearchUser = (data) => {
-        console.log('SearchValue = ', data)
+        setLoading(true)
+
         api.SearchUser(data).then(response => {
             console.log('SearchValue =', response.data)
             setTableData(response.data.data)
             message.success('搜索用户信息成功')
+            setLoading(false)
         }).catch(error => {
             console.log("error = ", error)
             message.error('搜索用户信息发生错误')
@@ -49,7 +54,7 @@ export default function UserManageAccount() {
                 {/* 功能区 */}
                 <UserTableFunctionalZone getSearch={getSearchUser} refreshTableData={getUser} />
                 {/* 用户评价的表格 */}
-                <UserTable tableData={tableData} refreshTableData={getUser} />
+                <UserTable tableData={tableData} refreshTableData={getUser} loading={loading} />
             </Space>,
         </div>
     )

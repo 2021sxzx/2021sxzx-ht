@@ -1,4 +1,4 @@
-import { Input, Image, Modal } from 'antd'
+import { Modal } from 'antd'
 import { useState } from 'react'
 import api from '../../../../../../api/rule'
 import style from './FormImage.module.scss'

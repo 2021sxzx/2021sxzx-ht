@@ -23,7 +23,7 @@ export default function UserTableFunctionalZone(props) {
         message.error('用户批量导入发生错误');
 
         // 刷新表格数据
-        setTimeout(props.refreshTableData,1000)
+        setTimeout(props.refreshTableData, 1000)
     }
 
     const addUserAndRefresh = function (data) {

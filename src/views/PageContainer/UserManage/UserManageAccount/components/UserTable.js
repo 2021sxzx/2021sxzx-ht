@@ -2,13 +2,14 @@ import ActivationStatusSwitch from "./ActivationStatusSwitch";
 import UserModal from "./UserModal";
 import api from "../../../../../api/user";
 import React from "react";
-import {Button, message, Space, Table} from "antd";
+import {Button, message, Space, Table, Tooltip} from "antd";
 
 /**
  * 后台账号管理的表格
  * @param props = {
  *     tableData:[],// 表格内的数据
- *     refreshTableData:function,// 用于刷新表格数据
+ *     refreshTableData:function(),// 用于刷新表格数据
+ *     loading:boolean, //是否处于加载状态
  * }
  * @returns {JSX.Element}
  * @constructor
@@ -38,6 +39,16 @@ export default function UserTable(props) {
         }))
     }
 
+    // 设置用户不能修改其他同名角色的非自己的账号信息
+    const disableModal = (record) => {
+        return record._id !== localStorage.getItem('_id') && record.role_name === localStorage.getItem('roleName')
+    }
+
+    // 设置删除按钮 disable 逻辑: 已激活的或者没有修改权限的不能删除
+    const disableDeleteButton = (record) => {
+        return record.activation_status !== 0 || disableModal(record)
+    }
+
     // 表格的属性/列名
     const tableColumns = [//  修改dataIndex和key，以便和服务器进行数据对接
         {
@@ -55,7 +66,7 @@ export default function UserTable(props) {
             dataIndex: 'role_name',
             key: 'role_name',
         },
-        // TODO（钟卓江）：部门表的信息还没完善，API也欠缺
+
         {
             title: '部门',
             dataIndex: 'department_name',
@@ -67,7 +78,7 @@ export default function UserTable(props) {
             dataIndex: 'activation_status',
             key: 'activation_status',
             render: (text, record) => (
-                <ActivationStatusSwitch record={record}/>
+                <ActivationStatusSwitch record={record} refreshTableData={props.refreshTableData}/>
             )
         },
 
@@ -76,22 +87,42 @@ export default function UserTable(props) {
             key: 'detail',
             render: (text, record) => (//修改用户信息按钮
                 <Space>
-                    <UserModal 
-                    buttonText={'修改用户信息'} title={'修改用户信息'}
+
+                    <UserModal buttonText={'修改用户信息'}
+                               title={'修改用户信息'}
+                               disable={disableModal(record)}
                                detailData={record}
                                saveInfoFunction={updateUserAndRefresh}
                                accountReadOnly={false}/>
-                    <Button disabled={record.activation_status !== 0}
-                        onClick={() => {
-                            deleteUser({account: record.account})
-                        }}
-                    >删除</Button>
+
+                    {
+                        disableDeleteButton(record) === false
+                            ?
+                            <Button disabled={disableDeleteButton(record)}
+                                    onClick={() => {
+                                        deleteUser({account: record.account})
+                                    }}
+                            >删除</Button>
+                            :
+                            <Tooltip title="如果要删除账号请先将账号设置为未激活" mouseEnterDelay={0.5}>
+                                <Button disabled={disableDeleteButton(record)}
+                                        onClick={() => {
+                                            deleteUser({account: record.account})
+                                        }}
+                                >删除</Button>
+                            </Tooltip>
+                    }
                 </Space>
             ),
         },
     ]
 
     return (
-        <Table columns={tableColumns} dataSource={props.tableData} rowKey={record => record._id}/>
+        <div>
+            <Table columns={tableColumns}
+                   dataSource={props.tableData !== {} ? props.tableData : {}}
+                   rowKey={record => record._id}
+                   loading={props.loading}/>
+        </div>
     )
 }

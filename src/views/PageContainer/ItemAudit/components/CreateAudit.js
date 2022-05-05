@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import style from './CreateAudit.module.scss'
 import {Table, Button, Space, Input, Modal} from 'antd'
 import api from '../../../../api/rule'
-const {TextArea} = Input
+const { TextArea } = Input
 
 export default function CreateAudit(props) {
     const [comment, setComment] = useState('')
