@@ -374,11 +374,37 @@ export default function CreateGuide(props){
         if (isUpdating){
             data['task_code'] = props.modifyId
             data['new_task_code'] = guideCode
-            updateItemGuide(data)
+            api.GetItemGuides({
+                task_code: guideCode
+            }).then(response=>{
+                if (response.data.data.length === 0){
+                    updateItemGuide(data)
+                }
+                else{
+                    Modal.warning({
+                        title: '已有指南',
+                        content: '该指南编码已存在，请重新输入！',
+                        centered: true
+                    })
+                }
+            }) 
         }
         else{
             data['task_code'] = guideCode
-            createItemGuide(data)
+            api.GetItemGuides({
+                task_code: guideCode
+            }).then(response=>{
+                if (response.data.data.length === 0){
+                    createItemGuide(data)
+                }
+                else{
+                    Modal.warning({
+                        title: '已有指南',
+                        content: '该指南编码已存在，请重新输入！',
+                        centered: true
+                    })
+                }
+            })
         }
     }
 
@@ -389,7 +415,6 @@ export default function CreateGuide(props){
             props.setPageType(1)
         }).catch(error=>{
             props.showError('创建指南失败！')
-            // props.setPageType(1)
         })
     }
 
@@ -399,7 +424,6 @@ export default function CreateGuide(props){
             props.setPageType(1)
         }).catch(error=>{
             props.showError('编辑指南失败！')
-            // props.setPageType(1)
         })
     }
 

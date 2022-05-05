@@ -6,6 +6,7 @@ const { TextArea } = Input
 
 export default function CreateAudit(props) {
     const [comment, setComment] = useState('')
+    let isRecalling = (props.statusScheme[props.auditingStatus].eng_name === 'Recall')
 
     const detailColumns = [
         {
@@ -51,7 +52,7 @@ export default function CreateAudit(props) {
         else{
             Modal.confirm({
                 title: '确认审核',
-                content: '    您的审核意见为“' + comment + '”，\n' + '    确定不通过审核吗？',
+                content: '    您的审核意见为“' + comment + '”，\n' + '    确定' + (isRecalling ? '不同意撤回' : '不通过审核') + '吗？',
                 centered: true,
                 style: {whiteSpace: 'pre-wrap'},
                 onOk: function(){
@@ -80,7 +81,7 @@ export default function CreateAudit(props) {
         else{
             Modal.confirm({
                 title: '确认审核',
-                content: '    您的审核意见为“' + comment + '”，\n' + '    确定通过审核吗？',
+                content: '    您的审核意见为“' + comment + '”，\n' + '    确定' + (isRecalling ? '同意撤回' : '通过审核') + '吗？',
                 centered: true,
                 style: {whiteSpace: 'pre-wrap'},
                 onOk: function(){
@@ -120,7 +121,7 @@ export default function CreateAudit(props) {
         api.AddAuditAdvise({
             item_id: props.auditingId,
             user_id: props.userId,
-            advise: ('（' + props.statusScheme[props.auditingStatus].cn_name + (choice === 'pass' ? '）（通过）' : '）（不通过）') + comment)
+            advise: ('（' + props.statusScheme[props.auditingStatus].cn_name + (choice === 'pass' ? '）（' : '）（不') + (isRecalling ? '同意撤回）' : '通过审核）') + comment)
         }).then(response=>{
             props.showSuccess()
             props.setPageType(1)
@@ -144,10 +145,10 @@ export default function CreateAudit(props) {
                     取消    
                 </Button>
                 <Button style={{backgroundColor: 'red', color: 'white'}} onClick={handleRejection}>
-                    审核不通过  
+                    {isRecalling ? '不同意撤回' : '不通过审核'}  
                 </Button>
                 <Button type='primary' onClick={handleAuditing}>
-                    审核通过   
+                    {isRecalling ? '同意撤回' : '通过审核'}  
                 </Button>
             </Space>
         </Space>
