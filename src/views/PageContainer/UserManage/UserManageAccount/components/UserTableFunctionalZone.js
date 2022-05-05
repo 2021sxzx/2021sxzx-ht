@@ -61,11 +61,10 @@ export default function UserTableFunctionalZone(props) {
                            saveInfoFunction={addUserAndRefresh}/>
 
                 {/*批量导入按钮*/}
-                <Button type="primary" onClick={multiCreate}>批量导入用户</Button>
+                <BatchImportUserButton />
 
                 {/*搜索表单*/}
                 <SearchForm getSearch={props.getSearch}/>
-                {/* <BatchImportUserButton /> */}
             </Space>
         </div>
     )
