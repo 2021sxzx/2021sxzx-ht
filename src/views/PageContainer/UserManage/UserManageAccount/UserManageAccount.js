@@ -19,7 +19,7 @@ export default function UserManageAccount() {
     const getUser = (data) => {
         api.GetUser(data).then(response => {
             setTableData(response.data.data)
-            console.log('getUser response.data.data=', response.data.data)
+            // console.log('getUser response.data.data=', response.data.data)
         }).catch(error => {
             console.log("error = ", error)
         })

@@ -33,7 +33,7 @@ function SideMenu(props) {
         // 获取侧边栏信息
         MenuList.getAndStorageMenuList((menuList)=>{
             setMenuList(menuList)
-            console.log('获得了 menuList', menuList)
+            // console.log('获得了 menuList', menuList)
         })
     },[])
 
