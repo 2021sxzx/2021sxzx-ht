@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import style from './CreateAudit.module.scss'
 import {Table, Button, Space, Input, Modal} from 'antd'
 import api from '../../../../api/rule'
-const {TextArea} = Input
+const { TextArea } = Input
 
 export default function CreateAudit(props) {
     const [comment, setComment] = useState('')
+    let isRecalling = (props.statusScheme[props.auditingStatus].eng_name === 'Recall')
 
     const detailColumns = [
         {
@@ -41,10 +42,17 @@ export default function CreateAudit(props) {
             })
             return
         }
+        else if (inj_judge(comment)){
+            Modal.warning({
+                centered: true,
+                title: '非法输入',
+                content: '输入信息中有非法输入内容，请检查输入！'
+            })
+        }
         else{
             Modal.confirm({
                 title: '确认审核',
-                content: '    您的审核意见为“' + comment + '”，\n' + '    确定不通过审核吗？',
+                content: '    您的审核意见为“' + comment + '”，\n' + '    确定' + (isRecalling ? '不同意撤回' : '不通过审核') + '吗？',
                 centered: true,
                 style: {whiteSpace: 'pre-wrap'},
                 onOk: function(){
@@ -63,10 +71,17 @@ export default function CreateAudit(props) {
             })
             return
         }
+        else if (inj_judge(comment)){
+            Modal.warning({
+                centered: true,
+                title: '非法输入',
+                content: '输入信息中有非法输入内容，请检查输入！'
+            })
+        }
         else{
             Modal.confirm({
                 title: '确认审核',
-                content: '    您的审核意见为“' + comment + '”，\n' + '    确定通过审核吗？',
+                content: '    您的审核意见为“' + comment + '”，\n' + '    确定' + (isRecalling ? '同意撤回' : '通过审核') + '吗？',
                 centered: true,
                 style: {whiteSpace: 'pre-wrap'},
                 onOk: function(){
@@ -91,11 +106,22 @@ export default function CreateAudit(props) {
         })
     }
 
+    const inj_judge = (str)=>{
+        let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
+            'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
+        for (let i = 0; i < inj_str.length; i++){
+            if (str.indexOf(inj_str[i]) >= 0){
+                return true
+            }
+        }
+        return false
+    }
+
     const addAuditAdvise = (choice)=>{
         api.AddAuditAdvise({
             item_id: props.auditingId,
             user_id: props.userId,
-            advise: ('（' + props.statusScheme[props.auditingStatus].cn_name + (choice === 'pass' ? '）（通过）' : '）（不通过）') + comment)
+            advise: ('（' + props.statusScheme[props.auditingStatus].cn_name + (choice === 'pass' ? '）（' : '）（不') + (isRecalling ? '同意撤回）' : '通过审核）') + comment)
         }).then(response=>{
             props.showSuccess()
             props.setPageType(1)
@@ -119,10 +145,10 @@ export default function CreateAudit(props) {
                     取消    
                 </Button>
                 <Button style={{backgroundColor: 'red', color: 'white'}} onClick={handleRejection}>
-                    审核不通过  
+                    {isRecalling ? '不同意撤回' : '不通过审核'}  
                 </Button>
                 <Button type='primary' onClick={handleAuditing}>
-                    审核通过   
+                    {isRecalling ? '同意撤回' : '通过审核'}  
                 </Button>
             </Space>
         </Space>

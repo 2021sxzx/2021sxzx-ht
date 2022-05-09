@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import ManageProcess from './components/ManageProcess'
 import CreateProcess from './components/CreateProcess'
-import {Modal, message} from 'antd'
+import { Modal, message } from 'antd'
 import api from '../../../../api/rule'
 
 export default function ItemManageProcess(props) {
@@ -39,7 +39,7 @@ export default function ItemManageProcess(props) {
                 pageType === 1 &&
                 <ManageProcess setPageType={setPageType} canOperate={canOperate}
                     ruleRoot={props.ruleRoot} regionRoot={props.regionRoot} userId={props.userId}
-                    showError={showError} showSuccess={showSuccess}
+                    showError={showError} showSuccess={showSuccess} jumpCode={props.jumpCode} setJumpCode={props.setJumpCode}
                     bindedData={props.bindedData} setBindedData={props.setBindedData}/>
             }
             {

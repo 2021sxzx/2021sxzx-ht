@@ -1,24 +1,18 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import style from './CreateRule.module.scss'
-import { DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
+import { Space, Input, Button, Modal } from 'antd'
 import TagsArea from './TagsArea.js'
-import api from '../../../../../api/rule';
+import api from '../../../../../api/rule'
 
 export default function CreateRule(props){
     /* 页面中用以展示的基础数据 */
     const [pathName, setPathName] = useState('')
-    const [extraHeight, setExtraHeight] = useState(0)
     // 加载效果
     const [isLoading, setIsLoading] = useState(false)
 
     /* 选择过程中的已选择、待选择节点 */
     const [chosenTags, setChosenTags] = useState([])
     const [enabledTags, setEnabledTags] = useState([])
-    const [recommendedTags, setRecommendedTags] = useState([{
-        'nodeName': '暂无',
-        'nodeId': '12345',
-        'disabled': false
-    }])
 
     /* 创建自定义节点 */
     const [isNodeCreating, setIsNodeCreating] = useState(false)
@@ -66,7 +60,7 @@ export default function CreateRule(props){
     }, [])
 
     const initUpdatePath = (path)=>{
-        // 正在修改的节点id，需要被跳过
+        // 正在修改的节点id需要被跳过
         let len = path.length
         let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
         api.GetRules({
@@ -98,11 +92,11 @@ export default function CreateRule(props){
     }
 
     const chooseTagApi = (tag)=>{
-        // 正在修改的节点id，需要被跳过
+        // 正在修改的节点id需要被跳过
         let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
         // 点击某个节点
         api.GetRules({
-            parentId: tag.nodeId
+            parentId: [tag.nodeId]
         }).then(response=>{
             let data = response.data.data
             // 子节点处理
@@ -132,11 +126,11 @@ export default function CreateRule(props){
     }
 
     const getBackApi = (tag, index)=>{
-        // 正在修改的节点id，需要被跳过
+        // 正在修改的节点id需要被跳过
         let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
         // 点击回归某个节点
         api.GetRules({
-            parentId: tag.nodeId
+            parentId: [tag.nodeId]
         }).then(response=>{
             let data = response.data.data
             // 子节点处理
@@ -367,22 +361,8 @@ export default function CreateRule(props){
         })
     }
 
-    useEffect(function(){
-        // 根据节点数量动态调整选择框高度
-        let height = 0
-        if (enabledTags.length > 7 || recommendedTags.length > 4){
-            if (enabledTags.length - 7 > recommendedTags.length - 4){
-                height = enabledTags.length - 7
-            }
-            else{
-                height = recommendedTags.length - 4
-            }
-        }
-        setExtraHeight(height * 32)
-    },[enabledTags, recommendedTags])
-
     return (
-        <Space direction='vertical' size={15}>
+        <Space className={style.mainSpace} direction='vertical' size={15}>
             <Modal centered destroyOnClose={true} title='自定义节点' visible={isNodeCreating} onCancel={endNodeCreating} onOk={finishNodeCreating}>
                 <Input id='NodeCreatingInput' placeholder='请输入自定义节点名' size='middle' onChange={handleNodeCreatingInputChange}/>
             </Modal>
@@ -444,33 +424,24 @@ export default function CreateRule(props){
                     </Space>
                 </div>
 
-                <div className={style.chooseBox} style={{height: 276 + extraHeight, minHeight: 276}}>
-                    <div className={style.chooseBoxTitle1}>
-                        可选事项规则项：
-                    </div>
-                    <div className={style.enabledTags}>
+                <div className={style.chooseBox}>
+                    <div className={style.chooseTagArea}>
+                        <div className={style.chooseBoxTitle1}>
+                            可选业务规则项：
+                        </div>
                         <TagsArea tags={enabledTags} chooseTag={chooseTag} type={'1'}/>
                     </div>
-
-                    <div className={style.separator} style={{height: 240 + extraHeight, minHeight: 240}}></div>
                     
-                    <div className={style.chooseBoxTitle2}>
-                        候选事项规则项：
-                    </div>
-
-                    <div className={style.chooseBoxSubTitle}>
-                        推荐规则项：
-                    </div>
-                    <div className={style.textRankTags}>
-                        <TagsArea tags={recommendedTags} chooseTag={chooseTag} type={'2'}/>
-                    </div>
-
-                    <div className={style.chooseBoxSubTitle} style={{top: 120 + extraHeight, display: isUpdatingRoot ? 'none' : 'block'}}>
-                        用户自定义：
-                    </div>
-                    <div className={style.createTag} style={{top: 125 + extraHeight, display: isUpdatingRoot ? 'none' : 'block'}}
-                        onClick={startNodeCreating}>
-                        自定义标签+
+                    <div className={style.separator1}/>
+                    
+                    <div className={style.chooseTagArea}>
+                        <div className={style.chooseBoxTitle3}>
+                            新建事项规则项：
+                        </div>
+                        <div className={style.createTag} style={{display: isUpdatingRoot ? 'none' : 'block'}}
+                            onClick={startNodeCreating}>
+                            自定义标签+
+                        </div>
                     </div>
                 </div>
             </Space>

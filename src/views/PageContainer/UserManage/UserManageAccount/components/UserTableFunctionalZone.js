@@ -1,6 +1,7 @@
 // 页面上方使用条件搜索和角色创建导入的表单
 import {Button, Space, message} from "antd";
 import UserModal from "./UserModal";
+import BatchImportUserButton from "../components/BatchImportUserButton/BatchImportUserButton";
 import api from "../../../../../api/user";
 import SearchForm from "./SearchForm";
 import React from "react";
@@ -22,7 +23,7 @@ export default function UserTableFunctionalZone(props) {
         message.error('用户批量导入发生错误');
 
         // 刷新表格数据
-        setTimeout(props.refreshTableData,1000)
+        setTimeout(props.refreshTableData, 1000)
     }
 
     const addUserAndRefresh = function (data) {
@@ -60,7 +61,7 @@ export default function UserTableFunctionalZone(props) {
                            saveInfoFunction={addUserAndRefresh}/>
 
                 {/*批量导入按钮*/}
-                <Button type="primary" onClick={multiCreate}>批量导入用户</Button>
+                <BatchImportUserButton />
 
                 {/*搜索表单*/}
                 <SearchForm getSearch={props.getSearch}/>

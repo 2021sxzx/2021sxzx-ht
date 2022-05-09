@@ -1,6 +1,6 @@
 import api from "../api/login";
-import Cookie from "./Cookie";
 import {message} from "antd";
+import UrlJump from "./UrlJump";
 
 const MenuList = {
     /**
@@ -20,40 +20,25 @@ const MenuList = {
     }, roleName = '') {
         // 如果没有传入 roleName，
         if (roleName === '') {
-            // // 如果 sessionStorage 中找到了 menuList 就直接返回
-            // let menuListJSON = sessionStorage.getItem('menuList')
-            // if (menuListJSON) {
-            //     console.log('从 sessionStorage 中找到了 menuList 并调用 callback 函数')
-            //     callback(JSON.parse(menuListJSON))
-            //     return true
-            // }
+            roleName = localStorage.getItem('roleName')
 
-            // 否则去 cookie 中找 roleName
-            roleName = Cookie.getAndResetCookie('roleName')
             // 如果没有找到 roleName，就 return false
             if (!roleName) {
                 console.log("error 没有找到 roleName，请重新登录")
                 // TODO（钟卓江）：测试一下
                 // roleName = '全知全能的开发人员'
                 message.warn('登录已过期，请重新登录')
+                UrlJump.replace('#/login');
                 return false
             }
         }
 
         // 根据角色名称向服务器申请获取 MenuList
         api.GetMenuList({role_name: roleName}).then((response => {
-            console.log('GetMenuList', response.data.data)
             const menuList = response.data.data
-            // // 储存到 sessionStorage 中
-            // console.log('根据角色名称向服务器申请获取 MenuList 成功', menuList)
-            // sessionStorage.setItem('menuList', JSON.stringify(menuList))
-
-            console.log('执行 callback(menuList)')
             callback(menuList)
             return true
         })).catch(error => {
-            console.log("error GetMenuList", error)
-            console.log('执行 callback(null)')
             callback(null)
             return false
         })

@@ -1,8 +1,7 @@
-import React, {useEffect, useState} from 'react'
-import api from '../../../../api/rule';
+import React, { useEffect, useState } from 'react'
 import ManageRules from './components/ManageRules'
 import CreateRule from './components/CreateRule'
-import {Modal, message} from 'antd'
+import { Modal, message } from 'antd'
 
 export default function ItemManageRule(props) {
     // 页面的基础数据

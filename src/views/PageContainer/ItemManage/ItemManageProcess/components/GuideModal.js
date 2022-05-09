@@ -1,12 +1,13 @@
-import React, {useEffect, useState} from 'react'
-import { DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptions, Badge  } from 'antd';
-import api from '../../../../../api/rule';
+import React, { useEffect, useState } from 'react'
+import { Form, Input, Button, Table, Modal } from 'antd'
+import api from '../../../../../api/rule'
 
 export default function GuideModal(props){
     const [enabledGuides, setEnabledGuides] = useState([])
     const [guidePageNum, setGuidePageNum] = useState(0)
     const [guideTableTotal, setGuideTableTotal] = useState(0)
     const [originData, setOriginData] = useState({})
+    const [tableLoading, setTableLoading] = useState(false)
 
     const [task_code, setTaskCode] = useState('')
     const [task_name, setTaskName] = useState('')
@@ -26,6 +27,7 @@ export default function GuideModal(props){
 
     const init = ()=>{
         if (!props.choosingGuide) return
+        setTableLoading(true)
         api.GetItemGuides({
             task_status: 0,
             page_size: 8,
@@ -34,7 +36,9 @@ export default function GuideModal(props){
             let data = response.data.data
             setGuideTableTotal(data.total)
             setEnabledGuides(data.data)
+            setTableLoading(false)
         }).catch(error=>{
+            setTableLoading(false)
             props.showError('选择指南初始化失败')
         })
     }
@@ -45,6 +49,7 @@ export default function GuideModal(props){
     }, [props.choosingGuide])
 
     const handleGuideTableChange = (page)=>{
+        setTableLoading(true)
         let totalData = originData
         totalData['task_status'] = 0
         totalData['page_num'] = page - 1
@@ -55,7 +60,9 @@ export default function GuideModal(props){
             let data = response.data.data
             setGuideTableTotal(data.total)
             setEnabledGuides(data.data)
+            setTableLoading(false)
         }).catch(error=>{
+            setTableLoading(false)
             props.showError('选择指南换页失败')
         })
     }
@@ -89,6 +96,7 @@ export default function GuideModal(props){
     }
 
     const search = (data)=>{
+        setTableLoading(true)
         setOriginData(data)
         let totalData = data
         totalData['task_status'] = 0
@@ -99,8 +107,9 @@ export default function GuideModal(props){
             let data = response.data.data
             setGuideTableTotal(data.total)
             setEnabledGuides(data.data)
+            setTableLoading(false)
         }).catch(error=>{
-            console.log(error)
+            setTableLoading(false)
             props.showError('搜索失败')
         })
     }
@@ -166,7 +175,7 @@ export default function GuideModal(props){
                     <Button type='primary' onClick={processData}>搜索</Button>
                 </Form.Item>
             </Form>
-            <Table class={guideTable} columns={guideColumns} dataSource={enabledGuides} rowKey='task_code'
+            <Table class={guideTable} columns={guideColumns} dataSource={enabledGuides} rowKey='task_code' loading={tableLoading}
                 pagination={{total: guideTableTotal, onChange: handleGuideTableChange, current: guidePageNum + 1, showSizeChanger: false, pageSize: 8}}/>
         </Modal>
     )

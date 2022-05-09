@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react'
-import {DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptions, Badge} from 'antd'
-import {getTimeStamp} from "../../../../../utils/TimeStamp";
+import React, { useState } from 'react'
+import {DatePicker, Form, Input, Button, Modal } from 'antd'
+import {getTimeStamp} from "../../../../../utils/TimeStamp"
 const {RangePicker} = DatePicker
 
 export default function SelectForm(props){
@@ -33,16 +33,35 @@ export default function SelectForm(props){
         return ids
     }
 
+    const inj_judge = (str)=>{
+        let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
+            'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
+        for (let i = 0; i < inj_str.length; i++){
+            if (str.indexOf(inj_str[i]) >= 0){
+                return true
+            }
+        }
+        return false
+    }
+
     const Search = ()=>{
         const data = {}
-        if (start_time !== '') data['start_time'] = start_time
-        if (end_time !== '') data['end_time'] = end_time
-        if (rule_id !== '') data['rule_id'] = splitIds(rule_id)
-        if (rule_name !== '') data['rule_name'] = rule_name
-        if (department !== '') data['department_name'] = department
-        if (creator !== '') data['creator_name'] = creator
-        //clear()
-        props.getSearch(data)
+        if (inj_judge(rule_id) || inj_judge(rule_name) || inj_judge(creator) || inj_judge(department)){
+            Modal.warning({
+                centered: true,
+                title: '非法输入',
+                content: '输入信息中有非法输入内容，请检查输入！'
+            })
+        }
+        else{
+            if (start_time !== '') data['start_time'] = start_time
+            if (end_time !== '') data['end_time'] = end_time
+            if (rule_id !== '') data['rule_id'] = splitIds(rule_id)
+            if (rule_name !== '') data['rule_name'] = rule_name
+            if (department !== '') data['department_name'] = department
+            if (creator !== '') data['creator_name'] = creator
+            props.getSearch(data)
+        }
     }
 
     const handleDateChange = (value, dataString)=>{

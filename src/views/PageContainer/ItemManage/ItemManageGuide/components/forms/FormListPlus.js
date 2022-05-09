@@ -1,8 +1,8 @@
 import { Input, Button } from 'antd'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import style from './FormListPlus.module.scss'
 const { TextArea } = Input
-import { MinusCircleOutlined } from '@ant-design/icons';
+import { MinusCircleOutlined } from '@ant-design/icons'
 
 export default function FormListPlus(props){
     const [windows, setWindows] = useState(props.data)
@@ -59,7 +59,7 @@ export default function FormListPlus(props){
                                 <div className={style.oneRow}>
                                     <TextArea className={style.longTextArea} onChange={function(e){
                                         handleChange(e.target.value, 'office_hour', index)
-                                    }} value={windows[index].office_hour} autoSize={true} placeholder='请输入咨询及投诉电话' />
+                                    }} value={windows[index].office_hour} autoSize={true} placeholder='请输入办公时间' />
                                 </div>
                             </div>
                         </div>

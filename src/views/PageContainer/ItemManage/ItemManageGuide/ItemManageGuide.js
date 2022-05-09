@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 import ManageGuides from './components/ManageGuides'
 import CreateGuide from './components/CreateGuide'
-import {useState} from 'react'
-import {Modal, message} from 'antd'
+import { useState } from 'react'
+import { Modal, message } from 'antd'
 
 export default function ItemManageGuide(props) {
     // 页面的基础数据

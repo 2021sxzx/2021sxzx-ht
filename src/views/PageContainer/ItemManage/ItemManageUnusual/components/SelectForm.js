@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react'
-import {DatePicker, Space, Form, Input, Button, Select, Table, Modal,Descriptions, Badge} from 'antd'
-import {getTimeStamp} from "../../../../../utils/TimeStamp";
-const {RangePicker} = DatePicker
+import React, { useEffect, useState } from 'react'
+import { DatePicker, Form, Input, Button, Modal } from 'antd'
+import { getTimeStamp } from "../../../../../utils/TimeStamp"
+const { RangePicker } = DatePicker
 
 export default function SelectForm(props){
     const [form] = Form.useForm()
@@ -65,28 +65,40 @@ export default function SelectForm(props){
         return result
     }
 
+    const inj_judge = (str)=>{
+        // 输入检测
+        let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
+            'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
+        for (let i = 0; i < inj_str.length; i++){
+            if (str.indexOf(inj_str[i]) >= 0){
+                return true
+            }
+        }
+        return false
+    }
+
     const Search = ()=>{
         const data = {}
-        if (start_time !== '') data['create_start_time'] = start_time
-        if (end_time !== '') data['create_end_time'] = end_time
-        if (task_code !== ''){
-            let code = splitIds(task_code)
-            data['task_code'] = code
-        } 
-        if (item_name !== '') data['item_name'] = item_name
-        if (department !== '') data['department_name'] = department
-        if (creator !== '') data['creator_name'] = creator
-        if (rule_id !== ''){
-            let id = splitIds(rule_id)
-            data['rule_id'] = id
-        } 
-        if (region_code !== ''){
-            let code = splitIds(region_code)
-            data['region_code'] = code
-        } 
-        // clear()
-        props.setOriginData(data)
-        props.getSearch(data)
+        if (inj_judge(task_code) || inj_judge(item_name) || inj_judge(department) || inj_judge(rule_id)
+            || inj_judge(creator) || inj_judge(region_code)){
+            Modal.warning({
+                centered: true,
+                title: '非法输入',
+                content: '输入信息中有非法输入内容，请检查输入！'
+            })
+        }
+        else{
+            if (start_time !== '') data['create_start_time'] = start_time
+            if (end_time !== '') data['create_end_time'] = end_time
+            if (task_code !== '') data['task_code'] = splitIds(task_code)
+            if (item_name !== '') data['item_name'] = item_name
+            if (department !== '') data['department_name'] = department
+            if (creator !== '') data['creator_name'] = creator
+            if (rule_id !== '') data['rule_id'] = splitIds(rule_id)
+            if (region_code !== '') data['region_code'] = splitIds(region_code)
+            props.setOriginData(data)
+            props.getSearch(data)
+        }
     }
 
     const handleDateChange = (value, dataString)=>{
