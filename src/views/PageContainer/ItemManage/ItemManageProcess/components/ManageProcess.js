@@ -108,7 +108,7 @@ export default function ManageProcess(props) {
             width: 100
         },
         {
-            title: '创建人',
+            title: '负责人',
             dataIndex: 'creator_name',
             key: 'creator_name',
             width: 100

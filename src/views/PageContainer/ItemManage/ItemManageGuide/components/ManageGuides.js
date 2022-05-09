@@ -102,7 +102,7 @@ export default function ManageGuide(props) {
             width: 125
         },
         {
-            title: '创建人',
+            title: '负责人',
             dataIndex: 'creator_name',
             key: 'creator_name',
             width: 100
