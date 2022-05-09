@@ -99,7 +99,7 @@ const HandleModal = (props) => {
       {/* <Button type="link" style={{color:"yellow",textDecoration:"underline"}}>详情</Button>
       <button style={{textDecoration:"underline"}}>underline</button> */}
       <a style={{textDecoration:"underline"}} onClick={showModal}>详情</a>
-      <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} okText="确定" cancelText="取消">
+      <Modal title="故障详情" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} okText="确定" cancelText="取消">
         <h2>故障名称：{props.record.failure_name}</h2>
         <p>故障描述：{props.record.failure_des}</p>
         <Image.PreviewGroup>
@@ -203,7 +203,7 @@ const SubmitFailure=(props)=>{
       return false;
     }
     data.user_name=localStorage.getItem('role_name');
-    data.create_time=new Date();
+    data.create_time=new Date(new Date().getTime()+8 * 3600 * 1000);
     data.fileSizeList=[];
     // props.setFresh(!props.fresh)
     // console.log('fresh:',props.fresh)

@@ -377,7 +377,7 @@ const Chart = (props) => {
     total=100;
     proportion=(used/total);
   }
-  console.log("proportion:"+proportion)
+  // console.log("proportion:"+proportion)
   var color='';
   if(proportion<=0.2){
     color='blue';
@@ -491,7 +491,7 @@ export default function SystemManageResource() {
   const [cpuPercentage, setCpuPercentage] = useState(false);
   const [memory, setMemory] = useState(false);
   const [disk, setDisk] = useState(false);
-  // const [test, setTest] = useState(false);
+  const [processCount, setProcessCount] = useState(false);
   // setTest(1.6);
   // var test=await api.GetCpuPercentage();
   // var cp=await test();
@@ -509,6 +509,12 @@ export default function SystemManageResource() {
       setMemory(info.data.data);
       console.log("getMemory=", info.data.data)
       console.log("Memory=", memory)
+    }).catch();
+  };
+  const getProcessCount = () => {
+    api.GetProcessCount().then(info=>{
+      setProcessCount(info.data);
+      console.log("processCount=", info.data)
     }).catch();
   };
   const getDisk = () => {
@@ -532,6 +538,7 @@ export default function SystemManageResource() {
     getCpuPercentage();
     getMemory();
     getDisk();
+    getProcessCount();
   }, []);
   return (
     <>
@@ -548,16 +555,16 @@ export default function SystemManageResource() {
         </Space>
       </div> */}
         <PageHeader title="服务器"></PageHeader>
-          <Row>
+          <Row style={{width:'1200px'}}>
             <Col span={8} offset={3}>
               <Chart id="CPU" name="CPU" used={cpuPercentage} total={2}></Chart>
             </Col>
             <Col span={8} offset={2}>
-              <Chart id="Users" name="用户并发数" used={82} total={100}></Chart>
+              <Chart id="Users" name="用户并发数" used={processCount} total={100}></Chart>
             </Col>
           </Row>
           <Divider></Divider>
-          <Row>
+          <Row style={{width:'1200px'}}>
           <Col span={8} offset={3}>
               <Chart id="ServerMemory" name="内存" used={memory.usedMemMb} total={memory.totalMemMb}></Chart>
             </Col>

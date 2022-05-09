@@ -14,13 +14,20 @@ import {
   Image,
   Switch,
   Select,
-  Upload,Row,Col,message
+  Upload,Row,Col,message,Typography,Card
 } from "antd";
+const { Title } = Typography;
 import { SyncOutlined, UploadOutlined } from "@ant-design/icons";
+import * as echarts from "echarts";
 import api from "../../../../api/systemBasic";
+import apiLog from "../../../../api/log";
 import "./MetaData.css";
-import SystemManageBasic from "../SystemManageBasic/SystemManageBasic";
-// import './FileMetaData.css'
+import ChartsT from "./ChartsT";
+import Charts from "./UsersChart";
+import ChartsTe from "./ChartsTe";
+// import LineChart from "./LineChart";
+// import BarChart from "./BarChart";
+import UsersChart from "./UsersChart";
 const { TabPane } = Tabs;
 
 //弹窗Modal
@@ -60,6 +67,137 @@ const HandleModal = (props) => {
   );
 };
 
+ const BarChart = (props) => {
+  const [data, setData] = useState([]);
+  // getLog(data, setData);
+  React.useEffect(()=>{
+    var chartDom = document.getElementById(props.id);
+    var myChart = echarts.init(chartDom);
+    myChart.setOption({
+      title: {
+        text:"日志记录",
+        subtext:"5000",
+        textStyle:{
+          fontSize:'12px',
+          fontWeight:'normal'
+        },
+        subtextStyle: {
+          fontSize: '20px',
+          fontWeight: 'bolder'
+        }
+      },
+      tooltip: {
+        trigger: 'item',
+        position: function (pt) {
+          // return [pt[0], '10%','top'];
+          return 'top'
+        }
+      },
+      xAxis: {
+        type: 'category',
+        // data: chart2()
+      },
+      yAxis: {
+        type: 'value',
+        show: false
+      },
+      series: [
+        {
+          // data: api.MetaDataLog(),
+          data: props.data,
+          // data: [120, 200, 150, 80, 70, 110, 130,120, 200, 150, 80, 70, 110, 130,140],
+          type: 'bar'
+        }
+      ]
+    });
+    // getLog(data,setData);
+  })
+  return (
+      <div style={{
+        width: "250px",
+        height: "170px",
+        // paddingLeft: "10px",
+        display: "inline-block",
+
+        // float: "left"
+      }}>
+        <div id={props.id} style={{width:"100%",height:"100%"}}/>
+        <Divider style={{marginTop:"-42px",marginBottom:"0px"}}/>
+        <div>
+          <p3 style={{marginLeft:"12px",marginRight:"20px"}}>更改条数</p3>+14
+        </div>
+      </div>
+
+  );
+}
+const LineChart = (props) => {
+  const [data,setData]=useState(false)
+  React.useEffect(()=>{
+      var chartDom = document.getElementById(props.id);
+      var myChart = echarts.init(chartDom);
+      myChart.setOption({
+          tooltip: {
+              trigger: 'axis',
+              position: function (pt) {
+                  return [pt[0], '10%'];
+              }
+          },
+          title: {
+              left: 'left',
+              text:"今日事项浏览次数",
+              subtext:"8486",
+              textStyle:{
+                  fontSize:'12px',
+                  fontWeight:'normal'
+              },
+              subtextStyle: {
+                  fontSize: '20px',
+                  fontWeight: 'bolder'
+              }
+          },
+          xAxis: {
+              type: 'time',
+              boundaryGap: false
+          },
+          yAxis: {
+              type: 'value',
+              boundaryGap: [0, '100%'],
+              show:false
+          },
+          series: [
+              {
+                  name: '今日事项浏览次数',
+                  type: 'line',
+                  smooth: true,
+                  symbol: 'none',
+                  areaStyle: {},
+                  data: props.data
+              }
+          ]
+      });
+      // getItemBrowseCount();
+  })
+  return (
+/*        <div id={props.id} style={{
+          width: "250px",
+          height: "170px",
+          paddingLeft: "10px",
+          display: "inline-block",
+          float: "left"
+      }}/>*/
+  <div style={{
+      width: "250px",
+      height: "170px",
+      display: "inline-block",
+  }}>
+      <div id={props.id} style={{width:"100%",height:"100%"}}/>
+      <Divider style={{marginTop:"-42px",marginBottom:"0px"}}/>
+      <div>
+          <p3 style={{marginLeft:"12px",marginRight:"20px"}}>日访问量</p3>14512
+      </div>
+  </div>
+  );
+}
 const Demo = () => {
   const [websiteSettingsForm]=Form.useForm()
   const [coreSettingsForm]=Form.useForm()
@@ -71,6 +209,10 @@ const Demo = () => {
   const [AddressBarIconFile,setAddressBarIconFile]=React.useState(null)
   const [MobileLogoFile,setMobileLogoFile]=React.useState(null)
   const [QRCodeFile,setQRCodeFile]=React.useState(null)
+  const [officialWebsite,setOfficialWebsite]=React.useState(null)
+  const [officialAccount,setOfficialAccount]=React.useState(null)
+  const [APP,setAPP]=React.useState(null)
+  const [cloudPlatform,setCloudPlatform]=React.useState(null)
   // const handleUpload = () => {
   //   const formData = new FormData();
   //   fileList.forEach(file => {
@@ -267,6 +409,27 @@ const Demo = () => {
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
+  const [logData15, setLogData15] = useState(false);
+  const [itemBrowseCount15, setItemBrowseCount15] = useState(false);
+
+  const getLog = () => {
+    // setLogData15([1, 10]);
+    // return [1, 10];
+    apiLog
+      .MetaDataLog()
+      .then((response) => {
+        setLogData15(response.data);
+        console.log("response.data.data=", response.data);
+      })
+      .catch((error) => {});
+    apiLog
+      .ItemBrowseCount()
+      .then((response) => {
+        setItemBrowseCount15(response.data);
+        console.log("Item=", response.data);
+      })
+      .catch((error) => {});
+  };
 
   useEffect(()=>{
     api.SiteSettings().then((response)=>{
@@ -279,6 +442,8 @@ const Demo = () => {
         Address:response.data.Address,
         Disclaimers:response.data.Disclaimers
       })
+      // console.log('ii')
+      // apiLog.MetaDataLog().then(response =>{setLogData15(response.data)} )
     })
     api.CoreSettings().then((response)=>{coreSettingsForm.setFieldsValue({
       MobileDomainName: response.data.MobileDomainName,
@@ -287,15 +452,43 @@ const Demo = () => {
     api.InterfaceConfiguration().then((response)=>{
       interfaceConfigurationForm.setFieldsValue({
         OfficialWebsite:response.data.OfficialWebsite,
-        OfficialAccount:response.data.OfficialAccount
+        OfficialAccount:response.data.OfficialAccount,
       })
+      setOfficialWebsite(response.data.OfficialWebsite)
+      setOfficialAccount(response.data.OfficialAccount)
+      // setAPP(response.data.APP)
+      // setCloudPlatform(response.data.CloudPlatform)
     })
-  })
+    getLog();
+  },[])
 
-  return (
+    function getMyState(data) {
+        if(data===0)
+        return (<span style={{color: '#63c044'}}>良好</span>);
+        else return(<span style={{color: 'red'}}>不良</span>)
+    }
+
+    return (
     <div className="card-container">
       <Tabs type="card">
-        <TabPane tab="网站设置" key="1">
+        <TabPane tab="元数据查看" key="1">
+          <div style={{padding:"5px",backgroundColor:"#eeeeee"}}>
+            <Row gutter={10}>
+              <Col span={8}> <Card size='small'><UsersChart id="xi"/></Card></Col>
+              <Col span={8}> <Card size='small'><LineChart id="ha" data={itemBrowseCount15}/></Card></Col>
+              <Col span={8}> <Card size='small'><BarChart id="ww" data={logData15}/></Card></Col>
+            </Row>
+          </div>
+          <Divider/>
+          {/* <Image width={800} src={require("./1.png").default} />
+          <Image width={400} src={require("./2.png").default} /> */}
+          {/* <ChartsT id="Users" name="用户并发数" used={82} total={100}></ChartsT>
+          <ChartsTe id="zyk" name="用户并发数" used={82} total={100}></ChartsTe> */}
+          {/*<Charts id="yk"/>*/}
+          {/*<LineChart id="k"/>*/}
+          {/* <img src="./1.png"></img> */}
+        </TabPane>
+        <TabPane tab="网站设置" key="2">
           <Form
             labelCol={{ span: 4 }}
             onFinish={onFinish}
@@ -469,7 +662,7 @@ const Demo = () => {
             </Form.Item>
           </Form>
         </TabPane>
-        <TabPane tab="核心设置" key="2">
+        <TabPane tab="核心设置" key="3">
           <Form
             labelCol={{ span: 4 }}
             onFinish={ChangeCoreSettings}
@@ -535,7 +728,7 @@ const Demo = () => {
             </Form.Item>
           </Form>
         </TabPane>
-        <TabPane tab="URL配置" key="3">
+        <TabPane tab="URL配置" key="4">
           <h3>URL模式</h3>
           <h3>伪静态模式</h3>
           <Form>
@@ -562,13 +755,14 @@ const Demo = () => {
             </Form.Item>
           </Form>
         </TabPane>
-        <TabPane tab="接口配置" key="4">
+        <TabPane tab="接口配置" key="5">
           <Row>
-            <Col span={18}> <Form
-            labelCol={{ span: 4 }}
+            <Col span={18}><Form
+            labelCol={{ span: 5 }}
             onFinish={ChangeInterfaceConfiguration}
             onFinishFailed={onFinishFailed}
             form={interfaceConfigurationForm}
+            labelAlign= 'left'
           >
             <h2>入口配置</h2>
             <Form.Item
@@ -578,14 +772,16 @@ const Demo = () => {
               // validateStatus="success"
               // hasFeedback
             >
-              <Input style={{ width: "700px" }} />
+              {/*<Input style={{ width: "700px" }} bordered={false} disabled={true} />*/}
+              {officialWebsite}
             </Form.Item>
             <Form.Item
               label="广州市人社局微信公众号"
               name="OfficialAccount"
               rules={[{ message: "Please input your username!" }]}
             >
-              <Input style={{ width: "700px" }} />
+              {/*<Input  style={{ width: "700px" }} />*/}
+              {officialAccount}
             </Form.Item>
             <Form.Item
               label="穗好办APP"
@@ -632,14 +828,68 @@ const Demo = () => {
           </Form>
           </Col>
             <Col span={6}>
-            <Image src={require("./2.png").default} />
+                <Form
+                    labelCol={{ span: 15}}
+                    // onFinish={ChangeInterfaceConfiguration}
+                    // onFinishFailed={onFinishFailed}
+                    // form={interfaceConfigurationForm}
+                    labelAlign= 'left'
+                >
+                    <Title level={4}>服务器与接口状态</Title>
+                    <Form.Item
+                        label="服务器网络"
+                        name="OfficialWebsite"
+                    >
+                        {getMyState(1)
+                            // ? <span style={{color: '#63c044'}}>良好</span> :
+                            //     <span style={{color: 'red'}}>不良</span>
+                        }
+                    </Form.Item>
+                    <Form.Item
+                        label="广州市人社局接口"
+                        name="OfficialWebsite"
+                    >
+                      {getMyState(0)}
+                    </Form.Item>
+                    <Form.Item
+                        label="广州人设微信公众号接口"
+                        name="OfficialWebsite"
+                    >
+                        良好
+                    </Form.Item>
+                    <Form.Item
+                        label="穗好办APP接口"
+                        name="OfficialWebsite"
+                    >
+                        良好
+                    </Form.Item>
+                    <Form.Item
+                        label="智能服务机器人云平台接口"
+                        name="OfficialWebsite"
+                    >
+                        良好
+                    </Form.Item>
+                    <Form.Item
+                        label="广东省政务服务综合平台接口"
+                        name="OfficialWebsite"
+                    >
+                        良好
+                    </Form.Item>
+                    <Form.Item
+                        label="百度地图接口"
+                        name="OfficialWebsite"
+                    >
+                        良好
+                    </Form.Item>
+                    <Form.Item
+                        label="QQ客服接口"
+                        name="OfficialWebsite"
+                    >
+                        良好
+                    </Form.Item>
+                </Form>
             </Col>
           </Row>
-        </TabPane>
-        <TabPane tab="元数据查看" key="5">
-          <Image width={800} src={require("./1.png").default} />
-          <Image width={400} src={require("./2.png").default} />
-          {/* <img src="./1.png"></img> */}
         </TabPane>
       </Tabs>
     </div>
