@@ -14,8 +14,12 @@ const api = {
 			data // data:data同名可以直接写 data
 		})
 	},
-	async getCommentParams() {
-		return service.get('/v1/commentparam')
+	async getCommentParams(data) {
+		return service.request({
+			method: 'get',
+			url:'/v1/commentparam',
+			params:data
+		})
 	},
 	SearchComment(data) {
 		return service.request({
@@ -23,7 +27,14 @@ const api = {
 			url: '/v1/searchComment/',
 			data // data:data同名可以直接写 data
 		})
-	}
+	},
+	getCommentDetail(data) {
+		return service.request({
+			method: 'get',
+			url: '/v1/commentDetail/',
+			params:data // data:data同名可以直接写 data
+		})
+	},
 }
 
 export default api

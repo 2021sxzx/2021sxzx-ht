@@ -17,8 +17,8 @@ import api from '../../../api/comment'
 const { RangePicker } = DatePicker
 const { Option } = Select
 // 设置下拉列表的内容
-const starList = ['全部', '1', '2', '3', '4', '5']
-const idList = ['全部', '证件号', '事项指南名称', '事项指南编码', '事项规则']
+const starList = ['全部', '1', '2', '3', '4']
+const idList = ['全部', '证件号', '事项指南名称', '事项指南编码']
 // 下拉列表组件
 const DropSelect = (props) => {
 	const { dataList, setData } = props
@@ -44,13 +44,13 @@ const DropSelect = (props) => {
 const tableColumns = [
 	{
 		title: '事项指南编码',
-		dataIndex: ['task', 'task_code'],
-		key: 'task.task_code'
+		dataIndex: ['task_code'],
+		key: 'task_code'
 	},
 	{
 		title: '事项指南名称',
-		dataIndex: ['task', 'task_name'],
-		key: 'task.task_name'
+		dataIndex: ['task_name'],
+		key: 'task_name'
 	},
 	{
 		title: '星级',
@@ -73,7 +73,7 @@ const tableColumns = [
 			record //查看详情按钮和详情弹窗
 		) => (
 			<Space size='middle'>
-				<DetailModal itemDetail={record}></DetailModal>
+				<DetailModal comment_id={record._id}/>
 			</Space>
 		)
 	}
@@ -97,10 +97,15 @@ const SelectForm = (props) => {
 			endTime,
 			score,
 			type,
-			typeData
+			typeData,
+
 		}
 		props.getParam(data)
+		data.pageNum=1
 		props.getSearch(data)
+		props.setCur({
+			current:1
+		})
 	}
 	const handleDateChange = (value, dateString) => {
 		if (value) {
@@ -147,31 +152,37 @@ const SelectForm = (props) => {
 // 查看详情按钮及其对应的详情弹窗
 const DetailModal = (props) => {
 	const [isModalVisible, setIsModalVisible] = useState(false)
-	const detail = props.itemDetail
+	const [detailData,setDetailData]=useState({})
 	const key2name = {
 		item_guide_name: '事项指南名称',
 		item_guide_id: '事项指南编码',
-
 		score: '星级',
 		content: '评价内容',
 		idc_type: '证件类型',
 		idc: '证件号',
 		rule_name: '事项规则',
-
 		create_time: '创建时间'
 	}
 
-	const detailData = {
-		item_guide_name: detail.task.task_name,
-		item_guide_id: detail.task.task_code,
-		score: detail.score,
-		content: detail.content,
-		create_time: getYMD(detail.create_time),
-		rule_name: detail.rule.rule_name,
-		idc_type: detail.idc_type,
-		idc: detail.idc
-	}
-	const showModal = () => {
+
+
+
+
+	const showModal = async () => {
+		let detail=await api.getCommentDetail({
+			_id:props.comment_id
+		})
+		detail=detail.data.data
+		setDetailData({
+			item_guide_name: detail.task_name,
+			item_guide_id: detail.task_code,
+			score: detail.score,
+			content: detail.content,
+			create_time: getYMD(detail.create_time),
+			rule_name: detail.rule.rule_name,
+			idc_type: detail.idc_type,
+			idc: detail.idc
+		})
 		setIsModalVisible(true)
 	}
 
@@ -233,27 +244,40 @@ export default function CommentManageList() {
 	}
 	// 从服务器中获取搜索结果，保存到 tableData 中
 	const getSearchComment = (data) => {
-		console.log(data)
 		api
 			.SearchComment(data)
 			.then((response) => {
-				console.log('searchData=', response.data.data)
-				setTableData(response.data.data)
+				console.log('searchData=', response.data)
+				setTableData(response.data.data.data)
+				if (response.data.data.total){
+					setPage({
+						total:response.data.data.total,
+						current: data.pageNum
+					})
+				}
+				else{
+					setPage({
+						total:0,
+						current: 1
+					})
+				}
+
 			})
 			.catch((error) => {
 				// catch
 			})
 	}
 	const handlePageChange=(pagination, filters, sorter)=>{
-
+		console.log(pagination)
 		setPage(pagination)
-		getComment({
-			pageNum:pagination
-		})
+		let param=searchParam
+		param.pageNum=pagination.current
+		console.log('search=',param)
+		getSearchComment(searchParam)
 	}
 	// 获取所有评论表格的数据，组件每渲染一次，该函数就自动执行一次。
 	useEffect(() => {
-		getComment({
+		getSearchComment({
 			pageNum: 1
 		})
 	}, [])
@@ -261,7 +285,7 @@ export default function CommentManageList() {
 		<div>
 			<Space direction='vertical' size={12}>
 				{/* 搜索 */}
-				<SelectForm getSearch={getSearchComment} getParam={setSearchParam}></SelectForm>
+				<SelectForm getSearch={getSearchComment} getParam={setSearchParam} setCur={setPage}></SelectForm>
 				{/* 用户评价的表格 */}
 				<Table columns={tableColumns} dataSource={tableData} pagination={page} loading={loading} showSizeChanger={false} onChange={handlePageChange}/>
 			</Space>
