@@ -454,6 +454,8 @@ export default function ManageGuide(props) {
             tempGuideContent['guideOfflineProcess'] = data.ckbllc
             tempGuideContent['guideWindows'] = data.windows
             tempGuideContent['guideQRCode'] = data.qr_code
+            tempGuideContent['principle'] = data.creator.name
+            tempGuideContent['principleId'] = data.creator.id
             let type = data.service_object_type.split(',')
             let tempServiceType = []
             for (let i = 0; i < type.length; i++){

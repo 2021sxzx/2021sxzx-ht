@@ -209,10 +209,18 @@ const api ={
             url: "/v1/getEveryItemStatusCount"
         })
     },
-    GetItemUsers(){
+    GetItemUsers(data){
         return service.request({
-            method: "get",
-            url: "/v1/getItemUsers"
+            method: "post",
+            url: "/v1/getItemUsers",
+            data
+        })
+    },
+    GetUserNameById(data){
+        return service.request({
+            method: "post",
+            url: "/v1/getUserNameById",
+            data
         })
     },
     GetServerIP(){

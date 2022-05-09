@@ -3,6 +3,7 @@ import style from './CreateGuide.module.scss'
 import { Steps, Space, Button, Modal } from 'antd'
 import api from '../../../../../api/rule'
 import FormArea from './forms/FormArea.js'
+import FormUser from './forms/FormUser.js'
 import FormListPlus from './forms/FormListPlus.js'
 import FormListMaterial from './forms/FormListMaterial.js'
 import FormTime from './forms/FormTime.js'
@@ -15,6 +16,11 @@ export default function CreateGuide(props){
     // 各个事项指南输入项的值
     const isUpdating = 'guideCode' in props.modifyContent
     const [imageUpdated, setImageUpdated] = useState(false)
+    const [buttonLoading, setButtonLoading] = useState(false)
+    const [principle, setPrinciple] = 
+        useState(isUpdating ? props.modifyContent.principle : '')
+    const [principleId, setPrincipleId] = 
+        useState(isUpdating ? props.modifyContent.principleId : props.userId)
     const [guideName, setGuideName] = 
         useState(isUpdating ? props.modifyContent.guideName : '')
     const [guideCode, setGuideCode] = 
@@ -71,7 +77,19 @@ export default function CreateGuide(props){
         }])
     // 判断指南输入状态
     const [stepStatus, setStepStatus] = useState(['process', 'wait', 'wait', 'wait'])
-    const [current, setCurrent] = useState(0);
+    const [current, setCurrent] = useState(0)
+
+    useEffect(function(){
+        // 新建时，默认负责人为账号本人
+        if (isUpdating || principleId === '' || principle !== '') return
+        api.GetUserNameById({
+            user_id: props.userId
+        }).then(response=>{
+            setPrinciple(response.data.data.user_name)
+        }).catch(error=>{
+            props.showError('获取用户信息时失败！')
+        })
+    }, [principleId])
 
     // 处理各个FormArea输入框的状态更新
     // 事项基本信息
@@ -119,6 +137,7 @@ export default function CreateGuide(props){
             title: '事项基本信息',
             content: 
             <Space className={style.form} direction='vertical' size={15} style={{width: '100%'}}>
+                <FormUser setPrinciple={setPrinciple} setPrincipleId={setPrincipleId} formName='负责人' value={principle} showError={props.showError}/>
                 <FormArea handleChange={handleGuideNameChange} formName='事项名称' value={guideName}/>
                 <FormArea handleChange={handleGuideCodeChange} formName='事项代码' value={guideCode}/>
                 <FormArea handleChange={handleGuideContentChange} formName='事项内容' value={guideContent}/>
@@ -334,11 +353,13 @@ export default function CreateGuide(props){
             title: '非法输入',
             content: '输入信息中有非法输入内容，请检查输入！'
         })
+        setButtonLoading(false)
     }
 
     // 数据预处理
     const dataProcessing = ()=>{
         let data = {}
+        setButtonLoading(true)
         if (inj_judge(guideName) || inj_judge(guidePCAddress) || inj_judge(guideCondition)
             || inj_judge(guideContent) || inj_judge(guidePEAddress) || inj_judge(guidePlatform)
             || inj_judge(guideSelfmadeAddress) || inj_judge(guideOfflineProcess) || inj_judge(guideOnlineProcess)){
@@ -347,7 +368,7 @@ export default function CreateGuide(props){
         }
         else{
             data = {
-                user_id: props.userId,
+                user_id: principleId,
                 task_name: guideName,
                 wsyy: guidePCAddress,
                 service_object_type: guideServiceType,
@@ -376,8 +397,8 @@ export default function CreateGuide(props){
             let tempWindow = {}
             for (let key in guideWindows[i]){
                 if (inj_judge(guideWindows[i][key])){
-                   showInlegal() 
-                   return
+                    showInlegal() 
+                    return
                 } 
                 tempWindow[key] = guideWindows[i][key]
             }
@@ -390,7 +411,7 @@ export default function CreateGuide(props){
             if (inj_judge(guideAccord[i])){
                 showInlegal() 
                 return
-             } 
+            } 
             legalBasis.push({
                 'name': guideAccord[i]
             })
@@ -433,8 +454,10 @@ export default function CreateGuide(props){
                             content: '该指南编码已存在，请重新输入！',
                             centered: true
                         })
+                        setButtonLoading(false)
                     }
-                }) 
+                }).catch(error=>{
+                })
             }
             else{
                 updateItemGuide(data)
@@ -454,7 +477,9 @@ export default function CreateGuide(props){
                         content: '该指南编码已存在，请重新输入！',
                         centered: true
                     })
+                    setButtonLoading(false)
                 }
+            }).catch(error=>{
             })
         }
     }
@@ -465,7 +490,6 @@ export default function CreateGuide(props){
             props.showSuccess()
             props.setPageType(1)
         }).catch(error=>{
-            console.log(error)
             props.showError('创建指南失败！')
         })
     }
@@ -590,7 +614,7 @@ export default function CreateGuide(props){
                 }
                 {
                     <Button type='primary' size='middle' className={style.button}
-                        onClick={handleChange}>
+                        onClick={handleChange} loading={buttonLoading}>
                         {isUpdating ? '修改' : '创建'}
                     </Button>
                 }
