@@ -25,6 +25,17 @@ export default function GuideModal(props){
         return ids
     }
 
+    const inj_judge = (str)=>{
+        let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
+            'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
+        for (let i = 0; i < inj_str.length; i++){
+            if (str.indexOf(inj_str[i]) >= 0){
+                return true
+            }
+        }
+        return false
+    }
+
     const init = ()=>{
         if (!props.choosingGuide) return
         setTableLoading(true)
@@ -87,6 +98,14 @@ export default function GuideModal(props){
 
     const processData = ()=>{
         let data = {}
+        if (inj_judge(task_code) || inj_judge(task_name)){
+            Modal.warning({
+                centered: true,
+                title: '非法输入',
+                content: '输入信息中有非法输入内容，请检查输入！'
+            }) 
+            return
+        }
         if (task_code !== ''){
             let code = splitIds(task_code)
             data['task_code'] = code

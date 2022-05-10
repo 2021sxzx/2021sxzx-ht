@@ -23,6 +23,17 @@ export default function PrincipleModal(props){
         })
     }
 
+    const inj_judge = (str)=>{
+        let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
+            'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
+        for (let i = 0; i < inj_str.length; i++){
+            if (str.indexOf(inj_str[i]) >= 0){
+                return true
+            }
+        }
+        return false
+    }
+
     useEffect(function(){
         // 当面板打开时获取首页指南
         init()
@@ -47,6 +58,14 @@ export default function PrincipleModal(props){
     }
 
     const processData = ()=>{
+        if (inj_judge(userName) || inj_judge(department)){
+            Modal.warning({
+                centered: true,
+                title: '非法输入',
+                content: '输入信息中有非法输入内容，请检查输入！'
+            }) 
+            return
+        }
         let data = {}
         if (userName !== '') data['user_name'] = userName
         if (department !== '') data['department_name'] = department  
@@ -59,7 +78,6 @@ export default function PrincipleModal(props){
             let data = response.data.data
             setUsers(data)
         }).catch(error=>{
-            console.log(error)
             props.showError('搜索失败')
         })
     }
