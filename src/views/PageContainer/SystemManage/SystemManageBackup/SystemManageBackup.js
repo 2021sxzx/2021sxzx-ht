@@ -15,14 +15,14 @@ import {
 } from "antd";
 import { getYMD, getTimeStamp } from "../../../../utils/TimeStamp";
 import { SyncOutlined } from "@ant-design/icons";
-import api from "../../../../api/log";
+import api from "../../../../api/systemBackup.js";
 // import './SystemManageBackup.css'
 const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
 
 const SelectForm = (props) => {
   const [form] = Form.useForm();
-  const [startTime, setStartTime] = useState("");
+/*  const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [myself, setMyself] = useState(false);
   const [today, setToday] = useState(false);
@@ -62,11 +62,28 @@ const SelectForm = (props) => {
       setEndTime("");
       setStartTime("");
     }
-  };
+  };*/
+  const onFinish=(values)=>{
+    console.log('Success:',values)
+    api.ChangeBackupCycle(values)
+    // console.log(form.getFieldValue())
+  }
+/*  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  }*/
+  useEffect(() => {
+    api.GetBackupCycle().then((res)=>{
+      console.log('-----------------------')
+      console.log(res)
+      form.setFieldsValue({
+        time:res.data.data
+      })
+    })
+  })
   return (
     <>
-      <Form form={form} layout={"inline"}>
-        <Form.Item label="起止日期" layout={"inline"}>
+      <Form name="setTime" form={form} layout={"inline"} onFinish={onFinish}>
+        {/* <Form.Item label="起止日期" layout={"inline"}>
           <RangePicker onChange={handleDateChange} />
         </Form.Item>
         <Form.Item label="备份名称">
@@ -81,13 +98,22 @@ const SelectForm = (props) => {
           >
             查询
           </Button>
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item>
           每
-          <Input
-            style={{ width: "40px", marginLeft: "4px", marginRight: "4px" }}
+        </Form.Item>
+        <Form.Item name="time">
+          <Input //addonBefore="每" addonAfter="小时系统自动备份一次"
+            style={{ width: "40px" }}
           ></Input>
+        </Form.Item>
+        <Form.Item>
           小时系统自动备份一次
+        </Form.Item>
+        <Form.Item>
+              <Button type="primary" htmlType="submit">
+                确认更改
+              </Button>
         </Form.Item>
       </Form>
     </>
@@ -182,7 +208,7 @@ const deleteFuncElem = (aimedRowData) => {
 
 const tableColumns = [
   {
-    title: "故障名称",
+    title: "备份名称",
     dataIndex: "failure_name",
     key: "failure_name",
   },
@@ -192,24 +218,9 @@ const tableColumns = [
     key: "create_time",
   },
   {
-    title: "操作描述",
-    dataIndex: "content",
-    key: "content",
-  },
-  {
-    title: "提交人",
+    title: "备份人",
     key: "user_name",
     dataIndex: "user_name",
-  },
-  {
-    // title:"详情",
-    key: "detail",
-    dataIndex: "detail",
-    render: () => (
-      <Space size="middle">
-        <a style={{ textDecoration: "underline" }}>详情</a>
-      </Space>
-    ),
   },
   {
     key: "handle",
@@ -223,8 +234,19 @@ const tableColumns = [
         {/* <Space size="middle">
         <button onClick={()=>{console.log(index)}}>处理</button>
       </Space> */}
-        <HandleModal record={record}></HandleModal>
+        {/* <HandleModal record={record}></HandleModal> */}
+        <Space size="middle">
+        <Button
+          style={{ border: "1px solid blue" }}
+          onClick={() => {
+            deleteFuncElem(record);
+          }}
+        >
+          下载
+        </Button>
+      </Space>
       </>
+      
     ),
   },
   {
@@ -276,10 +298,10 @@ const Demo = () => {
           <TabPane tab="数据库备份" key="1">
             <Table
               rowKey="log_id"
-              rowSelection={{
-                type: selectionType,
-                ...rowSelection,
-              }}
+              // rowSelection={{
+              //   type: selectionType,
+              //   ...rowSelection,
+              // }}
               columns={tableColumns}
               dataSource={tableData1}
               pagination={{ pageSize: 10,showQuickJumper:true,pageSizeOptions:[10,20,50],showSizeChanger:true }}
