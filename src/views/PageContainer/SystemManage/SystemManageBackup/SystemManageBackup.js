@@ -75,6 +75,9 @@ const SelectForm = (props) => {
 /*  const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   }*/
+  const backupNow=()=>{
+    message.success('备份')
+  }
   useEffect(() => {
     api.GetBackupCycle().then((res)=>{
       // console.log('-----------------------')
