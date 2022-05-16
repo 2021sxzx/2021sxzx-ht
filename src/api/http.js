@@ -18,8 +18,7 @@ const instance = axios.create({
 // 添加请求拦截器
 instance.interceptors.request.use(
     function (config) {
-        // let headers = config.headers
-        const token = localStorage.getItem('_id')
+/*         const token = localStorage.getItem('_id')
         console.log('token',token)
         if (localStorage.getItem('_id')) {
             // 注意：config.method 的判断值必须是小写的post和get
@@ -35,7 +34,9 @@ instance.interceptors.request.use(
                 }
             }
         }
-        // headers.user_id = localStorage.getItem('_id') ? localStorage.getItem('_id') : ''
+ */       
+        let headers = config.headers
+        headers.user_id = localStorage.getItem('_id') ? localStorage.getItem('_id') : ''
         console.log('请求拦截器',config);
         return config;
     },
