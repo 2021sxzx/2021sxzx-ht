@@ -36,7 +36,7 @@ instance.interceptors.request.use(
         }
  */       
         let headers = config.headers
-        headers.user_id = localStorage.getItem('_id') ? localStorage.getItem('_id') : ''
+        headers.userId = localStorage.getItem('_id') ? localStorage.getItem('_id') : ''
         console.log('请求拦截器',config);
         return config;
     },

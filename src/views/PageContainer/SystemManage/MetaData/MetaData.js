@@ -124,7 +124,7 @@ const HandleModal = (props) => {
         <div id={props.id} style={{width:"100%",height:"100%"}}/>
         <Divider style={{marginTop:"-42px",marginBottom:"0px"}}/>
         <div>
-          <p3 style={{marginLeft:"12px",marginRight:"20px"}}>更改条数</p3>+14
+          <p3 style={{marginLeft:"12px",marginRight:"20px"}}>更改条数</p3>+{props.data[props.data.length - 1][1]}
         </div>
       </div>
 
@@ -145,7 +145,7 @@ const LineChart = (props) => {
           title: {
               left: 'left',
               text:"今日事项浏览次数",
-              subtext:"8486",
+              subtext:props.data[props.data.length - 1][1],
               textStyle:{
                   fontSize:'12px',
                   fontWeight:'normal'
@@ -193,7 +193,7 @@ const LineChart = (props) => {
       <div id={props.id} style={{width:"100%",height:"100%"}}/>
       <Divider style={{marginTop:"-42px",marginBottom:"0px"}}/>
       <div>
-          <p3 style={{marginLeft:"12px",marginRight:"20px"}}>日访问量</p3>14512
+          <p3 style={{marginLeft:"12px",marginRight:"20px"}}>近15日日均访问量</p3>14512
       </div>
   </div>
   );
