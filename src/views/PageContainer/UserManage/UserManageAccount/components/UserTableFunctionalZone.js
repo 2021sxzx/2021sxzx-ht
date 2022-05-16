@@ -61,7 +61,7 @@ export default function UserTableFunctionalZone(props) {
                            saveInfoFunction={addUserAndRefresh}/>
 
                 {/*批量导入按钮*/}
-                {/* <BatchImportUserButton /> */}
+                <BatchImportUserButton />
 
                 {/*搜索表单*/}
                 <SearchForm getSearch={props.getSearch}/>

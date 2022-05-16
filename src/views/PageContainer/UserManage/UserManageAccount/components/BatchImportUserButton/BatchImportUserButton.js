@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// import * as XLSX from 'xlsx';
+import * as XLSX from 'xlsx';
 import './BatchImportUserButton.css';
 
 const BatchImportUserButton = () => {

@@ -4,7 +4,7 @@ const api ={
     GetBackupCycle(data) {
         return service.request({
             method: "get",
-            url: "v1/mongoBackupCycle",
+            url: "v1/mongo-backup-cycle",
             data, //data:data同名可以直接写 data
         });
     },

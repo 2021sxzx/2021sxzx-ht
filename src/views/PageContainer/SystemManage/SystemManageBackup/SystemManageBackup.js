@@ -12,6 +12,7 @@ import {
   Tabs,
   DatePicker,
   Alert,
+  message,
 } from "antd";
 import { getYMD, getTimeStamp } from "../../../../utils/TimeStamp";
 import { SyncOutlined } from "@ant-design/icons";
@@ -65,7 +66,10 @@ const SelectForm = (props) => {
   };*/
   const onFinish=(values)=>{
     console.log('Success:',values)
-    api.ChangeBackupCycle(values)
+    api.ChangeBackupCycle(values).then((res)=>{
+      if(res.data.data==='success'){message.success(res.data.msg)}
+      else{message.error(res.data.msg)}
+    })
     // console.log(form.getFieldValue())
   }
 /*  const onFinishFailed = (errorInfo) => {
@@ -73,8 +77,8 @@ const SelectForm = (props) => {
   }*/
   useEffect(() => {
     api.GetBackupCycle().then((res)=>{
-      console.log('-----------------------')
-      console.log(res)
+      // console.log('-----------------------')
+      // console.log(res)
       form.setFieldsValue({
         time:res.data.data
       })
@@ -99,6 +103,11 @@ const SelectForm = (props) => {
             查询
           </Button>
         </Form.Item> */}
+        <Form.Item>
+              <Button type="primary" htmlType="" onClick={backupNow}>
+                立即备份
+              </Button>
+        </Form.Item>
         <Form.Item>
           每
         </Form.Item>
