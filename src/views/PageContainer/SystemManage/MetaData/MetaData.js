@@ -66,13 +66,17 @@ const HandleModal = (props) => {
     </>
   );
 };
+var myChart;//echarts全局变量
 
  const BarChart = (props) => {
   const [data, setData] = useState([]);
   // getLog(data, setData);
+  if (myChart != null && myChart != "" && myChart != undefined) {
+    myChart.dispose();//销毁
+  }
   React.useEffect(()=>{
     var chartDom = document.getElementById(props.id);
-    var myChart = echarts.init(chartDom);
+    myChart = echarts.init(chartDom);
     myChart.setOption({
       title: {
         text:"日志记录",
@@ -124,16 +128,20 @@ const HandleModal = (props) => {
         <div id={props.id} style={{width:"100%",height:"100%"}}/>
         <Divider style={{marginTop:"-42px",marginBottom:"0px"}}/>
         <div>
-          <p3 style={{marginLeft:"12px",marginRight:"20px"}}>更改条数</p3>+{props.data[props.data.length - 1][1]}
+          <p3 style={{marginLeft:"12px",marginRight:"20px"}}>更改条数</p3>+{props.today}
         </div>
       </div>
 
   );
 }
 const LineChart = (props) => {
-  const [data,setData]=useState(false)
+  const [data,setData]=useState(props.data)
   React.useEffect(()=>{
       var chartDom = document.getElementById(props.id);
+      // setData(props.data[props.data.length - 1][1])
+      if (myChart != null && myChart != "" && myChart != undefined) {
+        myChart.dispose();//销毁
+      }
       var myChart = echarts.init(chartDom);
       myChart.setOption({
           tooltip: {
@@ -145,7 +153,7 @@ const LineChart = (props) => {
           title: {
               left: 'left',
               text:"今日事项浏览次数",
-              subtext:props.data[props.data.length - 1][1],
+              subtext:props.today,
               textStyle:{
                   fontSize:'12px',
                   fontWeight:'normal'
@@ -410,7 +418,10 @@ const Demo = () => {
     console.log('Failed:', errorInfo);
   };
   const [logData15, setLogData15] = useState(false);
+  const [logToday, setLogToday] = useState(false);
   const [itemBrowseCount15, setItemBrowseCount15] = useState(false);
+  const [itemBrowseCountAverage, setItemBrowseCountAverage] = useState(false);
+  const [itemBrowseCountToday, setItemBrowseCountToday] = useState(false);
 
   const getLog = () => {
     // setLogData15([1, 10]);
@@ -419,6 +430,7 @@ const Demo = () => {
       .MetaDataLog()
       .then((response) => {
         setLogData15(response.data);
+        setLogToday(logData15[logData15.length-1][1])
         console.log("response.data.data=", response.data);
       })
       .catch((error) => {});
@@ -426,6 +438,7 @@ const Demo = () => {
       .ItemBrowseCount()
       .then((response) => {
         setItemBrowseCount15(response.data);
+        setItemBrowseCountToday(itemBrowseCount15[itemBrowseCount15.length-1][1])
         console.log("Item=", response.data);
       })
       .catch((error) => {});
@@ -475,8 +488,8 @@ const Demo = () => {
           <div style={{padding:"5px",backgroundColor:"#eeeeee"}}>
             <Row gutter={10}>
               <Col span={8}> <Card size='small'><UsersChart id="xi"/></Card></Col>
-              <Col span={8}> <Card size='small'><LineChart id="ha" data={itemBrowseCount15}/></Card></Col>
-              <Col span={8}> <Card size='small'><BarChart id="ww" data={logData15}/></Card></Col>
+              <Col span={8}> <Card size='small'><LineChart id="ha" data={itemBrowseCount15} today={itemBrowseCountToday}/></Card></Col>
+              <Col span={8}> <Card size='small'><BarChart id="ww" data={logData15} today={logToday}/></Card></Col>
             </Row>
           </div>
           <Divider/>
