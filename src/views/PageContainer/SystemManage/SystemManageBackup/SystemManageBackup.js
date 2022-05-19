@@ -76,7 +76,10 @@ const SelectForm = (props) => {
     console.log('Failed:', errorInfo);
   }*/
   const backupNow=()=>{
-    message.success('备份')
+    api.HandleBackup().then(res=>{
+      message.success('res.data')
+    })
+          // message.success("res.data")
   }
   useEffect(() => {
     api.GetBackupCycle().then((res)=>{
@@ -107,7 +110,7 @@ const SelectForm = (props) => {
           </Button>
         </Form.Item> */}
         <Form.Item>
-              <Button type="primary" htmlType="" onClick={backupNow}>
+              <Button type="primary" onClick={backupNow}>
                 立即备份
               </Button>
         </Form.Item>

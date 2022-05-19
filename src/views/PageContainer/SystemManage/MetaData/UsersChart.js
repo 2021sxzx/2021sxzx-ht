@@ -22,7 +22,7 @@ const UsersChart = (props) => {
           </div>
           <Divider style={{marginTop:"-42px",marginBottom:"0px"}}/>
           <div>
-            <p3 style={{marginLeft:"12px",marginRight:"20px"}}>日均用户活跃数</p3>140
+            {/* <p3 style={{marginLeft:"12px",marginRight:"20px"}}>日均用户活跃数</p3>140 */}
           </div>
         </div>
     );

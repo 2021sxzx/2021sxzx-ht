@@ -16,6 +16,13 @@ const api ={
             data
         })
     },
+    HandleBackup(data){
+        return service.request({
+            method:"get",
+            url:"v1/handle-backup",
+            data
+        })
+    }
 }
 
 export default api

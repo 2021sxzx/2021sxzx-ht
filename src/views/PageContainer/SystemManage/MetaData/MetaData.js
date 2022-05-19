@@ -22,9 +22,9 @@ import * as echarts from "echarts";
 import api from "../../../../api/systemBasic";
 import apiLog from "../../../../api/log";
 import "./MetaData.css";
-import ChartsT from "./ChartsT";
-import Charts from "./UsersChart";
-import ChartsTe from "./ChartsTe";
+// import ChartsT from "./ChartsT";
+// import Charts from "./UsersChart";
+// import ChartsTe from "./ChartsTe";
 // import LineChart from "./LineChart";
 // import BarChart from "./BarChart";
 import UsersChart from "./UsersChart";
@@ -66,18 +66,18 @@ const HandleModal = (props) => {
     </>
   );
 };
-var myChart;//echarts全局变量
-
+var barChart;//echarts全局变量，用来消除警告There is a chart instance already initialized on the dom
+var lineChart;
  const BarChart = (props) => {
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
   // getLog(data, setData);
-  if (myChart != null && myChart != "" && myChart != undefined) {
-    myChart.dispose();//销毁
+  if (barChart != null && barChart != "" && barChart != undefined) {
+    barChart.dispose();//销毁
   }
   React.useEffect(()=>{
     var chartDom = document.getElementById(props.id);
-    myChart = echarts.init(chartDom);
-    myChart.setOption({
+    barChart = echarts.init(chartDom);
+    barChart.setOption({
       title: {
         text:"日志记录",
         subtext:"5000",
@@ -135,15 +135,13 @@ var myChart;//echarts全局变量
   );
 }
 const LineChart = (props) => {
-  const [data,setData]=useState(props.data)
+  if (lineChart != null && lineChart != "" && lineChart != undefined) {
+    lineChart.dispose();//销毁
+  }
   React.useEffect(()=>{
       var chartDom = document.getElementById(props.id);
-      // setData(props.data[props.data.length - 1][1])
-      if (myChart != null && myChart != "" && myChart != undefined) {
-        myChart.dispose();//销毁
-      }
-      var myChart = echarts.init(chartDom);
-      myChart.setOption({
+      var lineChart = echarts.init(chartDom);
+      lineChart.setOption({
           tooltip: {
               trigger: 'axis',
               position: function (pt) {
@@ -488,8 +486,8 @@ const Demo = () => {
           <div style={{padding:"5px",backgroundColor:"#eeeeee"}}>
             <Row gutter={10}>
               <Col span={8}> <Card size='small'><UsersChart id="xi"/></Card></Col>
-              <Col span={8}> <Card size='small'><LineChart id="ha" data={itemBrowseCount15} today={itemBrowseCountToday}/></Card></Col>
-              <Col span={8}> <Card size='small'><BarChart id="ww" data={logData15} today={logToday}/></Card></Col>
+              {/* <Col span={8}> <Card size='small'><LineChart id="itemBrowseCount" data={itemBrowseCount15} today={itemBrowseCountToday}/></Card></Col>
+              <Col span={8}> <Card size='small'><BarChart id="logData" data={logData15} today={logToday}/></Card></Col> */}
             </Row>
           </div>
           <Divider/>
