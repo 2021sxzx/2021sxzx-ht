@@ -224,13 +224,8 @@ const deleteFuncElem = (aimedRowData) => {
 const tableColumns = [
   {
     title: "备份名称",
-    dataIndex: "failure_name",
-    key: "failure_name",
-  },
-  {
-    title: "时间",
-    dataIndex: "create_time",
-    key: "create_time",
+    dataIndex: "backup_name",
+    key: "backup_name",
   },
   {
     title: "备份人",
@@ -300,6 +295,19 @@ const rowSelection = {
 const Demo = () => {
   const [visible, setVisible] = useState(false);
   const [selectionType, setSelectionType] = useState('checkbox');
+  const [tableData, setTableData] = useState('');
+  const getBackup = (data) => {
+    api
+      .GetBackup(data)
+      .then((response) => {
+        setTableData(response.data.data);
+        console.log("response.data.data=", response.data.data);
+      })
+      .catch((error) => {});
+  };
+  useEffect(() => {
+    getBackup()
+  },[]);
   return (
     <>
       {visible ? (
@@ -318,7 +326,7 @@ const Demo = () => {
               //   ...rowSelection,
               // }}
               columns={tableColumns}
-              dataSource={tableData1}
+              dataSource={tableData}
               pagination={{ pageSize: 10,showQuickJumper:true,pageSizeOptions:[10,20,50],showSizeChanger:true }}
             />
           </TabPane>
