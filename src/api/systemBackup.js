@@ -16,6 +16,20 @@ const api ={
             data
         })
     },
+    HandleBackup(data){
+        return service.request({
+            method:"get",
+            url:"v1/handle-backup",
+            data
+        })
+    },
+    GetBackup(data){
+        return service.request({
+            method:"get",
+            url:"v1/mongo-backup",
+            data
+        })
+    }
 }
 
 export default api
