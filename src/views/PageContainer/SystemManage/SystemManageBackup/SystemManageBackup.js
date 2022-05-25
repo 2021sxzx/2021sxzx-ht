@@ -184,10 +184,10 @@ const HandleModal = (props) => {
 };
 
 //删除操作
-const deleteFuncElem = (aimedRowData) => {
+const deleteFuncElem = async (aimedRowData) => {
   // console.log(aimedRowData);
-  const totalFuncDataList = tableData1;
-  // console.log(totalFuncDataList);
+  api.DeleteSystemBackup(aimedRowData).then(message.success('删除故障成功.'));
+/*   const totalFuncDataList = tableData1;
   let i;
   let indexOfFuncList;
   for (i = 0; i < totalFuncDataList.length; i++) {
@@ -195,9 +195,9 @@ const deleteFuncElem = (aimedRowData) => {
       break;
     }
   }
-  // console.log(totalFuncDataList[i]);
   totalFuncDataList.splice(i + 1, 1);
-  console.log(totalFuncDataList);
+  console.log(totalFuncDataList); */
+  // message.success(aimedRowData)
   // this.setState({
   //   data:totalFuncDataList
   // });
@@ -251,6 +251,7 @@ const tableColumns = [
           style={{ border: "1px solid blue" }}
           onClick={() => {
             deleteFuncElem(record);
+            message.success('删除成功')
           }}
         >
           删除

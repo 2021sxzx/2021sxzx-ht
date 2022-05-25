@@ -121,7 +121,7 @@ const HandleModal = (props) => {
 
 //删除操作
 const deleteFuncElem=async (aimedRowData)=>{
-  console.log(aimedRowData);
+  // console.log(aimedRowData);
   api.DeleteSystemFailure(aimedRowData).then(message.success('删除故障成功.'));
   // const totalFuncDataList = tableData1;
   // console.log(totalFuncDataList);

@@ -29,7 +29,14 @@ const api ={
             url:"v1/mongo-backup",
             data
         })
-    }
+    },
+    DeleteSystemBackup(data) {
+        return service.request({
+            method: "post",
+            url: "v1/delete-system-backup",
+            data
+        })
+    },
 }
 
 export default api
