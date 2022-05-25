@@ -76,7 +76,9 @@ const SelectForm = (props) => {
     console.log('Failed:', errorInfo);
   }*/
   const backupNow=()=>{
-    message.success('备份')
+    api.HandleBackup().then(res=>{
+      message.success('备份成功')
+    })
   }
   useEffect(() => {
     api.GetBackupCycle().then((res)=>{
@@ -90,24 +92,8 @@ const SelectForm = (props) => {
   return (
     <>
       <Form name="setTime" form={form} layout={"inline"} onFinish={onFinish}>
-        {/* <Form.Item label="起止日期" layout={"inline"}>
-          <RangePicker onChange={handleDateChange} />
-        </Form.Item>
-        <Form.Item label="备份名称">
-          <Input></Input>
-        </Form.Item>
-        <Form.Item label="">
-          <Button
-            type="primary"
-            onClick={() => {
-              props.setVisible(true);
-            }}
-          >
-            查询
-          </Button>
-        </Form.Item> */}
         <Form.Item>
-              <Button type="primary" htmlType="" onClick={backupNow}>
+              <Button type="primary" onClick={backupNow}>
                 立即备份
               </Button>
         </Form.Item>
