@@ -12,17 +12,18 @@ import {
   Tabs,
   DatePicker,
   Alert,
+  message,
 } from "antd";
 import { getYMD, getTimeStamp } from "../../../../utils/TimeStamp";
 import { SyncOutlined } from "@ant-design/icons";
-import api from "../../../../api/log";
+import api from "../../../../api/systemBackup.js";
 // import './SystemManageBackup.css'
 const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
 
 const SelectForm = (props) => {
   const [form] = Form.useForm();
-  const [startTime, setStartTime] = useState("");
+/*  const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
   const [myself, setMyself] = useState(false);
   const [today, setToday] = useState(false);
@@ -62,32 +63,55 @@ const SelectForm = (props) => {
       setEndTime("");
       setStartTime("");
     }
-  };
+  };*/
+  const onFinish=(values)=>{
+    console.log('Success:',values)
+    api.ChangeBackupCycle(values).then((res)=>{
+      if(res.data.data==='success'){message.success(res.data.msg)}
+      else{message.error(res.data.msg)}
+    })
+    // console.log(form.getFieldValue())
+  }
+/*  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  }*/
+  const backupNow=()=>{
+    api.HandleBackup().then(res=>{
+      message.success('备份成功')
+    })
+  }
+  useEffect(() => {
+    api.GetBackupCycle().then((res)=>{
+      // console.log('-----------------------')
+      // console.log(res)
+      form.setFieldsValue({
+        time:res.data.data
+      })
+    })
+  })
   return (
     <>
-      <Form form={form} layout={"inline"}>
-        <Form.Item label="起止日期" layout={"inline"}>
-          <RangePicker onChange={handleDateChange} />
-        </Form.Item>
-        <Form.Item label="备份名称">
-          <Input></Input>
-        </Form.Item>
-        <Form.Item label="">
-          <Button
-            type="primary"
-            onClick={() => {
-              props.setVisible(true);
-            }}
-          >
-            查询
-          </Button>
+      <Form name="setTime" form={form} layout={"inline"} onFinish={onFinish}>
+        <Form.Item>
+              <Button type="primary" onClick={backupNow}>
+                立即备份
+              </Button>
         </Form.Item>
         <Form.Item>
           每
-          <Input
-            style={{ width: "40px", marginLeft: "4px", marginRight: "4px" }}
+        </Form.Item>
+        <Form.Item name="time">
+          <Input //addonBefore="每" addonAfter="小时系统自动备份一次"
+            style={{ width: "40px" }}
           ></Input>
+        </Form.Item>
+        <Form.Item>
           小时系统自动备份一次
+        </Form.Item>
+        <Form.Item>
+              <Button type="primary" htmlType="submit">
+                确认更改
+              </Button>
         </Form.Item>
       </Form>
     </>
@@ -160,10 +184,10 @@ const HandleModal = (props) => {
 };
 
 //删除操作
-const deleteFuncElem = (aimedRowData) => {
+const deleteFuncElem = async (aimedRowData) => {
   // console.log(aimedRowData);
-  const totalFuncDataList = tableData1;
-  // console.log(totalFuncDataList);
+  api.DeleteSystemBackup(aimedRowData).then(message.success('删除故障成功.'));
+/*   const totalFuncDataList = tableData1;
   let i;
   let indexOfFuncList;
   for (i = 0; i < totalFuncDataList.length; i++) {
@@ -171,9 +195,9 @@ const deleteFuncElem = (aimedRowData) => {
       break;
     }
   }
-  // console.log(totalFuncDataList[i]);
   totalFuncDataList.splice(i + 1, 1);
-  console.log(totalFuncDataList);
+  console.log(totalFuncDataList); */
+  // message.success(aimedRowData)
   // this.setState({
   //   data:totalFuncDataList
   // });
@@ -182,34 +206,14 @@ const deleteFuncElem = (aimedRowData) => {
 
 const tableColumns = [
   {
-    title: "故障名称",
-    dataIndex: "failure_name",
-    key: "failure_name",
+    title: "备份名称",
+    dataIndex: "backup_name",
+    key: "backup_name",
   },
   {
-    title: "时间",
-    dataIndex: "create_time",
-    key: "create_time",
-  },
-  {
-    title: "操作描述",
-    dataIndex: "content",
-    key: "content",
-  },
-  {
-    title: "提交人",
+    title: "备份人",
     key: "user_name",
     dataIndex: "user_name",
-  },
-  {
-    // title:"详情",
-    key: "detail",
-    dataIndex: "detail",
-    render: () => (
-      <Space size="middle">
-        <a style={{ textDecoration: "underline" }}>详情</a>
-      </Space>
-    ),
   },
   {
     key: "handle",
@@ -223,8 +227,19 @@ const tableColumns = [
         {/* <Space size="middle">
         <button onClick={()=>{console.log(index)}}>处理</button>
       </Space> */}
-        <HandleModal record={record}></HandleModal>
+        {/* <HandleModal record={record}></HandleModal> */}
+        <Space size="middle">
+        <Button
+          style={{ border: "1px solid blue" }}
+          onClick={() => {
+            deleteFuncElem(record);
+          }}
+        >
+          下载
+        </Button>
+      </Space>
       </>
+      
     ),
   },
   {
@@ -236,6 +251,7 @@ const tableColumns = [
           style={{ border: "1px solid blue" }}
           onClick={() => {
             deleteFuncElem(record);
+            message.success('删除成功')
           }}
         >
           删除
@@ -263,6 +279,19 @@ const rowSelection = {
 const Demo = () => {
   const [visible, setVisible] = useState(false);
   const [selectionType, setSelectionType] = useState('checkbox');
+  const [tableData, setTableData] = useState('');
+  const getBackup = (data) => {
+    api
+      .GetBackup(data)
+      .then((response) => {
+        setTableData(response.data.data);
+        console.log("response.data.data=", response.data.data);
+      })
+      .catch((error) => {});
+  };
+  useEffect(() => {
+    getBackup()
+  },[]);
   return (
     <>
       {visible ? (
@@ -276,12 +305,12 @@ const Demo = () => {
           <TabPane tab="数据库备份" key="1">
             <Table
               rowKey="log_id"
-              rowSelection={{
-                type: selectionType,
-                ...rowSelection,
-              }}
+              // rowSelection={{
+              //   type: selectionType,
+              //   ...rowSelection,
+              // }}
               columns={tableColumns}
-              dataSource={tableData1}
+              dataSource={tableData}
               pagination={{ pageSize: 10,showQuickJumper:true,pageSizeOptions:[10,20,50],showSizeChanger:true }}
             />
           </TabPane>

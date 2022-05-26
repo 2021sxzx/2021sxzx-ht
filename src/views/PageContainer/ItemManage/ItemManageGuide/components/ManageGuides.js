@@ -45,6 +45,29 @@ export default function ManageGuide(props) {
         '9': '其他组织'
     }
 
+    const necessityType = {
+        '1': '必要',
+        '2': '非必要',
+        '3': '容缺后补'
+    }
+
+    const typesType = {
+        '1': '证件证书证明',
+        '2': '申请表格文书',
+        '3': '其他'
+    }
+
+    const formType = {
+        '1': '纸质',
+        '2': '电子化',
+        '3': '纸质/电子化'
+    }
+
+    const requiredType = {
+        '0': '否',
+        '1': '是'
+    }
+
     const detailColumns = [
         {
             title: '数据类型',
@@ -79,7 +102,7 @@ export default function ManageGuide(props) {
             width: 125
         },
         {
-            title: '创建人',
+            title: '负责人',
             dataIndex: 'creator_name',
             key: 'creator_name',
             width: 100
@@ -184,15 +207,27 @@ export default function ManageGuide(props) {
                 'detailInfo': data.conditions
             })
             // 申办材料数组处理
-            let tempMaterial = ''
-            if (data.submit_documents){
-                for (let i = 0; i < data.submit_documents.length; i++){
-                    tempMaterial += ((i + 1) + '.' + data.submit_documents[i].materials_name + '\n')
-                }
-            } 
             detailTable.push({
-                'detailType': '申办材料',
-                'detailInfo': tempMaterial
+                'detailType': '申办所需材料',
+                'detailInfo': (!data.submit_documents || data.submit_documents.length === 0) ? '' :
+                <Tabs defaultActiveKey='0' tabPosition='left' style={{whiteSpace: 'pre-wrap'}}>
+                    {
+                        data.submit_documents.map((item, index)=>(
+                            'materials_name' in item &&
+                            <TabPane tab={item.materials_name} key={index}>
+                                {
+                                    ('原件数量： ' + item.origin) +
+                                    ('\n复印件数量： ' + item.copy) + 
+                                    (item.material_form ? ('\n材料形式： ' + formType[item.material_form]) : '') + 
+                                    (item.page_format ? ('\n纸质材料规格： ' + item.page_format) : '') +
+                                    (item.material_necessity ? ('\n是否必要： ' + necessityType[item.material_necessity]) : '') +
+                                    (item.material_type ? ('\n材料类型： ' + typesType[item.material_type]) : '') +
+                                    (item.submissionrequired ? ('\n是否免提交： ' + requiredType[item.submissionrequired]) : '')
+                                }
+                            </TabPane>
+                        ))
+                    }
+                </Tabs>
             })
             // 审核时限格式处理
             let tempTimeLimit = ''
@@ -406,13 +441,7 @@ export default function ManageGuide(props) {
             }
             tempGuideContent['guideAccord'] = tempAccord
             tempGuideContent['guideCondition'] = data.conditions
-            let tempMaterial = []
-            if (data.submit_documents){
-                for (let i = 0; i < data.submit_documents.length; i++){
-                    tempMaterial.push(data.submit_documents[i].materials_name)
-                }
-            }
-            tempGuideContent['guideMaterial'] = tempMaterial
+            tempGuideContent['guideMaterial'] = data.submit_documents
             tempGuideContent['legalPeriod'] = data.legal_period
             tempGuideContent['legalType'] = data.legal_period_type ? data.legal_period_type : '0'
             tempGuideContent['promisedPeriod'] = data.promised_period
@@ -425,6 +454,8 @@ export default function ManageGuide(props) {
             tempGuideContent['guideOfflineProcess'] = data.ckbllc
             tempGuideContent['guideWindows'] = data.windows
             tempGuideContent['guideQRCode'] = data.qr_code
+            tempGuideContent['principle'] = data.creator.name
+            tempGuideContent['principleId'] = data.creator.id
             let type = data.service_object_type.split(',')
             let tempServiceType = []
             for (let i = 0; i < type.length; i++){

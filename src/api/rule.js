@@ -209,6 +209,20 @@ const api ={
             url: "/v1/getEveryItemStatusCount"
         })
     },
+    GetItemUsers(data){
+        return service.request({
+            method: "post",
+            url: "/v1/getItemUsers",
+            data
+        })
+    },
+    GetUserNameById(data){
+        return service.request({
+            method: "post",
+            url: "/v1/getUserNameById",
+            data
+        })
+    },
     GetServerIP(){
         return (service.defaults.baseURL === '/api' ? '/api' : 'http://8.134.73.52:5001')
     }

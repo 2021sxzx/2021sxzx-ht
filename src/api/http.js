@@ -12,13 +12,31 @@ else if(process.env.NODE_ENV==="production"){
 }
 const instance = axios.create({
     baseURL: BASEURL,
-    timeout: 100000
+    timeout: 100000,
+    withCredentials: true
 });
 // 添加请求拦截器
 instance.interceptors.request.use(
     function (config) {
+/*         const token = localStorage.getItem('_id')
+        console.log('token',token)
+        if (localStorage.getItem('_id')) {
+            // 注意：config.method 的判断值必须是小写的post和get
+            if (config.method === 'post') {
+                config.data = {
+                    api_token: token,
+                    ...config.data
+                }
+            } else if (config.method === 'get') {
+                config.params = {
+                    api_token: token,
+                    ...config.params
+                }
+            }
+        }
+ */       
         let headers = config.headers
-        headers.user_id = localStorage.getItem('_id') ? localStorage.getItem('_id') : ''
+        headers.userId = localStorage.getItem('_id') ? localStorage.getItem('_id') : ''
         console.log('请求拦截器',config);
         return config;
     },

@@ -17,6 +17,20 @@ const api ={
             url: "/v1/searchLog/",
             data, //data:data同名可以直接写 data
         });
+    },
+    MetaDataLog(data){
+        return service.request({
+            method: "get",
+            url: "/v1/metaDataLog/",
+            data,
+        });
+    },
+    ItemBrowseCount(data){
+        return service.request({
+            method: "get",
+            url: "/v1/itemBrowseCount/",
+            data,
+        });
     }
 }
 
