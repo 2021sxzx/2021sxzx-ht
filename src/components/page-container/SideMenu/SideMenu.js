@@ -48,7 +48,6 @@ function SideMenu(props) {
                 props.history.push(item.key)
             }}>{item.title}</Menu.Item>
         })
-
     }
 
     const selectedKeys = [props.location.pathname]
