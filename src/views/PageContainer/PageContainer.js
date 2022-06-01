@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { Redirect, Switch,Route } from 'react-router-dom'
 
 import { Layout, Breadcrumb } from 'antd'
@@ -31,15 +31,22 @@ import DepartmentManagement from "./UserManage/departmentManagement/DepartmentMa
 const { Content } = Layout
 
 export default function PageContainer() {
+  const [curRoute,setCurRoute]=useState([])
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <SideMenu/>
+      <SideMenu setCurRoute={setCurRoute}/>
       <Layout className="site-layout">
         <TopHeader/>
         <Content style={{ margin: '0 16px' }}>
           <Breadcrumb style={{ margin: '16px 0' }}>
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
+            {
+              curRoute.map(item=>{
+                return(
+                    <Breadcrumb.Item>{item}</Breadcrumb.Item>
+                )
+              })
+            }
           </Breadcrumb>
           <div className="site-layout-background" style={{ padding: 24, minHeight: 360, }}>
             <Switch>

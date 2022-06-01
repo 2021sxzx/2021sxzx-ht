@@ -13,7 +13,7 @@ import MenuList from "../../../utils/MenuList";
 
 const {Sider} = Layout;
 const {SubMenu} = Menu;
-
+const lastMenu='/user-manage/metaData'
 let menuTitleIcon = new Map([
     ['首页', <DesktopOutlined/>],
     ['个人中心', <UserOutlined/>],
@@ -24,21 +24,36 @@ let menuTitleIcon = new Map([
     ['用户管理', <FileOutlined/>]
 ])
 
+let menuTitle=new Map([])
+
 function SideMenu(props) {
     // 获取侧边栏菜单
     const [menuList,setMenuList] = useState([])
+    const getPathName=(path)=>{
+        let mid=path.split('/')
+        for (let i=0;i<mid.length;i++){
+            if (i<mid.length-1) mid[i+1]=mid[i]+'/'+mid[i+1]
+            if (i>0) mid[i]=menuTitle.get(mid[i])
+        }
+        mid.splice(0,1)
+        console.log(mid)
+        return mid
 
+    }
     // 只在第一次渲染的时候加载
     useEffect(()=>{
+
         // 获取侧边栏信息
         MenuList.getAndStorageMenuList((menuList)=>{
             setMenuList(menuList)
+
             // console.log('获得了 menuList', menuList)
         })
     },[])
 
     const renderMenu = (menuList) => {
         return menuList.map(item => {
+            menuTitle.set(item.key,item.title)
             if (item.children?.length > 0) {
                 return <SubMenu key={item.key} icon={menuTitleIcon.get(item.title)} title={item.title}>
                     {renderMenu(item.children)}
@@ -46,6 +61,7 @@ function SideMenu(props) {
             }
             return <Menu.Item key={item.key} icon={menuTitleIcon.get(item.title)} onClick={() => {
                 props.history.push(item.key)
+                props.setCurRoute(getPathName(item.key))
             }}>{item.title}</Menu.Item>
         })
 
