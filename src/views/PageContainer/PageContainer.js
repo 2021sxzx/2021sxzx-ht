@@ -1,5 +1,5 @@
-import React, {useState} from 'react'
-import { Redirect, Switch,Route } from 'react-router-dom'
+import React, {useEffect, useState} from 'react'
+import {Redirect, Switch, Route, withRouter} from 'react-router-dom'
 
 import { Layout, Breadcrumb } from 'antd'
 import SideMenu from '../../components/page-container/SideMenu/SideMenu.js'
@@ -27,15 +27,46 @@ import SystemManageBasic from './SystemManage/SystemManageBasic/SystemManageBasi
 import SystemManageBackup from './SystemManage/SystemManageBackup/SystemManageBackup.js'
 import NoPermission from './NoPermission/NoPermission.js'
 import DepartmentManagement from "./UserManage/departmentManagement/DepartmentManagement";
+import MenuList from "../../utils/MenuList";
 
 const { Content } = Layout
 
-export default function PageContainer() {
+export default withRouter(function PageContainer(props) {
   const [curRoute,setCurRoute]=useState([])
+  const menuTitle=new Map([])
+  function getMenuTitle(menu){
+      if (!menu) return
+      menu.map(item=>{
+        menuTitle.set(item.key,item.title)
+        if (item.children?.length > 0) {
+            getMenuTitle(item.children)
+        }
+      })
+  }
+
+  const getPathName=(path,menuTitle)=>{
+      let mid=path.split('/')
+      for (let i=0;i<mid.length;i++){
+        if (i<mid.length-1) mid[i+1]=mid[i]+'/'+mid[i+1]
+        if (i>0) mid[i]=menuTitle.get(mid[i])
+      }
+      mid.splice(0,1)
+      return mid
+
+  }
+
+  useEffect(()=>{
+    MenuList.getAndStorageMenuList((menuList)=>{
+        if (!menuList) return
+        getMenuTitle(menuList)
+        setCurRoute(getPathName(props.location.pathname,menuTitle))
+      // console.log('获得了 menuList', menuList)
+    })
+  },[])
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <SideMenu setCurRoute={setCurRoute}/>
+      <SideMenu setCurRoute={setCurRoute} getPathName={getPathName}/>
       <Layout className="site-layout">
         <TopHeader/>
         <Content style={{ margin: '0 16px' }}>
@@ -84,4 +115,4 @@ export default function PageContainer() {
       </Layout>
     </Layout>
   )
-}
+})
