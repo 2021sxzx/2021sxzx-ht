@@ -55,28 +55,43 @@ export default function UserTable(props) {
             title: '用户姓名',
             dataIndex: ['user_name'],
             key: 'user_name',
+            fixed: 'left',
+            width: 120,
+            // textWrap: 'word-break',
         },
         {
             title: '用户账号',
             dataIndex: ['account'],
             key: 'account',
+            width: 120,
+            // textWrap: 'word-break',
         },
         {
             title: '角色',
             dataIndex: 'role_name',
             key: 'role_name',
+            width: 120,
+            // textWrap: 'word-break',
         },
-
+        // {
+        //     title: '部门',
+        //     dataIndex: 'department',
+        //     key: 'department',
+        // },
         {
-            title: '部门',
-            dataIndex: 'department_name',
-            key: 'department_name',
+            title: '单位',
+            dataIndex: 'unit_name',
+            key: 'unit_name',
+            width: 120,
+            // textWrap: 'word-break',
         },
 
         {
             title: '激活状态',
             dataIndex: 'activation_status',
             key: 'activation_status',
+            width: 100,
+            // textWrap: 'word-break',
             render: (text, record) => (
                 <ActivationStatusSwitch record={record} refreshTableData={props.refreshTableData}/>
             )
@@ -84,31 +99,34 @@ export default function UserTable(props) {
 
         {
             title: '操作',
-            key: 'detail',
+            key: 'action',
+            fixed: 'right',
+            width: 210,
             render: (text, record) => (//修改用户信息按钮
                 <Space>
-
                     <UserModal buttonText={'修改用户信息'}
                                title={'修改用户信息'}
                                disable={disableModal(record)}
                                detailData={record}
                                saveInfoFunction={updateUserAndRefresh}
-                               accountReadOnly={false}/>
-
+                               accountReadOnly={false}
+                    />
                     {
                         disableDeleteButton(record) === false
                             ?
-                            <Button disabled={disableDeleteButton(record)}
-                                    onClick={() => {
-                                        deleteUser({account: record.account})
-                                    }}
+                            <Button
+                                disabled={disableDeleteButton(record)}
+                                onClick={() => {
+                                    deleteUser({account: record.account})
+                                }}
                             >删除</Button>
                             :
                             <Tooltip title="如果要删除账号请先将账号设置为未激活" mouseEnterDelay={0.5}>
-                                <Button disabled={disableDeleteButton(record)}
-                                        onClick={() => {
-                                            deleteUser({account: record.account})
-                                        }}
+                                <Button
+                                    disabled={disableDeleteButton(record)}
+                                    onClick={() => {
+                                        deleteUser({account: record.account})
+                                    }}
                                 >删除</Button>
                             </Tooltip>
                     }
@@ -122,7 +140,21 @@ export default function UserTable(props) {
             <Table columns={tableColumns}
                    dataSource={props.tableData !== {} ? props.tableData : {}}
                    rowKey={record => record._id}
-                   loading={props.loading}/>
+                   sticky={true} //设置粘性头部和滚动条
+                   scroll={{ //表格是否可滚动，也可以指定滚动区域的宽、高
+                       scrollToFirstRowOnChange: true, // 当分页、排序、筛选变化后是否滚动到表格顶部
+                       x: '100%', // 设置横向滚动，也可用于指定滚动区域的宽
+                       y: 400, //设置纵向滚动，也可用于指定滚动区域的高
+                   }}
+                   pagination={{//分页器
+                       // defaultPageSize: 7,// 默认每页的数量
+                       pageSizeOptions: [5, 10, 15, 20, 25], // 允许的每页数量
+                       showSizeChanger: true, // 是否展示 pageSize 切换器
+                       responsive: true, // 当 size 未指定时，根据屏幕宽度自动调整尺寸
+                       showQuickJumper:true, // 是否可以快速跳转至某页
+                   }}
+                   loading={props.loading}
+            />
         </div>
     )
 }

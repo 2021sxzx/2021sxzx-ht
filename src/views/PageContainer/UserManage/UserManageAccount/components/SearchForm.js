@@ -36,7 +36,13 @@ export default function SearchForm(props){
             }}
         >
             <Form.Item label={"综合搜索"}>
-                <Input placeholder="综合搜索" size="middle" onChange={handleInputChangeSearchValue}/>
+                <Input placeholder="综合搜索"
+                       size="middle"
+                       onChange={handleInputChangeSearchValue}
+                       type={"search"}
+                       maxLength={50}
+                       allowClear={true}
+                />
             </Form.Item>
             <Form.Item>
                 <Button type="primary" onClick={searchUser}>搜索</Button>

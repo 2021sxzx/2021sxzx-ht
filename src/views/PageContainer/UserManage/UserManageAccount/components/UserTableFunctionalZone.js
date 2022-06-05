@@ -39,8 +39,6 @@ export default function UserTableFunctionalZone(props) {
             // 刷新表格数据
             props.refreshTableData()
         });
-
-
     }
 
     return (
@@ -57,7 +55,8 @@ export default function UserTableFunctionalZone(props) {
                                account: '',
                                department: '',
                            }}
-                           saveInfoFunction={addUserAndRefresh}/>
+                           saveInfoFunction={addUserAndRefresh}
+                />
 
                 {/*批量导入按钮*/}
                 <Button type="primary" onClick={multiCreate}>批量导入用户</Button>

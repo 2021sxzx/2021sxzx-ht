@@ -56,8 +56,8 @@ export default function DepartmentModal(props) {
     const handleOk = () => {//  保存信息的修改
         setIsModalVisible(false);
         props.callback({
-            department_name:props.detailData.department_name,
-            new_department_name: departmentName,
+            department_name:departmentName,
+            department_id:props.detailData.department_id,
             department_describe: departmentDescribe,
         })
     };
@@ -133,9 +133,14 @@ export default function DepartmentModal(props) {
                             },
                         ]}
                     >
-                        <Input defaultValue={props.detailData.department_describe}
+                        <Input defaultValue={"部门描述暂时不支持修改"}
                                placeholder={'请输入部门描述'}
-                               onChange={handleInputChangeRoleDescribe}/>
+                               onChange={handleInputChangeRoleDescribe}
+                               disabled={true}
+                        />
+                        {/*<Input defaultValue={props.detailData.department_describe}*/}
+                        {/*       placeholder={'请输入部门描述'}*/}
+                        {/*       onChange={handleInputChangeRoleDescribe}/>*/}
                     </Form.Item>
                 </Form>
             </Modal>

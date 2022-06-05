@@ -20,6 +20,9 @@ const api = {
         return service.request({
             method: "post",
             url: "/v1/user/",
+            headers: {
+                'Content-Type': 'application/json'
+            },
             data, //data:data同名可以直接写 data
         });
     },
@@ -34,6 +37,9 @@ const api = {
         return service.request({
             method: "delete",
             url: "/v1/user/",
+            headers: {
+                'Content-Type': 'application/json'
+            },
             data, //data:data同名可以直接写 data
         })
     },
@@ -53,6 +59,9 @@ const api = {
         return service.request({
             method: "patch",
             url: "/v1/user/",
+            headers: {
+                'Content-Type': 'application/json'
+            },
             data, //data:data同名可以直接写 data
         })
     },
@@ -97,13 +106,13 @@ const api = {
         return service.request({
             method: "get",
             url: "/v1/user",
+
             data, //data:data同名可以直接写 data
         });
     },
     async getUser() {
         return service.get('/v1/user')
     },
-
     /**
      * 查询用户信息
      * @param data = { searchValue:string }
@@ -114,6 +123,9 @@ const api = {
         return service.request({
             method: "post",
             url: "/v1/searchUser",
+            headers: {
+                'Content-Type': 'application/json'
+            },
             data, //data:data同名可以直接写 data
         });
     },
@@ -128,9 +140,13 @@ const api = {
         return service.request({
             method: "post",
             url: "v1/setActivation",
+            headers: {
+                'Content-Type': 'application/json'
+            },
             data, //data:data同名可以直接写 data
         });
     }
 }
 
 export default api
+
