@@ -46,7 +46,11 @@ export default function MobileLoginForm() {
                     },
                 ]}
             >
-                <Input placeholder={'手机号码'} prefix={<UserOutlined className="site-form-item-icon"/>} allowClear={true}/>
+                <Input placeholder={'手机号码'}
+                       maxLength={15}
+                       type={"number"}
+                       prefix={<UserOutlined className="site-form-item-icon"/>}
+                       allowClear={true}/>
             </Form.Item>
             {/*验证码*/}
             <Form.Item
@@ -62,10 +66,12 @@ export default function MobileLoginForm() {
                 <Row>
                     <Col span={16}>
                         <Input placeholder={"验证码"}
-                               prefix={<MobileOutlined/>} allowClear={true}/>
+                               maxLength={10}
+                               prefix={<MobileOutlined/>}
+                               allowClear={true}/>
                     </Col>
                     <Col span={7} offset={1}>
-                        <CountDownButton />
+                        <CountDownButton/>
                     </Col>
                 </Row>
             </Form.Item>

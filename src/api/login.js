@@ -12,6 +12,9 @@ const api = {
         return service.request({
             method: "post",
             url: "/v1/login",
+            headers: {
+                'Content-Type': 'application/json'
+            },
             data, //data:data同名可以直接写 data
         });
     },
@@ -20,11 +23,14 @@ const api = {
         return service.request({
             method: "post",
             url: '/v1/sideBar',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             data: data,//{role_name}
         })
     },
     // 前端简单判断是否成功登录
-    IsLogin(data) {
+    IsLogin() {
         return !!localStorage.getItem('_id')
     },
 
@@ -38,6 +44,9 @@ const api = {
         return service.request({
             method: "post",
             url: "/v1/logout",
+            headers: {
+                'Content-Type': 'application/json'
+            },
             data,
         });
     },
@@ -46,14 +55,18 @@ const api = {
      */
     logout() {
         api.Logout({logoutData: {account: localStorage.getItem('account')}}).then(() => {
-                // 清除本地保存的所有信息
-                localStorage.clear()
+                // // 清除本地保存的所有信息
+                // localStorage.clear()
                 message.success('您已成功登出')
-                UrlJump.goto('#/login')
+                // UrlJump.goto('#/login')
             }
         ).catch(() => {
             // message.error('登出失败，请检查网络')
         })
+        // 清除本地保存的所有信息
+        localStorage.clear()
+        // message.success('您已成功登出')
+        UrlJump.goto('#/login')
     }
 }
 
