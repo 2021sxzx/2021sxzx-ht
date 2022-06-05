@@ -3,6 +3,7 @@ import {Button, Card, Col, message, Row} from "antd";
 import './LoginManagement.scss'
 import UserModal from "../UserManageAccount/components/UserModal";
 import api from "../../../../api/user";
+import BatchImportUserButton from "../UserManageAccount/components/BatchImportUserButton/BatchImportUserButton";
 
 function UnitManagement() {
     const addUser = function (data) {
@@ -65,9 +66,8 @@ function UnitManagement() {
                                     <Button>
                                         下载模板
                                     </Button>,
-                                    <Button type={'primary'}>
-                                        导入用户
-                                    </Button>,
+                                    // 导入用户
+                                    <BatchImportUserButton />,
                                 ]}
                             >
                                 <p>通过上传指定格式文件即可完成用户的批量导入。</p>

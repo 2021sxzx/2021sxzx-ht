@@ -1,9 +1,11 @@
 // 页面上方使用条件搜索和角色创建导入的表单
 import {Button, Space, message} from "antd";
 import UserModal from "./UserModal";
+// import BatchImportUserButton from "../components/BatchImportUserButton/BatchImportUserButton";
 import api from "../../../../../api/user";
 import SearchForm from "./SearchForm";
 import React from "react";
+import BatchImportUserButton from "./BatchImportUserButton/BatchImportUserButton";
 
 /**
  * 功能区，包括搜索筛选和增加用户等功能性按钮
@@ -44,22 +46,22 @@ export default function UserTableFunctionalZone(props) {
     return (
         <div>
             <Space direction="horizontal">
-                {/*账号按创建钮*/}
-                <UserModal buttonText={"账号创建"}
-                           buttonType={"primary"}
-                           title={"账号创建"}
-                           detailData={{
-                               user_name: '',
-                               password: '',
-                               role_name: '',
-                               account: '',
-                               department: '',
-                           }}
-                           saveInfoFunction={addUserAndRefresh}
-                />
+                {/*/!*账号按创建钮*!/*/}
+                {/*<UserModal buttonText={"账号创建"}*/}
+                {/*           buttonType={"primary"}*/}
+                {/*           title={"账号创建"}*/}
+                {/*           detailData={{*/}
+                {/*               user_name: '',*/}
+                {/*               password: '',*/}
+                {/*               role_name: '',*/}
+                {/*               account: '',*/}
+                {/*               department: '',*/}
+                {/*           }}*/}
+                {/*           saveInfoFunction={addUserAndRefresh}*/}
+                {/*/>*/}
 
-                {/*批量导入按钮*/}
-                <Button type="primary" onClick={multiCreate}>批量导入用户</Button>
+                {/*/!*批量导入按钮*!/*/}
+                {/*<BatchImportUserButton />*/}
 
                 {/*搜索表单*/}
                 <SearchForm getSearch={props.getSearch}/>

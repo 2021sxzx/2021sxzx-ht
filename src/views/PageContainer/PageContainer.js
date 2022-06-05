@@ -1,7 +1,7 @@
-import React from 'react'
-import {Redirect, Switch, Route} from 'react-router-dom'
+import React, {useEffect, useState} from 'react'
+import {Redirect, Switch, Route, withRouter} from 'react-router-dom'
 
-import {Layout, Breadcrumb} from 'antd'
+import { Layout, Breadcrumb } from 'antd'
 import SideMenu from '../../components/page-container/SideMenu/SideMenu.js'
 import TopHeader from '../../components/page-container/TopHeader/TopHeader.js'
 
@@ -30,75 +30,113 @@ import DepartmentManagement from "./UserManage/DepartmentManagement/DepartmentMa
 import UnitManagement from "./UserManage/UnitManagement/UnitManagement";
 import style from "../../components/page-container/SideMenu/SideMenu.module.css";
 import Sider from "antd/es/layout/Sider";
+import MenuList from "../../utils/MenuList";
 
-const {Content} = Layout
+const { Content } = Layout
 
-export default function PageContainer() {
-    return (
-        <Layout style={{minHeight: '100vh'}}>
-            <Sider
-                theme="light" // 样式主题
-                collapsible={true} // 是否可收起
-                style={{
-                    overflow: 'auto',
-                    height: '100vh',
-                    // position: 'fixed',
-                    float: 'left',
-                    left: 0,
-                    top: 0,
-                    bottom: 0,
-                }}
-            >
-                <div className={style.logo}>
-                    {/*TODO:添加 LOGO 图片*/}
-                    {/*<img src="....."/>*/}
-                    广州人社
-                </div>
-                <SideMenu/>
-            </Sider>
-            <Layout className="site-layout">
-                <TopHeader/>
-                <Content style={{margin: '0 10px'}}>
-                    <Breadcrumb style={{margin: '8px 0'}}>
-                        <Breadcrumb.Item>User</Breadcrumb.Item>
-                        <Breadcrumb.Item>Bill</Breadcrumb.Item>
-                    </Breadcrumb>
-                    <div className="site-layout-background" style={{padding: 20, minHeight: 360,}}>
-                        <Switch>
-                            {/* 首页 */}
-                            <Route path="/home" component={Home}/>
-                            {/* 用户评价 */}
-                            <Route path="/comment-manage/list" component={CommentManageList}/>
-                            {/* 评价报告 */}
-                            <Route path="/comment-manage/report" component={CommentManageReport}/>
-                            {/* 个人中心 */}
-                            <Route path="/personal" component={Personal}/>
-                            {/* 事项过程管理 */}
-                            <Route path="/item-manage" component={ItemManage}/>
-                            <Route path="/item-audit" component={ItemAudit}/>
-                            {/* 日志管理 */}
-                            <Route path="/system-manage/journal" component={SystemManageJournal}/>
-                            {/* 资源管理 */}
-                            <Route path="/system-manage/resource" component={SystemManageResource}/>
-                            {/* 后台账号管理 */}
-                            <Route path="/user-manage/account" component={UserManageAccount}/>
-                            {/* 角色管理 */}
-                            <Route path="/user-manage/role" component={UserManageRole}/>
-                            {/* 单位管理 */}
-                            <Route path="/user-manage/metaData" component={UnitManagement}/>
-                            {/* 部门管理 */}
-                            <Route path="/user-manage/department" component={DepartmentManagement}/>
-                            <Route path="/system-manage/failure" component={SystemManageFailure}/>
-                            <Route path="/system-manage/meta-data" component={MetaData}/>
-                            <Route path="/system-manage/backup" component={SystemManageBackup}/>
-                            <Route path="/system-manage/basic" component={SystemManageBasic}/>
-                            <Redirect from="/" to="/home" exact/>
-                            <Route path="*" component={NoPermission}/>
-                        </Switch>
-                    </div>
-                </Content>
-                {/* <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer> */}
-            </Layout>
-        </Layout>
-    )
-}
+export default withRouter(function PageContainer(props) {
+  const [curRoute,setCurRoute]=useState([])
+  const menuTitle=new Map([])
+  function getMenuTitle(menu){
+      if (!menu) return
+      menu.map(item=>{
+        menuTitle.set(item.key,item.title)
+        if (item.children?.length > 0) {
+            getMenuTitle(item.children)
+        }
+      })
+  }
+
+  const getPathName=(path,menuTitle)=>{
+      let mid=path.split('/')
+      for (let i=0;i<mid.length;i++){
+        if (i<mid.length-1) mid[i+1]=mid[i]+'/'+mid[i+1]
+        if (i>0) mid[i]=menuTitle.get(mid[i])
+      }
+      mid.splice(0,1)
+      return mid
+
+  }
+
+  useEffect(()=>{
+    MenuList.getAndStorageMenuList((menuList)=>{
+        if (!menuList) return
+        getMenuTitle(menuList)
+        setCurRoute(getPathName(props.location.pathname,menuTitle))
+      // console.log('获得了 menuList', menuList)
+    })
+  },[])
+
+  return (
+    <Layout style={{ minHeight: '100vh' }}>
+      <Sider
+          theme="light" // 样式主题
+          collapsible={true} // 是否可收起
+          style={{
+            overflow: 'auto',
+            height: '100vh',
+            // position: 'fixed',
+            float: 'left',
+            left: 0,
+            top: 0,
+            bottom: 0,
+          }}
+      >
+        <div className={style.logo}>
+          {/*TODO:添加 LOGO 图片*/}
+          {/*<img src="....."/>*/}
+          广州人社
+        </div>
+        <SideMenu setCurRoute={setCurRoute} getPathName={getPathName}/>
+      </Sider>
+      <Layout className="site-layout">
+        <TopHeader/>
+        <Content style={{ margin: '0 16px' }}>
+          <Breadcrumb style={{ margin: '16px 0' }}>
+            {
+              curRoute.map(item=>{
+                return(
+                    <Breadcrumb.Item>{item}</Breadcrumb.Item>
+                )
+              })
+            }
+          </Breadcrumb>
+          <div className="site-layout-background" style={{ padding: 24, minHeight: 360, }}>
+            <Switch>
+              {/* 首页 */}
+              <Route path="/home" component={Home} />
+              {/* 用户评价 */}
+              <Route path="/comment-manage/list" component={CommentManageList} />
+              {/* 评价报告 */}
+              <Route path="/comment-manage/report" component={CommentManageReport} />
+              {/* 个人中心 */}
+              <Route path="/personal" component={Personal} />
+              {/* 事项过程管理 */}
+              <Route path="/item-manage" component={ItemManage} />
+              <Route path="/item-audit" component={ItemAudit} />
+              {/* 日志管理 */}
+              <Route path="/system-manage/journal" component={SystemManageJournal} />
+              {/* 资源管理 */}
+              <Route path="/system-manage/resource" component={SystemManageResource} />
+              {/* 后台账号管理 */}
+              <Route path="/user-manage/account" component={UserManageAccount} />
+              {/* 角色管理 */}
+              <Route path="/user-manage/role" component={UserManageRole} />
+              {/* 单位管理 */}
+              <Route path="/user-manage/metaData" component={UnitManagement}/>
+              {/* 部门管理 */}
+              <Route path="/user-manage/department" component={DepartmentManagement} />
+              <Route path="/system-manage/failure" component={SystemManageFailure}/>
+              <Route path="/system-manage/meta-data" component={MetaData}/>
+              <Route path="/system-manage/backup" component={SystemManageBackup}/>
+              <Route path="/system-manage/basic" component={SystemManageBasic}/>
+              <Redirect from="/" to="/home" exact />
+              <Route path="*" component={NoPermission} />
+            </Switch>
+          </div>
+        </Content>
+        {/* <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer> */}
+      </Layout>
+    </Layout>
+  )
+})

@@ -1,5 +1,6 @@
 import api from "../api/login";
 import {message} from "antd";
+import UrlJump from "./UrlJump";
 
 const MenuList = {
     /**
@@ -37,6 +38,7 @@ const MenuList = {
                 // TODO（钟卓江）：测试一下
                 // roleName = '全知全能的开发人员'
                 message.warn('登录已过期，请重新登录')
+                UrlJump.replace('#/login');
                 return false
             }
         }

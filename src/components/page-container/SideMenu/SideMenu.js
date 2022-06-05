@@ -24,19 +24,20 @@ let menuTitleIcon = new Map([
 
 function SideMenu(props) {
     // 获取侧边栏菜单
-    const [menuList, setMenuList] = useState([])
-
+    const [menuList,setMenuList] = useState([])
+    const menuTitle=new Map([])
     // 只在第一次渲染的时候加载
     useEffect(() => {
         // 获取侧边栏信息
         MenuList.getAndStorageMenuList((menuList) => {
             setMenuList(menuList)
-            console.log('获得了 menuList', menuList)
+
         })
     }, [])
 
     const renderMenu = (menuList) => {
         return menuList.map(item => {
+            menuTitle.set(item.key,item.title)
             if (item.children?.length > 0) {
                 return <SubMenu key={item.key} icon={menuTitleIcon.get(item.title)} title={item.title}>
                     {renderMenu(item.children)}
@@ -44,15 +45,14 @@ function SideMenu(props) {
             }
             return <Menu.Item key={item.key} icon={menuTitleIcon.get(item.title)} onClick={() => {
                 props.history.push(item.key)
+                props.setCurRoute(props.getPathName(item.key,menuTitle))
             }}>{item.title}</Menu.Item>
         })
+
     }
 
     const selectedKeys = [props.location.pathname]
     const openKeys = ['/' + props.location.pathname.split('/')[1]]
-
-
-    console.log('渲染 menuList', props)
 
     return (
         <Scrollbars>

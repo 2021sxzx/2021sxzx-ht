@@ -25,6 +25,29 @@ export default function ManageAudit(props) {
         '9': '其他组织'
     }
 
+    const necessityType = {
+        '1': '必要',
+        '2': '非必要',
+        '3': '容缺后补'
+    }
+
+    const typesType = {
+        '1': '证件证书证明',
+        '2': '申请表格文书',
+        '3': '其他'
+    }
+
+    const formType = {
+        '1': '纸质',
+        '2': '电子化',
+        '3': '纸质/电子化'
+    }
+
+    const requiredType = {
+        '0': '否',
+        '1': '是'
+    }
+
     const tableColumns = [
         {
             title: '事项指南编码',
@@ -207,15 +230,27 @@ export default function ManageAudit(props) {
                 'detailInfo': data.conditions
             })
             // 申办材料数组处理
-            let tempMaterial = ''
-            if (data.submit_documents){
-                for (let i = 0; i < data.submit_documents.length; i++){
-                    tempMaterial += ((i + 1) + '.' + data.submit_documents[i].materials_name + '\n')
-                }
-            } 
             detailTable.push({
-                'detailType': '申办材料',
-                'detailInfo': tempMaterial
+                'detailType': '申办所需材料',
+                'detailInfo': (!data.submit_documents || data.submit_documents.length === 0) ? '' :
+                <Tabs defaultActiveKey='0' tabPosition='left' style={{whiteSpace: 'pre-wrap'}}>
+                    {
+                        data.submit_documents.map((item, index)=>(
+                            'materials_name' in item &&
+                            <TabPane tab={item.materials_name} key={index}>
+                                {
+                                    ('原件数量： ' + item.origin) +
+                                    ('\n复印件数量： ' + item.copy) + 
+                                    (item.material_form ? ('\n材料形式： ' + formType[item.material_form]) : '') + 
+                                    (item.page_format ? ('\n纸质材料规格： ' + item.page_format) : '') +
+                                    (item.material_necessity ? ('\n是否必要： ' + necessityType[item.material_necessity]) : '') +
+                                    (item.material_type ? ('\n材料类型： ' + typesType[item.material_type]) : '') +
+                                    (item.submissionrequired ? ('\n是否免提交： ' + requiredType[item.submissionrequired]) : '')
+                                }
+                            </TabPane>
+                        ))
+                    }
+                </Tabs>
             })
             // 审核时限格式处理
             let tempTimeLimit = ''

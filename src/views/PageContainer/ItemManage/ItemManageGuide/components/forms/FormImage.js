@@ -35,6 +35,7 @@ export default function FormImage(props){
         else{
             getBase64(e.target.files[0], imageUrl=>{
                 setData(imageUrl)
+                props.setImageUpdated(true)
                 props.setData(imageUrl)
             })
         } 

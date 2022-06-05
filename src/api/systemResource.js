@@ -21,6 +21,13 @@ const api ={
             url: "v1/showDisk",
             data, //data:data同名可以直接写 data
         });
+    },
+    GetProcessCount(data){
+        return service.request({
+            method: "get",
+            url: "v1/viewProcessMessage",
+            data
+        })
     }
 }
 
