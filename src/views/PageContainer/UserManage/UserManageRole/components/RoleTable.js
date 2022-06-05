@@ -64,11 +64,11 @@ export default function RoleTable(props) {
             title: '角色权限',
             dataIndex: 'permission',
             key: 'permission',
-            render: permission => (
+            render: (permission,record) => (
                 <>
                     {permission.map(permission => {
                         return (
-                            <Tag key={permission}>
+                            <Tag key={record.role_name+permission}>
                                 {permission}
                             </Tag>
                         );
@@ -94,6 +94,7 @@ export default function RoleTable(props) {
         <Table columns={tableColumns}
                dataSource={props.tableData !== {} ? props.tableData : {}}
                rowKey={record => record.role_name}
-               loading={props.loading}/>
+               loading={props.loading}
+        />
     )
 }

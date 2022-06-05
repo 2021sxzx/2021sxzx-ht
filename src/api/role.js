@@ -52,11 +52,11 @@ const api = {
     GetRole() {
         return service.request({
             method: "get",
-            url: "/v1/role/"
+            url: `/v1/role?role_id=${localStorage.getItem('roleID')}`,
         });
     },
     async getRole() {
-        return service.get('/v1/role')
+        return service.get( `/v1/role?role_id=${localStorage.getItem('roleID')}`)
     },
 
     // 搜索角色

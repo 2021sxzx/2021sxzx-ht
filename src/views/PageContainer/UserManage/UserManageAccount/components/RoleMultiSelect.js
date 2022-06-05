@@ -20,7 +20,7 @@ export default function RoleMultiSelect(props) {
     // 只在初次渲染的时候请求权限列表
     useEffect(()=>{
         api.GetRole().then(response => {
-            console.log('data1',response.data.data)
+            console.log('RoleMultiSelect GetRole',response.data.data)
             setOptions(
                 response.data.data.map((item)=>{
                     return (
