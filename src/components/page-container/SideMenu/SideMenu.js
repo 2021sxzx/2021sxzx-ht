@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {withRouter} from 'react-router-dom';
-import {Layout, Menu,} from 'antd'
+import { Menu,} from 'antd'
 import {Scrollbars} from 'react-custom-scrollbars'
-import style from './SideMenu.module.css'
 import {
     DesktopOutlined,
     FileOutlined,
@@ -11,7 +10,6 @@ import {
 } from '@ant-design/icons';
 import MenuList from "../../../utils/MenuList";
 
-const {Sider} = Layout;
 const {SubMenu} = Menu;
 
 let menuTitleIcon = new Map([
@@ -26,16 +24,16 @@ let menuTitleIcon = new Map([
 
 function SideMenu(props) {
     // 获取侧边栏菜单
-    const [menuList,setMenuList] = useState([])
+    const [menuList, setMenuList] = useState([])
 
     // 只在第一次渲染的时候加载
-    useEffect(()=>{
+    useEffect(() => {
         // 获取侧边栏信息
-        MenuList.getAndStorageMenuList((menuList)=>{
+        MenuList.getAndStorageMenuList((menuList) => {
             setMenuList(menuList)
             console.log('获得了 menuList', menuList)
         })
-    },[])
+    }, [])
 
     const renderMenu = (menuList) => {
         return menuList.map(item => {
@@ -48,26 +46,23 @@ function SideMenu(props) {
                 props.history.push(item.key)
             }}>{item.title}</Menu.Item>
         })
-
     }
 
     const selectedKeys = [props.location.pathname]
     const openKeys = ['/' + props.location.pathname.split('/')[1]]
 
+
+    console.log('渲染 menuList', props)
+
     return (
-        <Sider theme="light">
-            <div style={{display: 'flex', height: "100%", "flexDirection": "column"}}>
-                <div className={style.logo}>广州人社</div>
-                <Scrollbars>
-                    <div style={{flex: 1, "overflow": "auto"}}>
-                        <Menu theme="light" selectedKeys={selectedKeys} mode="inline" defaultOpenKeys={openKeys}>
-                            {renderMenu(menuList ? menuList : [])}
-                        </Menu>
-                    </div>
-                </Scrollbars>
+        <Scrollbars>
+            <div style={{flex: 1, "overflow": "auto"}}>
+                <Menu theme="light" selectedKeys={selectedKeys} mode="inline" defaultOpenKeys={openKeys}>
+                    {renderMenu(menuList ? menuList : [])}
+                </Menu>
             </div>
-        </Sider>
+        </Scrollbars>
     )
 }
 
-export default withRouter(SideMenu)
+export default withRouter(React.memo(SideMenu))
