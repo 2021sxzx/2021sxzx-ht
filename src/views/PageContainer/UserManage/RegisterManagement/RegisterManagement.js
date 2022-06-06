@@ -5,7 +5,7 @@ import UserModal from "../UserManageAccount/components/UserModal";
 import api from "../../../../api/user";
 import BatchImportUserButton from "../UserManageAccount/components/BatchImportUserButton/BatchImportUserButton";
 
-function UnitManagement() {
+function RegisterManagement() {
     const addUser = function (data) {
         api.AddUser(data).then(response => {
             // log 服务端返回的搜索结果
@@ -80,4 +80,4 @@ function UnitManagement() {
     )
 }
 
-export default UnitManagement
+export default RegisterManagement

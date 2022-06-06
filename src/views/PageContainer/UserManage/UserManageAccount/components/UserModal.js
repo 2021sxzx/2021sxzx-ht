@@ -223,33 +223,33 @@ export default function UserModal(props) {
                         />
                     </Form.Item>
 
-                    <Form.Item
-                        label="部门"
-                        name="department"
-                        rules={[
-                            {
-                                required: true,
-                                message: '请选择部门!',
-                            },
-                        ]}
-                    >
-                        {/* TODO（钟卓江）：等获取部门种类的 API 完成之后完善这里,还需要换成多选*/}
-                        <Input defaultValue={props.detailData.department}
-                               placeholder={'请选择部门' + '，这里应该是下拉列表'}
-                               onChange={handleInputChangeDepartment} allowClear={true}/>
-                    </Form.Item>
+                    {/*<Form.Item*/}
+                    {/*    label="部门"*/}
+                    {/*    name="department"*/}
+                    {/*    rules={[*/}
+                    {/*        {*/}
+                    {/*            required: true,*/}
+                    {/*            message: '请选择部门!',*/}
+                    {/*        },*/}
+                    {/*    ]}*/}
+                    {/*>*/}
+                    {/*    /!* TODO（钟卓江）：等获取部门种类的 API 完成之后完善这里,还需要换成多选*!/*/}
+                    {/*    <Input defaultValue={props.detailData.department}*/}
+                    {/*           placeholder={'请选择部门' + '，这里应该是下拉列表'}*/}
+                    {/*           onChange={handleInputChangeDepartment} allowClear={true}/>*/}
+                    {/*</Form.Item>*/}
 
                     <Form.Item
-                        label="单位"
+                        label="机构"
                         name="unit_name"
                         rules={[
                             {
                                 required: true,
-                                message: '请选择单位!',
+                                message: '请选择机构!',
                             },
                         ]}
                     >
-                        <div>未选择部门（待完善）</div>
+                        <div>未选择机构（待完善）</div>
                     </Form.Item>
                 </Form>
             </Modal>

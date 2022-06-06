@@ -26,8 +26,7 @@ import SystemManageFailure from './SystemManage/SystemManageFailure/SystemManage
 import SystemManageBasic from './SystemManage/SystemManageBasic/SystemManageBasic.js'
 import SystemManageBackup from './SystemManage/SystemManageBackup/SystemManageBackup.js'
 import NoPermission from './NoPermission/NoPermission.js'
-import DepartmentManagement from "./UserManage/DepartmentManagement/DepartmentManagement";
-import UnitManagement from "./UserManage/UnitManagement/UnitManagement";
+import RegisterManagement from "./UserManage/RegisterManagement/RegisterManagement";
 import style from "../../components/page-container/SideMenu/SideMenu.module.css";
 import Sider from "antd/es/layout/Sider";
 import MenuList from "../../utils/MenuList";
@@ -119,13 +118,13 @@ export default withRouter(function PageContainer(props) {
               {/* 资源管理 */}
               <Route path="/system-manage/resource" component={SystemManageResource} />
               {/* 后台账号管理 */}
-              <Route path="/user-manage/account" component={UserManageAccount} />
+              <Route path="/user-manage/account/user" component={UserManageAccount} />
               {/* 角色管理 */}
-              <Route path="/user-manage/role" component={UserManageRole} />
+              <Route path="/user-manage/account/role" component={UserManageRole} />
               {/* 单位管理 */}
-              <Route path="/user-manage/metaData" component={UnitManagement}/>
-              {/* 部门管理 */}
-              <Route path="/user-manage/department" component={DepartmentManagement} />
+              <Route path="/user-manage/register" component={RegisterManagement}/>
+              {/*/!* 部门管理 *!/*/}
+              {/*<Route path="/user-manage/department" component={DepartmentManagement} />*/}
               <Route path="/system-manage/failure" component={SystemManageFailure}/>
               <Route path="/system-manage/meta-data" component={MetaData}/>
               <Route path="/system-manage/backup" component={SystemManageBackup}/>
