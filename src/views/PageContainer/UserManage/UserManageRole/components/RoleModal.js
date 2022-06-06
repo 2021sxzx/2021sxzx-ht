@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Button, Form, Input, Modal} from "antd";
+import {Button, Form, Input, Modal,message} from "antd";
 import PermissionMultipleSelect from "./PermissionMultipleSelect";
 
 /**
@@ -58,14 +58,18 @@ export default function RoleModal(props) {
 
     // 保存按钮的触发函数，关闭详情弹窗并保存信息的修改
     const handleOk = () => {//  保存信息的修改
-        setIsModalVisible(false);
-        props.callback({
-            // role_name_old:props.detailData.role_name,
-            role_id: props.detailData.role_id,
-            role_name: roleName,
-            role_describe: roleDescribe,
-            permission_identifier_array: permissionIdentifierArray
-        })
+        if(roleName.length>0){
+            setIsModalVisible(false);
+            props.callback({
+                // role_name_old:props.detailData.role_name,
+                role_id: props.detailData.role_id,
+                role_name: roleName,
+                role_describe: roleDescribe,
+                permission_identifier_array: permissionIdentifierArray
+            })
+        }else{
+            message.warn('请先完成表单填写!')
+        }
     };
 
     // Cancel按钮的触发函数，关闭详情弹窗
@@ -122,6 +126,7 @@ export default function RoleModal(props) {
                     <Form.Item
                         label="角色名"
                         name="roleName"
+                        maxLength={20}
                         rules={[
                             {
                                 required: true,
@@ -136,9 +141,10 @@ export default function RoleModal(props) {
                     <Form.Item
                         label="角色描述"
                         name="roleDescribe"
+                        maxLength={300}
                         rules={[
                             {
-                                required: true,
+                                // required: true,
                                 message: '请输入角色描述!',
                             },
                         ]}
@@ -152,7 +158,7 @@ export default function RoleModal(props) {
                         name="permission"
                         rules={[
                             {
-                                required: true,
+                                // required: true,
                                 message: '请选择角色权限!',
                             },
                         ]}
