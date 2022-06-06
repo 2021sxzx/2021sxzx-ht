@@ -33,14 +33,14 @@ export default function RoleModal(props) {
     // const permissions = props.detailData.permission
 
     // 每次打开弹窗重置表单内容
-    useEffect(()=>{
-        if(isModalVisible){
+    useEffect(() => {
+        if (isModalVisible) {
             const formDom = document.getElementById(props.detailData.role_name)
-            if(formDom){
+            if (formDom) {
                 formDom.reset()
             }
         }
-    },[isModalVisible])
+    }, [isModalVisible])
 
     //表单提交的成功、失败反馈
     const onFinish = (values) => {
@@ -60,7 +60,8 @@ export default function RoleModal(props) {
     const handleOk = () => {//  保存信息的修改
         setIsModalVisible(false);
         props.callback({
-            role_name_old:props.detailData.role_name,
+            // role_name_old:props.detailData.role_name,
+            role_id: props.detailData.role_id,
             role_name: roleName,
             role_describe: roleDescribe,
             permission_identifier_array: permissionIdentifierArray
@@ -156,9 +157,11 @@ export default function RoleModal(props) {
                             },
                         ]}
                     >
-                        <PermissionMultipleSelect defaultValue={props.detailData.permission_identifier_array}
-                                                  placeholder={'请选择角色权限'}
-                                                  onChange={handleMultipleSelectChange}/>
+                        <PermissionMultipleSelect
+                            defaultValue={props.detailData.permission_identifier_array}
+                            placeholder={'请选择角色权限'}
+                            onChange={handleMultipleSelectChange}
+                        />
                     </Form.Item>
                 </Form>
             </Modal>

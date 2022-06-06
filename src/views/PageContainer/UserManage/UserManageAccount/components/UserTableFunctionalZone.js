@@ -5,6 +5,7 @@ import UserModal from "./UserModal";
 import api from "../../../../../api/user";
 import SearchForm from "./SearchForm";
 import React from "react";
+import BatchImportUserButton from "./BatchImportUserButton/BatchImportUserButton";
 
 /**
  * 功能区，包括搜索筛选和增加用户等功能性按钮
@@ -40,28 +41,27 @@ export default function UserTableFunctionalZone(props) {
             // 刷新表格数据
             props.refreshTableData()
         });
-
-
     }
 
     return (
         <div>
             <Space direction="horizontal">
-                {/*账号按创建钮*/}
-                <UserModal buttonText={"账号创建"}
-                           buttonType={"primary"}
-                           title={"账号创建"}
-                           detailData={{
-                               user_name: '',
-                               password: '',
-                               role_name: '',
-                               account: '',
-                               department: '',
-                           }}
-                           saveInfoFunction={addUserAndRefresh}/>
+                {/*/!*账号按创建钮*!/*/}
+                {/*<UserModal buttonText={"账号创建"}*/}
+                {/*           buttonType={"primary"}*/}
+                {/*           title={"账号创建"}*/}
+                {/*           detailData={{*/}
+                {/*               user_name: '',*/}
+                {/*               password: '',*/}
+                {/*               role_name: '',*/}
+                {/*               account: '',*/}
+                {/*               department: '',*/}
+                {/*           }}*/}
+                {/*           saveInfoFunction={addUserAndRefresh}*/}
+                {/*/>*/}
 
-                {/*批量导入按钮*/}
-                <BatchImportUserButton />
+                {/*/!*批量导入按钮*!/*/}
+                {/*<BatchImportUserButton />*/}
 
                 {/*搜索表单*/}
                 <SearchForm getSearch={props.getSearch}/>

@@ -15,6 +15,7 @@ import RoleMultiSelect from "./RoleMultiSelect";
  *         role_name: roleName,
  *         account: account,
  *         department: department
+ *         unit_name:unit_name
  *     },
  *     saveInfoFunction(data):function([]), // 回调函数，一般是和服务端通信的 API. data 为弹窗中表单的内容的数组。
  *     accountReadOnly:Boolean, // 是否允许修改账号
@@ -29,12 +30,13 @@ export default function UserModal(props) {
     const [userName, setUserName] = useState(props.detailData.user_name);
     const [account, setAccount] = useState(props.detailData.account);
     const [roleName, setRoleName] = useState(props.detailData.role_name);
-    const [department, setDepartment] = useState(props.detailData.department_name);
+    const [department, setDepartment] = useState(props.detailData.department);
+    // const [unitName, setUnitName] = useState(props.detailData.unit_name);
     const [password, setPassword] = useState(props.detailData.password);
 
     // 开关弹窗的时候自动刷新表单内容
     useEffect(() => {
-        if(isModalVisible){
+        if (isModalVisible) {
             const formDom = document.getElementById(props.detailData.account)
             if (formDom) {
                 formDom.reset()
@@ -57,14 +59,14 @@ export default function UserModal(props) {
             user_name,
             account,
             role_name,
-            department,
+            unit_name,
             password
         } = props.detailData;
         setIsModalVisible(true);
         setUserName(user_name);
         setAccount(account);
         setRoleName(role_name);
-        setDepartment(department);
+        setDepartment(unit_name);
         setPassword(password);
     };
     // 保存按钮的触发函数，关闭详情弹窗并保存信息的修改
@@ -72,11 +74,13 @@ export default function UserModal(props) {
         setIsModalVisible(false);
         props.saveInfoFunction({
             user_name: userName,
-            password: password,
-            role_name: roleName,
             account: props.detailData.account ? props.detailData.account : account,// 如果初始值为 ‘’ 说明是创建用户，否则为修改用户
             new_account: account,
-            department_name: department,
+            password: password,
+            // role_name: roleName,
+            role_id: roleID,
+            unit_id: department,
+            department_id: 1//TODO:测试用，待接口修复
         })
     };
 
@@ -189,14 +193,17 @@ export default function UserModal(props) {
                         rules={[
                             {
                                 required: true,
-                                message: '请输入用户密码!',
+                                message: '请输入用户密码！要求同时使用大小写字母，数字和符号，长度要求 8 位以上，不支持空格',
                             },
                         ]}
                     >
-                        <Input defaultValue={props.detailData.password}
-                               placeholder={'请输入用户密码'}
-                               onChange={handleInputChangePassword}
-                               allowClear={true}/>
+                        <Input
+                            defaultValue={props.detailData.password}
+                            placeholder={'请输入用户密码！要求同时使用大小写字母，数字和符号，长度要求 8 位以上，不支持空格'}
+                            onChange={handleInputChangePassword}
+                            allowClear={true}
+                            showCount={true}
+                        />
                     </Form.Item>
 
                     <Form.Item
@@ -209,25 +216,40 @@ export default function UserModal(props) {
                             },
                         ]}
                     >
-                        <RoleMultiSelect defaultValue={props.detailData.role_name}
-                                         placeholder={'请选择角色'}
-                                         onChange={handleInputChangeRoleName}/>
+                        <RoleMultiSelect
+                            defaultValue={props.detailData.role_name}
+                            placeholder={'请选择角色'}
+                            onChange={handleInputChangeRoleName}
+                        />
                     </Form.Item>
 
+                    {/*<Form.Item*/}
+                    {/*    label="部门"*/}
+                    {/*    name="department"*/}
+                    {/*    rules={[*/}
+                    {/*        {*/}
+                    {/*            required: true,*/}
+                    {/*            message: '请选择部门!',*/}
+                    {/*        },*/}
+                    {/*    ]}*/}
+                    {/*>*/}
+                    {/*    /!* TODO（钟卓江）：等获取部门种类的 API 完成之后完善这里,还需要换成多选*!/*/}
+                    {/*    <Input defaultValue={props.detailData.department}*/}
+                    {/*           placeholder={'请选择部门' + '，这里应该是下拉列表'}*/}
+                    {/*           onChange={handleInputChangeDepartment} allowClear={true}/>*/}
+                    {/*</Form.Item>*/}
+
                     <Form.Item
-                        label="部门"
-                        name="department_name"
+                        label="机构"
+                        name="unit_name"
                         rules={[
                             {
                                 required: true,
-                                message: '请选择部门!',
+                                message: '请选择机构!',
                             },
                         ]}
                     >
-                        {/* TODO（钟卓江）：等获取部门种类的 API 完成之后完善这里,还需要换成多选*/}
-                        <Input defaultValue={props.detailData.department_name}
-                               placeholder={'请选择部门' + '，这里应该是下拉列表'}
-                               onChange={handleInputChangeDepartment} allowClear={true}/>
+                        <div>未选择机构（待完善）</div>
                     </Form.Item>
                 </Form>
             </Modal>

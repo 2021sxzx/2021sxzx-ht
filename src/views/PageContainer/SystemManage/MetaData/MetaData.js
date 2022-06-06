@@ -14,9 +14,14 @@ import {
   Image,
   Switch,
   Select,
-  Upload,Row,Col,message,Typography,Card
+  Upload,
+  Row,
+  Col,
+  message,
+  Typography,
+  Card,
 } from "antd";
-const { Title } = Typography;
+const { Title, Paragraph } = Typography;
 import { SyncOutlined, UploadOutlined } from "@ant-design/icons";
 import * as echarts from "echarts";
 import api from "../../../../api/systemBasic";
@@ -66,161 +71,282 @@ const HandleModal = (props) => {
     </>
   );
 };
-var myChart;//echarts全局变量
+var myChart; //echarts全局变量
 
- const BarChart = (props) => {
+const BarChart = (props) => {
   const [data, setData] = useState([]);
   // getLog(data, setData);
   if (myChart != null && myChart != "" && myChart != undefined) {
-    myChart.dispose();//销毁
+    myChart.dispose(); //销毁
   }
-  React.useEffect(()=>{
+  React.useEffect(() => {
     var chartDom = document.getElementById(props.id);
     myChart = echarts.init(chartDom);
     myChart.setOption({
       title: {
-        text:"日志记录",
-        subtext:"5000",
-        textStyle:{
-          fontSize:'12px',
-          fontWeight:'normal'
+        text: "日志记录",
+        subtext: "5000",
+        textStyle: {
+          fontSize: "12px",
+          fontWeight: "normal",
         },
         subtextStyle: {
-          fontSize: '20px',
-          fontWeight: 'bolder'
-        }
+          fontSize: "20px",
+          fontWeight: "bolder",
+        },
       },
       tooltip: {
-        trigger: 'item',
+        trigger: "item",
         position: function (pt) {
           // return [pt[0], '10%','top'];
-          return 'top'
-        }
+          return "top";
+        },
       },
       xAxis: {
-        type: 'category',
+        type: "category",
         // data: chart2()
       },
       yAxis: {
-        type: 'value',
-        show: false
+        type: "value",
+        show: false,
       },
       series: [
         {
           // data: api.MetaDataLog(),
           data: props.data,
           // data: [120, 200, 150, 80, 70, 110, 130,120, 200, 150, 80, 70, 110, 130,140],
-          type: 'bar'
-        }
-      ]
+          type: "bar",
+        },
+      ],
     });
     // getLog(data,setData);
-  })
+  });
   return (
-      <div style={{
+    <div
+      style={{
         width: "250px",
         height: "170px",
         // paddingLeft: "10px",
         display: "inline-block",
 
         // float: "left"
-      }}>
-        <div id={props.id} style={{width:"100%",height:"100%"}}/>
-        <Divider style={{marginTop:"-42px",marginBottom:"0px"}}/>
-        <div>
-          <p3 style={{marginLeft:"12px",marginRight:"20px"}}>更改条数</p3>+{props.today}
-        </div>
+      }}
+    >
+      <div id={props.id} style={{ width: "100%", height: "100%" }} />
+      <Divider style={{ marginTop: "-42px", marginBottom: "0px" }} />
+      <div>
+        <Paragraph style={{ marginLeft: "12px", marginRight: "20px" }}>
+          更改条数 +{props.today}
+        </Paragraph>
       </div>
-
+    </div>
   );
-}
+};
 const LineChart = (props) => {
-  const [data,setData]=useState(props.data)
-  React.useEffect(()=>{
-      var chartDom = document.getElementById(props.id);
-      // setData(props.data[props.data.length - 1][1])
-      if (myChart != null && myChart != "" && myChart != undefined) {
-        myChart.dispose();//销毁
-      }
-      var myChart = echarts.init(chartDom);
-      myChart.setOption({
-          tooltip: {
-              trigger: 'axis',
-              position: function (pt) {
-                  return [pt[0], '10%'];
-              }
-          },
-          title: {
-              left: 'left',
-              text:"今日事项浏览次数",
-              subtext:props.today,
-              textStyle:{
-                  fontSize:'12px',
-                  fontWeight:'normal'
-              },
-              subtextStyle: {
-                  fontSize: '20px',
-                  fontWeight: 'bolder'
-              }
-          },
-          xAxis: {
-              type: 'time',
-              boundaryGap: false
-          },
-          yAxis: {
-              type: 'value',
-              boundaryGap: [0, '100%'],
-              show:false
-          },
-          series: [
-              {
-                  name: '今日事项浏览次数',
-                  type: 'line',
-                  smooth: true,
-                  symbol: 'none',
-                  areaStyle: {},
-                  data: props.data
-              }
-          ]
-      });
-      // getItemBrowseCount();
-  })
+  const [data, setData] = useState(props.data);
+  // console.log("props.today:"+props.today)
+  // console.log("props.today:"+props.today)
+  // console.log("props:"+props.toString())
+
+  React.useEffect(() => {
+    for (var i in props) {
+      console.log(i + ":" + props[i]);
+    }
+    var chartDom = document.getElementById(props.id);
+    // setData(props.data[props.data.length - 1][1])
+    if (myChart != null && myChart != "" && myChart != undefined) {
+      myChart.dispose(); //销毁
+    }
+    var myChart = echarts.init(chartDom);
+    myChart.setOption({
+      tooltip: {
+        trigger: "axis",
+        position: function (pt) {
+          return [pt[0], "10%"];
+        },
+      },
+      title: {
+        left: "left",
+        text: "今日事项浏览次数",
+        subtext: props.today,
+        textStyle: {
+          fontSize: "12px",
+          fontWeight: "normal",
+        },
+        subtextStyle: {
+          fontSize: "20px",
+          fontWeight: "bolder",
+        },
+      },
+      xAxis: {
+        type: "time",
+        boundaryGap: false,
+      },
+      yAxis: {
+        type: "value",
+        boundaryGap: [0, "100%"],
+        show: false,
+      },
+      series: [
+        {
+          name: "今日事项浏览次数",
+          type: "line",
+          smooth: true,
+          symbol: "none",
+          areaStyle: {},
+          data: props.data,
+        },
+      ],
+    });
+    // getItemBrowseCount();
+  });
   return (
-/*        <div id={props.id} style={{
+    /*        <div id={props.id} style={{
           width: "250px",
           height: "170px",
           paddingLeft: "10px",
           display: "inline-block",
           float: "left"
       }}/>*/
-  <div style={{
-      width: "250px",
-      height: "170px",
-      display: "inline-block",
-  }}>
-      <div id={props.id} style={{width:"100%",height:"100%"}}/>
-      <Divider style={{marginTop:"-42px",marginBottom:"0px"}}/>
+    <div
+      style={{
+        width: "250px",
+        height: "170px",
+        display: "inline-block",
+      }}
+    >
+      <div id={props.id} style={{ width: "100%", height: "100%" }} />
+      <Divider style={{ marginTop: "-42px", marginBottom: "0px" }} />
       <div>
-          <p3 style={{marginLeft:"12px",marginRight:"20px"}}>近15日日均访问量</p3>14512
+        <Paragraph style={{ marginLeft: "12px", marginRight: "20px" }}>
+          近15日日均访问量 14512
+        </Paragraph>
       </div>
-  </div>
+    </div>
   );
-}
+};
+// const LineChart = (props) => {
+//   React.useEffect(() => {
+//     var chartDom = document.getElementById(props.id);
+//     var myChart = echarts.init(chartDom);
+//     var option;
+
+//     const dataCount = 5e5;
+//     const data = generateData(dataCount);
+//     option = {
+//       title: {
+//         text: echarts.format.addCommas(dataCount) + ' Data',
+//         left: 10
+//       },
+//       toolbox: {
+//         feature: {
+//           dataZoom: {
+//             yAxisIndex: false
+//           },
+//           saveAsImage: {
+//             pixelRatio: 2
+//           }
+//         }
+//       },
+//       tooltip: {
+//         trigger: 'axis',
+//         axisPointer: {
+//           type: 'shadow'
+//         }
+//       },
+//       grid: {
+//         bottom: 90
+//       },
+//       dataZoom: [
+//         {
+//           type: 'inside'
+//         },
+//         {
+//           type: 'slider'
+//         }
+//       ],
+//       xAxis: {
+//         data: data.categoryData,
+//         silent: false,
+//         splitLine: {
+//           show: false
+//         },
+//         splitArea: {
+//           show: false
+//         }
+//       },
+//       yAxis: {
+//         splitArea: {
+//           show: false
+//         }
+//       },
+//       series: [
+//         {
+//           type: 'bar',
+//           data: data.valueData,
+//           // Set `large` for large data amount
+//           large: true
+//         }
+//       ]
+//     };
+//     function generateData(count) {
+//       let baseValue = Math.random() * 1000;
+//       let time = +new Date(2011, 0, 1);
+//       let smallBaseValue;
+//       function next(idx) {
+//         smallBaseValue =
+//           idx % 30 === 0
+//             ? Math.random() * 700
+//             : smallBaseValue + Math.random() * 500 - 250;
+//         baseValue += Math.random() * 20 - 10;
+//         return Math.max(0, Math.round(baseValue + smallBaseValue) + 3000);
+//       }
+//       const categoryData = [];
+//       const valueData = [];
+//       for (let i = 0; i < count; i++) {
+//         categoryData.push(
+//           echarts.format.formatTime('yyyy-MM-dd\nhh:mm:ss', time, false)
+//         );
+//         valueData.push(next(i).toFixed(2));
+//         time += 1000;
+//       }
+//       return {
+//         categoryData: categoryData,
+//         valueData: valueData
+//       };
+//     }
+
+//     option && myChart.setOption(option);
+//     return (
+//   <div style={{
+//       width: "250px",
+//       height: "170px",
+//       display: "inline-block",
+//   }}>
+//       <div id={props.id} style={{width:"100%",height:"100%"}}/>
+//       <Divider style={{marginTop:"-42px",marginBottom:"0px"}}/>
+//       <div>
+//           <Paragraph style={{marginLeft:"12px",marginRight:"20px"}}>近15日日均访问量 14512</Paragraph>
+//       </div>
+//   </div>
+//   );
+//   })
+// }
 const Demo = () => {
-  const [websiteSettingsForm]=Form.useForm()
-  const [coreSettingsForm]=Form.useForm()
-  const [interfaceConfigurationForm]=Form.useForm()
+  const [websiteSettingsForm] = Form.useForm();
+  const [coreSettingsForm] = Form.useForm();
+  const [interfaceConfigurationForm] = Form.useForm();
   const [WebsiteStatus, setWebsiteStatus] = React.useState(true);
-  const [fileList,setFileList]=React.useState(null)
-  const [BackstageLogoFile,setBackstageLogoFile]=React.useState(null)
-  const [WebsiteLogoFile,setWebsiteLogoFile]=React.useState(null)
-  const [AddressBarIconFile,setAddressBarIconFile]=React.useState(null)
-  const [MobileLogoFile,setMobileLogoFile]=React.useState(null)
-  const [QRCodeFile,setQRCodeFile]=React.useState(null)
-  const [officialWebsite,setOfficialWebsite]=React.useState(null)
-  const [officialAccount,setOfficialAccount]=React.useState(null)
-  const [APP,setAPP]=React.useState(null)
-  const [cloudPlatform,setCloudPlatform]=React.useState(null)
+  const [fileList, setFileList] = React.useState(null);
+  const [BackstageLogoFile, setBackstageLogoFile] = React.useState(null);
+  const [WebsiteLogoFile, setWebsiteLogoFile] = React.useState(null);
+  const [AddressBarIconFile, setAddressBarIconFile] = React.useState(null);
+  const [MobileLogoFile, setMobileLogoFile] = React.useState(null);
+  const [QRCodeFile, setQRCodeFile] = React.useState(null);
+  const [officialWebsite, setOfficialWebsite] = React.useState(null);
+  const [officialAccount, setOfficialAccount] = React.useState(null);
+  const [APP, setAPP] = React.useState(null);
+  const [cloudPlatform, setCloudPlatform] = React.useState(null);
   // const handleUpload = () => {
   //   const formData = new FormData();
   //   fileList.forEach(file => {
@@ -258,7 +384,7 @@ const Demo = () => {
   //   },
   // ];
   const onFinish = (values) => {
-    api.ChangeSiteSettings(values)
+    api.ChangeSiteSettings(values);
     // let formData = new FormData();
     // fileList.forEach(file => {
     //   formData.append('file', file);
@@ -305,7 +431,7 @@ const Demo = () => {
         .then((res) => res.json())
         .then(() => {
           //上传之后删除浏览器的图片
-          setBackstageLogoFile(null)
+          setBackstageLogoFile(null);
           message.success("首页轮播图上传成功.");
         })
         .catch(() => {
@@ -315,107 +441,110 @@ const Demo = () => {
 
     if (WebsiteLogoFile) {
       const WebsiteLogoFileFormData = new FormData();
-      WebsiteLogoFileFormData.append('file', WebsiteLogoFile);
-      console.log('WebsiteLogoFileFormData.file:',WebsiteLogoFileFormData.get('file'))
-      fetch('http://localhost:5001/api/v1/websitelogo-upload', {
-        method: 'POST',
+      WebsiteLogoFileFormData.append("file", WebsiteLogoFile);
+      console.log(
+        "WebsiteLogoFileFormData.file:",
+        WebsiteLogoFileFormData.get("file")
+      );
+      fetch("http://localhost:5001/api/v1/websitelogo-upload", {
+        method: "POST",
         body: WebsiteLogoFileFormData,
         mode: "cors",
         // headers: {
         //   "Content-Type": "multipart/form-data",
         // },
       })
-        .then(res => res.json())
+        .then((res) => res.json())
         .then(() => {
           //上传之后删除浏览器的图片
-          setWebsiteLogoFile(null)
-          message.success('网站logo上传成功.');
+          setWebsiteLogoFile(null);
+          message.success("网站logo上传成功.");
         })
         .catch(() => {
-          message.error('网站logo上传失败.');
+          message.error("网站logo上传失败.");
+        });
+    }
+    if (AddressBarIconFile) {
+      const AddressBarIconFileFormData = new FormData();
+      AddressBarIconFileFormData.append("file", AddressBarIconFile);
+      // console.log('WebsiteLogoFileFormData.file:',WebsiteLogoFileFormData.get('file'))
+      fetch("http://localhost:5001/api/v1/addressbaricon-upload", {
+        method: "POST",
+        body: AddressBarIconFileFormData,
+        mode: "cors",
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
+      })
+        .then((res) => res.json())
+        .then(() => {
+          //上传之后删除浏览器的图片
+          setAddressBarIconFile(null);
+          message.success("地址栏图标上传成功.");
         })
-      }
-      if (AddressBarIconFile) {
-        const AddressBarIconFileFormData = new FormData();
-        AddressBarIconFileFormData.append('file', AddressBarIconFile);
-        // console.log('WebsiteLogoFileFormData.file:',WebsiteLogoFileFormData.get('file'))
-        fetch('http://localhost:5001/api/v1/addressbaricon-upload', {
-          method: 'POST',
-          body: AddressBarIconFileFormData,
-          mode: "cors",
-          // headers: {
-          //   "Content-Type": "multipart/form-data",
-          // },
+        .catch(() => {
+          message.error("地址栏图标上传失败.");
+        });
+    }
+    if (MobileLogoFile) {
+      const MobileLogoFileFormData = new FormData();
+      MobileLogoFileFormData.append("file", MobileLogoFile);
+      // console.log('WebsiteLogoFileFormData.file:',WebsiteLogoFileFormData.get('file'))
+      fetch("http://localhost:5001/api/v1/mobilelogo-upload", {
+        method: "POST",
+        body: MobileLogoFileFormData,
+        mode: "cors",
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
+      })
+        .then((res) => res.json())
+        .then(() => {
+          //上传之后删除浏览器的图片
+          setMobileLogoFile(null);
+          message.success("手机端logo上传成功.");
         })
-          .then(res => res.json())
-          .then(() => {
-            //上传之后删除浏览器的图片
-            setAddressBarIconFile(null)
-            message.success('地址栏图标上传成功.');
-          })
-          .catch(() => {
-            message.error('地址栏图标上传失败.');
-          })
-        }
-        if (MobileLogoFile) {
-          const MobileLogoFileFormData = new FormData();
-          MobileLogoFileFormData.append('file', MobileLogoFile);
-          // console.log('WebsiteLogoFileFormData.file:',WebsiteLogoFileFormData.get('file'))
-          fetch('http://localhost:5001/api/v1/mobilelogo-upload', {
-            method: 'POST',
-            body: MobileLogoFileFormData,
-            mode: "cors",
-            // headers: {
-            //   "Content-Type": "multipart/form-data",
-            // },
-          })
-            .then(res => res.json())
-            .then(() => {
-              //上传之后删除浏览器的图片
-              setMobileLogoFile(null)
-              message.success('手机端logo上传成功.');
-            })
-            .catch(() => {
-              message.error('手机端logo上传失败.');
-            })
-          }
-          if (QRCodeFile) {
-            const QRCodeFileFormData = new FormData();
-            QRCodeFileFormData.append('file', QRCodeFile);
-            // console.log('WebsiteLogoFileFormData.file:',WebsiteLogoFileFormData.get('file'))
-            fetch('http://localhost:5001/api/v1/QRCode-upload', {
-              method: 'POST',
-              body: QRCodeFileFormData,
-              mode: "cors",
-              // headers: {
-              //   "Content-Type": "multipart/form-data",
-              // },
-            })
-              .then(res => res.json())
-              .then(() => {
-                //上传之后删除浏览器的图片
-                setQRCodeFile(null)
-                message.success('二维码上传成功.');
-              })
-              .catch(() => {
-                message.error('二维码上传失败.');
-              })
-            }
-    message.success('修改成功')
+        .catch(() => {
+          message.error("手机端logo上传失败.");
+        });
+    }
+    if (QRCodeFile) {
+      const QRCodeFileFormData = new FormData();
+      QRCodeFileFormData.append("file", QRCodeFile);
+      // console.log('WebsiteLogoFileFormData.file:',WebsiteLogoFileFormData.get('file'))
+      fetch("http://localhost:5001/api/v1/QRCode-upload", {
+        method: "POST",
+        body: QRCodeFileFormData,
+        mode: "cors",
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
+      })
+        .then((res) => res.json())
+        .then(() => {
+          //上传之后删除浏览器的图片
+          setQRCodeFile(null);
+          message.success("二维码上传成功.");
+        })
+        .catch(() => {
+          message.error("二维码上传失败.");
+        });
+    }
+    message.success("修改成功");
   };
 
-  const ChangeCoreSettings=(values)=>{
-    api.ChangeCoreSettings(values)
-    message.success('核心设置修改成功')
-  }
+  const ChangeCoreSettings = (values) => {
+    api.ChangeCoreSettings(values);
+    message.success("核心设置修改成功");
+  };
 
-  const ChangeInterfaceConfiguration=(values)=>{
-    api.ChangeInterfaceConfiguration(values)
-    message.success('接口修改成功')
-  }
+  const ChangeInterfaceConfiguration = (values) => {
+    api.ChangeInterfaceConfiguration(values);
+    message.success("接口修改成功");
+  };
 
   const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+    console.log("Failed:", errorInfo);
   };
   const [logData15, setLogData15] = useState(false);
   const [logToday, setLogToday] = useState(false);
@@ -430,7 +559,7 @@ const Demo = () => {
       .MetaDataLog()
       .then((response) => {
         setLogData15(response.data);
-        setLogToday(logData15[logData15.length-1][1])
+        setLogToday(response.data[response.data.length - 1][1]);
         console.log("response.data.data=", response.data);
       })
       .catch((error) => {});
@@ -438,61 +567,82 @@ const Demo = () => {
       .ItemBrowseCount()
       .then((response) => {
         setItemBrowseCount15(response.data);
-        setItemBrowseCountToday(itemBrowseCount15[itemBrowseCount15.length-1][1])
+        setItemBrowseCountToday(response.data[response.data.length - 1][1]);
         console.log("Item=", response.data);
       })
       .catch((error) => {});
   };
 
-  useEffect(()=>{
-    api.SiteSettings().then((response)=>{
+  useEffect(() => {
+    api.SiteSettings().then((response) => {
       websiteSettingsForm.setFieldsValue({
-        WebsiteAbbreviation:response.data.WebsiteAbbreviation,
-        WebsiteDomainName:response.data.WebsiteDomainName,
-        CopyrightInformation:response.data.CopyrightInformation,
-        RecordNumber:response.data.RecordNumber,
-        ServiceHotline:response.data.ServiceHotline,
-        Address:response.data.Address,
-        Disclaimers:response.data.Disclaimers
-      })
+        WebsiteAbbreviation: response.data.WebsiteAbbreviation,
+        WebsiteDomainName: response.data.WebsiteDomainName,
+        CopyrightInformation: response.data.CopyrightInformation,
+        RecordNumber: response.data.RecordNumber,
+        ServiceHotline: response.data.ServiceHotline,
+        Address: response.data.Address,
+        Disclaimers: response.data.Disclaimers,
+      });
       // console.log('ii')
       // apiLog.MetaDataLog().then(response =>{setLogData15(response.data)} )
-    })
-    api.CoreSettings().then((response)=>{coreSettingsForm.setFieldsValue({
-      MobileDomainName: response.data.MobileDomainName,
-      PCDomainName:response.data.PCDomainName
-    })})
-    api.InterfaceConfiguration().then((response)=>{
+    });
+    api.CoreSettings().then((response) => {
+      coreSettingsForm.setFieldsValue({
+        MobileDomainName: response.data.MobileDomainName,
+        PCDomainName: response.data.PCDomainName,
+      });
+    });
+    api.InterfaceConfiguration().then((response) => {
       interfaceConfigurationForm.setFieldsValue({
-        OfficialWebsite:response.data.OfficialWebsite,
-        OfficialAccount:response.data.OfficialAccount,
-      })
-      setOfficialWebsite(response.data.OfficialWebsite)
-      setOfficialAccount(response.data.OfficialAccount)
+        OfficialWebsite: response.data.OfficialWebsite,
+        OfficialAccount: response.data.OfficialAccount,
+      });
+      setOfficialWebsite(response.data.OfficialWebsite);
+      setOfficialAccount(response.data.OfficialAccount);
       // setAPP(response.data.APP)
       // setCloudPlatform(response.data.CloudPlatform)
-    })
+    });
     getLog();
-  },[])
+  }, []);
 
-    function getMyState(data) {
-        if(data===0)
-        return (<span style={{color: '#63c044'}}>良好</span>);
-        else return(<span style={{color: 'red'}}>不良</span>)
-    }
+  function getMyState(data) {
+    if (data === 0) return <span style={{ color: "#63c044" }}>良好</span>;
+    else return <span style={{ color: "red" }}>不良</span>;
+  }
 
-    return (
+  return (
     <div className="card-container">
       <Tabs type="card">
         <TabPane tab="元数据查看" key="1">
-          <div style={{padding:"5px",backgroundColor:"#eeeeee"}}>
+          <div style={{ padding: "5px", backgroundColor: "#eeeeee" }}>
             <Row gutter={10}>
-              <Col span={8}> <Card size='small'><UsersChart id="xi"/></Card></Col>
-              <Col span={8}> <Card size='small'><LineChart id="ha" data={itemBrowseCount15} today={itemBrowseCountToday}/></Card></Col>
-              <Col span={8}> <Card size='small'><BarChart id="ww" data={logData15} today={logToday}/></Card></Col>
+              <Col span={8}>
+                {" "}
+                <Card size="small">
+                  <UsersChart id="xi" />
+                </Card>
+              </Col>
+              {/* <Col span={8}> <Card size='small'><div style={{width: '250px', height: '170px', display: 'inline-block'}} id="ha" data={itemBrowseCount15} today={itemBrowseCountToday}/></Card></Col> */}
+              <Col span={8}>
+                {" "}
+                <Card size="small">
+                  <LineChart
+                    id="ha"
+                    data={itemBrowseCount15}
+                    today={itemBrowseCountToday}
+                  />
+                </Card>
+              </Col>
+              <Col span={8}>
+                {" "}
+                <Card size="small">
+                  <BarChart id="ww" data={logData15} today={logToday} />
+                </Card>
+              </Col>
             </Row>
           </div>
-          <Divider/>
+          <Divider />
           {/* <Image width={800} src={require("./1.png").default} />
           <Image width={400} src={require("./2.png").default} /> */}
           {/* <ChartsT id="Users" name="用户并发数" used={82} total={100}></ChartsT>
@@ -510,15 +660,15 @@ const Demo = () => {
             name="websiteSettings"
           >
             {/* <Form.Item label="网站状态" name="WebsiteStatus">
-              <Switch
-                checked={WebsiteStatus}
-                checkedChildren="开"
-                unCheckedChildren="关"
-                onChange={() => {
-                  setWebsiteStatus(!WebsiteStatus);
-                }}
-              />{" "}
-            </Form.Item> */}
+    <Switch
+      checked={WebsiteStatus}
+      checkedChildren="开"
+      unCheckedChildren="关"
+      onChange={() => {
+        setWebsiteStatus(!WebsiteStatus);
+      }}
+    />{" "}
+  </Form.Item> */}
             <Form.Item
               label="网站简称"
               name="WebsiteAbbreviation"
@@ -559,10 +709,10 @@ const Demo = () => {
                   // this.setState((state) => ({
                   //   fileList: [file],
                   // }));
-                  const isPNG = file.type === 'image/jpeg';
+                  const isPNG = file.type === "image/jpeg";
                   if (!isPNG) {
                     message.error(`${file.name}不是jpg格式`);
-                    return Upload.LIST_IGNORE
+                    return Upload.LIST_IGNORE;
                   }
                   setBackstageLogoFile(file);
                   console.log(BackstageLogoFile);
@@ -770,137 +920,124 @@ const Demo = () => {
         </TabPane>
         <TabPane tab="接口配置" key="5">
           <Row>
-            <Col span={18}><Form
-            labelCol={{ span: 5 }}
-            onFinish={ChangeInterfaceConfiguration}
-            onFinishFailed={onFinishFailed}
-            form={interfaceConfigurationForm}
-            labelAlign= 'left'
-          >
-            <h2>入口配置</h2>
-            <Form.Item
-              label="广州市人社局官网"
-              name="OfficialWebsite"
-              rules={[{ message: "Please input your username!" }]}
-              // validateStatus="success"
-              // hasFeedback
-            >
-              {/*<Input style={{ width: "700px" }} bordered={false} disabled={true} />*/}
-              {officialWebsite}
-            </Form.Item>
-            <Form.Item
-              label="广州市人社局微信公众号"
-              name="OfficialAccount"
-              rules={[{ message: "Please input your username!" }]}
-            >
-              {/*<Input  style={{ width: "700px" }} />*/}
-              {officialAccount}
-            </Form.Item>
-            <Form.Item
-              label="穗好办APP"
-              name="APP"
-              rules={[{ message: "Please input your username!" }]}
-            >
-              <Input style={{ width: "700px" }} />
-            </Form.Item>
-            <Form.Item
-              label="智能服务机器人云平台"
-              name="CloudPlatform"
-              rules={[{ message: "Please input your username!" }]}
-            >
-              <Input style={{ width: "700px" }} />
-            </Form.Item>
-            <h2>出口配置</h2>
-            <Form.Item
-              label="广东省政务综合服务平台"
-              name="ServicePlatform"
-              rules={[{ message: "Please input your username!" }]}
-            >
-              <Input style={{ width: "700px" }} />
-            </Form.Item>
-            <h2>其他配置</h2>
-            <Form.Item
-              label="百度地图"
-              name="BaiduMaps"
-              rules={[{ message: "Please input your username!" }]}
-            >
-              <Input style={{ width: "700px" }} />
-            </Form.Item>
-            <Form.Item
-              label="QQ客服咨询"
-              name="QQCustomerService"
-              rules={[{ message: "Please input your username!" }]}
-            >
-              <Input style={{ width: "700px" }} />
-            </Form.Item>
-            <Form.Item wrapperCol={{ offset: 10, span: 16 }}>
-              <Button type="primary" htmlType="submit">
-                确认更改
-              </Button>
-            </Form.Item>
-          </Form>
-          </Col>
-            <Col span={6}>
-                <Form
-                    labelCol={{ span: 15}}
-                    // onFinish={ChangeInterfaceConfiguration}
-                    // onFinishFailed={onFinishFailed}
-                    // form={interfaceConfigurationForm}
-                    labelAlign= 'left'
+            <Col span={18}>
+              <Form
+                labelCol={{ span: 5 }}
+                onFinish={ChangeInterfaceConfiguration}
+                onFinishFailed={onFinishFailed}
+                form={interfaceConfigurationForm}
+                labelAlign="left"
+              >
+                <h2>入口配置</h2>
+                <Form.Item
+                  label="广州市人社局官网"
+                  name="OfficialWebsite"
+                  rules={[{ message: "Please input your username!" }]}
+                  // validateStatus="success"
+                  // hasFeedback
                 >
-                    <Title level={4}>服务器与接口状态</Title>
-                    <Form.Item
-                        label="服务器网络"
-                        name="OfficialWebsite"
-                    >
-                        {getMyState(1)
-                            // ? <span style={{color: '#63c044'}}>良好</span> :
-                            //     <span style={{color: 'red'}}>不良</span>
-                        }
-                    </Form.Item>
-                    <Form.Item
-                        label="广州市人社局接口"
-                        name="OfficialWebsite"
-                    >
-                      {getMyState(0)}
-                    </Form.Item>
-                    <Form.Item
-                        label="广州人设微信公众号接口"
-                        name="OfficialWebsite"
-                    >
-                        良好
-                    </Form.Item>
-                    <Form.Item
-                        label="穗好办APP接口"
-                        name="OfficialWebsite"
-                    >
-                        良好
-                    </Form.Item>
-                    <Form.Item
-                        label="智能服务机器人云平台接口"
-                        name="OfficialWebsite"
-                    >
-                        良好
-                    </Form.Item>
-                    <Form.Item
-                        label="广东省政务服务综合平台接口"
-                        name="OfficialWebsite"
-                    >
-                        良好
-                    </Form.Item>
-                    <Form.Item
-                        label="百度地图接口"
-                        name="OfficialWebsite"
-                    >
-                        良好
-                    </Form.Item>
-                    <Form.Item
-                        label="QQ客服接口"
-                        name="OfficialWebsite"
-                    >
-                        良好
-                    </Form.Item>
-                </Form>
+                  {/*<Input style={{ width: "700px" }} bordered={false} disabled={true} />*/}
+                  {officialWebsite}
+                </Form.Item>
+                <Form.Item
+                  label="广州市人社局微信公众号"
+                  name="OfficialAccount"
+                  rules={[{ message: "Please input your username!" }]}
+                >
+                  {/*<Input  style={{ width: "700px" }} />*/}
+                  {officialAccount}
+                </Form.Item>
+                <Form.Item
+                  label="穗好办APP"
+                  name="APP"
+                  rules={[{ message: "Please input your username!" }]}
+                >
+                  <Input style={{ width: "700px" }} />
+                </Form.Item>
+                <Form.Item
+                  label="智能服务机器人云平台"
+                  name="CloudPlatform"
+                  rules={[{ message: "Please input your username!" }]}
+                >
+                  <Input style={{ width: "700px" }} />
+                </Form.Item>
+                <h2>出口配置</h2>
+                <Form.Item
+                  label="广东省政务综合服务平台"
+                  name="ServicePlatform"
+                  rules={[{ message: "Please input your username!" }]}
+                >
+                  <Input style={{ width: "700px" }} />
+                </Form.Item>
+                <h2>其他配置</h2>
+                <Form.Item
+                  label="百度地图"
+                  name="BaiduMaps"
+                  rules={[{ message: "Please input your username!" }]}
+                >
+                  <Input style={{ width: "700px" }} />
+                </Form.Item>
+                <Form.Item
+                  label="QQ客服咨询"
+                  name="QQCustomerService"
+                  rules={[{ message: "Please input your username!" }]}
+                >
+                  <Input style={{ width: "700px" }} />
+                </Form.Item>
+                <Form.Item wrapperCol={{ offset: 10, span: 16 }}>
+                  <Button type="primary" htmlType="submit">
+                    确认更改
+                  </Button>
+                </Form.Item>
+              </Form>
+            </Col>
+            <Col span={6}>
+              <Form
+                labelCol={{ span: 15 }}
+                // onFinish={ChangeInterfaceConfiguration}
+                // onFinishFailed={onFinishFailed}
+                // form={interfaceConfigurationForm}
+                labelAlign="left"
+              >
+                <Title level={4}>服务器与接口状态</Title>
+                <Form.Item label="服务器网络" name="OfficialWebsite">
+                  {
+                    getMyState(1)
+                    // ? <span style={{color: '#63c044'}}>良好</span> :
+                    //     <span style={{color: 'red'}}>不良</span>
+                  }
+                </Form.Item>
+                <Form.Item label="广州市人社局接口" name="OfficialWebsite">
+                  {getMyState(0)}
+                </Form.Item>
+                <Form.Item
+                  label="广州人设微信公众号接口"
+                  name="OfficialWebsite"
+                >
+                  良好
+                </Form.Item>
+                <Form.Item label="穗好办APP接口" name="OfficialWebsite">
+                  良好
+                </Form.Item>
+                <Form.Item
+                  label="智能服务机器人云平台接口"
+                  name="OfficialWebsite"
+                >
+                  良好
+                </Form.Item>
+                <Form.Item
+                  label="广东省政务服务综合平台接口"
+                  name="OfficialWebsite"
+                >
+                  良好
+                </Form.Item>
+                <Form.Item label="百度地图接口" name="OfficialWebsite">
+                  良好
+                </Form.Item>
+                <Form.Item label="QQ客服接口" name="OfficialWebsite">
+                  良好
+                </Form.Item>
+              </Form>
             </Col>
           </Row>
         </TabPane>

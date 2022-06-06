@@ -39,7 +39,7 @@ export default function DepartmentTable(props) {
             dataIndex: 'department_describe',
             key: 'department_describe',
             render:()=>(
-                <>这是部门描述</>
+                <>这是部门描述。。。。。。。。。。。</>
             )
         },
         {

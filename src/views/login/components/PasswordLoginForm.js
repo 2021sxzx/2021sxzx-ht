@@ -1,4 +1,4 @@
-import {Button, Checkbox, Col, Form, Row, Input, message} from "antd";
+import {Button,  Col, Form, Row, Input, message} from "antd";
 import {LockOutlined, UserOutlined} from "@ant-design/icons";
 import React, {useState} from "react";
 import QuickLogin from "./QuickLogin";
@@ -65,7 +65,8 @@ export default function PasswordLoginForm() {
         localStorage.setItem('_id', response.data.data._id);
         // localStorage.setItem('loginToken', response.data.data.jwt.token)
         // localStorage.setItem('role_name', response.data.data.role_name)
-        localStorage.setItem('roleName', response.data.data.role_name)
+        // localStorage.setItem('roleName', response.data.data.role_name)
+        localStorage.setItem('roleID', response.data.data.role_id)
 
         // HACK：出于安全考虑，不再需要保存密码
         // 从 localStorage 中获取是否记住密码（boolean）
@@ -99,12 +100,14 @@ export default function PasswordLoginForm() {
                 rules={[
                     {
                         required: true,
-                        message: '请输入账号/手机号码!',
+                        message: '请输入手机号码!',
                     },
                 ]}
             >
-                <Input placeholder={'账号/手机号码'}
+                <Input placeholder={'手机号码'}
                        defaultValue={historyAccount}
+                       // type={"number"}
+                       maxLength={15}
                        prefix={<UserOutlined className="site-form-item-icon"/>}
                        allowClear={true}
                        onChange={handleInputChangeAccount}/>
@@ -120,9 +123,10 @@ export default function PasswordLoginForm() {
                     },
                 ]}
             >
-                <Input.Password type={"password"}
-                                placeholder={"密码"}
+                <Input.Password placeholder={"密码"}
                                 defaultValue={historyPassword}
+                                type={"password"}
+                                maxLength={32}
                                 prefix={<LockOutlined className="site-form-item-icon"/>}
                                 allowClear={true}
                                 onChange={handleInputChangePassword}/>

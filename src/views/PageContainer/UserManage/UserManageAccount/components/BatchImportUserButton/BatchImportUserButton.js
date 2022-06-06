@@ -48,9 +48,14 @@ const BatchImportUserButton = () => {
   }
 
   return (
-    <a href="" className="file">
-        批量导入用户
-        <input type="file" name="" id="" onChange={getXlsxData}/>
+    <a href="" className="file" style={{
+      color:'#FFFFFF',
+      fontSize:'',
+      margin:'0px',
+      width:'100px',
+    }}>
+        导入用户
+        <input type="file" name="" id="" onChange={getXlsxData} />
     </a>
   );
 }

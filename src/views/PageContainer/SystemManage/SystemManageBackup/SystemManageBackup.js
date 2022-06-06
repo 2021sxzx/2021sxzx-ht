@@ -94,7 +94,7 @@ const SelectForm = (props) => {
       <Form name="setTime" form={form} layout={"inline"} onFinish={onFinish}>
         <Form.Item>
               <Button type="primary" onClick={backupNow}>
-                立即备份
+                手动备份
               </Button>
         </Form.Item>
         <Form.Item>
@@ -314,7 +314,7 @@ const Demo = () => {
               pagination={{ pageSize: 10,showQuickJumper:true,pageSizeOptions:[10,20,50],showSizeChanger:true }}
             />
           </TabPane>
-          <TabPane tab="文件备份" key="2">
+          {/* <TabPane tab="文件备份" key="2">
             <p>Content of Tab Pane 2</p>
             <p>Content of Tab Pane 2</p>
             <p>Content of Tab Pane 2</p>
@@ -323,7 +323,7 @@ const Demo = () => {
             <p>Content of Tab Pane 3</p>
             <p>Content of Tab Pane 3</p>
             <p>Content of Tab Pane 3</p>
-          </TabPane>
+          </TabPane> */}
         </Tabs>
       </div>
     </>

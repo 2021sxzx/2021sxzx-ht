@@ -17,7 +17,7 @@ import api from '../../../api/comment'
 const { RangePicker } = DatePicker
 const { Option } = Select
 // 设置下拉列表的内容
-const starList = ['全部', '1', '2', '3', '4']
+const starList = ['全部', '1', '2', '3', '4',' 5']
 const idList = ['全部', '证件号', '事项指南名称', '事项指南编码']
 // 下拉列表组件
 const DropSelect = (props) => {
@@ -224,7 +224,8 @@ export default function CommentManageList() {
 	const [page, setPage] = useState({
 		current: 1,
 		pageSize: 10,
-		total: 100
+		total: 100,
+		showSizeChanger:false
 	})
 	// 从服务器获取评论表格的数据，保存到 tableData 中
 	const [searchParam,setSearchParam]=useState({})
@@ -252,13 +253,15 @@ export default function CommentManageList() {
 				if (response.data.data.total){
 					setPage({
 						total:response.data.data.total,
-						current: data.pageNum
+						current: data.pageNum,
+						showSizeChanger:false
 					})
 				}
 				else{
 					setPage({
 						total:0,
-						current: 1
+						current: 1,
+						showSizeChanger:false
 					})
 				}
 
@@ -287,7 +290,7 @@ export default function CommentManageList() {
 				{/* 搜索 */}
 				<SelectForm getSearch={getSearchComment} getParam={setSearchParam} setCur={setPage}></SelectForm>
 				{/* 用户评价的表格 */}
-				<Table columns={tableColumns} dataSource={tableData} pagination={page} loading={loading} showSizeChanger={false} onChange={handlePageChange}/>
+				<Table columns={tableColumns} dataSource={tableData} pagination={page} loading={loading} onChange={handlePageChange}/>
 			</Space>
 			,
 		</div>

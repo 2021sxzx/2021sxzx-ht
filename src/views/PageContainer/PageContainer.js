@@ -1,5 +1,5 @@
-import React from 'react'
-import { Redirect, Switch,Route } from 'react-router-dom'
+import React, {useEffect, useState} from 'react'
+import {Redirect, Switch, Route, withRouter} from 'react-router-dom'
 
 import { Layout, Breadcrumb } from 'antd'
 import SideMenu from '../../components/page-container/SideMenu/SideMenu.js'
@@ -16,30 +16,89 @@ import CommentManageList from './CommentManageList/CommentManageList.js'
 import CommentManageReport from './CommentManageReport/CommentManageReport.js'
 import MetaData from './SystemManage/MetaData/MetaData.js'
 import SystemManageJournal
-  from "./SystemManage/SystemManageJournal/SystemManageJournal.js";
+    from "./SystemManage/SystemManageJournal/SystemManageJournal.js";
 import SystemManageResource
-  from "./SystemManage/SystemManageResource/SystemManageResource.js";
+    from "./SystemManage/SystemManageResource/SystemManageResource.js";
 import UserManageAccount
-  from './UserManage/UserManageAccount/UserManageAccount'
+    from './UserManage/UserManageAccount/UserManageAccount'
 import UserManageRole from './UserManage/UserManageRole/UserManageRole'
 import SystemManageFailure from './SystemManage/SystemManageFailure/SystemManageFailure.js';
 import SystemManageBasic from './SystemManage/SystemManageBasic/SystemManageBasic.js'
 import SystemManageBackup from './SystemManage/SystemManageBackup/SystemManageBackup.js'
 import NoPermission from './NoPermission/NoPermission.js'
-import DepartmentManagement from "./UserManage/departmentManagement/DepartmentManagement";
+import RegisterManagement from "./UserManage/RegisterManagement/RegisterManagement";
+import style from "../../components/page-container/SideMenu/SideMenu.module.css";
+import Sider from "antd/es/layout/Sider";
+import MenuList from "../../utils/MenuList";
 
 const { Content } = Layout
 
-export default function PageContainer() {
+export default withRouter(function PageContainer(props) {
+  const [curRoute,setCurRoute]=useState([])
+  const menuTitle=new Map([])
+  function getMenuTitle(menu){
+      if (!menu) return
+      menu.map(item=>{
+        menuTitle.set(item.key,item.title)
+        if (item.children?.length > 0) {
+            getMenuTitle(item.children)
+        }
+      })
+  }
+
+  const getPathName=(path,menuTitle)=>{
+      let mid=path.split('/')
+      for (let i=0;i<mid.length;i++){
+        if (i<mid.length-1) mid[i+1]=mid[i]+'/'+mid[i+1]
+        if (i>0) mid[i]=menuTitle.get(mid[i])
+      }
+      mid.splice(0,1)
+      return mid
+
+  }
+
+  useEffect(()=>{
+    MenuList.getAndStorageMenuList((menuList)=>{
+        if (!menuList) return
+        getMenuTitle(menuList)
+        setCurRoute(getPathName(props.location.pathname,menuTitle))
+      // console.log('获得了 menuList', menuList)
+    })
+  },[])
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <SideMenu/>
+      <Sider
+          theme="light" // 样式主题
+          collapsible={true} // 是否可收起
+          style={{
+            overflow: 'auto',
+            height: '100vh',
+            // position: 'fixed',
+            float: 'left',
+            left: 0,
+            top: 0,
+            bottom: 0,
+          }}
+      >
+        <div className={style.logo}>
+          {/*TODO:添加 LOGO 图片*/}
+          {/*<img src="....."/>*/}
+          广州人社
+        </div>
+        <SideMenu setCurRoute={setCurRoute} getPathName={getPathName}/>
+      </Sider>
       <Layout className="site-layout">
         <TopHeader/>
         <Content style={{ margin: '0 16px' }}>
           <Breadcrumb style={{ margin: '16px 0' }}>
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
+            {
+              curRoute.map(item=>{
+                return(
+                    <Breadcrumb.Item>{item}</Breadcrumb.Item>
+                )
+              })
+            }
           </Breadcrumb>
           <div className="site-layout-background" style={{ padding: 24, minHeight: 360, }}>
             <Switch>
@@ -59,11 +118,13 @@ export default function PageContainer() {
               {/* 资源管理 */}
               <Route path="/system-manage/resource" component={SystemManageResource} />
               {/* 后台账号管理 */}
-              <Route path="/user-manage/account" component={UserManageAccount} />
+              <Route path="/user-manage/account/user" component={UserManageAccount} />
               {/* 角色管理 */}
-              <Route path="/user-manage/role" component={UserManageRole} />
-              {/* 部门管理 */}
-              <Route path="/user-manage/department" component={DepartmentManagement} />
+              <Route path="/user-manage/account/role" component={UserManageRole} />
+              {/* 单位管理 */}
+              <Route path="/user-manage/register" component={RegisterManagement}/>
+              {/*/!* 部门管理 *!/*/}
+              {/*<Route path="/user-manage/department" component={DepartmentManagement} />*/}
               <Route path="/system-manage/failure" component={SystemManageFailure}/>
               <Route path="/system-manage/meta-data" component={MetaData}/>
               <Route path="/system-manage/backup" component={SystemManageBackup}/>
@@ -77,4 +138,4 @@ export default function PageContainer() {
       </Layout>
     </Layout>
   )
-}
+})
