@@ -1,9 +1,9 @@
 /**
  * 用户管理/角色管理页面
  */
-import React, {useEffect, useState} from 'react'
+import React, {useCallback, useEffect, useState} from 'react'
 
-import {Space, message} from 'antd';
+import {message} from 'antd';
 
 import api from "../../../../api/role";
 import SelectForm from "./components/SelectForm";
@@ -19,38 +19,60 @@ export default function UserManageList() {
     }, [])
 
     // 从服务器获取角色表格的数据，保存到 tableData 中
-    const getRole = () => {
+    const getRole = useCallback(() => {
         setLoading(true)
         api.GetRole().then(response => {
-            setLoading(false)
-            console.log('角色表格的数据 GetRole =', response.data.data)
             setTableData(response.data.data)
-        }).catch(error => {
-            console.log('GetRole error:', error)
+        }).catch(() => {
+            message.error('获取角色失败，请稍后重试')
+        }).finally(() => {
+            setLoading(false)
         })
-    }
+    }, [])
 
     // 从服务器中获取搜索结果，保存到 tableData 中
-    const getSearchRole = (data) => {
+    const getSearchRole = useCallback((data) => {
         setLoading(true)
         api.SearchRole(data).then(response => {
-            setLoading(false)
             setTableData(response.data.data)
             message.success("搜索角色成功")
-        }).catch(error => {
+        }).catch(() => {
             message.error("搜索角色出现错误")
-            console.log("SearchRole error:", error)
+        }).finally(() => {
+            setLoading(false)
         })
-    }
+    }, [])
 
     return (
         <div>
-            <Space direction="vertical" size={12} style={{width: 100 + '%'}}>
-                {/* 搜索 */}
-                <SelectForm getSearch={getSearchRole} refreshTableData={getRole}/>
-                {/* 用户评价的表格 */}
-                <RoleTable tableData={tableData} refreshTableData={getRole} loading={loading}/>
-            </Space>
+            {/*<Space direction="vertical" size={12} style={{width: 100 + '%'}}>*/}
+            <div style={{
+                display: "inline-block",
+                width:'100%',
+                position:'relative',
+            }}>
+                <div style={{
+                    display: "inline-flex",
+                    alignItems: 'center',
+                    fontSize: 20,
+                    position:'absolute',
+                    top:0,
+                    bottom:0,
+                    padding:'0 10px'
+                }}>
+                    角色列表
+                </div>
+                <div style={{
+                    float: "right",
+                }}>
+                    <SelectForm getSearch={getSearchRole} refreshTableData={getRole}/>
+                </div>
+            </div>
+            {/*间隔*/}
+            <div style={{margin: '12px'}}/>
+            {/* 用户评价的表格 */}
+            <RoleTable tableData={tableData} refreshTableData={getRole} loading={loading}/>
+            {/*</Space>*/}
         </div>
     )
 }
