@@ -1,6 +1,7 @@
 
 import {message} from "antd";
 import UrlJump from "./UrlJump";
+import api from '../api/login'
 
 const MenuList = {
     /**
@@ -43,16 +44,16 @@ const MenuList = {
             }
         }
 
-        // // 根据角色名称向服务器申请获取 MenuList
-        // api.GetMenuList({role_id:roleID}).then((response => {
-        //     menuList = response.data.data
-        //     sessionStorage.setItem('menuList',JSON.stringify(menuList))
-        //     callback(menuList)
-        //     return true
-        // })).catch(error => {
-        //     callback(null)
-        //     return false
-        // })
+        // 根据角色名称向服务器申请获取 MenuList
+        api.GetMenuList({role_id:roleID}).then((response => {
+            menuList = response.data.data
+            sessionStorage.setItem('menuList',JSON.stringify(menuList))
+            callback(menuList)
+            return true
+        })).catch(error => {
+            callback(null)
+            return false
+        })
     }
 }
 
