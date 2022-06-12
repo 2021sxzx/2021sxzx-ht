@@ -44,13 +44,18 @@ export default function MobileLoginForm() {
                         required: true,
                         message: '请输入手机号码!',
                     },
+                    {
+                        // TODO：暂时保留了开发人员账号
+                        pattern:/^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/,
+                        message:'请输入正确的手机号码'
+                    },
                 ]}
             >
                 <Input placeholder={'手机号码'}
-                       maxLength={15}
-                       type={"number"}
+                       maxLength={32}
                        prefix={<UserOutlined className="site-form-item-icon"/>}
-                       allowClear={true}/>
+                       allowClear={true}
+                />
             </Form.Item>
             {/*验证码*/}
             <Form.Item
@@ -61,12 +66,16 @@ export default function MobileLoginForm() {
                         required: true,
                         message: '请输入验证码!',
                     },
+                    {
+                        len:8,
+                        message:'请输入 8 位验证码'
+                    }
                 ]}
             >
                 <Row>
                     <Col span={16}>
                         <Input placeholder={"验证码"}
-                               maxLength={10}
+                               maxLength={32}
                                prefix={<MobileOutlined/>}
                                allowClear={true}/>
                     </Col>
