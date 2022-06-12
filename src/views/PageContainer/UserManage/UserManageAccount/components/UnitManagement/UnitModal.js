@@ -55,10 +55,10 @@ export default function UnitModal(props) {
         props.callback({
             // 用于添加 unit
             unit_name: unitName,
-            parent_unit:props.detailData.parent_unit,
+            parent_unit: props.detailData.parent_unit,
             // 用于修改 unit
             new_unit_name: unitName,
-            unit_id:props.detailData.unit_id,
+            unit_id: props.detailData.unit_id,
         })
     };
 
@@ -110,7 +110,8 @@ export default function UnitModal(props) {
                         span: 16,
                     }}
                     initialValues={{
-                        remember: true,
+                        departmentName: props.detailData.unit_name,
+
                     }}
                     autoComplete="off"
                 >
@@ -124,16 +125,17 @@ export default function UnitModal(props) {
                             },
                         ]}
                     >
-                        <Input defaultValue={props.detailData.unit_name}
-                               placeholder={'请输入机构名称'}
-                               onChange={handleInputChangeUnitName}/>
+                        <Input
+                            // defaultValue={props.detailData.unit_name}
+                            placeholder={'请输入机构名称'}
+                            onChange={handleInputChangeUnitName}/>
                     </Form.Item>
                     {
                         props.detailData.parent_name
                             ?
                             <Form.Item
                                 label="父级机构"
-                                name="parentUnit"
+                                // name="parentUnit"
                                 rules={[
                                     {
                                         required: true,

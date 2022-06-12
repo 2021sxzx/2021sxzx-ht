@@ -90,12 +90,12 @@ export default withRouter(function PageContainer(props) {
       </Sider>
       <Layout className="site-layout">
         <TopHeader/>
-        <Content style={{ margin: '0 16px' }}>
-          <Breadcrumb style={{ margin: '16px 0' }}>
+        <Content style={{ margin: '0 10px' }}>
+          <Breadcrumb style={{ margin: '10px 0' }}>
             {
               curRoute.map(item=>{
                 return(
-                    <Breadcrumb.Item>{item}</Breadcrumb.Item>
+                    <Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>
                 )
               })
             }

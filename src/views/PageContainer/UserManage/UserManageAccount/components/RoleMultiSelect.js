@@ -1,7 +1,7 @@
 import {Select} from "antd";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import api from "../../../../../api/role";
-
+const {Option} = Select
 /**
  * 角色多选器
  * @param props = {
@@ -13,35 +13,46 @@ import api from "../../../../../api/role";
  * @constructor
  */
 export default function RoleMultiSelect(props) {
-    const {Option} = Select
-
     const [options,setOptions] = useState([])
+    const componentMounted = useRef(true) // 组件是否加载成功
 
     // 只在初次渲染的时候请求权限列表
     useEffect(()=>{
         api.GetRole().then(response => {
-            console.log('RoleMultiSelect GetRole',response.data.data)
-            setOptions(
-                response.data.data.map((item)=>{
-                    return (
-                        <Option key={item.role_name}
-                                value={item.role_name}>
-                            {item.role_name}
-                        </Option>
-                    );
-                })
-            )
+            // When component is still mounted
+            if (componentMounted.current === true) {
+                setOptions(
+                    response.data.data.map((item)=>{
+                        return (
+                            <Option key={item.role_id}
+                                    value={item.role_id}>
+                                {item.role_name}
+                            </Option>
+                        );
+                    })
+                )
+            }
         }).catch(()=>{
             console.log('error:GetRoleList')
         })
+
+        // This code runs when component is unmounted
+        return ()=>{
+            // set it false
+            componentMounted.current = false
+        }
     },[])
 
     return (
         <Select
             allowClear
+            showSearch
             placeholder={props.placeholder}
             defaultValue={props.defaultValue}
             onChange={props.onChange}
+            filterOption={(input, option) => {
+                option.children.toLowerCase().includes(input.toLowerCase())
+            }}
         >
             {options}
         </Select>

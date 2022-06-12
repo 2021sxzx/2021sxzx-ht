@@ -1,5 +1,5 @@
 import {message, Table, Tag} from "antd";
-import React from "react";
+import React, {useCallback} from "react";
 import api from "../../../../../api/role";
 import RoleModal from "./RoleModal";
 
@@ -14,39 +14,21 @@ import RoleModal from "./RoleModal";
  * @constructor
  */
 export default function RoleTable(props) {
-    const UpdateRoleInfoAndRefresh = (data) => {
-        // 用于判断所有信息是否都完成更新
-        let canRefresh = false
+    console.log('RoleTable')
 
-        // 自动决定是否刷新表格
-        const autoRefresh = () => {
-            if (canRefresh) {
+    const UpdateRoleInfoAndRefresh = useCallback((data) => {
+        Promise.all([api.UpdateRole(data), api.UpdateRolePermission(data)])
+            .then(() => {
                 message.success('修改角色信息成功')
+            })
+            .catch(() => {
+                message.error('修改角色信息发生错误')
+            })
+            .finally(() => {
                 // 刷新表格
                 props.refreshTableData()
-            } else {
-                canRefresh = true
-            }
-        }
-
-        // 更新非权限相关的信息
-        api.UpdateRole(data).then(response => {
-            console.log('UpdateRole = ', response.data)
-            autoRefresh()
-        }).catch(error => {
-            message.error('修改角色信息发生错误')
-            console.log("UpdateRole error", error)
-        })
-
-        // 更新权限相关的信息
-        api.UpdateRolePermission(data).then(response => {
-            console.log('UpdatePermission = ', response.data)
-            autoRefresh()
-        }).catch(error => {
-            message.error('修改角色信息发生错误')
-            console.log("UpdateRolePermission error", error)
-        })
-    }
+            })
+    }, [])
 
     // 表格的属性/列名
     const tableColumns = [
@@ -54,21 +36,25 @@ export default function RoleTable(props) {
             title: '角色名称',
             dataIndex: 'role_name',
             key: 'role_name',
+            fixed: 'left',
+            width: 100,
         },
         {
             title: '角色描述',
             dataIndex: 'role_describe',
             key: 'role_describe',
+            width: 150,
         },
         {
             title: '角色权限',
             dataIndex: 'permission',
             key: 'permission',
-            render: (permission,record) => (
+            width: 250,
+            render: (permission, record) => (
                 <>
                     {permission.map(permission => {
                         return (
-                            <Tag key={record.role_name+permission}>
+                            <Tag key={record.role_name + permission}>
                                 {permission}
                             </Tag>
                         );
@@ -79,22 +65,39 @@ export default function RoleTable(props) {
         {
             title: '修改角色信息',
             key: 'detail',
+            fixed: 'right',
+            width: 100,
             render: (text, record) => (//查看详情按钮和详情弹窗
-                <RoleModal buttonText={'修改角色信息'}
-                           buttonType={''}
-                           title={'修改角色信息'}
-                           detailData={record}
-                           callback={UpdateRoleInfoAndRefresh}
+                <RoleModal
+                    buttonText={'修改角色信息'}
+                    buttonType={''}
+                    title={'修改角色信息'}
+                    detailData={record}
+                    callback={UpdateRoleInfoAndRefresh}
                 />
             ),
         },
     ]
 
     return (
-        <Table columns={tableColumns}
-               dataSource={props.tableData !== {} ? props.tableData : {}}
-               rowKey={record => record.role_name}
-               loading={props.loading}
+        <Table
+            columns={tableColumns}
+            dataSource={props.tableData !== {} ? props.tableData : {}}
+            rowKey={record => record.role_id + record.role_name}
+            sticky={true} //设置粘性头部和滚动条
+            scroll={{ //表格是否可滚动，也可以指定滚动区域的宽、高
+                scrollToFirstRowOnChange: true, // 当分页、排序、筛选变化后是否滚动到表格顶部
+                x: 'max-content',//'100%', // 设置横向滚动，也可用于指定滚动区域的宽
+                y: 400, //设置纵向滚动，也可用于指定滚动区域的高
+            }}
+            pagination={{//分页器
+                // defaultPageSize: 5,// 默认每页的数量
+                pageSizeOptions: ['5', '10', '15', '20', '25'], // 允许的每页数量
+                showSizeChanger: true, // 是否展示 pageSize 切换器
+                responsive: true, // 当 size 未指定时，根据屏幕宽度自动调整尺寸
+                showQuickJumper: true, // 是否可以快速跳转至某页
+            }}
+            loading={props.loading}
         />
     )
 }

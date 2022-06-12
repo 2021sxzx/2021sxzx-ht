@@ -12,7 +12,8 @@ import RoleModal from "./RoleModal";
  * @returns {JSX.Element}
  * @constructor
  */
-export default function SelectForm(props) {
+function SelectForm(props) {
+    console.log('SelectForm')
     // 使用并设置表单组件
     const [form] = Form.useForm();
     const formLayout = 'inline';
@@ -49,11 +50,12 @@ export default function SelectForm(props) {
             }
         }
 
-        // 新增角色非权限信息
+        // 新增角色
         api.AddRole({
             role_name: data.role_name,
             role_describe: data.role_describe,
-            permission_identifier_array: data.permission_identifier_array
+            permission_identifier_array: data.permission_identifier_array,
+            role_rank: 1,
         }).then(response => {
             // log 服务端返回的搜索结果
             console.log('addRoleResult=', response.data)
@@ -63,18 +65,18 @@ export default function SelectForm(props) {
             console.log("AddRole error", error)
         })
 
-        // 新增角色权限信息
-        api.AddRolePermission({
-            role_name: data.role_name,
-            permission_identifier_array: data.permission_identifier_array
-        }).then(response => {
-            // log 服务端返回的搜索结果
-            console.log('addRolePermissionResult=', response.data)
-            autoRefresh()
-        }).catch(error => {
-            message.error('新增角色权限出现错误')
-            console.log("AddRolePermission error", error)
-        })
+        // // 新增角色权限信息
+        // api.AddRolePermission({
+        //     role_name: data.role_name,
+        //     permission_identifier_array: data.permission_identifier_array
+        // }).then(response => {
+        //     // log 服务端返回的搜索结果
+        //     console.log('addRolePermissionResult=', response.data)
+        //     autoRefresh()
+        // }).catch(error => {
+        //     message.error('新增角色权限出现错误')
+        //     console.log("AddRolePermission error", error)
+        // })
     }
 
     return (
@@ -105,3 +107,5 @@ export default function SelectForm(props) {
         </>
     )
 }
+
+export default React.memo(SelectForm)

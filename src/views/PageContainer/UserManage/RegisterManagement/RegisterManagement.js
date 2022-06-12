@@ -1,6 +1,6 @@
 import React from "react";
 import {Button, Card, Col, message, Row} from "antd";
-import './LoginManagement.scss'
+import './RegisterManagement.scss'
 import UserModal from "../UserManageAccount/components/UserModal";
 import api from "../../../../api/user";
 import BatchImportUserButton from "../UserManageAccount/components/BatchImportUserButton/BatchImportUserButton";
@@ -8,9 +8,12 @@ import BatchImportUserButton from "../UserManageAccount/components/BatchImportUs
 function RegisterManagement() {
     const addUser = function (data) {
         api.AddUser(data).then(response => {
-            // log 服务端返回的搜索结果
             console.log('addUser =', response.data)
-            message.success('用户创建成功');
+            if (response.data.code === 404) {
+                message.warn(response.data.msg);
+            } else {
+                message.success('用户创建成功');
+            }
         }).catch(error => {
             console.log('error = ', error)
             message.error('用户创建发生错误');
@@ -35,17 +38,21 @@ function RegisterManagement() {
                                     fontSize: 20,
                                 }}
                                 actions={[
-                                    <UserModal buttonText={"开始账号创建"}
-                                               buttonType={"primary"}
-                                               title={"账号创建"}
-                                               detailData={{
-                                                   user_name: '',
-                                                   password: '',
-                                                   role_name: '',
-                                                   account: '',
-                                                   department: '',
-                                               }}
-                                               saveInfoFunction={addUser}
+                                    <UserModal
+                                        buttonText={"开始账号创建"}
+                                        buttonType={"primary"}
+                                        title={"账号创建"}
+                                        disable={false}
+                                        detailData={{
+                                            user_name: '',
+                                            password: '',
+                                            role_name: '',
+                                            account: '',
+                                            role_id: null,
+                                            unit_id: null,
+                                            unit_name: '',
+                                        }}
+                                        saveInfoFunction={addUser}
                                     />,
                                 ]}
                             >
@@ -67,7 +74,7 @@ function RegisterManagement() {
                                         下载模板
                                     </Button>,
                                     // 导入用户
-                                    <BatchImportUserButton />,
+                                    <BatchImportUserButton/>,
                                 ]}
                             >
                                 <p>通过上传指定格式文件即可完成用户的批量导入。</p>
