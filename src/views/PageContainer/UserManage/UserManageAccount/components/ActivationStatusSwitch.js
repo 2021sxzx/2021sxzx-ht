@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {message, Switch} from "antd";
 import api from '../../../../../api/user'
+
 /**
  * 切换用户激活状态的开关
  * @param props = {
@@ -14,7 +15,7 @@ import api from '../../../../../api/user'
  * @returns {JSX.Element|string}
  * @constructor
  */
-export default function ActivationStatusSwitch (props){
+export default function ActivationStatusSwitch(props) {
     const record = props.record
     const [activationStatus, setActivationStatus] = useState(record.activation_status);
     const roleName = record.role_name
@@ -30,16 +31,17 @@ export default function ActivationStatusSwitch (props){
         api.SetActivation(data).then(() => {
             setActivationStatus(checked)
             message.success('切换账号激活状态成功')
-            // 刷新表格数据
-            props.refreshTableData()
         }).catch(error => {
             console.log("error: handleSwitchChangeActivationState", error);
             message.error('切换账号激活状态失败')
+        }).finally(() => {
+            // 刷新表格数据
+            props.refreshTableData()
         })
     }
 
     const disableSwitch = () => {
-      return record._id === localStorage.getItem('_id') || roleName === localStorage.getItem('roleName')
+        return record._id === localStorage.getItem('_id') || roleName === localStorage.getItem('roleName')
     }
 
     if (activationStatus === false || activationStatus === true || activationStatus === 1 || activationStatus === 0) {
@@ -53,7 +55,7 @@ export default function ActivationStatusSwitch (props){
             onChange={handleSwitchChangeActivationState}
         />
     } else {
-      console.log('activationStatus',activationStatus)
+        console.log('activationStatus', activationStatus)
         return <div>error status</div>
     }
 }
