@@ -1,5 +1,5 @@
-import React, { useState} from 'react';
-import { Drawer, Popover} from 'antd';
+import React, {useState} from 'react';
+import {Drawer, Popover} from 'antd';
 import {DoubleLeftOutlined, DoubleRightOutlined} from "@ant-design/icons";
 
 /**
@@ -22,9 +22,10 @@ import {DoubleLeftOutlined, DoubleRightOutlined} from "@ant-design/icons";
  * @constructor
  */
 const SideDrawer = (props) => {
+    console.log('SideDrawer')
     const [visible, setVisible] = useState(typeof !(props.visible) === 'boolean' ? !!(props.visible) : true);
 
-    const showDrawer = () => {
+    const switchDrawer = () => {
         setVisible(!visible);
     };
 
@@ -34,13 +35,13 @@ const SideDrawer = (props) => {
 
     return (
         <div>
-            {/*打开抽屉按钮*/}
             {
                 visible === false
                     ?
                     <div style={{
                         height: '100%',
                     }}>
+                        {/*打开抽屉按钮*/}
                         <Popover
                             content={props.buttonTitle ? props.buttonTitle : 'Switch'}
                             // title={props.buttonTitle ? props.buttonTitle : 'Switch'}
@@ -56,7 +57,7 @@ const SideDrawer = (props) => {
                                     width: '30px',
                                     background: '#EEEEEE',
                                 }}
-                                onClick={showDrawer}
+                                onClick={switchDrawer}
                             >
                                 {/*图标*/}
                                 <DoubleRightOutlined/>
@@ -64,7 +65,8 @@ const SideDrawer = (props) => {
                         </Popover>
                     </div>
                     :
-                    <div style={props.drawerContainerOpenStyle ? props.drawerContainerOpenStyle : {width: '378px'}}>
+                    <div style={props.drawerContainerOpenStyle ? props.drawerContainerOpenStyle : {height: '100%'}}>
+                        {/*打开的抽屉*/}
                         <Drawer
                             title={props.title ? props.title : '标题'}// 标题
                             placement={props.placement ? props.placement : "left"} // 出现的方向
@@ -75,7 +77,7 @@ const SideDrawer = (props) => {
                             mask={false} // 是否设置遮罩层
                             getContainer={props.getContainer ? props.getContainer : false} // 获取抽屉定位
                             style={props.style ? props.style : {position: 'fixed'}} // 设置抽屉样式
-                            extra={props.extra ? props.extra : <div />}
+                            extra={props.extra ? props.extra : <div/>}
                         >
                             {props.children ? props.children : 'Nothing'}
                         </Drawer>

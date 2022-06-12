@@ -68,7 +68,6 @@ const api = {
 
     /**
      * 获取用户信息
-     * @param data = {}
      * @returns {Promise<AxiosResponse<any>>}
      * response.data = {
      *     idc:{   //证件号码
@@ -102,12 +101,11 @@ const api = {
      * }
      * @constructor
      */
-    GetUser(data) {
+    GetUser() {
         return service.request({
             method: "get",
             url: "/v1/user",
-
-            data, //data:data同名可以直接写 data
+            // data, //data:data同名可以直接写 data
         });
     },
     async getUser() {
@@ -145,8 +143,27 @@ const api = {
             },
             data, //data:data同名可以直接写 data
         });
+    },
+    /**
+     * 根据 unit_id 来获取用户
+     * @param data
+     * @return {Promise<AxiosResponse<any>>}
+     * @constructor
+     */
+    GetUserByID (data) {
+        return service.post(
+            '/v1/getUserById',
+            {unit_id:data.unit_id},
+            {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            }
+        )
     }
 }
+
+
 
 export default api
 
