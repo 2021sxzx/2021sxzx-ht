@@ -6,18 +6,23 @@ import UnitTreeSelect from "./UnitManagement/UnitTreeSelect";
 /**
  * 用户管理相关的弹窗
  * @param props = {
+ *     modalType:'addUnitUser'|'addUser'|'editUser', // 弹窗类型
  *     buttonText:String, // 按钮文字
- *     buttonType:String, // 按钮类型，如"primary"
- *     disable:Boolean, // 设置弹窗触发的按钮能否被使用，默认 false
- *     tooltipTitle:string, // 设置按钮 disable 时的文字提醒
- *     title:String, // 标题
+ *     buttonProps:Object = { // antd Button 组件的 props，比如：
+ *         type:String, // 按钮类型，如 "primary"
+ *         disabled:Boolean, // 设置弹窗触发的按钮能否被使用，默认 false
+ *         shape: "circle", // 按钮形状
+ *         icon: <PlusOutlined/>, // 按钮图标
+ *     },
+ *     tooltipSuccessTitle:string, // 设置按钮正常使用时的文字提醒
+ *     tooltipErrorTitle:string, // 设置按钮 disable = true 时的文字提醒
+ *     title:String, // 对话框标题
  *     detailData:{ // 默认表单内容
- *         user_name: userName,
- *         password: password,
- *         role_name: roleName,
- *         account: account,
- *         department: department
- *         unit_name:unit_name
+ *         user_name: string,
+ *         password: string,
+ *         role_id: number,
+ *         account: string,
+ *         unit_id:number,
  *     },
  *     saveInfoFunction(data):function([]), // 回调函数，一般是和服务端通信的 API. data 为弹窗中表单的内容的数组。
  *     accountReadOnly:Boolean, // 是否允许修改账号
@@ -28,26 +33,8 @@ function UserModal(props) {
     // 初始化新增用户弹窗的展示状态
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    // 储存用户信息
-    // const [userName, setUserName] = useState(props.detailData.user_name);
-    // const [account, setAccount] = useState(props.detailData.account);
-    // const [password, setPassword] = useState(props.detailData.password);
-    // const [roleID, setRoleID] = useState(props.detailData.role_id);
-    // const [unitID, setUnitID] = useState(props.detailData.unit_id);
-
-
     // 创建表单实例
     const [form] = Form.useForm();
-
-    // // 开关弹窗的时候自动刷新表单内容
-    // useEffect(() => {
-    //     if (isModalVisible) {
-    //         const formDom = document.getElementById('user-model-' + props.detailData.account)
-    //         if (formDom) {
-    //             formDom.reset()
-    //         }
-    //     }
-    // }, [isModalVisible])
 
     // 表单初始化数据
     const initialValues = {
@@ -62,15 +49,10 @@ function UserModal(props) {
     const showModal = () => {
         // 打开对话框
         setIsModalVisible(true)
-        // 直接重置表单内容会有数据加载延迟
+        // 直接重置表单内容会有数据加载延迟（延迟一次渲染）
         // form.resetFields()
         // 手动重置数据
         form.setFieldsValue(initialValues)
-        // setUserName(props.detailData.user_name)
-        // setAccount(props.detailData.account)
-        // setPassword(props.detailData.password)
-        // setRoleID(props.detailData.role_id)
-        // setUnitID(props.detailData.unit_id)
     }
 
     // 保存按钮的触发函数，关闭详情弹窗并保存信息的修改
@@ -95,38 +77,12 @@ function UserModal(props) {
             .catch(() => {
                 message.warn('请正确完成表单填写')
             })
-        // if (userName !== '' && account !== '' && password !== '' && !!(roleID) && !!(unitID)) {
-        //     setIsModalVisible(false);
-        //
-        //     props.saveInfoFunction({
-        //         user_name: userName,
-        //         account: props.detailData.account ? props.detailData.account : account,// 如果初始值为 ‘’ 说明是创建用户，否则为修改用户
-        //         new_account: account,
-        //         password: password,
-        //         // role_name: roleName,
-        //         role_id: roleID,
-        //         unit_id: unitID,
-        //     })
-        // } else {
-        //     message.warn('请先完成表单填写再提交！')
-        // }
     };
 
     // Cancel按钮的触发函数，关闭详情弹窗
     const handleCancel = () => {
         setIsModalVisible(false);
     };
-
-    // // 根据输入框更新用户的信息
-    // const handleInputChangeUserName = (e) => {
-    //     setUserName(e.target.value)
-    // }
-    // const handleInputChangeAccount = (e) => {
-    //     setAccount(e.target.value)
-    // }
-    // const handleInputChangePassword = (e) => {
-    //     setPassword(e.target.value)
-    // }
 
     const handleInputChangeRoleID = (value) => {
         // setRoleID(value)
@@ -137,47 +93,57 @@ function UserModal(props) {
         form.setFieldsValue({unit: value})
     }
 
-
     return (
         <>
-            {
-                props.disable === true
-                    ?
-                    <Tooltip title={props.tooltipTitle?props.tooltipTitle:"禁止修改同级别角色的其他账号信息"} mouseEnterDelay={0.5}>
-                        <Button
-                            type={props.buttonType}
-                            onClick={showModal}
-                            disabled={props.disable}
-                        >
-                            {props.buttonText}
-                        </Button>
-                    </Tooltip>
-                    :
+            {/*{*/}
+            {/*    props.buttonProps.disabled === true*/}
+            {/*        ?*/}
+            <Tooltip
+                title={props.buttonProps.disabled === true ? props.tooltipErrorTitle : props.tooltipSuccessTitle}
+                mouseEnterDelay={0.1}
+                zIndex={100}
+            >
+                <Button
+                    {...props.buttonProps}
+                    onClick={showModal}
+                >
+                    {props.buttonText}
+                </Button>
+            </Tooltip>
+            {/*        :*/}
+            {/*        <Tooltip*/}
+            {/*            title={props.tooltipSuccessTitle}*/}
+            {/*            mouseEnterDelay={0.5}*/}
+            {/*        >*/}
+            {/*            <Button*/}
+            {/*                {...props.buttonProps}*/}
+            {/*                onClick={showModal}*/}
+            {/*            >*/}
+            {/*                {props.buttonText}*/}
+            {/*            </Button>*/}
+            {/*        </Tooltip>*/}
+            {/*}*/}
+            <Modal
+                title={props.title}
+                visible={isModalVisible}
+                onSave={handleOk}
+                onCancel={handleCancel}
+                footer={[
                     <Button
-                        type={props.buttonType}
-                        onClick={showModal}
-                        disabled={props.disable}
+                        key="back"
+                        onClick={handleCancel}
                     >
-                        {props.buttonText}
-                    </Button>
-            }
-            <Modal title={props.title} visible={isModalVisible} onSave={handleOk} onCancel={handleCancel}
-                   footer={[
-                       <Button
-                           key="back"
-                           onClick={handleCancel}
-                       >
-                           取消
-                       </Button>,
-                       <Button
-                           key="submit"
-                           type="primary"
-                           htmlType="submit"
-                           onClick={handleOk}
-                       >
-                           保存
-                       </Button>,
-                   ]}
+                        取消
+                    </Button>,
+                    <Button
+                        key="submit"
+                        type="primary"
+                        htmlType="submit"
+                        onClick={handleOk}
+                    >
+                        保存
+                    </Button>,
+                ]}
             >
                 <Form
                     form={form}
@@ -305,11 +271,17 @@ function UserModal(props) {
                             },
                         ]}
                     >
-                        <UnitTreeSelect
-                            defaultValue={props.detailData.unit_id}
-                            placeholder={'请选择机构'}
-                            onChange={handleInputChangeUnit}
-                        />
+                        {
+                            props.modalType === 'addUnitUser'
+                                ?
+                                props.detailData.unit_name
+                                :
+                                <UnitTreeSelect
+                                    defaultValue={props.detailData.unit_id}
+                                    placeholder={'请选择机构'}
+                                    onChange={handleInputChangeUnit}
+                                />
+                        }
                     </Form.Item>
                 </Form>
             </Modal>
