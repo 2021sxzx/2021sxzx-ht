@@ -1,16 +1,19 @@
 import React from "react";
 import {DeleteOutlined, ExclamationCircleOutlined} from "@ant-design/icons";
-import {Button, Modal} from "antd";
+import {Button, Modal, Tooltip} from "antd";
+
 const {confirm} = Modal;
 
 /**
  * 自带对话框的按钮，可通过 props 自定义该组件，默认为删除的按钮和确认对话框
- * @param props={
+ * @param props = {
  *     buttonProps:object = {
  *         shape:"circle",
  *         icon:{<DeleteOutlined/>},
  *     }, // antd Button 的 API
  *     buttonText:string = undefined, // 删除按钮的文字
+ *     tooltipSuccessTitle:string, // 设置按钮正常使用时的文字提醒
+ *     tooltipErrorTitle:string, // 设置按钮 disable = true 时的文字提醒
  *     deleteCallback:function|undefined, // 对话框确认按钮的回调
  *     cancelCallback:function|undefined, // 对话框取消按钮的回调
  *     title:string = `是否确认删除?`, // 对话框标题
@@ -24,36 +27,42 @@ const {confirm} = Modal;
  * @constructor
  */
 function SimpleModalButton(props) {
-    const buttonProps = props.buttonProps?props.buttonProps:{
-        shape:"circle",
-        icon:<DeleteOutlined/>,
+    const buttonProps = props.buttonProps ? props.buttonProps : {
+        shape: "circle",
+        icon: <DeleteOutlined/>,
     }
 
     const showDeleteConfirm = () => {
         confirm({
-            title: props.title?props.title:`是否确认删除?`,
-            icon: props.icon?props.icon:<ExclamationCircleOutlined/>,
-            content: props.content?props.content:undefined,
-            okText: props.okText?props.okText:'删除',
-            okType: props.okType?props.okType:'danger',
-            cancelText: props.cancelText?props.cancelText:'取消',
+            title: props.title ? props.title : `是否确认删除?`,
+            icon: props.icon ? props.icon : <ExclamationCircleOutlined/>,
+            content: props.content ? props.content : undefined,
+            okText: props.okText ? props.okText : '删除',
+            okType: props.okType ? props.okType : 'danger',
+            cancelText: props.cancelText ? props.cancelText : '取消',
 
             onOk() {
-                props.deleteCallback?props.deleteCallback():null
+                props.deleteCallback ? props.deleteCallback() : null
             },
             onCancel() {
-                props.cancelCallback?props.cancelCallback():null
+                props.cancelCallback ? props.cancelCallback() : null
             },
         })
     }
 
     return (
-        <Button
-            {...buttonProps}
-            onClick={() => {
-                showDeleteConfirm()
-            }}
-        >{props.buttonText}</Button>
+        <Tooltip
+            title={props.buttonProps.disabled === true ? props.tooltipErrorTitle : props.tooltipSuccessTitle}
+            mouseEnterDelay={0.1}
+            zIndex={100}
+        >
+            <Button
+                {...buttonProps}
+                onClick={() => {
+                    showDeleteConfirm()
+                }}
+            >{props.buttonText}</Button>
+        </Tooltip>
     )
 }
 
