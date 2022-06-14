@@ -3,19 +3,18 @@ import {Button, Card, Col, message, Row} from "antd";
 import './RegisterManagement.scss'
 import UserModal from "../UserManageAccount/components/UserModal";
 import api from "../../../../api/user";
-import BatchImportUserButton from "../UserManageAccount/components/BatchImportUserButton/BatchImportUserButton";
+import BatchImportUserButton from "./components/BatchImportUserButton/BatchImportUserButton";
 
 function RegisterManagement() {
     const addUser = function (data) {
         api.AddUser(data).then(response => {
-            console.log('addUser =', response.data)
+            // console.log('addUser =', response.data)
             if (response.data.code === 404) {
                 message.warn(response.data.msg);
             } else {
                 message.success('用户创建成功');
             }
-        }).catch(error => {
-            console.log('error = ', error)
+        }).catch(() => {
             message.error('用户创建发生错误');
         });
     }
@@ -40,9 +39,11 @@ function RegisterManagement() {
                                 actions={[
                                     <UserModal
                                         buttonText={"开始账号创建"}
-                                        buttonType={"primary"}
+                                        buttonProps={{
+                                            type:"primary",
+                                            disabled:false,
+                                        }}
                                         title={"账号创建"}
-                                        disable={false}
                                         detailData={{
                                             user_name: '',
                                             password: '',
@@ -56,7 +57,9 @@ function RegisterManagement() {
                                     />,
                                 ]}
                             >
-                                <p>通过在线填写表单即可完成单个用户的创建。</p>
+                                <div style={{height:'80px'}}>
+                                    通过在线填写表单即可完成同级部门或下级部门的单个用户创建。
+                                </div>
                             </Card>
                         </div>
                     </Col>
@@ -77,7 +80,9 @@ function RegisterManagement() {
                                     <BatchImportUserButton/>,
                                 ]}
                             >
-                                <p>通过上传指定格式文件即可完成用户的批量导入。</p>
+                                <div style={{height:'75px'}}>
+                                    通过上传指定格式文件即可完成用户的批量导入。
+                                </div>
                             </Card>
                         </div>
                     </Col>
