@@ -1,6 +1,7 @@
 import {Select} from "antd";
 import React, {useEffect, useRef, useState} from "react";
 import api from "../../../../../api/role";
+
 const {Option} = Select
 /**
  * 角色多选器
@@ -13,35 +14,37 @@ const {Option} = Select
  * @constructor
  */
 export default function RoleMultiSelect(props) {
-    const [options,setOptions] = useState([])
+    const [options, setOptions] = useState([])
     const componentMounted = useRef(true) // 组件是否加载成功
 
     // 只在初次渲染的时候请求权限列表
-    useEffect(()=>{
+    useEffect(() => {
         api.GetRole().then(response => {
             // When component is still mounted
             if (componentMounted.current === true) {
                 setOptions(
-                    response.data.data.map((item)=>{
+                    response.data.data.map((item) => {
                         return (
-                            <Option key={item.role_id}
-                                    value={item.role_id}>
+                            <Option
+                                key={item.role_id}
+                                value={item.role_id}
+                            >
                                 {item.role_name}
                             </Option>
                         );
                     })
                 )
             }
-        }).catch(()=>{
+        }).catch(() => {
             console.log('error:GetRoleList')
         })
 
         // This code runs when component is unmounted
-        return ()=>{
+        return () => {
             // set it false
             componentMounted.current = false
         }
-    },[])
+    }, [])
 
     return (
         <Select
@@ -51,7 +54,7 @@ export default function RoleMultiSelect(props) {
             defaultValue={props.defaultValue}
             onChange={props.onChange}
             filterOption={(input, option) => {
-                option.children.toLowerCase().includes(input.toLowerCase())
+                return option.children.toLowerCase().includes(input.toLowerCase())
             }}
         >
             {options}
