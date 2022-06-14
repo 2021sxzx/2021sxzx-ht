@@ -19,11 +19,12 @@
     "node-sass": "^6.0.1",
     "react": "^17.0.2",
     "react-bootstrap": "^2.1.0",
-    "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^17.0.2",
     "react-router": "^6.2.2",
     "react-router-dom": "^5.2.1",
     "react-scripts": "4.0.3",
+    "sass": "^1.52.3",
+    "sass-loader": "^10.2.0",
     "web-vitals": "^1.1.2",
     "webpack": "^4.44.2",
     "xlsx": "^0.18.5"
@@ -50,9 +51,7 @@
     ]
   },
   "devDependencies": {
-    "http-proxy-middleware": "^2.0.1",
-    "sass": "^1.46.0",
-    "sass-loader": "^12.4.0"
+    "http-proxy-middleware": "^2.0.1"
   },
   "description": "+ git 务必用熟，b站学习，不要找时长很短的视频。命令行学会后再使用图形化界面。\r + react 目前的风格是全部使用函数式组件，推荐资源：\r   + 入门视频\r   + 实战视频，使用函数式组件 hooks https://www.bilibili.com/video/BV1fw411d7R5?from=search&seid=10983113197955230788&spm_id_from=333.337.0.0\r + scss 跟 css 没有什么区别，让你能嵌套写 css，还有一些其他功能。xxx.module.scss 是使得样式模块化不污染全局，自己上网搜搜博客，或者参考项目里的写法。\r +",
   "main": "index.js",

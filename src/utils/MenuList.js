@@ -24,7 +24,8 @@ const MenuList = {
 
         // 判断 sessionStorage 有没有侧边栏缓存
         menuList = JSON.parse(sessionStorage.getItem('menuList'))
-        if(menuList && menuList instanceof Array){
+        // 如果 menuList 存在，而且是非空数组，就直接使用 sessionStorage 的内容
+        if(menuList && menuList instanceof Array && menuList.length > 0){
             callback(menuList)
             return menuList
         }
@@ -50,7 +51,7 @@ const MenuList = {
             sessionStorage.setItem('menuList',JSON.stringify(menuList))
             callback(menuList)
             return true
-        })).catch(error => {
+        })).catch(() => {
             callback(null)
             return false
         })

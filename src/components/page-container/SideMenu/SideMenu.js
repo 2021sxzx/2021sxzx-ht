@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {withRouter} from 'react-router-dom';
 import {Menu,} from 'antd'
-import {Scrollbars} from 'react-custom-scrollbars'
+// import {Scrollbars} from 'react-custom-scrollbars'
 import {
     DesktopOutlined,
     FileOutlined,
@@ -194,13 +194,13 @@ function SideMenu(props) {
     const openKeys = ['/' + props.location.pathname.split('/')[1]]
 
     return (
-        <Scrollbars>
+        // <Scrollbars>
             <div style={{flex: 1, "overflow": "auto"}}>
                 <Menu theme="light" selectedKeys={selectedKeys} mode="inline" defaultOpenKeys={openKeys}>
                     {renderMenu(menuList ? menuList : [])}
                 </Menu>
             </div>
-        </Scrollbars>
+        // </Scrollbars>
     )
 }
 

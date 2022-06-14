@@ -1,4 +1,4 @@
-import {Button,  Col, Form, Row, Input, message} from "antd";
+import {Button, Col, Form, Row, Input, message} from "antd";
 import {LockOutlined, UserOutlined} from "@ant-design/icons";
 import React from "react";
 // import QuickLogin from "./QuickLogin";
@@ -32,14 +32,15 @@ export default function PasswordLoginForm() {
             password: values.password
         }).then(async response => {
             // 保存用户信息：账号密码用户id
-            await saveUserInfo(response,values)
+            await saveUserInfo(response, values)
 
             // 展现 0.1s 的登录成功操作提示并自动跳转到首页
             message.success('登录成功', 0.1, () => {
                 UrlJump.goto('#/home')
             })
         }).catch((error) => {
-            message.error(error.response.data)
+            console.log('login error', error.response.data)
+            message.error(typeof error.response.data === 'string' ? error.response.data : '登录发生错误，请稍后重试')
         })
     }
 
@@ -52,7 +53,7 @@ export default function PasswordLoginForm() {
      * @param response 响应报文
      * @param values 表单中的数据
      */
-    const saveUserInfo = (response,values) => {
+    const saveUserInfo = (response, values) => {
         // 保存账号
         localStorage.setItem('account', values.account)
         localStorage.setItem('_id', response.data.data._id);
@@ -87,8 +88,8 @@ export default function PasswordLoginForm() {
                     },
                     {
                         // TODO：暂时保留了开发人员账号
-                        pattern:/^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}|account$/,
-                        message:'请输入正确的手机号码或者开发人员账号'
+                        pattern: /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}|account$/,
+                        message: '请输入正确的手机号码或者开发人员账号'
                     },
                 ]}
             >
@@ -97,7 +98,7 @@ export default function PasswordLoginForm() {
                        maxLength={32}
                        prefix={<UserOutlined className="site-form-item-icon"/>}
                        allowClear={true}
-                       // onChange={handleInputChangeAccount}
+                    // onChange={handleInputChangeAccount}
                 />
             </Form.Item>
             {/*密码*/}
@@ -110,27 +111,27 @@ export default function PasswordLoginForm() {
                         message: '请输入密码!',
                     },
                     {
-                        min:8,
-                        message:'密码长度要求不小于 8 位'
+                        min: 8,
+                        message: '密码长度要求不小于 8 位'
                     },
                     {
-                        max:32,
-                        message:'密码长度要求不大于 32 位'
+                        max: 32,
+                        message: '密码长度要求不大于 32 位'
                     },
                     {
                         // TODO：暂时保留开发人员密码
-                        pattern:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%&*_\-+=])[\w\d@#$%&*_\-+=]*|password$/,
-                        message:'要求同时使用大小写字母，数字和部分特殊字符(@#$%&*_+-=)，不支持空格'
+                        pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%&*_\-+=])[\w\d@#$%&*_\-+=]*|password$/,
+                        message: '要求同时使用大小写字母，数字和部分特殊字符(@#$%&*_+-=)，不支持空格'
                     }
                 ]}
             >
                 <Input.Password placeholder={"密码"}
-                                // defaultValue={historyPassword}
+                    // defaultValue={historyPassword}
                                 type={"password"}
                                 maxLength={32}
                                 prefix={<LockOutlined className="site-form-item-icon"/>}
                                 allowClear={true}
-                                // onChange={handleInputChangePassword}
+                    // onChange={handleInputChangePassword}
                 />
             </Form.Item>
             {/*是否记住登录状态 & 忘记密码 */}
@@ -157,7 +158,7 @@ export default function PasswordLoginForm() {
                 <a
                     className="login-form-forgot"
                     href=""
-                    style={{float:"right"}}
+                    style={{float: "right"}}
                 >
                     忘记密码（开发中）
                 </a>
