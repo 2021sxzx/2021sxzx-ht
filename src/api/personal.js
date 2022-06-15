@@ -4,7 +4,7 @@ const api = {
   getTopHeaderData () {
     return axios.request({
       method: 'get',
-      url: '/v1/personal/'
+      url: '/v1/personal'
     });
   }
 }
