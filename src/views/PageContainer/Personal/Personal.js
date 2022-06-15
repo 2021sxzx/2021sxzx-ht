@@ -1,6 +1,6 @@
 import React from 'react'
 import style from './Personal.module.scss'
-import {Avatar, Card, message} from "antd";
+import {Avatar, Card, Image, message} from "antd";
 import {EditOutlined,} from "@ant-design/icons";
 import Meta from "antd/es/card/Meta";
 import PersonalDescription from "./components/PersonalDescription";
@@ -66,6 +66,8 @@ function Personal() {
                 title={(
                     <div>
                         <Avatar
+                            alt={'用户头像'} // 图像无法显示时的替代文本
+
                             size={{
                                 xs: 24,
                                 sm: 32,
@@ -74,8 +76,7 @@ function Personal() {
                                 xl: 80,
                                 xxl: 100,
                             }}
-                            src="https://joeschmoe.io/api/v1/random"
-
+                            src={<Image src="https://joeschmoe.io/api/v1/random" />}
                         />
                         <div style={{
                             display: "inline",
