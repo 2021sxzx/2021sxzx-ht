@@ -37,7 +37,7 @@ instance.interceptors.request.use(
  */       
         let headers = config.headers
         headers.userId = localStorage.getItem('_id') ? localStorage.getItem('_id') : ''
-        console.log('请求拦截器',config);
+        // console.log('请求拦截器',config);
         return config;
     },
     function (error) {
@@ -49,7 +49,7 @@ instance.interceptors.request.use(
 // 添加响应拦截器
 instance.interceptors.response.use(
     function (response) {
-        console.log('响应拦截器',response);
+        // console.log('响应拦截器',response);
         // 对响应数据做点什么
         return response
     },

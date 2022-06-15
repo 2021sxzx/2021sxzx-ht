@@ -6,11 +6,13 @@ import {message} from "antd";
 import api from  '../api/login'
 
 export default function indexRouter() {
+  
   const [isLogin, setIsLogin] = useState(true);
   useEffect(async () => {
     const _isLogin = await api.IsLogin();
     setIsLogin(_isLogin);
   }, []);
+
     return (
         <HashRouter>
             <Switch>

@@ -32,8 +32,8 @@ export default function PasswordLoginForm() {
             password: values.password
         }).then(async response => {
             // 保存用户信息：账号密码用户id
-            await saveUserInfo(response, values)
-
+            saveUserInfo(response, values)
+            console.log(response)
             // 展现 0.1s 的登录成功操作提示并自动跳转到首页
             message.success('登录成功', 0.1, () => {
                 UrlJump.goto('#/home')
@@ -44,7 +44,8 @@ export default function PasswordLoginForm() {
         })
     }
 
-    const onFinishFailed = () => {
+    const onFinishFailed = (err) => {
+        console.log(err)
         message.warn('请正确填写账号密码')
     }
 
