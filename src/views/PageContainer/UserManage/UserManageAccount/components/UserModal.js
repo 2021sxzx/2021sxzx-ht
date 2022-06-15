@@ -26,6 +26,10 @@ import UnitTreeSelect from "./UnitManagement/UnitTreeSelect";
  *     },
  *     saveInfoFunction(data):function([]), // 回调函数，一般是和服务端通信的 API. data 为弹窗中表单的内容的数组。
  *     accountReadOnly:Boolean, // 是否允许修改账号
+ *     userNameReadOnly:Boolean, // 是否允许修改用户名
+ *     passwordReadOnly:Boolean, // 是否允许修改密码
+ *     roleReadOnly:Boolean, // 是否允许修改角色
+ *     unitReadOnly:Boolean, // 是否允许修改机构
  * }
  * @returns {JSX.Element}
  */
@@ -202,13 +206,20 @@ function UserModal(props) {
                             },
                         ]}
                     >
-                        <Input
-                            // defaultValue={props.detailData.user_name}
-                            placeholder={'请输入用户名'}
-                            maxLength={32}
-                            // onChange={handleInputChangeUserName}
-                            allowClear={true}
-                        />
+                        {
+                            props.userNameReadOnly === true
+                                ?
+                                <div>{props.detailData.user_name}</div>
+                                :
+                                <Input
+                                    // defaultValue={props.detailData.user_name}
+                                    placeholder={'请输入用户名'}
+                                    maxLength={32}
+                                    // onChange={handleInputChangeUserName}
+                                    allowClear={true}
+                                />
+                        }
+
                     </Form.Item>
 
                     <Form.Item
@@ -233,13 +244,19 @@ function UserModal(props) {
                             }
                         ]}
                     >
-                        <Input
-                            // defaultValue={props.detailData.password}
-                            placeholder={'请输入用户密码'}
-                            maxLength={32}
-                            // onChange={handleInputChangePassword}
-                            allowClear={true}
-                        />
+                        {
+                            props.passwordReadOnly === true
+                                ?
+                                <div>{props.detailData.password}</div>
+                                :
+                                <Input
+                                    // defaultValue={props.detailData.password}
+                                    placeholder={'请输入用户密码'}
+                                    maxLength={32}
+                                    // onChange={handleInputChangePassword}
+                                    allowClear={true}
+                                />
+                        }
                     </Form.Item>
 
                     <Form.Item
@@ -253,11 +270,17 @@ function UserModal(props) {
                             },
                         ]}
                     >
-                        <RoleMultiSelect
-                            defaultValue={props.detailData.role_id}
-                            placeholder={'请选择角色'}
-                            onChange={handleInputChangeRoleID}
-                        />
+                        {
+                            props.roleReadOnly === true
+                                ?
+                                <div>{props.detailData.role_name}</div>
+                                :
+                                <RoleMultiSelect
+                                    defaultValue={props.detailData.role_id}
+                                    placeholder={'请选择角色'}
+                                    onChange={handleInputChangeRoleID}
+                                />
+                        }
                     </Form.Item>
 
                     <Form.Item
@@ -272,9 +295,9 @@ function UserModal(props) {
                         ]}
                     >
                         {
-                            props.modalType === 'addUnitUser'
+                            props.unitReadOnly === true
                                 ?
-                                props.detailData.unit_name
+                                <div>{props.detailData.unit_name}</div>
                                 :
                                 <UnitTreeSelect
                                     defaultValue={props.detailData.unit_id}
