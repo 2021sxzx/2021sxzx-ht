@@ -188,7 +188,6 @@ function SideMenu(props) {
                 }}
             >{item.title}</Menu.Item>
         })
-
     }
 
     const selectedKeys = [props.location.pathname]

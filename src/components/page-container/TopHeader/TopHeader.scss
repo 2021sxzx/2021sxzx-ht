@@ -1,0 +1,23 @@
+.header {
+  background-color: #fff;
+  padding: 0
+}
+
+.wrapBox {
+  display: flex;
+  // flex右排
+  flex-direction: row-reverse;
+  // 子元素之间的宽度
+  gap: 24px;
+  padding-right: 5%;
+}
+
+.btnContainer {
+  align-items: center;
+}
+
+.imgContainer {
+  display: flex;
+  align-items: center;
+  margin-right: 8%;
+}
