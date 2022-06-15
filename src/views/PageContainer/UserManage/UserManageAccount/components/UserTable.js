@@ -2,8 +2,8 @@ import ActivationStatusSwitch from "./ActivationStatusSwitch";
 import UserModal from "./UserModal";
 import api from "../../../../../api/user";
 import React from "react";
-import { message,  Table, Tooltip} from "antd";
-import {DeleteOutlined} from "@ant-design/icons";
+import {message, Table} from "antd";
+import {DeleteOutlined, EditOutlined} from "@ant-design/icons";
 import SimpleModalButton from "../../../../../components/SimpleModalButton";
 
 
@@ -141,27 +141,34 @@ function UserTable(props) {
             title: '操作',
             key: 'action',
             fixed: 'right',
-            width: 200,
+            width: 80,
             render: (text, record) => (//修改用户信息按钮
                 <div style={{
-                    display:'inline-flex',
+                    display: 'inline-flex',
                     // width:'100%',
                 }}>
-                    <Tooltip
-                        title={disableModal(record) ? "不能修改同级别角色的用户信息" : undefined}//
-                        mouseEnterDelay={0.5}
-                        mouseLeaveDelay={0.1}
-                    >
-                        <div style={{padding: '5px',}}>
-                            <UserModal buttonText={'修改用户信息'}
-                                       title={'修改用户信息'}
-                                       disable={disableModal(record)}
-                                       detailData={record}
-                                       saveInfoFunction={updateUserAndRefresh}
-                                       accountReadOnly={false}
-                            />
-                        </div>
-                    </Tooltip>
+                    {/*<Tooltip*/}
+                    {/*    title={disableModal(record) ? "不能修改同级别角色的用户信息" : undefined}//*/}
+                    {/*    mouseEnterDelay={0.5}*/}
+                    {/*    mouseLeaveDelay={0.1}*/}
+                    {/*>*/}
+                    <div style={{padding: '5px',}}>
+                        <UserModal
+                            // buttonText={'修改用户信息'}
+                            buttonProps={{
+                                disabled: disableModal(record),
+                                shape: "circle", // 按钮形状
+                                icon: <EditOutlined/>, // 按钮图标
+                            }}
+                            tooltipSuccessTitle={'修改用户信息'}
+                            tooltipErrorTitle={'不能修改同级别角色的用户信息'}
+                            title={'修改用户信息'}
+                            detailData={record}
+                            saveInfoFunction={updateUserAndRefresh}
+                            accountReadOnly={false}
+                        />
+                    </div>
+                    {/*</Tooltip>*/}
                     {/*{*/}
                     {/*    disableDeleteButton(record) === false*/}
                     {/*        ?*/}
@@ -184,25 +191,27 @@ function UserTable(props) {
                     {/*            }}*/}
                     {/*        />*/}
                     {/*        :*/}
-                    <Tooltip
-                        title={disableDeleteButton(record) ? "如果要删除账号请先将账号设置为未激活" : undefined}//
-                        mouseEnterDelay={0.5}
-                        mouseLeaveDelay={0.1}
-                    >
-                        {/*这个 div 用于增加提示的激活区域面积，减少因鼠标快速移出导致 tooltip 不能自动关闭的情况*/}
-                        <div style={{padding: '5px'}}>
-                            <SimpleModalButton
-                                buttonProps={{
-                                    disabled: disableDeleteButton(record),
-                                    shape: "circle",
-                                    icon: <DeleteOutlined/>,
-                                }}
-                                deleteCallback={() => {
-                                    deleteUser({account: record.account})
-                                }}
-                            />
-                        </div>
-                    </Tooltip>
+                    {/*<Tooltip*/}
+                    {/*    title={disableDeleteButton(record) ? "如果要删除用户请先将用户设置为未激活" : '删除用户'}//*/}
+                    {/*    mouseEnterDelay={0.5}*/}
+                    {/*    // mouseLeaveDelay={0.1}*/}
+                    {/*>*/}
+                    {/*    /!*这个 div 用于增加提示的激活区域面积，减少因鼠标快速移出导致 tooltip 不能自动关闭的情况*!/*/}
+                    <div style={{padding: '5px'}}>
+                        <SimpleModalButton
+                            buttonProps={{
+                                disabled: disableDeleteButton(record),
+                                shape: "circle",
+                                icon: <DeleteOutlined/>,
+                            }}
+                            tooltipSuccessTitle={'删除用户'}
+                            tooltipErrorTitle={"如果要删除用户请先将用户设置为未激活"}
+                            deleteCallback={() => {
+                                deleteUser({account: record.account})
+                            }}
+                        />
+                    </div>
+                    {/*</Tooltip>*/}
                     {/*}*/}
                 </div>
             ),

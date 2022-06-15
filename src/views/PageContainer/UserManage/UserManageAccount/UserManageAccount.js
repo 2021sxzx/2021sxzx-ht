@@ -4,7 +4,7 @@
 
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import './UserManageAccount.scss'
-import { message, Space} from 'antd';
+import {message, Space} from 'antd';
 
 import api from "../../../../api/user";
 import UserTableFunctionalZone from "./components/UserTableFunctionalZone";
@@ -21,6 +21,7 @@ export default function UserManageAccount() {
     const [loading, setLoading] = useState(true)
     // const [unitIDSelected,setUnitIDSelected] = useState(null)
     const unitIDRef = useRef(null)
+    const unitNameRef = useRef(null)
 
     // 从服务器获取所有用户的数据，保存到 tableData 中
     const getUser = useCallback(() => {
@@ -36,10 +37,11 @@ export default function UserManageAccount() {
     }, [])
 
     // 更新选中的 unit_id，useCallback 用于减少组件 UnitList 的渲染
-    const selectUnitID = useCallback((unitID) => {
+    const selectUnit = useCallback((unitID, unitName) => {
         // setUnitIDSelected(unitID)
         // unitIDSelected = unitID
         unitIDRef.current = unitID
+        unitNameRef.current = unitName
         // console.log('selectUnit',unitIDSelected,unitID)
         // console.log('unitIDRef',unitIDRef)
         getUserByID()
@@ -48,8 +50,8 @@ export default function UserManageAccount() {
     // 从服务器获取用户表格的数据，保存到 tableData 中
     const getUserByID = useCallback(() => {
         setLoading(true)
-        console.log('getUserByID',unitIDRef.current)
-        if(unitIDRef.current) {
+        // console.log('getUserByID',unitIDRef.current)
+        if (unitIDRef.current) {
             api.GetUserByID({
                 // unit_id: unitIDSelected
                 unit_id: unitIDRef.current
@@ -60,7 +62,7 @@ export default function UserManageAccount() {
             }).finally(() => {
                 setLoading(false)
             })
-        }else{
+        } else {
             api.GetUser().then(response => {
                 setTableData(response.data.data)
             }).catch(error => {
@@ -115,7 +117,7 @@ export default function UserManageAccount() {
         }
     }, [])
 
-    const unitListComponent = useRef(<UnitList selectUnitID={selectUnitID}/>)
+    const unitListComponent = useRef(<UnitList selectUnitID={selectUnit}/>)
 
     return (
         <div className={'user-manage-container'}>
@@ -129,9 +131,18 @@ export default function UserManageAccount() {
             <div className='user-account-container'>
                 <Space direction="vertical" size={12} style={{width: '100%'}}>
                     {/* 功能区 */}
-                    <UserTableFunctionalZone getSearch={getSearchUser}/>
+                    <UserTableFunctionalZone
+                        getSearch={getSearchUser}
+                        refreshTableData={getUserByID}
+                        unitName={unitNameRef.current}
+                        unitID={unitIDRef.current}
+                    />
                     {/* 用户评价的表格 */}
-                    <UserTable tableData={tableData} refreshTableData={getUserByID} loading={loading}/>
+                    <UserTable
+                        tableData={tableData}
+                        refreshTableData={getUserByID}
+                        loading={loading}
+                    />
                 </Space>
             </div>
         </div>

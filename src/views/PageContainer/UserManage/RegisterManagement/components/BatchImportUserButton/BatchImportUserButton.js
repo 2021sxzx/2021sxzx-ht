@@ -52,7 +52,7 @@ const BatchImportUserButton = () => {
       color:'#FFFFFF',
       fontSize:'',
       margin:'0px',
-      width:'100px',
+      width:'90px',
     }}>
         导入用户
         <input type="file" name="" id="" onChange={getXlsxData} />

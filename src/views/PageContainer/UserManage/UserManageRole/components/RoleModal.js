@@ -195,7 +195,7 @@ function RoleModal(props) {
                         ]}
                     >
                         <PermissionMultipleSelect
-                            defaultValue={props.detailData.permission_identifier}
+                            defaultValue={props.detailData.permission_identifier_array}
                             placeholder={'请选择角色权限'}
                             onChange={handleMultipleSelectChange}
                         />

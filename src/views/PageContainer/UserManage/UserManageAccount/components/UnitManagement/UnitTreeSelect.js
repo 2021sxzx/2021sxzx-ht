@@ -36,23 +36,26 @@ export default function UnitTreeSelect(props) {
     }, [])
 
     return (
-        <TreeSelect
-            showSearch// 搜索
-            switcherIcon={<DownOutlined/>} // 展开收缩图标
-            // defaultExpandAll // 默认展开全部
-            placeholder={props.placeholder}
-            defaultValue={props.defaultValue}
-            onChange={props.onChange} // 选择事件回调
-            treeData={treeData} // 数据源
-            fieldNames={{ // 自定义数据对应的结构
-                label: 'unit_name',
-                value: 'unit_id',
-                children: 'children',
-            }}
-            filterTreeNode={(inputValue, treeNode) => {
-                return new RegExp(inputValue.toLowerCase()).test(treeNode.title.toLowerCase())
-            }}
-        />
+        <div>
+            <TreeSelect
+                key={props.defaultValue} // 用于当 defaultValue 发生变化时重新渲染组件从而实现 defaultValue 的更新
+                showSearch// 搜索
+                switcherIcon={<DownOutlined/>} // 展开收缩图标
+                // defaultExpandAll // 默认展开全部
+                placeholder={props.placeholder}
+                defaultValue={props.defaultValue}
+                onChange={props.onChange} // 选择事件回调
+                treeData={treeData} // 数据源
+                fieldNames={{ // 自定义数据对应的结构
+                    label: 'unit_name',
+                    value: 'unit_id',
+                    children: 'children',
+                }}
+                filterTreeNode={(inputValue, treeNode) => {
+                    return new RegExp(inputValue.toLowerCase()).test(treeNode.title.toLowerCase())
+                }}
+            />
+        </div>
         // <Select
         //     allowClear
         //     showSearch

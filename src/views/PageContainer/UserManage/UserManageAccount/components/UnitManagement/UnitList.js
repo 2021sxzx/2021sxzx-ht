@@ -2,16 +2,17 @@ import React, {useCallback, useEffect, useState} from "react";
 import {
     DeleteOutlined,
     DownOutlined,
-    EditOutlined, ExclamationCircleOutlined,
+    EditOutlined,
     MoreOutlined,
     PlusOutlined
 } from '@ant-design/icons';
-import {Button, message, Popover, Space, Tree, Modal} from 'antd';
+import {message, Popover, Space, Tree, Tooltip} from 'antd';
 
 import api from '../../../../../../api/unit'
 import UnitModal from "./UnitModal";
+import SimpleModalButton from "../../../../../../components/SimpleModalButton";
 
-const {confirm} = Modal;
+
 /**
  *
  * @param props={
@@ -37,34 +38,34 @@ const UnitList = (props) => {
 
     const onSelect = (selectedKeys, info) => {
         // console.log('selected', selectedKeys, info.node.unit_id);
-        props.selectUnitID(info.node.unit_id)
+        props.selectUnitID(info.node.unit_id, info.node.unit_name)
     };
 
-    const showDeleteConfirm = (nodeData) => {
-        confirm({
-            title: `是否确认删除机构：${nodeData.unit_name}?`,
-            icon: <ExclamationCircleOutlined/>,
-            content: undefined,
-            okText: '删除',
-            okType: 'danger',
-            cancelText: '取消',
-
-            onOk() {
-                api.DeletUnit({
-                    unit_id: nodeData.unit_id
-                }).then(() => {
-                    message.success('删除机构成功')
-                }).catch(() => {
-                    message.error('删除机构失败，请重试')
-                }).finally(() => {
-                    getUnitAndRefreshTree()
-                })
-            },
-            onCancel() {
-                // console.log('Cancel')
-            },
-        })
-    }
+    // const showDeleteConfirm = (nodeData) => {
+    //     confirm({
+    //         title: `是否确认删除机构：${nodeData.unit_name}?`,
+    //         icon: <ExclamationCircleOutlined/>,
+    //         content: undefined,
+    //         okText: '删除',
+    //         okType: 'danger',
+    //         cancelText: '取消',
+    //
+    //         onOk() {
+    //             api.DeletUnit({
+    //                 unit_id: nodeData.unit_id
+    //             }).then(() => {
+    //                 message.success('删除机构成功')
+    //             }).catch(() => {
+    //                 message.error('删除机构失败，请重试')
+    //             }).finally(() => {
+    //                 getUnitAndRefreshTree()
+    //             })
+    //         },
+    //         onCancel() {
+    //             // console.log('Cancel')
+    //         },
+    //     })
+    // }
 
     const nodeRender = (nodeData) => {
         if (!nodeData) {
@@ -86,59 +87,80 @@ const UnitList = (props) => {
                             content={( // 气泡内容
                                 <div>
                                     <Space>
-                                        {/*添加 unit*/}
-                                        <UnitModal
+                                        <Tooltip title={'新增下级部门'} zIndex={100}>
+                                            {/*不知道为什么 tooltip 直接嵌套 UnitModal 无效*/}
+                                            <div>
+                                                {/*添加 unit*/}
+                                                <UnitModal
+                                                    buttonProps={{
+                                                        shape: "circle",
+                                                        icon: <PlusOutlined/>,
+                                                    }}
+                                                    title={'新增下级机构'}
+                                                    detailData={{
+                                                        // 用于添加 unit
+                                                        unit_name: '',
+                                                        parent_unit: nodeData.unit_id,
+                                                        parent_name: nodeData.unit_name,
+                                                    }}
+                                                    callback={(data) => {
+                                                        api.AddUnit(data).then(() => {
+                                                            message.success('添加下级部门成功')
+                                                            getUnitAndRefreshTree()
+                                                        }).catch(() => {
+                                                            message.error('添加下级部门失败，请重新尝试')
+                                                            getUnitAndRefreshTree()
+                                                        })
+                                                    }}
+                                                />
+                                            </div>
+                                        </Tooltip>
+                                        <Tooltip title={'修改部门信息'} zIndex={100}>
+                                            {/*不知道为什么 tooltip 直接嵌套 UnitModal 无效*/}
+                                            <div>
+                                                {/*修改 unit*/}
+                                                <UnitModal
+                                                    buttonProps={{
+                                                        shape: "circle",
+                                                        icon: <EditOutlined/>,
+                                                    }}
+                                                    title={'修改机构信息'}
+                                                    detailData={{
+                                                        // 用于修改 unit
+                                                        unit_name: nodeData.unit_name,
+                                                        unit_id: nodeData.unit_id,
+                                                    }}
+                                                    callback={(data) => {
+                                                        api.UpdateUnit(data).then(() => {
+                                                            message.success('修改部门信息成功')
+                                                            getUnitAndRefreshTree()
+                                                        }).catch(() => {
+                                                            message.error('修改部门信息失败，请重新尝试')
+                                                            getUnitAndRefreshTree()
+                                                        })
+                                                    }}
+                                                />
+                                            </div>
+                                        </Tooltip>
+                                        <SimpleModalButton
                                             buttonProps={{
                                                 shape: "circle",
-                                                icon: <PlusOutlined/>,
+                                                icon: <DeleteOutlined/>,
                                             }}
-                                            title={'新增下级机构'}
-                                            detailData={{
-                                                // 用于添加 unit
-                                                unit_name: '',
-                                                parent_unit: nodeData.unit_id,
-                                                parent_name: nodeData.unit_name,
-                                            }}
-                                            callback={(data) => {
-                                                api.AddUnit(data).then(() => {
-                                                    message.success('添加下级部门成功')
-                                                    getUnitAndRefreshTree()
-                                                }).catch(() => {
-                                                    message.error('添加下级部门失败，请重新尝试')
-                                                    getUnitAndRefreshTree()
-                                                })
-                                            }}
+                                            tooltipSuccessTitle={'删除部门'}
+                                            title={'删除部门'}
+                                            content={`是否确认删除机构：${nodeData.unit_name}?`}
                                         />
-                                        {/*修改 unit*/}
-                                        <UnitModal
-                                            buttonProps={{
-                                                shape: "circle",
-                                                icon: <EditOutlined/>,
-                                            }}
-                                            title={'修改机构信息'}
-                                            detailData={{
-                                                // 用于修改 unit
-                                                unit_name: nodeData.unit_name,
-                                                unit_id: nodeData.unit_id,
-                                            }}
-                                            callback={(data) => {
-                                                api.UpdateUnit(data).then(() => {
-                                                    message.success('修改部门信息成功')
-                                                    getUnitAndRefreshTree()
-                                                }).catch(() => {
-                                                    message.error('修改部门信息失败，请重新尝试')
-                                                    getUnitAndRefreshTree()
-                                                })
-                                            }}
-                                        />
-                                        {/*删除 unit*/}
-                                        <Button
-                                            shape="circle"
-                                            icon={<DeleteOutlined/>}
-                                            onClick={() => {
-                                                showDeleteConfirm(nodeData)
-                                            }}
-                                        />
+                                        {/*<Tooltip title={'删除部门'}>*/}
+                                        {/*    /!*删除 unit*!/*/}
+                                        {/*    <Button*/}
+                                        {/*        shape="circle"*/}
+                                        {/*        icon={<DeleteOutlined/>}*/}
+                                        {/*        onClick={() => {*/}
+                                        {/*            showDeleteConfirm(nodeData)*/}
+                                        {/*        }}*/}
+                                        {/*    />*/}
+                                        {/*</Tooltip>*/}
                                     </Space>
                                 </div>
                             )}
@@ -157,7 +179,7 @@ const UnitList = (props) => {
         console.log('node', node)
     }
 
-    if(treeData.length > 0){
+    if (treeData.length > 0) {
         return (
             <div>
                 <Tree
@@ -177,7 +199,7 @@ const UnitList = (props) => {
                 />
             </div>
         )
-    }else{
+    } else {
         return (
             <div>
                 loading...
