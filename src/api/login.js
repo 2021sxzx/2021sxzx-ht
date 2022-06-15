@@ -55,18 +55,18 @@ const api = {
      */
     logout() {
         api.Logout({logoutData: {account: localStorage.getItem('account')}}).then(() => {
-                // // 清除本地保存的所有信息
-                // localStorage.clear()
                 message.success('您已成功登出')
-                // UrlJump.goto('#/login')
             }
         ).catch(() => {
-            // message.error('登出失败，请检查网络')
+            message.error('登出失败，请检查网络')
+        }).finally(() => {
+            // 清除本地保存的所有信息
+            localStorage.clear()
+            // 清除会话缓存
+            sessionStorage.clear()
+            // message.success('您已成功登出')
+            UrlJump.goto('#/login')
         })
-        // 清除本地保存的所有信息
-        localStorage.clear()
-        // message.success('您已成功登出')
-        UrlJump.goto('#/login')
     }
 }
 
