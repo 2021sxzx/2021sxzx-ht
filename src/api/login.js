@@ -26,12 +26,17 @@ const api = {
             headers: {
                 'Content-Type': 'application/json'
             },
-            data: data,//{role_name}
+            data: data,
         })
     },
     // 前端简单判断是否成功登录
-    IsLogin() {
-        return !!localStorage.getItem('_id')
+    async IsLogin() {
+      const res = await service.request({
+        method: "get",
+        url: '/v1/isLogin',
+      });
+      console.log(res.data.data.isLogin)
+      return res.data.data.isLogin
     },
 
     /**
