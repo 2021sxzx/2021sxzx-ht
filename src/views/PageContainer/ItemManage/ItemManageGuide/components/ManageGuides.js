@@ -96,7 +96,7 @@ export default function ManageGuide(props) {
             key: 'task_name'
         },
         {
-            title: '业务部门',
+            title: '机构',
             dataIndex: 'department_name',
             key: 'department_name',
             width: 125

@@ -109,9 +109,9 @@ export default function SelectForm(props){
                     <Input value={rule_name}
                         placeholder='请输入名称' size='middle' onChange={handleTaskRuleChange}></Input>
                 </Form.Item>
-                <Form.Item label='业务部门' style={{width: '22%'}}>
+                <Form.Item label='机构' style={{width: '22%'}}>
                     <Input value={department}
-                        placeholder='请输入部门' size='middle' onChange={handleDepartmentChange}></Input>
+                        placeholder='请输入机构' size='middle' onChange={handleDepartmentChange}></Input>
                 </Form.Item>
                 <Form.Item label='创建人' style={{width: '22%'}}>
                     <Input value={creator}

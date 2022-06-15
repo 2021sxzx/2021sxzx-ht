@@ -54,8 +54,8 @@ export default function CreateGuide(props){
         useState(isUpdating ? props.modifyContent.guideOnlineProcess : '')
     const [guideOfflineProcess, setGuideOfflineProcess] = 
         useState(isUpdating ? props.modifyContent.guideOfflineProcess : '')
-    const [guideQRCode, setGuideQRCode] = 
-        useState(isUpdating ? props.modifyContent.guideQRCode : '')
+    // const [guideQRCode, setGuideQRCode] = 
+    //     useState(isUpdating ? props.modifyContent.guideQRCode : '')
     const [guideServiceType, setGuideServiceType] = 
         useState(isUpdating ? props.modifyContent.guideServiceType : [])
     // 审核时限
@@ -126,9 +126,9 @@ export default function CreateGuide(props){
     const handleGuideOfflineProcessChange = (e)=>{
         setGuideOfflineProcess(e.target.value)
     }
-    const handleGuideQRCodeChange = (e)=>{
-        setGuideQRCode(e.target.value) 
-    }
+    // const handleGuideQRCodeChange = (e)=>{
+    //     setGuideQRCode(e.target.value) 
+    // }
     
 
     // 每一步的输入内容
@@ -136,7 +136,7 @@ export default function CreateGuide(props){
         {
             title: '事项基本信息',
             content: 
-            <Space className={style.form} direction='vertical' size={15} style={{width: '100%'}}>
+            <Space className={style.form} direction='vertical' size={15} style={{width: '95%'}}>
                 <FormUser setPrinciple={setPrinciple} setPrincipleId={setPrincipleId} formName='负责人' value={principle} showError={props.showError}/>
                 <FormArea handleChange={handleGuideNameChange} formName='事项名称' value={guideName}/>
                 <FormArea handleChange={handleGuideCodeChange} formName='事项代码' value={guideCode}/>
@@ -147,7 +147,7 @@ export default function CreateGuide(props){
         {
             title: '资格审核信息',
             content: 
-            <Space className={style.form} direction='vertical' size={15} style={{width: '100%'}}>
+            <Space className={style.form} direction='vertical' size={15} style={{width: '95%'}}>
                 <FormArea handleChange={handleGuideConditionChange} formName='申办所需审核条件' value={guideCondition}/>
                 <FormListMaterial addBtn='添加申办所需材料' formName='申办所需材料'
                     data={guideMaterial} setData={setGuideMaterial} />
@@ -158,7 +158,7 @@ export default function CreateGuide(props){
         {
             title: '业务咨询信息',
             content: 
-            <Space className={style.form} direction='vertical' size={15} style={{width: '100%'}}>
+            <Space className={style.form} direction='vertical' size={15} style={{width: '95%'}}>
                 <FormArea handleChange={handleGuidePlatformChange} formName='咨询平台' value={guidePlatform}/>
                 <FormArea handleChange={handleGuidePCAddressChange} formName='网办PC端' value={guidePCAddress}/>
                 <FormArea handleChange={handleGuidePEAddressChange} formName='网办移动端' value={guidePEAddress}/>
@@ -167,13 +167,13 @@ export default function CreateGuide(props){
         {
             title: '业务办理信息',
             content: 
-            <Space className={style.form} direction='vertical' size={15} style={{width: '100%'}}>
+            <Space className={style.form} direction='vertical' size={15} style={{width: '95%'}}>
                 <FormArea handleChange={handleGuideSelfmadeAddressChange} formName='自助终端' value={guideSelfmadeAddress}/>
                 <FormArea handleChange={handleGuideOnlineProcessChange} formName='网上办理流程' value={guideOnlineProcess}/>
                 <FormArea handleChange={handleGuideOfflineProcessChange} formName='线下办理流程' value={guideOfflineProcess}/>
                 <FormListPlus addBtn='添加办理点' formName='办理点信息' 
                     data={guideWindows} setData={setGuideWindows} />
-                <FormImage setImageUpdated={setImageUpdated} setData={setGuideQRCode} handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>
+                {/*<FormImage setImageUpdated={setImageUpdated} setData={setGuideQRCode} handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>*/}
                 <FormCheckbox setData={setGuideServiceType} formName='服务对象类型' value={guideServiceType}/>
             </Space>
         }
@@ -285,7 +285,7 @@ export default function CreateGuide(props){
         }
         if (guideOnlineProcess === '') emptyArea.push('网上办理流程')
         if (guideOfflineProcess === '') emptyArea.push('线下办理流程')
-        if (guideQRCode === '') emptyArea.push('二维码')
+        // if (guideQRCode === '') emptyArea.push('二维码')
         if (guideServiceType.length === 0) emptyArea.push('服务对象类型')
         if (emptyArea.length === 0 && !notNum && !notGood){
             showConfirm()
@@ -388,9 +388,9 @@ export default function CreateGuide(props){
         }
 
         // 只在图片上传完成后处理二维码图片
-        if (imageUpdated){
-            data['qr_code'] = guideQRCode
-        }
+        // if (imageUpdated){
+        //     data['qr_code'] = guideQRCode
+        // }
         // 办理点信息处理
         let tempWindows = []
         for (let i = 0; i < guideWindows.length; i++){
@@ -552,7 +552,7 @@ export default function CreateGuide(props){
             tempStatus[2] = 'wait'
         }
         // 业务办理信息
-        if (guideSelfmadeAddress !== '' && guideOnlineProcess !== '' && guideOfflineProcess !== '' && guideWindows.length !== 0 && guideQRCode !== ''){
+        if (guideSelfmadeAddress !== '' && guideOnlineProcess !== '' && guideOfflineProcess !== '' && guideWindows.length !== 0/* && guideQRCode !== ''*/){
             tempStatus[3] = 'finish'
             for (let i = 0; i < guideWindows.length; i++){
                 for (let key in guideWindows[i]){
@@ -586,7 +586,7 @@ export default function CreateGuide(props){
             <Steps current={current} onChange={handleCurrentChange} type="navigation"
                 className={style.siteNavigationSteps} style={{width: '100%'}}>
                 {steps.map((item, index) => 
-                    <Step key={item.title} title={item.title} status={stepStatus[index]}/>
+                    <Step key={item.title} title={item.title} style={{width: '95%'}} status={stepStatus[index]}/>
                 )}
             </Steps>
             <div className={style.stepsContent}>
