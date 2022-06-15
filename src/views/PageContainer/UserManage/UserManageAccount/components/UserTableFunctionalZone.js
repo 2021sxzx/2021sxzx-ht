@@ -20,7 +20,7 @@ import {message, Space} from "antd";
  * @constructor
  */
 const UserTableFunctionalZone = (props) => {
-    console.log('UserTableFunctionalZone',props.unitID,props.unitName)
+    console.log('UserTableFunctionalZone', props.unitID, props.unitName)
     // // TOD O（钟卓江）：等待批量导入用户的 API 完成后完善
     // const multiCreate = () => {
     //     console.log('批量导入并刷新表格')
@@ -62,7 +62,6 @@ const UserTableFunctionalZone = (props) => {
                             ?
                             // 部门用户创建按钮
                             <UserModal
-                                modalType={'addUnitUser'}
                                 buttonText={"部门用户创建"}
                                 buttonProps={{
                                     // type: "primary",
@@ -79,9 +78,10 @@ const UserTableFunctionalZone = (props) => {
                                     unit_name: props.unitName,
                                 }}
                                 saveInfoFunction={addUserAndRefresh}
+                                unitReadOnly={true}
                             />
-                        :
-                        <div/>
+                            :
+                            <div/>
                     }
 
                     {/*/!*批量导入按钮*!/*/}
