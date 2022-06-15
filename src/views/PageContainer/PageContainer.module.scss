@@ -1,0 +1,65 @@
+/* 想要修改一些 antd 组件的样式好像有时必须写一个 .scss 没法模模块化， 在 module.scss 难以准确指定到目标标签 */
+$headContainerHeight: 8%;
+
+.siteLayout {
+  height: 100vh;
+  width: 100vw;
+
+  .headerContainer {
+    height: $headContainerHeight;
+    width: 100%;
+
+    .header{
+      height: 100%;
+      width: 100%;
+      background-color: #FFFFFF;
+      padding: 5px 5px;
+      border-bottom: 1px solid  #d9d9d9;
+    }
+  }
+
+  .siteContainer {
+    height: 100% - $headContainerHeight;
+
+    .leftRightLayout {
+      height: 100%;
+
+      .sideMenuContainer {
+        height: 100%;
+        overflow: auto;
+        float: left;
+        box-shadow: 2px 0 2px 0 #d9d9d9;
+      }
+
+      .rightSideLayout {
+        height: 100%;
+
+        .mainContentContainer {
+          height: 100%;
+          margin: 8px 10px 10px 8px;
+          border: 2px solid #d9d9d9;
+          box-shadow: 2px 2px 2px 1px #d9d9d9;
+
+          .breadcrumb {
+            display: flex;
+            align-items: center;
+            height: 5%;
+            padding: 10px;
+            background: #F5F5F5;
+          }
+
+          .mainContent {
+            height: 95%;
+            padding: 24px;
+            background: rgb(255, 255, 255);
+          }
+        }
+      }
+    }
+  }
+}
+
+
+
+
+
