@@ -4,21 +4,6 @@ import service from "./http";
  */
 
 const api ={
-    // 数据层
-    GetRuleTree(data) {
-        return service.request({
-            method: "get",
-            url: "/v1/getRuleTree/",
-            data
-        });
-    },
-    GetRegionTree(data){
-        return service.request({
-            method: "get",
-            url: "/v1/getRegionTree/",
-            data
-        });
-    },
     // 业务规则管理
     CreateRules(data){
         return service.request({
@@ -100,10 +85,12 @@ const api ={
         })
     },
     GetItemGuides(data){
+        let dataPlus = data
+        dataPlus['user_id'] = localStorage.getItem('_id')
         return service.request({
             method: "post",
             url: "/v1/getItemGuides",
-            data
+            data: dataPlus
         })
     },
     CreateItemGuide(data){
@@ -154,10 +141,12 @@ const api ={
         })
     },
     GetItems(data){
+        let dataPlus = data
+        dataPlus['user_id'] = localStorage.getItem('_id')
         return service.request({
             method: "post",
             url: "/v1/getItems",
-            data
+            data: dataPlus
         })
     },
     ChangeItemStatus(data){
