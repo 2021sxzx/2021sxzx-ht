@@ -43,7 +43,7 @@ export default function TopHeader() {
                         />
                     }/>
                 <div>
-                    你好，<strong>{userInfo.user_name}</strong> 你是 <strong>{userInfo.unit_name}</strong> 的 <strong>{userInfo.role_name}</strong>
+                    你好，<strong>{userInfo.user_name}</strong>。你是 <strong>{userInfo.unit_name}</strong> 的 <strong>{userInfo.role_name}</strong>
                 </div>
             </div>
         </div>
