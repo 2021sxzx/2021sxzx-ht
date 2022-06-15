@@ -11,11 +11,9 @@ export default function TopHeader() {
     useEffect(() => {
         apiPersonal.getTopHeaderData()
             .then(value => {
-                console.log(value.data)
                 setUserInfo(value.data.data)
             })
-            .catch(err => {
-                console.log(err)
+            .catch(() => {
             });
     }, []);
 

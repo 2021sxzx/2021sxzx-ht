@@ -14,12 +14,8 @@ function Personal() {
     useEffect(() => {
         apiPersonal.getTopHeaderData()
             .then(value => {
-                console.log(value.data)
                 setUserInfo(value.data.data)
             })
-            .catch(err => {
-                console.log(err)
-            });
     }, []);
 
     return (
@@ -65,7 +61,7 @@ function Personal() {
                                 xl: 80,
                                 xxl: 100,
                             }}
-                            src={<Image src="https://joeschmoe.io/api/v1/random" />}
+                            src={<Image src="https://joeschmoe.io/api/v1/random"/>}
                         />
                         <div style={{
                             display: "inline",

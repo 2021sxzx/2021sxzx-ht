@@ -34,7 +34,6 @@ export default function PermissionMultipleSelect(props) {
                 )
             }
         }).catch(() => {
-            console.log('error:GetPermission')
         })
 
         // This code runs when component is unmounted

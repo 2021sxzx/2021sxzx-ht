@@ -18,7 +18,6 @@ import SimpleModalButton from "../../../../../components/SimpleModalButton";
  * @constructor
  */
 function UserTable(props) {
-    console.log('UserTable')
     // 修改用户信息
     const updateUserAndRefresh = (data) => {
         api.UpdateUser(data).then(() => {
@@ -39,7 +38,6 @@ function UserTable(props) {
         }).finally(() => {
             // 刷新表格内容
             props.refreshTableData()
-            console.log('刷新表格内容')
         })
     }
 
@@ -52,42 +50,6 @@ function UserTable(props) {
     const disableDeleteButton = (record) => {
         return record.activation_status !== 0 || disableModal(record)
     }
-
-    // const showDeleteConfirm = (record) => {
-    //     confirm({
-    //         title: `是否确认删除用户：${record.user_name}?`,
-    //         icon: <ExclamationCircleOutlined/>,
-    //         // content: 'Some descriptions',
-    //         okText: '删除',
-    //         okType: 'danger',
-    //         cancelText: '取消',
-    //
-    //         onOk() {
-    //             // api.DeletUnit({
-    //             //     unit_id: nodeData.unit_id
-    //             // }).then(() => {
-    //             //     message.success('删除机构成功')
-    //             // }).catch(() => {
-    //             //     message.error('删除机构失败，请重试')
-    //             // }).finally(() => {
-    //             //     getUnitAndRefreshTree()
-    //             // })
-    //             api.DeleteUser({
-    //                 account: record.account
-    //             }).then((() => {
-    //                 message.success('删除用户成功')
-    //             }).catch(() => {
-    //                 message.error('删除用户构失败，请重试')
-    //             }).finally(() => {
-    //                 // 刷新表格内容
-    //                 props.refreshTableData()
-    //             }))
-    //         },
-    //         onCancel() {
-    //             // console.log('Cancel')
-    //         },
-    //     })
-    // }
 
     // 表格的属性/列名
     const tableColumns = [//  修改dataIndex和key，以便和服务器进行数据对接
@@ -113,11 +75,6 @@ function UserTable(props) {
             width: 120,
             // textWrap: 'word-break',
         },
-        // {
-        //     title: '部门',
-        //     dataIndex: 'department',
-        //     key: 'department',
-        // },
         {
             title: '机构',
             dataIndex: 'unit_name',
@@ -147,11 +104,6 @@ function UserTable(props) {
                     display: 'inline-flex',
                     // width:'100%',
                 }}>
-                    {/*<Tooltip*/}
-                    {/*    title={disableModal(record) ? "不能修改同级别角色的用户信息" : undefined}//*/}
-                    {/*    mouseEnterDelay={0.5}*/}
-                    {/*    mouseLeaveDelay={0.1}*/}
-                    {/*>*/}
                     <div style={{padding: '5px',}}>
                         <UserModal
                             // buttonText={'修改用户信息'}
@@ -168,35 +120,7 @@ function UserTable(props) {
                             accountReadOnly={false}
                         />
                     </div>
-                    {/*</Tooltip>*/}
-                    {/*{*/}
-                    {/*    disableDeleteButton(record) === false*/}
-                    {/*        ?*/}
-                    {/*        // <Button*/}
-                    {/*        //     icon={<DeleteOutlined/>}*/}
-                    {/*        //     disabled={disableDeleteButton(record)}*/}
-                    {/*        //     onClick={() => {*/}
-                    {/*        //         showDeleteConfirm(record)*/}
-                    {/*        //         // deleteUser({account: record.account})*/}
-                    {/*        //     }}*/}
-                    {/*        // >删除</Button>*/}
-                    {/*        <SimpleModalButton*/}
-                    {/*            buttonProps={{*/}
-                    {/*                disabled: disableDeleteButton(record),*/}
-                    {/*                shape: "circle",*/}
-                    {/*                icon: <DeleteOutlined/>,*/}
-                    {/*            }}*/}
-                    {/*            deleteCallback={() => {*/}
-                    {/*                deleteUser({account: record.account})*/}
-                    {/*            }}*/}
-                    {/*        />*/}
-                    {/*        :*/}
-                    {/*<Tooltip*/}
-                    {/*    title={disableDeleteButton(record) ? "如果要删除用户请先将用户设置为未激活" : '删除用户'}//*/}
-                    {/*    mouseEnterDelay={0.5}*/}
-                    {/*    // mouseLeaveDelay={0.1}*/}
-                    {/*>*/}
-                    {/*    /!*这个 div 用于增加提示的激活区域面积，减少因鼠标快速移出导致 tooltip 不能自动关闭的情况*!/*/}
+
                     <div style={{padding: '5px'}}>
                         <SimpleModalButton
                             buttonProps={{
@@ -211,8 +135,6 @@ function UserTable(props) {
                             }}
                         />
                     </div>
-                    {/*</Tooltip>*/}
-                    {/*}*/}
                 </div>
             ),
         },

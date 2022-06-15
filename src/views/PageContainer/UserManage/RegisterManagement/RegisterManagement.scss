@@ -1,22 +1,16 @@
-.login-management{
+.login-management {
   height: 75vh;
-  position:relative;
-  .cards-container{
+  position: relative;
+
+  .cards-container {
     position: absolute;
     width: 100%;
     top: 50%;
     transform: translate(0, -80%);
-    //display:flex;
-    //justify-content:center;
-    //align-items:center;
-    //width:10000px;
 
-    .card-box{
+    .card-box {
       border: 1px solid #e1e1e1;
-      //padding: 10px;
     }
-
   }
-
 }
 

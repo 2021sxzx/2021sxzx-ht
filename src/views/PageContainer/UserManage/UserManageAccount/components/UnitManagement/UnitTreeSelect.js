@@ -25,7 +25,6 @@ export default function UnitTreeSelect(props) {
                 setTreeData([response.data.data])
             }
         }).catch(() => {
-            console.log('error:GetUnit')
         })
 
         // This code runs when component is unmounted

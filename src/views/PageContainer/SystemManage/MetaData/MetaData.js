@@ -150,7 +150,7 @@ const LineChart = (props) => {
 
   React.useEffect(() => {
     for (var i in props) {
-      console.log(i + ":" + props[i]);
+      // console.log(i + ":" + props[i]);
     }
     var chartDom = document.getElementById(props.id);
     // setData(props.data[props.data.length - 1][1])
@@ -417,7 +417,7 @@ const Demo = () => {
       formData.append("test", "123456");
       // });
       // setUploading(true)
-      console.log("formData.file:", formData.get("file"));
+      // console.log("formData.file:", formData.get("file"));
       // console.log('formData.test:',formData.get('test'))
       // You can use any AJAX library you like
       fetch("http://8.134.73.52/api/v1/backstagelogo-upload", {
@@ -442,10 +442,10 @@ const Demo = () => {
     if (WebsiteLogoFile) {
       const WebsiteLogoFileFormData = new FormData();
       WebsiteLogoFileFormData.append("file", WebsiteLogoFile);
-      console.log(
-        "WebsiteLogoFileFormData.file:",
-        WebsiteLogoFileFormData.get("file")
-      );
+      // console.log(
+      //   "WebsiteLogoFileFormData.file:",
+      //   WebsiteLogoFileFormData.get("file")
+      // );
       fetch("http://localhost:5001/api/v1/websitelogo-upload", {
         method: "POST",
         body: WebsiteLogoFileFormData,
@@ -544,7 +544,7 @@ const Demo = () => {
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
+    // console.log("Failed:", errorInfo);
   };
   const [logData15, setLogData15] = useState(false);
   const [logToday, setLogToday] = useState(false);
@@ -560,7 +560,7 @@ const Demo = () => {
       .then((response) => {
         setLogData15(response.data);
         setLogToday(response.data[response.data.length - 1][1]);
-        console.log("response.data.data=", response.data);
+        // console.log("response.data.data=", response.data);
       })
       .catch((error) => {});
     apiLog
@@ -568,7 +568,7 @@ const Demo = () => {
       .then((response) => {
         setItemBrowseCount15(response.data);
         setItemBrowseCountToday(response.data[response.data.length - 1][1]);
-        console.log("Item=", response.data);
+        // console.log("Item=", response.data);
       })
       .catch((error) => {});
   };
@@ -683,7 +683,7 @@ const Demo = () => {
                 accept=".png"
                 beforeUpload={(file) => {
                   setWebsiteLogoFile(file);
-                  console.log(WebsiteLogoFile);
+                  // console.log(WebsiteLogoFile);
                   return false;
                 }}
                 name="websiteLogo"
@@ -715,7 +715,7 @@ const Demo = () => {
                     return Upload.LIST_IGNORE;
                   }
                   setBackstageLogoFile(file);
-                  console.log(BackstageLogoFile);
+                  // console.log(BackstageLogoFile);
                   return false;
                 }}
                 maxCount={1}
@@ -732,7 +732,7 @@ const Demo = () => {
                 accept=".png"
                 beforeUpload={(file) => {
                   setAddressBarIconFile(file);
-                  console.log(AddressBarIconFile);
+                  // console.log(AddressBarIconFile);
                   return false;
                 }}
                 maxCount={1}
@@ -749,7 +749,7 @@ const Demo = () => {
                 accept=".png"
                 beforeUpload={(file) => {
                   setMobileLogoFile(file);
-                  console.log(MobileLogoFile);
+                  // console.log(MobileLogoFile);
                   return false;
                 }}
                 maxCount={1}
@@ -766,7 +766,7 @@ const Demo = () => {
                 accept=".png"
                 beforeUpload={(file) => {
                   setQRCodeFile(file);
-                  console.log(QRCodeFile);
+                  // console.log(QRCodeFile);
                   return false;
                 }}
                 maxCount={1}

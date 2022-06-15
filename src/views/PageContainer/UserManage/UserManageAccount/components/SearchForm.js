@@ -8,7 +8,7 @@ import React, {useState} from "react";
  * }
  * @constructor
  */
-export default function SearchForm(props){
+export default function SearchForm(props) {
     const [form] = Form.useForm();
     const formLayout = 'inline';
 
@@ -27,7 +27,7 @@ export default function SearchForm(props){
         props.getSearch(data)
     }
 
-    return(
+    return (
         <Form
             layout={formLayout}
             form={form}

@@ -8,7 +8,6 @@ import BatchImportUserButton from "./components/BatchImportUserButton/BatchImpor
 function RegisterManagement() {
     const addUser = function (data) {
         api.AddUser(data).then(response => {
-            // console.log('addUser =', response.data)
             if (response.data.code === 404) {
                 message.warn(response.data.msg);
             } else {

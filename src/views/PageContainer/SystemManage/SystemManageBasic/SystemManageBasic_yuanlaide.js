@@ -29,15 +29,15 @@ const SelectForm = (props) => {
   const handleToday=e=>{
     setToday(true);
     setThisWeek(false);
-    console.log("today:",today,".week:",thisWeek)
+    // console.log("today:",today,".week:",thisWeek)
   }
   const handleWeek=e=>{
     setToday(false);
     setThisWeek(true);
-    console.log("week:",thisWeek,".today:",today)
+    // console.log("week:",thisWeek,".today:",today)
   }
   const handleRadio=e=>{
-    console.log('radio checked',e.target.value)
+    // console.log('radio checked',e.target.value)
     if(e.target.value===1){
       handleToday()
     }
@@ -140,7 +140,7 @@ const deleteFuncElem=(aimedRowData)=>{
   }
   // console.log(totalFuncDataList[i]);
   totalFuncDataList.splice(i+1,1);
-  console.log(totalFuncDataList);
+  // console.log(totalFuncDataList);
   // this.setState({
   //   data:totalFuncDataList
   // });
@@ -184,7 +184,7 @@ const tableColumns = [
       {/* <Space size="middle">
         <button onClick={()=>{console.log(index)}}>处理</button>
       </Space> */}
-      <HandleModal record={record}></HandleModal>
+      <HandleModal record={record}/>
     </>
       )
   },{
@@ -199,7 +199,7 @@ const tableColumns = [
 
 const rowSelection = {
   onChange: (selectedRowKeys, selectedRows) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    // console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
   },
   getCheckboxProps: (record) => ({
     disabled: record.name === 'Disabled User',
@@ -211,18 +211,18 @@ const rowSelection = {
 const Demo = () => {
   const [WebsiteStatus, setWebsiteStatus] = React.useState(true);
   const onFinish = (values) => {
-    console.log('Success:', values);
+    // console.log('Success:', values);
     alert('ok')
   };
 
   const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+    // console.log('Failed:', errorInfo);
   };
   //互斥单选框
   const [value, setValue] = React.useState(1);
 
   const onChange = e => {
-    console.log('radio checked', e.target.value);
+    // console.log('radio checked', e.target.value);
     setValue(e.target.value);
   };
   return (
@@ -366,14 +366,14 @@ export default function SystemManageBasic() {
       .GetLog(data)
       .then((response) => {
         setTableData(response.data.data);
-        console.log("response.data.data=", response.data.data);
+        // console.log("response.data.data=", response.data.data);
       })
       .catch((error) => {});
   };
   const getSearchLog = (data) => {
-    console.log(data);
+    // console.log(data);
     api.SearchLog(data).then((response) => {
-        console.log("searchData=", response.data.data);
+        // console.log("searchData=", response.data.data);
         setTableData(response.data.data);
       }).catch((error) => {});
   };
@@ -382,7 +382,7 @@ export default function SystemManageBasic() {
   }, []);
   return (
     <>
-      <Demo></Demo>
+      <Demo/>
     </>
   );
 }

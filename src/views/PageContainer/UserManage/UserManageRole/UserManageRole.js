@@ -45,20 +45,19 @@ export default function UserManageList() {
 
     return (
         <div>
-            {/*<Space direction="vertical" size={12} style={{width: 100 + '%'}}>*/}
             <div style={{
                 display: "inline-block",
-                width:'100%',
-                position:'relative',
+                width: '100%',
+                position: 'relative',
             }}>
                 <div style={{
                     display: "inline-flex",
                     alignItems: 'center',
                     fontSize: 20,
-                    position:'absolute',
-                    top:0,
-                    bottom:0,
-                    padding:'0 10px'
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    padding: '0 10px'
                 }}>
                     角色列表
                 </div>
@@ -72,7 +71,6 @@ export default function UserManageList() {
             <div style={{margin: '12px'}}/>
             {/* 用户评价的表格 */}
             <RoleTable tableData={tableData} refreshTableData={getRole} loading={loading}/>
-            {/*</Space>*/}
         </div>
     )
 }

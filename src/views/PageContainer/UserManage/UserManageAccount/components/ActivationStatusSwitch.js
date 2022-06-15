@@ -31,8 +31,7 @@ export default function ActivationStatusSwitch(props) {
         api.SetActivation(data).then(() => {
             setActivationStatus(checked)
             message.success('切换账号激活状态成功')
-        }).catch(error => {
-            console.log("error: handleSwitchChangeActivationState", error);
+        }).catch(() => {
             message.error('切换账号激活状态失败')
         }).finally(() => {
             // 刷新表格数据
@@ -45,8 +44,6 @@ export default function ActivationStatusSwitch(props) {
     }
 
     if (activationStatus === false || activationStatus === true || activationStatus === 1 || activationStatus === 0) {
-        // console.log("roleName === Cookie.getCookie('roleName')", roleName === Cookie.getCookie('roleName'), roleName)
-        // console.log('role_name', localStorage.getItem('role_name'))
         return <Switch
             disabled={disableSwitch()}
             checkedChildren={"已激活"}
@@ -55,7 +52,6 @@ export default function ActivationStatusSwitch(props) {
             onChange={handleSwitchChangeActivationState}
         />
     } else {
-        console.log('activationStatus', activationStatus)
         return <div>error status</div>
     }
 }
