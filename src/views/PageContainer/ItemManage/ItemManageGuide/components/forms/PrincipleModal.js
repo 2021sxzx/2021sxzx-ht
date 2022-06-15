@@ -101,7 +101,7 @@ export default function PrincipleModal(props){
             key: 'role_name'
         },
         {
-            title: '业务部门',
+            title: '机构',
             dataIndex: 'department_name',
             key: 'department_name'
         },
@@ -130,7 +130,7 @@ export default function PrincipleModal(props){
                 }}
                 style={{marginBottom: 10}}
             >
-                <Form.Item label='业务部门' style={{width: '37%'}}>
+                <Form.Item label='机构' style={{width: '37%'}}>
                     <Input id='departmentInput' value={department}
                         placeholder='请输入业务部门' onChange={handleDepartmentChange} />
                 </Form.Item>

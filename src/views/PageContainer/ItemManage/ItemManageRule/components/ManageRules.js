@@ -42,7 +42,7 @@ export default function ManageRules(props) {
             key: 'rule_path'
         },
         {
-            title: '业务部门',
+            title: '机构',
             dataIndex: 'department_name',
             key: 'department_name',
             width: 125
