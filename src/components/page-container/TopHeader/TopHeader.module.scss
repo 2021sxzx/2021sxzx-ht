@@ -1,0 +1,29 @@
+.wrapBox {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  padding: 0 5px;
+  align-items: center;
+  position: relative;
+
+  .logo {
+    height: 90%;
+    width: max-content;
+    background: #722ed1;
+    margin: 5px;
+  }
+
+  .functionalZone {
+    display: inline-flex;
+    float: right;
+    flex-direction: row-reverse; // flex右排
+    gap: 24px; // 子元素之间的宽度
+    height: 100%;
+    align-items: center;
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+}
+
+

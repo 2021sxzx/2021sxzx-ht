@@ -23,7 +23,7 @@ const chart2=() =>{
     for (var i = 0; i < 15; i++) {
         xdata[i] = getDay(-i)
     }
-    console.log('this.dateList',xdata)
+    // console.log('this.dateList',xdata)
     return xdata.reverse();
 }
 function doHandleMonth(month) {
@@ -43,7 +43,7 @@ const getLog = (data,setData)=>{
             setData(response.data);
             dat=response.data;
             return dat;
-            console.log("response.data.data=", response.data);
+            // console.log("response.data.data=", response.data);
         })
         .catch((error) => {});
     // return dat;

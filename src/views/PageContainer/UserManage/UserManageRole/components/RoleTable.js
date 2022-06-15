@@ -14,7 +14,6 @@ import RoleModal from "./RoleModal";
  * @constructor
  */
 export default function RoleTable(props) {
-    console.log('RoleTable')
 
     const UpdateRoleInfoAndRefresh = useCallback((data) => {
         Promise.all([api.UpdateRole(data), api.UpdateRolePermission(data)])

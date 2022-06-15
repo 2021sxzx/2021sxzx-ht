@@ -236,7 +236,7 @@ export default function CommentManageList() {
 			.then((response) => {
 				setTableData(response.data.data)
 				setLoading(false)
-				console.log('response.data.data=', response.data.data)
+				// console.log('response.data.data=', response.data.data)
 
 			})
 			.catch((error) => {
@@ -248,7 +248,7 @@ export default function CommentManageList() {
 		api
 			.SearchComment(data)
 			.then((response) => {
-				console.log('searchData=', response.data)
+				// console.log('searchData=', response.data)
 				setTableData(response.data.data.data)
 				if (response.data.data.total){
 					setPage({
@@ -271,11 +271,11 @@ export default function CommentManageList() {
 			})
 	}
 	const handlePageChange=(pagination, filters, sorter)=>{
-		console.log(pagination)
+		// console.log(pagination)
 		setPage(pagination)
 		let param=searchParam
 		param.pageNum=pagination.current
-		console.log('search=',param)
+		// console.log('search=',param)
 		getSearchComment(searchParam)
 	}
 	// 获取所有评论表格的数据，组件每渲染一次，该函数就自动执行一次。

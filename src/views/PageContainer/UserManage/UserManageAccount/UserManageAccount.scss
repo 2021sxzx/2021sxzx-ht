@@ -1,7 +1,6 @@
 .user-manage-container {
   display: inline-block;
   height: 560px;
-  //color: #91d5ff;
 
   .drawer-container {
     display: flex;
@@ -11,7 +10,7 @@
     overflow: hidden;
     height: 100%;
     border: 1px solid #bfbfbf;
-    border-radius:5px;
+    border-radius: 5px;
   }
 
   .user-account-container {
@@ -19,5 +18,4 @@
     flex: 1 1 auto;
     height: 100%;
   }
-
 }

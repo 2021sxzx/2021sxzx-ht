@@ -99,9 +99,6 @@ function UserModal(props) {
 
     return (
         <>
-            {/*{*/}
-            {/*    props.buttonProps.disabled === true*/}
-            {/*        ?*/}
             <Tooltip
                 title={props.buttonProps.disabled === true ? props.tooltipErrorTitle : props.tooltipSuccessTitle}
                 mouseEnterDelay={0.1}
@@ -114,19 +111,7 @@ function UserModal(props) {
                     {props.buttonText}
                 </Button>
             </Tooltip>
-            {/*        :*/}
-            {/*        <Tooltip*/}
-            {/*            title={props.tooltipSuccessTitle}*/}
-            {/*            mouseEnterDelay={0.5}*/}
-            {/*        >*/}
-            {/*            <Button*/}
-            {/*                {...props.buttonProps}*/}
-            {/*                onClick={showModal}*/}
-            {/*            >*/}
-            {/*                {props.buttonText}*/}
-            {/*            </Button>*/}
-            {/*        </Tooltip>*/}
-            {/*}*/}
+
             <Modal
                 title={props.title}
                 visible={isModalVisible}
@@ -182,10 +167,8 @@ function UserModal(props) {
                                 <div>{props.detailData.account}</div>
                                 :
                                 <Input
-                                    // defaultValue={props.detailData.account}
                                     placeholder={'请输入用户账号（手机号码）'}
                                     maxLength={32}
-                                    // onChange={handleInputChangeAccount}
                                     allowClear={true}
                                 />
                         }
@@ -212,10 +195,8 @@ function UserModal(props) {
                                 <div>{props.detailData.user_name}</div>
                                 :
                                 <Input
-                                    // defaultValue={props.detailData.user_name}
                                     placeholder={'请输入用户名'}
                                     maxLength={32}
-                                    // onChange={handleInputChangeUserName}
                                     allowClear={true}
                                 />
                         }
@@ -250,10 +231,8 @@ function UserModal(props) {
                                 <div>{props.detailData.password}</div>
                                 :
                                 <Input
-                                    // defaultValue={props.detailData.password}
                                     placeholder={'请输入用户密码'}
                                     maxLength={32}
-                                    // onChange={handleInputChangePassword}
                                     allowClear={true}
                                 />
                         }
@@ -290,7 +269,6 @@ function UserModal(props) {
                             {
                                 required: true,
                                 message: '请选择机构!',
-                                // warningOnly:true,
                             },
                         ]}
                     >

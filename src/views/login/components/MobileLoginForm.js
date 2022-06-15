@@ -1,7 +1,6 @@
 import {Button, Col, Form, Input, Row} from "antd";
 import {MobileOutlined, UserOutlined} from "@ant-design/icons";
 import React from "react";
-import QuickLogin from "./QuickLogin";
 import CountDownButton from "./CountDownButton";
 
 /**
@@ -10,12 +9,10 @@ import CountDownButton from "./CountDownButton";
  * @constructor
  */
 export default function MobileLoginForm() {
-    const onFinish = (values) => {
-        console.log('MobileLoginForm Success:', values);
+    const onFinish = () => {
     };
 
-    const onFinishFailed = (errorInfo) => {
-        console.log('MobileLoginForm Failed:', errorInfo);
+    const onFinishFailed = () => {
     };
 
     return (
@@ -46,8 +43,8 @@ export default function MobileLoginForm() {
                     },
                     {
                         // TODO：暂时保留了开发人员账号
-                        pattern:/^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/,
-                        message:'请输入正确的手机号码'
+                        pattern: /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/,
+                        message: '请输入正确的手机号码'
                     },
                 ]}
             >
@@ -67,8 +64,8 @@ export default function MobileLoginForm() {
                         message: '请输入验证码!',
                     },
                     {
-                        len:8,
-                        message:'请输入 8 位验证码'
+                        len: 8,
+                        message: '请输入 8 位验证码'
                     }
                 ]}
             >
@@ -85,8 +82,7 @@ export default function MobileLoginForm() {
                 </Row>
             </Form.Item>
 
-            {/*登录按钮*/
-            }
+            {/*登录按钮*/}
             <Form.Item>
                 <Row type="flex" justify="center" align="middle">
                     <Col span={24}>
@@ -95,10 +91,6 @@ export default function MobileLoginForm() {
                         </Button>
                     </Col>
                 </Row>
-            </Form.Item>
-            <Form.Item>
-                {/*第三方快捷登录*/}
-                <QuickLogin/>
             </Form.Item>
         </Form>
     )

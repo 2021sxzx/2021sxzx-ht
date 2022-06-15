@@ -1,76 +1,57 @@
 import {Form} from "antd";
 import React from "react";
 
-
+/**
+ * 个人中心中展示的数据表单
+ * @param props = {
+ *     data:{ // 要展示的数据
+ *         account: string,
+ *         user_name: string,
+ *         password: string,
+ *         role: string,
+ *         unit: string,
+ *     }
+ * }
+ * @return {JSX.Element}
+ * @constructor
+ */
 function PersonalDescription(props) {
     const [form] = Form.useForm()
 
     // 表单初始化数据
     const initialValues = {
-        // account: props.detailData.account,
-        // user_name: props.detailData.user_name,
-        // password: props.detailData.password,
-        // role: props.detailData.role_id,
-        // unit: props.detailData.unit_id,
-        account: 'account',
-        userName: 'user_name',
-        password: 'password',
-        roleName: 'role_name',
-        unitName: 'unit_name',
+        account: props.data.account,
+        user_name: props.data.user_name,
+        password: props.data.password,
+        role: props.data.role_id,
+        unit: props.data.unit_id,
     }
 
     return (
         <div>
-            {/*<Divider />*/}
             <Form
                 form={form}
-                // name="basic"
-                // labelCol={{
-                //     span: 8,
-                // }}
-                // wrapperCol={{
-                //     span: 16,
-                // }}
                 initialValues={initialValues}
-                // autoComplete="off"
             >
                 <Form.Item
                     label="账号/手机号码"
                     name="account"
                 >
-                    {/*<div>{form.getFieldValue('account')}</div>*/}
-                    18128706873
-                </Form.Item>
-
-                {/*<Form.Item*/}
-                {/*    label="用户名"*/}
-                {/*    name="userName"*/}
-                {/*>*/}
-                {/*    <div>{form.getFieldValue('userName')}</div>*/}
-                {/*</Form.Item>*/}
-
-                <Form.Item
-                    label="用户密码"
-                    name="password"
-                >
-                    {/*<div>{form.getFieldValue('password')}</div>*/}
-                    11aaAA@@
+                    {props.data.account}
                 </Form.Item>
 
                 <Form.Item
                     label="角色"
                     name="roleName"
                 >
-                    {/*<div>{form.getFieldValue('roleName')}</div>*/}
-                    业务员
+                    {props.data.role_name}
                 </Form.Item>
 
                 <Form.Item
                     label="机构"
                     name="unitName"
                 >
-                    {/*<div>{form.getFieldValue('unitName')}</div>*/}
-                    办公室
+                    {props.data.unit_name}
                 </Form.Item>
             </Form>
         </div>

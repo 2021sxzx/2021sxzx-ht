@@ -65,7 +65,7 @@ const SelectForm = (props) => {
     }
   };*/
   const onFinish=(values)=>{
-    console.log('Success:',values)
+    // console.log('Success:',values)
     api.ChangeBackupCycle(values).then((res)=>{
       if(res.data.data==='success'){message.success(res.data.msg)}
       else{message.error(res.data.msg)}
@@ -239,7 +239,7 @@ const tableColumns = [
         </Button>
       </Space>
       </>
-      
+
     ),
   },
   {
@@ -263,11 +263,11 @@ const tableColumns = [
 
 const rowSelection = {
   onChange: (selectedRowKeys, selectedRows) => {
-    console.log(
-      `selectedRowKeys: ${selectedRowKeys}`,
-      "selectedRows: ",
-      selectedRows
-    );
+    // console.log(
+    //   `selectedRowKeys: ${selectedRowKeys}`,
+    //   "selectedRows: ",
+    //   selectedRows
+    // );
   },
   getCheckboxProps: (record) => ({
     disabled: record.name === "Disabled User",
@@ -285,7 +285,7 @@ const Demo = () => {
       .GetBackup(data)
       .then((response) => {
         setTableData(response.data.data);
-        console.log("response.data.data=", response.data.data);
+        // console.log("response.data.data=", response.data.data);
       })
       .catch((error) => {});
   };

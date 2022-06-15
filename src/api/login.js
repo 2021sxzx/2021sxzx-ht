@@ -35,7 +35,6 @@ const api = {
         method: "get",
         url: '/v1/isLogin',
       });
-      console.log(res.data.data.isLogin)
       return res.data.data.isLogin
     },
 

@@ -171,14 +171,14 @@ export default function SystemManageJournal() {
         .GetLog(data)
         .then((response) => {
           setTableData(response.data.data);
-          console.log("response.data.data=", response.data.data);
+          // console.log("response.data.data=", response.data.data);
         })
         .catch((error) => {});
   };
   const getSearchLog = (data) => {
-    console.log(data);
+    // console.log(data);
     api.SearchLog(data).then((response) => {
-      console.log("searchData=", response.data.data);
+      // console.log("searchData=", response.data.data);
       setTableData(response.data.data);
     }).catch((error) => {});
   };
@@ -187,7 +187,7 @@ export default function SystemManageJournal() {
   }, []);
   return (
       <>
-        <SelectForm getSearch={getSearchLog}></SelectForm>
+        <SelectForm getSearch={getSearchLog}/>
         <Table rowKey="log_id" columns={tableColumns} dataSource={tableData} />
       </>
   );

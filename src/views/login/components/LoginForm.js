@@ -6,7 +6,6 @@ import React from "react";
 
 const {TabPane} = Tabs
 
-
 export default function LoginForm() {
     return (
         <div>

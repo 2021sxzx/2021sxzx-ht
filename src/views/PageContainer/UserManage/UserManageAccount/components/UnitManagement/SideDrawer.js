@@ -22,7 +22,6 @@ import {DoubleLeftOutlined, DoubleRightOutlined} from "@ant-design/icons";
  * @constructor
  */
 const SideDrawer = (props) => {
-    console.log('SideDrawer')
     const [visible, setVisible] = useState(typeof !(props.visible) === 'boolean' ? !!(props.visible) : true);
 
     const switchDrawer = () => {

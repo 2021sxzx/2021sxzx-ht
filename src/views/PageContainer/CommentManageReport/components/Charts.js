@@ -8,10 +8,10 @@ export default function Charts(props) {
 	const [data, setData] = useState({})
 	async function initChart() {
 		// 请求 rawData
-		console.log('chartData=',props.chartData)
+		// console.log('chartData=',props.chartData)
 		if (Object.keys(props.chartData).length==0) return
 		let rawData = props.chartData.data.data
-		console.log('data=',rawData)
+		// console.log('data=',rawData)
 		function processData(rawData) {
 			let processedData = JSON.parse(JSON.stringify(rawData))
 			// 下面三个数据，将通过加工原数据得到。附加在 processedData 上。
@@ -143,7 +143,7 @@ export default function Charts(props) {
 
 	}, [])
 	useEffect(()=>{
-		console.log('change=',props.chartData)
+		// console.log('change=',props.chartData)
 		initChart()
 	},[props.chartData])
 	return (

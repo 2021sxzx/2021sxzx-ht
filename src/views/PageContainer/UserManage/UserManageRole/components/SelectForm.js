@@ -13,7 +13,6 @@ import RoleModal from "./RoleModal";
  * @constructor
  */
 function SelectForm(props) {
-    console.log('SelectForm')
     // 使用并设置表单组件
     const [form] = Form.useForm();
     const formLayout = 'inline';
@@ -36,20 +35,6 @@ function SelectForm(props) {
     }
 
     const AddRoleAndRefresh = (data) => {
-        // // 用于判断所有信息是否都完成更新
-        // let canRefresh = false
-
-        // // 自动决定是否刷新表格
-        // const autoRefresh = () => {
-        //     if (canRefresh) {
-        //         message.success('新增角色成功')
-        //         // 刷新表格
-        //         props.refreshTableData()
-        //     } else {
-        //         canRefresh = true
-        //     }
-        // }
-
         // 新增角色
         api.AddRole({
             role_name: data.role_name,
@@ -59,22 +44,9 @@ function SelectForm(props) {
             message.success('添加角色成功')
         }).catch(() => {
             message.error('添加角色出现错误')
-        }).finally(()=>{
+        }).finally(() => {
             props.refreshTableData()
         })
-
-        // // 新增角色权限信息
-        // api.AddRolePermission({
-        //     role_name: data.role_name,
-        //     permission_identifier_array: data.permission_identifier_array
-        // }).then(response => {
-        //     // log 服务端返回的搜索结果
-        //     console.log('addRolePermissionResult=', response.data)
-        //     autoRefresh()
-        // }).catch(error => {
-        //     message.error('新增角色权限出现错误')
-        //     console.log("AddRolePermission error", error)
-        // })
     }
 
     return (

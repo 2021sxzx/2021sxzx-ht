@@ -22,7 +22,6 @@ import SimpleModalButton from "../../../../../../components/SimpleModalButton";
  * @constructor
  */
 const UnitList = (props) => {
-    console.log('UnitList')
     const [treeData, setTreeData] = useState([])
     // const treeDataRef = useRef(treeData)
 
@@ -37,35 +36,8 @@ const UnitList = (props) => {
     }, [])
 
     const onSelect = (selectedKeys, info) => {
-        // console.log('selected', selectedKeys, info.node.unit_id);
         props.selectUnitID(info.node.unit_id, info.node.unit_name)
     };
-
-    // const showDeleteConfirm = (nodeData) => {
-    //     confirm({
-    //         title: `是否确认删除机构：${nodeData.unit_name}?`,
-    //         icon: <ExclamationCircleOutlined/>,
-    //         content: undefined,
-    //         okText: '删除',
-    //         okType: 'danger',
-    //         cancelText: '取消',
-    //
-    //         onOk() {
-    //             api.DeletUnit({
-    //                 unit_id: nodeData.unit_id
-    //             }).then(() => {
-    //                 message.success('删除机构成功')
-    //             }).catch(() => {
-    //                 message.error('删除机构失败，请重试')
-    //             }).finally(() => {
-    //                 getUnitAndRefreshTree()
-    //             })
-    //         },
-    //         onCancel() {
-    //             // console.log('Cancel')
-    //         },
-    //     })
-    // }
 
     const nodeRender = (nodeData) => {
         if (!nodeData) {
@@ -174,11 +146,6 @@ const UnitList = (props) => {
         }
     }
 
-    const handleRightClick = ({event, node}) => {
-        console.log('event', event)
-        console.log('node', node)
-    }
-
     if (treeData.length > 0) {
         return (
             <div>
@@ -195,7 +162,6 @@ const UnitList = (props) => {
                         children: 'children',
                     }}
                     titleRender={nodeRender}// 自定义渲染节点 (nodeData) => ReactNode
-                    onRightClick={handleRightClick} // 右键
                 />
             </div>
         )

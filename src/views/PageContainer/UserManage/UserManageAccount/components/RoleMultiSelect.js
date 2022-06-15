@@ -1,4 +1,4 @@
-import {Select} from "antd";
+import {message, Select} from "antd";
 import React, {useEffect, useRef, useState} from "react";
 import api from "../../../../../api/role";
 
@@ -36,7 +36,7 @@ export default function RoleMultiSelect(props) {
                 )
             }
         }).catch(() => {
-            console.log('error:GetRoleList')
+            message.error('获取角色列表失败，请稍后重试')
         })
 
         // This code runs when component is unmounted

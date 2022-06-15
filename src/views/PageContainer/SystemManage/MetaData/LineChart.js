@@ -23,7 +23,7 @@ const chart2=() =>{
     for (var i = 0; i < 15; i++) {
         xdata[i] = getDay(-i)
     }
-    console.log('this.dateList',xdata)
+    // console.log('this.dateList',xdata)
     return xdata.reverse();
 }
 function doHandleMonth(month) {
@@ -47,7 +47,7 @@ for (let i = 0; i < 15; i++) {
     data.push([now, Math.round((Math.random() - 0.5) * 20)]);
     // data.push([now, Math.round((Math.random() - 0.5) * 20 + data[i - 1][1])]);
 }
-console.log("data:",data)
+// console.log("data:",data)
 // console.log(data)
 /* option = {
     tooltip: {
@@ -85,7 +85,7 @@ console.log("data:",data)
             smooth: true,
             symbol: 'none',
             areaStyle: {},
-            data: 
+            data:
         }
     ]
 }; */
@@ -97,7 +97,7 @@ const LineChart = (props) => {
             .ItemBrowseCount(data)
             .then((response) => {
                 setDat(response.data);
-                console.log("ItemBrowseCount.data=", response.data);
+                // console.log("ItemBrowseCount.data=", response.data);
             })
             .catch((error) => {});
         // return dat;

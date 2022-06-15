@@ -66,7 +66,7 @@ const api = {
     SearchDepartment(data) {
         return service.request({
             method: "get",
-            url: "/v1/searchDepartment?searchValue="+data.searchValue,
+            url: "/v1/searchDepartment?searchValue=" + data.searchValue,
             // data, //data:data同名可以直接写 data
         });
     },
@@ -76,7 +76,7 @@ const api = {
      * TODO（钟卓江）：这部分接口文档还没完善
      * @param data
      */
-    SetDepartment(data){
+    SetDepartment(data) {
         return service.request({
             method: "post",
             url: "v1/setActivation",

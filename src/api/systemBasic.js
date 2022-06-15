@@ -38,7 +38,6 @@ const api ={
         })
     },
     InterfaceConfiguration(data){
-        console.log('2')
         return service.request({
             method:"get",
             url: "v1/interface-configuration",

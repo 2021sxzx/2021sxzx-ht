@@ -9,7 +9,7 @@ export default function SearchBar(props) {
 	const [type,setType]=useState(0)
 	const typeList=['全部', '事项指南名称', '事项指南编码']
 	const handleChangeType=(value)=>{
-		console.log('changeType=',value)
+		// console.log('changeType=',value)
 		setType(value)
 	}
 	const selectBefore = (

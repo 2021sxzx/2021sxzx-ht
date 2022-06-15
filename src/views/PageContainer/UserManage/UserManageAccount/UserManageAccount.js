@@ -10,16 +10,12 @@ import api from "../../../../api/user";
 import UserTableFunctionalZone from "./components/UserTableFunctionalZone";
 import UserTable from "./components/UserTable";
 import SideDrawer from "./components/UnitManagement/SideDrawer";
-// import UnitSelectForm from "./components/UnitManagement/UnitSelectForm";
 import UnitList from "./components/UnitManagement/UnitList";
-// import {hidden} from "caniuse-lite/data/features";
-
 
 //  修改页面 UI 样式
 export default function UserManageAccount() {
     const [tableData, setTableData] = useState([])
     const [loading, setLoading] = useState(true)
-    // const [unitIDSelected,setUnitIDSelected] = useState(null)
     const unitIDRef = useRef(null)
     const unitNameRef = useRef(null)
 
@@ -29,8 +25,7 @@ export default function UserManageAccount() {
 
         api.GetUser().then(response => {
             setTableData(response.data.data)
-        }).catch(error => {
-            console.log("error = ", error)
+        }).catch(() => {
         }).finally(() => {
             setLoading(false)
         })
@@ -38,35 +33,28 @@ export default function UserManageAccount() {
 
     // 更新选中的 unit_id，useCallback 用于减少组件 UnitList 的渲染
     const selectUnit = useCallback((unitID, unitName) => {
-        // setUnitIDSelected(unitID)
-        // unitIDSelected = unitID
         unitIDRef.current = unitID
         unitNameRef.current = unitName
-        // console.log('selectUnit',unitIDSelected,unitID)
-        // console.log('unitIDRef',unitIDRef)
         getUserByID()
     }, [])
 
     // 从服务器获取用户表格的数据，保存到 tableData 中
     const getUserByID = useCallback(() => {
         setLoading(true)
-        // console.log('getUserByID',unitIDRef.current)
         if (unitIDRef.current) {
             api.GetUserByID({
                 // unit_id: unitIDSelected
                 unit_id: unitIDRef.current
             }).then(response => {
                 setTableData(response.data.data)
-            }).catch(error => {
-                console.log("error = ", error)
+            }).catch(() => {
             }).finally(() => {
                 setLoading(false)
             })
         } else {
             api.GetUser().then(response => {
                 setTableData(response.data.data)
-            }).catch(error => {
-                console.log("error = ", error)
+            }).catch(() => {
             }).finally(() => {
                 setLoading(false)
             })
@@ -81,8 +69,7 @@ export default function UserManageAccount() {
         api.SearchUser(data).then(response => {
             setTableData(response.data.data)
             message.success('搜索用户信息成功')
-        }).catch(error => {
-            console.log("error = ", error)
+        }).catch(() => {
             message.error('搜索用户信息发生错误')
         }).finally(() => {
             setLoading(false)
@@ -92,7 +79,6 @@ export default function UserManageAccount() {
     // 获取所有评论表格的数据，仅在第一次渲染时执行。
     useEffect(() => {
         getUser()
-        // getUserByID()
     }, [])
 
     // 用于减少 SideDrawer 组件的渲染
@@ -109,11 +95,6 @@ export default function UserManageAccount() {
             drawerContainerOpenStyle: {
                 height: '100%',
             },
-            extra: (
-                <div>
-                    {/*<UnitSelectForm />*/}
-                </div>
-            )
         }
     }, [])
 

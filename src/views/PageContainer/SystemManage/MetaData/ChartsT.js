@@ -14,7 +14,7 @@ const ChartsT = (props) => {
       total=100;
       proportion=(used/total);
     }
-    console.log("proportion:"+proportion)
+    // console.log("proportion:"+proportion)
     var color='';
     if(proportion<=0.2){
       color='blue';
@@ -99,5 +99,5 @@ const ChartsT = (props) => {
     <div id={props.id} style={{ width: "215px", height: "170px",paddingLeft:"10px",display:"inline-block",float:"left" }}></div>
     </div>);
   };
-  
+
   export default ChartsT

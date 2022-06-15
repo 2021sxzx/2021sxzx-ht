@@ -1,4 +1,3 @@
-
 import {message} from "antd";
 import UrlJump from "./UrlJump";
 import api from '../api/login'
@@ -18,14 +17,14 @@ const MenuList = {
     getAndStorageMenuList(callback = (menuList) => {
         /*setMenuList(menuList)*/
         return menuList
-    }, roleID  = '') {
+    }, roleID = '') {
         // 侧边栏菜单
         let menuList
 
         // 判断 sessionStorage 有没有侧边栏缓存
         menuList = JSON.parse(sessionStorage.getItem('menuList'))
         // 如果 menuList 存在，而且是非空数组，就直接使用 sessionStorage 的内容
-        if(menuList && menuList instanceof Array && menuList.length > 0){
+        if (menuList && menuList instanceof Array && menuList.length > 0) {
             callback(menuList)
             return menuList
         }
@@ -46,9 +45,9 @@ const MenuList = {
         }
 
         // 根据角色名称向服务器申请获取 MenuList
-        api.GetMenuList({role_id:roleID}).then((response => {
+        api.GetMenuList({role_id: roleID}).then((response => {
             menuList = response.data.data
-            sessionStorage.setItem('menuList',JSON.stringify(menuList))
+            sessionStorage.setItem('menuList', JSON.stringify(menuList))
             callback(menuList)
             return true
         })).catch(() => {

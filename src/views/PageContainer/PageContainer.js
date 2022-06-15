@@ -1,11 +1,9 @@
 import React, {useEffect, useState} from 'react'
 import {Redirect, Switch, Route, withRouter} from 'react-router-dom'
 
-import { Layout, Breadcrumb } from 'antd'
+import {Layout, Breadcrumb} from 'antd'
 import SideMenu from '../../components/page-container/SideMenu/SideMenu.js'
 import TopHeader from '../../components/page-container/TopHeader/TopHeader.js'
-
-import './PageContainer.scss'
 
 // 导入页面内容
 import Home from './Home/Home'
@@ -27,115 +25,117 @@ import SystemManageBasic from './SystemManage/SystemManageBasic/SystemManageBasi
 import SystemManageBackup from './SystemManage/SystemManageBackup/SystemManageBackup.js'
 import NoPermission from './NoPermission/NoPermission.js'
 import RegisterManagement from "./UserManage/RegisterManagement/RegisterManagement";
-import style from "../../components/page-container/SideMenu/SideMenu.module.css";
+import style from "./PageContainer.module.scss";
 import Sider from "antd/es/layout/Sider";
 import MenuList from "../../utils/MenuList";
+import {Header} from "antd/es/layout/layout";
 
-const { Content } = Layout
+const {Content} = Layout
 
 export default withRouter(function PageContainer(props) {
-  const [curRoute,setCurRoute]=useState([])
-  const menuTitle=new Map([])
-  function getMenuTitle(menu){
-      if (!menu) return
-      menu.map(item=>{
-        menuTitle.set(item.key,item.title)
-        if (item.children?.length > 0) {
-            getMenuTitle(item.children)
-        }
-      })
-  }
+    const [curRoute, setCurRoute] = useState([])
+    const menuTitle = new Map([])
 
-  const getPathName=(path,menuTitle)=>{
-      let mid=path.split('/')
-      for (let i=0;i<mid.length;i++){
-        if (i<mid.length-1) mid[i+1]=mid[i]+'/'+mid[i+1]
-        if (i>0) mid[i]=menuTitle.get(mid[i])
-      }
-      mid.splice(0,1)
-      return mid
-
-  }
-
-  useEffect(()=>{
-    MenuList.getAndStorageMenuList((menuList)=>{
-        if (!menuList) return
-        getMenuTitle(menuList)
-        setCurRoute(getPathName(props.location.pathname,menuTitle))
-      // console.log('获得了 menuList', menuList)
-    })
-  },[])
-
-  return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider
-          theme="light" // 样式主题
-          collapsible={true} // 是否可收起
-          style={{
-            overflow: 'auto',
-            height: '100vh',
-            // position: 'fixed',
-            float: 'left',
-            left: 0,
-            top: 0,
-            bottom: 0,
-          }}
-      >
-        <div className={style.logo}>
-          {/*TODO:添加 LOGO 图片*/}
-          {/*<img src="....."/>*/}
-          广州人社
-        </div>
-        <SideMenu setCurRoute={setCurRoute} getPathName={getPathName}/>
-      </Sider>
-      <Layout className="site-layout">
-        <TopHeader/>
-        <Content style={{ margin: '0 10px' }}>
-          <Breadcrumb style={{ margin: '10px 0' }}>
-            {
-              curRoute.map(item=>{
-                return(
-                    <Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>
-                )
-              })
+    function getMenuTitle(menu) {
+        if (!menu) return
+        menu.map(item => {
+            menuTitle.set(item.key, item.title)
+            if (item.children?.length > 0) {
+                getMenuTitle(item.children)
             }
-          </Breadcrumb>
-          <div className="site-layout-background" style={{ padding: 24, minHeight: 360, }}>
-            <Switch>
-              {/* 首页 */}
-              <Route path="/home" component={Home} />
-              {/* 用户评价 */}
-              <Route path="/comment-manage/list" component={CommentManageList} />
-              {/* 评价报告 */}
-              <Route path="/comment-manage/report" component={CommentManageReport} />
-              {/* 个人中心 */}
-              <Route path="/personal" component={Personal} />
-              {/* 事项过程管理 */}
-              <Route path="/item-manage" component={ItemManage} />
-              <Route path="/item-audit" component={ItemAudit} />
-              {/* 日志管理 */}
-              <Route path="/system-manage/journal" component={SystemManageJournal} />
-              {/* 资源管理 */}
-              <Route path="/system-manage/resource" component={SystemManageResource} />
-              {/* 后台账号管理 */}
-              <Route path="/user-manage/account/user" component={UserManageAccount} />
-              {/* 角色管理 */}
-              <Route path="/user-manage/account/role" component={UserManageRole} />
-              {/* 单位管理 */}
-              <Route path="/user-manage/register" component={RegisterManagement}/>
-              {/*/!* 部门管理 *!/*/}
-              {/*<Route path="/user-manage/department" component={DepartmentManagement} />*/}
-              <Route path="/system-manage/failure" component={SystemManageFailure}/>
-              <Route path="/system-manage/meta-data" component={MetaData}/>
-              <Route path="/system-manage/backup" component={SystemManageBackup}/>
-              <Route path="/system-manage/basic" component={SystemManageBasic}/>
-              <Redirect from="/" to="/home" exact />
-              <Route path="*" component={NoPermission} />
-            </Switch>
-          </div>
-        </Content> 
-        {/* <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer> */}
-      </Layout>
-    </Layout>
-  )
+        })
+    }
+
+    const getPathName = (path, menuTitle) => {
+        let mid = path.split('/')
+        for (let i = 0; i < mid.length; i++) {
+            if (i < mid.length - 1) mid[i + 1] = mid[i] + '/' + mid[i + 1]
+            if (i > 0) mid[i] = menuTitle.get(mid[i])
+        }
+        mid.splice(0, 1)
+        return mid
+
+    }
+
+    useEffect(() => {
+        MenuList.getAndStorageMenuList((menuList) => {
+            if (!menuList) return
+            getMenuTitle(menuList)
+            setCurRoute(getPathName(props.location.pathname, menuTitle))
+        })
+    }, [])
+
+    return (
+        <Layout className={style.siteLayout}>
+            {/*<Layout>*/}
+            <div className={style.headerContainer}>
+                <Header className={style.header}>
+                    <TopHeader/>
+                </Header>
+            </div>
+            <Content
+                className={style.siteContainer}
+            >
+                <Layout className={style.leftRightLayout}>
+                    <Sider
+                        className={style.sideMenuContainer}
+                        theme="light" // 样式主题
+                        collapsible={true} // 是否可收起
+                        collapsedWidth={50}
+                    >
+                        <SideMenu setCurRoute={setCurRoute} getPathName={getPathName}/>
+                    </Sider>
+                    <Layout className={style.rightSideLayout}>
+                        <Content
+                            className={style.mainContentContainer}
+                            // style={{ margin: '0 10px' }}
+                        >
+                            <Breadcrumb className={style.breadcrumb}>
+                                {
+                                    curRoute.map(item => {
+                                        return (
+                                            <Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>
+                                        )
+                                    })
+                                }
+                            </Breadcrumb>
+                            <div className={style.mainContent}>
+                                <Switch>
+                                    {/* 首页 */}
+                                    <Route path="/home" component={Home}/>
+                                    {/* 用户评价 */}
+                                    <Route path="/comment-manage/list" component={CommentManageList}/>
+                                    {/* 评价报告 */}
+                                    <Route path="/comment-manage/report" component={CommentManageReport}/>
+                                    {/* 个人中心 */}
+                                    <Route path="/personal" component={Personal}/>
+                                    {/* 事项过程管理 */}
+                                    <Route path="/item-manage" component={ItemManage}/>
+                                    <Route path="/item-audit" component={ItemAudit}/>
+                                    {/* 日志管理 */}
+                                    <Route path="/system-manage/journal" component={SystemManageJournal}/>
+                                    {/* 资源管理 */}
+                                    <Route path="/system-manage/resource" component={SystemManageResource}/>
+                                    {/* 后台账号管理 */}
+                                    <Route path="/user-manage/account/user" component={UserManageAccount}/>
+                                    {/* 角色管理 */}
+                                    <Route path="/user-manage/account/role" component={UserManageRole}/>
+                                    {/* 单位管理 */}
+                                    <Route path="/user-manage/register" component={RegisterManagement}/>
+                                    {/*/!* 部门管理 *!/*/}
+                                    {/*<Route path="/user-manage/department" component={DepartmentManagement} />*/}
+                                    <Route path="/system-manage/failure" component={SystemManageFailure}/>
+                                    <Route path="/system-manage/meta-data" component={MetaData}/>
+                                    <Route path="/system-manage/backup" component={SystemManageBackup}/>
+                                    <Route path="/system-manage/basic" component={SystemManageBasic}/>
+                                    <Redirect from="/" to="/home" exact/>
+                                    <Route path="*" component={NoPermission}/>
+                                </Switch>
+                            </div>
+                        </Content>
+                    </Layout>
+                </Layout>
+            </Content>
+        </Layout>
+    )
 })

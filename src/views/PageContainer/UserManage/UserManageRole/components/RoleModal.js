@@ -2,8 +2,6 @@ import React, {useState} from "react";
 import {Button, Form, Input, Modal, message} from "antd";
 import PermissionMultipleSelect from "./PermissionMultipleSelect";
 
-// import useForm from "antd/lib/form/hooks/useForm";
-
 /**
  * 角色管理相关的弹窗
  * @param props = {
@@ -79,18 +77,6 @@ function RoleModal(props) {
             .catch(() => {
                 message.warn('请正确完成表单填写')
             })
-        // if (!!(roleName) && !!(permissionIdentifierArray)) {
-        //     setIsModalVisible(false);
-        //     props.callback({
-        //         // role_name_old:props.detailData.role_name,
-        //         role_id: props.detailData.role_id,
-        //         role_name: roleName,
-        //         role_describe: roleDescribe,
-        //         permission_identifier_array: permissionIdentifierArray,
-        //     })
-        // } else {
-        //     message.warn('请正确完成表单填写')
-        // }
     }
 
     // Cancel按钮的触发函数，关闭详情弹窗
@@ -98,19 +84,8 @@ function RoleModal(props) {
         setIsModalVisible(false);
     };
 
-    // // 根据输入框更新角色的信息
-    // const handleInputChangeRoleName = (event) => {
-    //     setRoleName(event.target.value);
-    // }
-    //
-    // const handleInputChangeRoleDescribe = (event) => {
-    //     setRoleDescribe(event.target.value);
-    // }
-
     const handleMultipleSelectChange = (value) => {
-        // console.log('multiSelect = ', value)
         form.setFieldsValue({permission: value})
-        // setPermissionIdentifierArray(value);
     }
 
     return (
@@ -162,9 +137,7 @@ function RoleModal(props) {
                         ]}
                     >
                         <Input
-                            // defaultValue={props.detailData.role_name}
                             placeholder={'请输入角色名'}
-                            // onChange={handleInputChangeRoleName}
                         />
                     </Form.Item>
                     <Form.Item
@@ -179,9 +152,7 @@ function RoleModal(props) {
                         ]}
                     >
                         <Input
-                            // defaultValue={props.detailData.role_describe}
                             placeholder={'请输入角色描述'}
-                            // onChange={handleInputChangeRoleDescribe}
                         />
                     </Form.Item>
                     <Form.Item

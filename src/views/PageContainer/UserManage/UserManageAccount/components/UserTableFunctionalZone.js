@@ -20,17 +20,6 @@ import {message, Space} from "antd";
  * @constructor
  */
 const UserTableFunctionalZone = (props) => {
-    console.log('UserTableFunctionalZone', props.unitID, props.unitName)
-    // // TOD O（钟卓江）：等待批量导入用户的 API 完成后完善
-    // const multiCreate = () => {
-    //     console.log('批量导入并刷新表格')
-    //
-    //     message.success('用户批量导入成功');
-    //     message.error('用户批量导入发生错误');
-    //
-    //     // 刷新表格数据
-    //     setTimeout(props.refreshTableData, 1000)
-    // }
 
     const addUserAndRefresh = function (data) {
         api.AddUser(data).then(response => {
@@ -84,38 +73,11 @@ const UserTableFunctionalZone = (props) => {
                             <div/>
                     }
 
-                    {/*/!*批量导入按钮*!/*/}
-                    {/*<BatchImportUserButton />*/}
                     {/*搜索表单*/}
                     <SearchForm getSearch={props.getSearch}/>
                 </Space>
             </div>
 
-
-            {/*<div style={{*/}
-            {/*    display: "inline-block",*/}
-            {/*    // position: "absolute",*/}
-            {/*    // top: 0,*/}
-            {/*    // bottom: 0,*/}
-            {/*    // left: 0,*/}
-            {/*    // alignItems: 'center',*/}
-            {/*    padding: '0 10px',*/}
-            {/*    // flex:'1 1 auto',*/}
-            {/*    fontSize: 20,*/}
-            {/*    color: '#333333',*/}
-            {/*    // alignItems:'center',*/}
-            {/*    // textAlign:"center",*/}
-            {/*    // float:'left',*/}
-            {/*    // height:'100%',*/}
-            {/*}}>*/}
-            {/*    /!*<div style={{*!/*/}
-            {/*    /!*    fontSize: 20,*!/*/}
-            {/*    /!*    color: '#666666',*!/*/}
-            {/*    /!*}}>*!/*/}
-            {/*    用户列表*/}
-            {/*    /!*</div>*!/*/}
-
-            {/*</div>*/}
             <div style={{
                 display: "inline-block",
                 fontSize: 20,
