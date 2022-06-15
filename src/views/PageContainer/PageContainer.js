@@ -133,7 +133,7 @@ export default withRouter(function PageContainer(props) {
               <Route path="*" component={NoPermission} />
             </Switch>
           </div>
-        </Content>
+        </Content> 
         {/* <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer> */}
       </Layout>
     </Layout>
