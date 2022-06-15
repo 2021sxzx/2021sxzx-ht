@@ -8,6 +8,7 @@ import api from  '../api/login'
 export default function indexRouter() {
   
   const [isLogin, setIsLogin] = useState(true);
+
   useEffect(async () => {
     const _isLogin = await api.IsLogin();
     setIsLogin(_isLogin);
@@ -20,11 +21,12 @@ export default function indexRouter() {
                 <Route path='/' render={() => {
                     if (isLogin) {
                         // 成功登录就进入后台页面
-                        return (<PageContainer/>)
+                        return <PageContainer/>
                     } else {
                         // 未登录就重定向到登录页面
+                        setIsLogin(true);
                         message.warn('请先登录')
-                        return (<Redirect to="/login"/>)
+                        return <Redirect to="/login"/>
                     }
                 }}/>
             </Switch>

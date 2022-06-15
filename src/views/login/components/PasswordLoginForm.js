@@ -1,6 +1,6 @@
 import {Button, Col, Form, Row, Input, message} from "antd";
 import {LockOutlined, UserOutlined} from "@ant-design/icons";
-import React from "react";
+import React, {useState} from "react";
 import api from "../../../api/login";
 import UrlJump from "../../../utils/UrlJump";
 
@@ -10,7 +10,8 @@ import UrlJump from "../../../utils/UrlJump";
  * @constructor
  */
 export default function PasswordLoginForm() {
-    const historyAccount = localStorage.getItem('account')
+    const historyAccount = localStorage.getItem('account') ? localStorage.getItem('account') : '';
+    const [account, setAccount] = useState(historyAccount);
 
     const onFinish = (values) => {
         api.Login({
@@ -19,7 +20,6 @@ export default function PasswordLoginForm() {
         }).then(async response => {
             // 保存用户信息：账号密码用户id
             saveUserInfo(response, values)
-            console.log(response)
             // 展现 0.1s 的登录成功操作提示并自动跳转到首页
             message.success('登录成功', 0.1, () => {
                 UrlJump.goto('#/home')
@@ -41,9 +41,10 @@ export default function PasswordLoginForm() {
      */
     const saveUserInfo = (response, values) => {
         // 保存账号
-        localStorage.setItem('account', values.account)
+        localStorage.setItem('account', values.account);
         localStorage.setItem('_id', response.data.data._id);
-        localStorage.setItem('roleID', response.data.data.role_id)
+        localStorage.setItem('roleID', response.data.data.role_id);
+        setAccount(values.account);
     }
 
     return (
@@ -57,7 +58,8 @@ export default function PasswordLoginForm() {
                 span: 8,
             }}
             initialValues={{
-                remember: true,
+              account: account,
+              remember: true,
             }}
             autoComplete="off"
             onFinish={onFinish}
@@ -80,7 +82,7 @@ export default function PasswordLoginForm() {
                 ]}
             >
                 <Input placeholder={'手机号码'}
-                       defaultValue={historyAccount}
+                       defaultValue={account}
                        maxLength={32}
                        prefix={<UserOutlined className="site-form-item-icon"/>}
                        allowClear={true}
