@@ -26,7 +26,7 @@ const api = {
             headers: {
                 'Content-Type': 'application/json'
             },
-            data: data,//{role_name}
+            data: data,
         })
     },
     // 前端简单判断是否成功登录

@@ -1,7 +1,6 @@
 import {Button, Col, Form, Row, Input, message} from "antd";
 import {LockOutlined, UserOutlined} from "@ant-design/icons";
 import React from "react";
-// import QuickLogin from "./QuickLogin";
 import api from "../../../api/login";
 import UrlJump from "../../../utils/UrlJump";
 
@@ -11,20 +10,7 @@ import UrlJump from "../../../utils/UrlJump";
  * @constructor
  */
 export default function PasswordLoginForm() {
-    // const rememberPassword = !!localStorage.getItem('rememberPassword') // 是否选择记住密码（Boolean）
     const historyAccount = localStorage.getItem('account')
-    // const historyPassword = localStorage.getItem('password')
-
-    // const [account, setAccount] = useState(historyAccount)
-    // const [password, setPassword] = useState(historyPassword)
-
-    // const handleInputChangeAccount = (e) => {
-    //     setAccount(e.target.value)
-    // }
-
-    // const handleInputChangePassword = (e) => {
-    //     setPassword(e.target.value)
-    // }
 
     const onFinish = (values) => {
         api.Login({
@@ -39,7 +25,6 @@ export default function PasswordLoginForm() {
                 UrlJump.goto('#/home')
             })
         }).catch((error) => {
-            console.log('login error', error.response.data)
             message.error(typeof error.response.data === 'string' ? error.response.data : '登录发生错误，请稍后重试')
         })
     }
@@ -98,7 +83,6 @@ export default function PasswordLoginForm() {
                        maxLength={32}
                        prefix={<UserOutlined className="site-form-item-icon"/>}
                        allowClear={true}
-                    // onChange={handleInputChangeAccount}
                 />
             </Form.Item>
             {/*密码*/}
@@ -125,13 +109,13 @@ export default function PasswordLoginForm() {
                     }
                 ]}
             >
-                <Input.Password placeholder={"密码"}
-                    // defaultValue={historyPassword}
-                                type={"password"}
-                                maxLength={32}
-                                prefix={<LockOutlined className="site-form-item-icon"/>}
-                                allowClear={true}
-                    // onChange={handleInputChangePassword}
+                <Input.Password
+                    placeholder={"密码"}
+                    type={"password"}
+                    maxLength={32}
+                    prefix={<LockOutlined className="site-form-item-icon"/>}
+                    allowClear={true}
+
                 />
             </Form.Item>
             {/*是否记住登录状态 & 忘记密码 */}
@@ -143,17 +127,6 @@ export default function PasswordLoginForm() {
                     span: 8,
                 }}
             >
-                {/*<Row>*/}
-                {/*    <Col span={8}>*/}
-                {/*        <Checkbox defaultChecked={rememberPassword} onChange={handleCheckboxChange}>记住密码</Checkbox>*/}
-                {/*    </Col>*/}
-                {/*    <Col span={3} offset={13}>*/}
-                {/*        <a className="login-form-forgot" href="">*/}
-                {/*            忘记密码*/}
-                {/*        </a>*/}
-                {/*    </Col>*/}
-                {/*</Row>*/}
-
                 {/*TODO：忘记密码待完成*/}
                 <a
                     className="login-form-forgot"
@@ -178,10 +151,6 @@ export default function PasswordLoginForm() {
                     </Col>
                 </Row>
             </Form.Item>
-            {/*<Form.Item>*/}
-            {/*    /!*第三方快捷登录*!/*/}
-            {/*    <QuickLogin/>*/}
-            {/*</Form.Item>*/}
         </Form>
     )
 }

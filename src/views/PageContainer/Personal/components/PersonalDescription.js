@@ -1,7 +1,20 @@
 import {Form} from "antd";
 import React from "react";
 
-
+/**
+ * 个人中心中展示的数据表单
+ * @param props = {
+ *     data:{ // 要展示的数据
+ *         account: string,
+ *         user_name: string,
+ *         password: string,
+ *         role: string,
+ *         unit: string,
+ *     }
+ * }
+ * @return {JSX.Element}
+ * @constructor
+ */
 function PersonalDescription(props) {
     const [form] = Form.useForm()
 

@@ -194,13 +194,11 @@ function SideMenu(props) {
     const openKeys = ['/' + props.location.pathname.split('/')[1]]
 
     return (
-        // <Scrollbars>
-            <div style={{flex: 1, "overflow": "auto"}}>
-                <Menu theme="light" selectedKeys={selectedKeys} mode="inline" defaultOpenKeys={openKeys}>
-                    {renderMenu(menuList ? menuList : [])}
-                </Menu>
-            </div>
-        // </Scrollbars>
+        <div style={{flex: 1, "overflow": "auto"}}>
+            <Menu theme="light" selectedKeys={selectedKeys} mode="inline" defaultOpenKeys={openKeys}>
+                {renderMenu(menuList ? menuList : [])}
+            </Menu>
+        </div>
     )
 }
 

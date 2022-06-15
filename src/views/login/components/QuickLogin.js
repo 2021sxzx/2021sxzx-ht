@@ -9,10 +9,10 @@ import React from "react";
  */
 export default function QuickLogin() {
     return (
-    <Space size={"middle"}>
-        其他登录方式：（举个例子）
-        <Avatar icon={<WechatOutlined/>}/>
-        <Avatar icon={<QqOutlined/>}/>
-    </Space>
-)
+        <Space size={"middle"}>
+            其他登录方式：（举个例子）
+            <Avatar icon={<WechatOutlined/>}/>
+            <Avatar icon={<QqOutlined/>}/>
+        </Space>
+    )
 }

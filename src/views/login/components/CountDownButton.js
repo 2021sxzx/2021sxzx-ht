@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, {useState} from "react";
 import {Button} from "antd";
 
 /**
@@ -60,7 +60,13 @@ export default function CountDownButton() {
     }
 
     return (
-        <Button block={true} onClick={sendVerificationCode}
-                disabled={countDownStatus.isGetting} loading={countDownStatus.isGetting}>{countDownStatus.text}</Button>
+        <Button
+            block={true}
+            onClick={sendVerificationCode}
+            disabled={countDownStatus.isGetting}
+            loading={countDownStatus.isGetting}
+        >
+            {countDownStatus.text}
+        </Button>
     )
 }

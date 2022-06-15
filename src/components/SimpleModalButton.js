@@ -1,7 +1,6 @@
 import React from "react";
 import {DeleteOutlined, ExclamationCircleOutlined} from "@ant-design/icons";
 import {Button, Modal, Tooltip} from "antd";
-
 const {confirm} = Modal;
 
 /**

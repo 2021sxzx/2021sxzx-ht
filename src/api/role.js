@@ -9,7 +9,7 @@ const api = {
         return service.request({
             method: "post",
             url: "/v1/role/",
-            data, //data:data同名可以直接写 data
+            data,
         });
     },
 
@@ -17,7 +17,7 @@ const api = {
         return service.request({
             method: "delete",
             url: "/v1/role/",
-            data, //data:data同名可以直接写 data
+            data,
         })
     },
 
@@ -26,7 +26,7 @@ const api = {
         return service.request({
             method: "patch",
             url: "/v1/role/",
-            data, //data:data同名可以直接写 data
+            data,
         })
     },
 
@@ -35,16 +35,16 @@ const api = {
         return service.request({
             method: "patch",
             url: "/v1/aboutPermission/",
-            data, //data:data同名可以直接写 data
+            data,
         })
     },
 
     // 添加用户权限(添加角色权限相关的信息)
-    AddRolePermission(data){
+    AddRolePermission(data) {
         return service.request({
             method: "post",
             url: "/v1/aboutPermission/",
-            data, //data:data同名可以直接写 data
+            data,
         })
     },
 
@@ -55,21 +55,18 @@ const api = {
             url: `/v1/role`,
         });
     },
-    // async getRole() {
-    //     return service.get( `/v1/role?role_id=${localStorage.getItem('roleID')}`)
-    // },
 
     // 搜索角色
     SearchRole(data) {
         return service.request({
             method: "post",
             url: "/v1/searchRole",
-            data, //data:data同名可以直接写 data
+            data,
         });
     },
 
     //获取权限列表
-    GetPermission(){
+    GetPermission() {
         return service.get('/v1/permissionList')
     }
 }

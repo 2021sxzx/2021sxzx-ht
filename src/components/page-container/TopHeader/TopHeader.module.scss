@@ -6,28 +6,23 @@
   align-items: center;
   position: relative;
 
-  .logo{
-    //display: inline;
+  .logo {
     height: 90%;
     width: max-content;
-    //float: left;
     background: #722ed1;
     margin: 5px;
   }
 
-  .functionalZone{
+  .functionalZone {
     display: inline-flex;
     float: right;
-    flex-direction: row-reverse;// flex右排
-    gap: 24px;// 子元素之间的宽度
+    flex-direction: row-reverse; // flex右排
+    gap: 24px; // 子元素之间的宽度
     height: 100%;
-    //width: max-content;
-    //width: 100%;
     align-items: center;
-    //background: #722ed1;
     position: absolute;
     right: 0;
-    top:0;
+    top: 0;
   }
 }
 

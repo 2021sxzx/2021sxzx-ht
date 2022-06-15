@@ -21,7 +21,6 @@ export default function Login() {
                     <LoginForm/>
                 </Content>
 
-                {/*TODO(钟卓江):将样式移到scss文件中*/}
                 {/*页尾*/}
                 <Footer style={{background: '#FFFF'}}>
                     <PageFooter/>
