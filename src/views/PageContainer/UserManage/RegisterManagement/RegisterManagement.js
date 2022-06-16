@@ -1,12 +1,37 @@
-import React from "react";
-import {Button, Card, Col, message, Row} from "antd";
+import React, {useState} from "react";
+import {Button, Card, Col, message, Row, Modal, Input} from "antd";
 import './RegisterManagement.scss'
 import UserModal from "../UserManageAccount/components/UserModal";
 import api from "../../../../api/user";
 import BatchImportUserButton from "./components/BatchImportUserButton/BatchImportUserButton";
 
 function RegisterManagement() {
-    const addUser = function (data) {
+
+    const initialPasswordInLocalStorage = localStorage.getItem("initialPassword") ? localStorage.getItem("initialPassword") : '11AAaa@@';
+    const [initialPassword, setInitialPassword] = useState(initialPasswordInLocalStorage);
+    const [passwordInInput, setPasswordInInput] = useState('');
+    const [isModalVisible, setIsModalVisible] = useState(false);
+
+    const showModal = () => {
+      setIsModalVisible(true);
+    };
+  
+    const handleOk = () => {
+      message.success('修改初始密码成功');
+      setIsModalVisible(false);
+      setInitialPassword(passwordInInput);  
+      localStorage.setItem("initialPassword", passwordInInput);
+    };
+  
+    const handleCancel = () => {
+      setIsModalVisible(false);
+    };
+
+    const changePassword = (e) => {
+      setPasswordInInput(e.target.value)
+    }
+
+    const addUser = (data) => {
         api.AddUser(data).then(response => {
             if (response.data.code === 404) {
                 message.warn(response.data.msg);
@@ -18,7 +43,12 @@ function RegisterManagement() {
         });
     }
 
+    const downloadTemplate = () => {
+      api.DownloadTemplate()
+    }
+
     return (
+      <>
         <div className={'login-management'}>
             <div className={'cards-container'}>
                 <Row
@@ -72,15 +102,15 @@ function RegisterManagement() {
                                     fontSize: 20,
                                 }}
                                 actions={[
-                                    <Button>
+                                    <Button onClick={downloadTemplate}>
                                         下载模板
                                     </Button>,
                                     // 导入用户
-                                    <BatchImportUserButton/>,
+                                    <BatchImportUserButton initialPassword={initialPassword}/>
                                 ]}
                             >
                                 <div style={{height:'75px'}}>
-                                    通过上传指定格式文件即可完成用户的批量导入。
+                                    通过上传指定格式文件即可完成用户的批量导入。用户的默认密码为：<strong>{initialPassword}</strong> <a onClick={showModal}>修改</a>
                                 </div>
                             </Card>
                         </div>
@@ -88,6 +118,11 @@ function RegisterManagement() {
                 </Row>
             </div>
         </div>
+
+        <Modal title="更换默认密码" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+          <Input placeholder="更换初始注册密码" onChange={changePassword} defaultValue={initialPassword}/>
+        </Modal>
+      </>
     )
 }
 
