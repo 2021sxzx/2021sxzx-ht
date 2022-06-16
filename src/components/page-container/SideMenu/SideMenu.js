@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {withRouter} from 'react-router-dom';
-import {Menu,} from 'antd'
-// import {Scrollbars} from 'react-custom-scrollbars'
+import {Menu} from 'antd'
+import style from './SideMenu.module.scss'
 import {
     DesktopOutlined,
     FileOutlined,
@@ -21,143 +21,6 @@ const menuTitleIcon = new Map([
     ['用户评价管理', <FileOutlined/>],
     ['用户管理', <FileOutlined/>]
 ])
-
-// const menuList = [
-//     {
-//         "key": "/home",
-//         "title": "首页",
-//         "id": 1
-//     },
-//     {
-//         "key": "/personal",
-//         "title": "个人中心",
-//         "id": 2
-//     },
-//     {
-//         "key": "/system-manage",
-//         "title": "系统管理",
-//         "id": 8,
-//         "children": [
-//             {
-//                 "key": "/system-manage/journal",
-//
-//                 "title": "系统日志管理",
-//
-//                 "id": 9
-//
-//             },
-//             {
-//                 "key": "/system-manage/resource",
-//
-//                 "title": "系统资源管理",
-//
-//                 "id": 10
-//
-//             },
-//             {
-//                 "key": "/system-manage/basic",
-//
-//                 "title": "系统基础管理",
-//
-//                 "id": 22
-//
-//             },
-//             {
-//                 "key": "/system-manage/backup",
-//
-//                 "title": "系统数据备份管理",
-//
-//                 "id": 23
-//
-//             },
-//             {
-//                 "key": "/system-manage/meta-data",
-//
-//                 "title": "系统元数据管理",
-//
-//                 "id": 24
-//
-//             },
-//             {
-//                 "key": "/system-manage/failure",
-//
-//                 "title": "系统故障管理",
-//
-//                 "id": 25
-//
-//             }
-//         ]
-//
-//     },
-//     {
-//         "key": "/comment-manage",
-//         "title": "用户评价管理",
-//         "id": 11,
-//         "children": [
-//             {
-//                 "key": "/comment-manage/list",
-//
-//                 "title": "用户评价",
-//
-//                 "id": 12
-//
-//             },
-//             {
-//                 "key": "/comment-manage/report",
-//
-//                 "title": "评价报告",
-//
-//                 "id": 13
-//
-//             }
-//         ]
-//
-//     },
-//     {
-//         "key": "/user-manage",
-//         "title": "用户管理",
-//         "id": 14,
-//         "children": [
-//             {
-//                 "key": "/user-manage/account",
-//                 "title": "账号管理",
-//                 "id":19,
-//                 "children": [
-//                     {
-//                         "key": "/user-manage/account/user",
-//
-//                         "title": "后台账号管理",
-//
-//                         "id": 15
-//
-//                     },
-//                     {
-//                         "key": "/user-manage/account/role",
-//
-//                         "title": "角色管理",
-//
-//                         "id": 16
-//
-//                     },
-//                     // {
-//                     //     "key": "/user-manage/department",
-//                     //
-//                     //     "title": "部门管理",
-//                     //
-//                     //     "id": 17
-//                     //
-//                     // },
-//                 ]
-//             },
-//             {
-//                 "key": "/user-manage/register",
-//                 "title": "注册管理",
-//                 "id": 18
-//             }
-//         ]
-//
-//     }
-// ]
 
 function SideMenu(props) {
     // 获取侧边栏菜单
@@ -194,8 +57,13 @@ function SideMenu(props) {
     const openKeys = ['/' + props.location.pathname.split('/')[1]]
 
     return (
-        <div style={{flex: 1, "overflow": "auto"}}>
-            <Menu theme="light" selectedKeys={selectedKeys} mode="inline" defaultOpenKeys={openKeys}>
+        <div className={style.sideMenuContainer}>
+            <Menu
+                theme="light"
+                selectedKeys={selectedKeys}
+                mode="inline"
+                defaultOpenKeys={openKeys}
+            >
                 {renderMenu(menuList ? menuList : [])}
             </Menu>
         </div>
