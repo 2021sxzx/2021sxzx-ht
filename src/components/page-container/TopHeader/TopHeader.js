@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react';
+import { useHistory } from "react-router-dom";
 import {Button, Image, Avatar} from 'antd'
 import apiPersonal from '../../../api/personal';
 import api from '../../../api/login';
@@ -6,6 +7,7 @@ import style from './TopHeader.module.scss';
 import logo from './LOGO.jpg'
 
 export default function TopHeader() {
+    const history = useHistory();
     // 用户信息
     const [userInfo, setUserInfo] = useState({});
     useEffect(() => {
@@ -17,6 +19,14 @@ export default function TopHeader() {
             });
     }, []);
 
+    const jumpToHome = () => {
+      history.push('/home');
+    }
+
+    const jumpToPersonal = () => {
+      history.push('/personal')
+    }
+
     return (
         <div className={style.wrapBox}>
             <div className={style.logo}>
@@ -24,6 +34,8 @@ export default function TopHeader() {
                     height={'100%'}
                     src={logo}
                     preview={false}
+                    onClick={jumpToHome}
+                    className={style.getCursor}
                 />
             </div>
 
@@ -41,7 +53,10 @@ export default function TopHeader() {
                             src={"https://joeschmoe.io/api/v1/random"}
                             preview={false}
                         />
-                    }/>
+                    }
+                    className={style.getCursor}
+                    onClick={jumpToPersonal}
+                  />
                 <div>
                     你好，<strong>{userInfo.user_name}</strong>。你是 <strong>{userInfo.unit_name}</strong> 的 <strong>{userInfo.role_name}</strong>
                 </div>

@@ -55,6 +55,7 @@ const SideDrawer = (props) => {
                                     height: '100%',
                                     width: '30px',
                                     background: '#EEEEEE',
+                                    cursor: "pointer"
                                 }}
                                 onClick={switchDrawer}
                             >

@@ -90,7 +90,7 @@ export default function UserManageAccount() {
             getContainer: false,
             style: {
                 position: 'static',
-                height: '100%',
+                height: '100%'
             },
             drawerContainerOpenStyle: {
                 height: '100%',
