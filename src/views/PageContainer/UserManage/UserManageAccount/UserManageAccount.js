@@ -3,8 +3,8 @@
  */
 
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react'
-import './UserManageAccount.scss'
-import {message, Space} from 'antd';
+import style from './UserManageAccount.module.scss'
+import {message} from 'antd';
 
 import api from "../../../../api/user";
 import UserTableFunctionalZone from "./components/UserTableFunctionalZone";
@@ -101,30 +101,30 @@ export default function UserManageAccount() {
     const unitListComponent = useRef(<UnitList selectUnitID={selectUnit}/>)
 
     return (
-        <div className={'user-manage-container'}>
-            <div className="drawer-container">
+        <div className={style.userManageContainer}>
+            <div className={style.drawerContainer}>
                 <SideDrawer
                     {...SideDrawerProps}
                 >
                     {unitListComponent.current}
                 </SideDrawer>
             </div>
-            <div className='user-account-container'>
-                <Space direction="vertical" size={12} style={{width: '100%'}}>
-                    {/* 功能区 */}
-                    <UserTableFunctionalZone
-                        getSearch={getSearchUser}
-                        refreshTableData={getUserByID}
-                        unitName={unitNameRef.current}
-                        unitID={unitIDRef.current}
-                    />
-                    {/* 用户评价的表格 */}
-                    <UserTable
-                        tableData={tableData}
-                        refreshTableData={getUserByID}
-                        loading={loading}
-                    />
-                </Space>
+            <div className={style.userAccountContainer}>
+                {/*<Space direction="vertical" size={12} style={{width: '100%',height:'100%'}}>*/}
+                {/* 功能区 */}
+                <UserTableFunctionalZone
+                    getSearch={getSearchUser}
+                    refreshTableData={getUserByID}
+                    unitName={unitNameRef.current}
+                    unitID={unitIDRef.current}
+                />
+                {/* 用户评价的表格 */}
+                <UserTable
+                    tableData={tableData}
+                    refreshTableData={getUserByID}
+                    loading={loading}
+                />
+                {/*</Space>*/}
             </div>
         </div>
     )

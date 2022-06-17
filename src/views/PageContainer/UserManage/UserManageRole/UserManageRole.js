@@ -8,6 +8,7 @@ import {message} from 'antd';
 import api from "../../../../api/role";
 import SelectForm from "./components/SelectForm";
 import RoleTable from "./components/RoleTable";
+import style from './UserManageRole.module.scss'
 
 export default function UserManageList() {
     const [tableData, setTableData] = useState([])
@@ -44,31 +45,15 @@ export default function UserManageList() {
     }, [])
 
     return (
-        <div>
-            <div style={{
-                display: "inline-block",
-                width: '100%',
-                position: 'relative',
-            }}>
-                <div style={{
-                    display: "inline-flex",
-                    alignItems: 'center',
-                    fontSize: 20,
-                    position: 'absolute',
-                    top: 0,
-                    bottom: 0,
-                    padding: '0 10px'
-                }}>
+        <div className={style.userManageRoleContainer}>
+            <div className={style.functionalZone}>
+                <div className={style.tableName}>
                     角色列表
                 </div>
-                <div style={{
-                    float: "right",
-                }}>
+                <div className={style.selectForm}>
                     <SelectForm getSearch={getSearchRole} refreshTableData={getRole}/>
                 </div>
             </div>
-            {/*间隔*/}
-            <div style={{margin: '12px'}}/>
             {/* 用户评价的表格 */}
             <RoleTable tableData={tableData} refreshTableData={getRole} loading={loading}/>
         </div>

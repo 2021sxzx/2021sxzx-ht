@@ -141,7 +141,6 @@ function UserTable(props) {
     ]
 
     return (
-        <div>
             <Table
                 columns={tableColumns}
                 dataSource={props.tableData !== {} ? props.tableData : {}}
@@ -149,8 +148,8 @@ function UserTable(props) {
                 sticky={true} //设置粘性头部和滚动条
                 scroll={{ //表格是否可滚动，也可以指定滚动区域的宽、高
                     scrollToFirstRowOnChange: true, // 当分页、排序、筛选变化后是否滚动到表格顶部
-                    x: 'max-content',//'100%', // 设置横向滚动，也可用于指定滚动区域的宽
-                    y: 400, //设置纵向滚动，也可用于指定滚动区域的高
+                    x: true,//'100%', // 设置横向滚动，也可用于指定滚动区域的宽
+                    y: '52vh', //设置纵向滚动，也可用于指定滚动区域的高
                 }}
                 pagination={{//分页器
                     // defaultPageSize: 5,// 默认每页的数量
@@ -158,10 +157,20 @@ function UserTable(props) {
                     showSizeChanger: true, // 是否展示 pageSize 切换器
                     responsive: true, // 当 size 未指定时，根据屏幕宽度自动调整尺寸
                     showQuickJumper: true, // 是否可以快速跳转至某页
+                    showTotal: (total) => {// 展示数据总数
+                        return (
+                            <span
+                                style={{
+                                    // fontSize: 16,
+                                    color: '#264653',
+                                    fontFamily: "微软雅黑",
+                                }}
+                            >共{total}条数据</span>
+                        )
+                    },
                 }}
                 loading={props.loading}
             />
-        </div>
     )
 }
 

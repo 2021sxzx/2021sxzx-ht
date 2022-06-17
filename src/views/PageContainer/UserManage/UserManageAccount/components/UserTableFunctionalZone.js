@@ -38,12 +38,24 @@ const UserTableFunctionalZone = (props) => {
 
     return (
         <div style={{
-            display: "inline",
+            display:'flex',
+            flex:'1 1 auto',
+            justifyContent:'space-between',
+            alignItems:'center',
             width: '100%',
-            position: "relative",
+            height:'6%',
+            margin:'0 0 1% 0',
         }}>
             <div style={{
-                float: "right",
+                display: "inline-block",
+                fontSize: 20,
+                color: '#333333',
+            }}>
+                {props.unitName ? `${props.unitName}` : '全部用户'}
+            </div>
+
+            <div style={{
+                display:"inline-block",
             }}>
                 <Space direction="horizontal">
                     {
@@ -76,14 +88,6 @@ const UserTableFunctionalZone = (props) => {
                     {/*搜索表单*/}
                     <SearchForm getSearch={props.getSearch}/>
                 </Space>
-            </div>
-
-            <div style={{
-                display: "inline-block",
-                fontSize: 20,
-                color: '#333333',
-            }}>
-                {props.unitName ? `${props.unitName}` : '全部用户'}
             </div>
         </div>
     )
