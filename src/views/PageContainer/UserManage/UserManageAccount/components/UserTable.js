@@ -130,7 +130,7 @@ function UserTable(props) {
                             }}
                             tooltipSuccessTitle={'删除用户'}
                             tooltipErrorTitle={"如果要删除用户请先将用户设置为未激活"}
-                            deleteCallback={() => {
+                            okCallback={() => {
                                 deleteUser({account: record.account})
                             }}
                         />
