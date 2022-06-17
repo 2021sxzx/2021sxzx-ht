@@ -59,7 +59,7 @@ const api = {
      */
     logout() {
         api.Logout({logoutData: {account: localStorage.getItem('account')}}).then(() => {
-                message.success('您已成功登出')
+                message.success('您已登出')
             }
         ).catch(() => {
             message.error('登出失败，请检查网络')

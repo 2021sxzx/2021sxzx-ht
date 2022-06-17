@@ -6,7 +6,7 @@ import {message} from "antd";
 import api from  '../api/login'
 
 export default function indexRouter() {
-  
+
   const [isLogin, setIsLogin] = useState(true);
 
   useEffect(async () => {
@@ -25,8 +25,13 @@ export default function indexRouter() {
                     } else {
                         // 未登录就重定向到登录页面
                         setIsLogin(true);
-                        message.warn('请先登录')
+                        message.warn('登录已过期，请重新登录')
+                        // 清除本地保存的所有信息
+                        localStorage.clear()
+                        // 清除会话缓存
+                        sessionStorage.clear()
                         return <Redirect to="/login"/>
+
                     }
                 }}/>
             </Switch>
