@@ -7,6 +7,7 @@ const BatchImportUserButton = (props) => {
     const [xlsxData, setXlsxData] = useState([]);
     const initialPassword = props.initialPassword ? props.initialPassword : '11AAaa@@';
 
+    // 用于批量导入的触发
     useEffect(() => {
         console.log('xlsxData', xlsxData);
     }, [xlsxData]);
@@ -19,13 +20,14 @@ const BatchImportUserButton = (props) => {
     const getXlsxData = (e) => {
         // 读取excel文件并写入到数组中
         const files = e.target.files
-        console.log(files);
+
         if (files.length <= 0) {
             return false;
         } else if (!/\.(xls|xlsx)$/.test(files[0].name.toLowerCase())) {
             alert('文件传格式不正确')
             return false
         }
+        
         const fileReader = new FileReader();
         // 监听
         fileReader.onload = (ev) => {
