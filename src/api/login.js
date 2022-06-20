@@ -31,11 +31,11 @@ const api = {
     },
     // 前端简单判断是否成功登录
     async IsLogin() {
-      const res = await service.request({
-        method: "get",
-        url: '/v1/isLogin',
-      });
-      return res.data.data.isLogin
+        const res = await service.request({
+            method: "get",
+            url: '/v1/isLogin',
+        });
+        return res.data.data.isLogin
     },
 
     /**
@@ -55,23 +55,30 @@ const api = {
         });
     },
     /**
+     * 清除缓存信息并重定向到登录页面
+     */
+    clearStorageAndRedirect() {
+        // 清除本地保存的所有信息
+        localStorage.clear()
+        // 清除会话缓存
+        sessionStorage.clear()
+        // message.success('您已成功登出')
+        UrlJump.goto('#/login')
+    },
+    /**
      * 登出效果的统一实现
      */
     logout() {
         api.Logout({logoutData: {account: localStorage.getItem('account')}}).then(() => {
-                message.success('您已登出')
-            }
-        ).catch(() => {
+            message.success('您已登出')
+        }).catch(() => {
             message.error('登出失败，请检查网络')
         }).finally(() => {
-            // 清除本地保存的所有信息
-            localStorage.clear()
-            // 清除会话缓存
-            sessionStorage.clear()
-            // message.success('您已成功登出')
-            UrlJump.goto('#/login')
+            api.clearStorageAndRedirect()
         })
-    }
+    },
+
+
 }
 
 export default api
