@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react'
 import {withRouter} from 'react-router-dom';
-import {Menu} from 'antd'
+import {Button, Menu, Tooltip} from 'antd'
 import style from './SideMenu.module.scss'
 import {
     DesktopOutlined,
     FileOutlined,
     UserOutlined,
-    SettingOutlined,
+    SettingOutlined, MenuUnfoldOutlined, MenuFoldOutlined,
 } from '@ant-design/icons';
 import MenuList from "../../../utils/MenuList";
 
@@ -22,6 +22,17 @@ const menuTitleIcon = new Map([
     ['用户管理', <FileOutlined/>]
 ])
 
+/**
+ *
+ * @param props={
+ *     siderCollapsed:boolean, // 菜单展开状态
+ *     setSiderCollapsed: function(boolean), // 设置菜单是否展开
+ *     getPathName:function, // 根据 key 和 title 获取 url
+ *     setCurRoute, // 更新当前的 url，用于面包屑展示
+ * }
+ * @return {JSX.Element}
+ * @constructor
+ */
 function SideMenu(props) {
     // 获取侧边栏菜单
     const [menuList, setMenuList] = useState([])
@@ -56,8 +67,30 @@ function SideMenu(props) {
     const selectedKeys = [props.location.pathname]
     const openKeys = ['/' + props.location.pathname.split('/')[1]]
 
+    const foldingSideMenu = () => {
+        props.setSiderCollapsed(!props.siderCollapsed)
+    }
+
     return (
         <div className={style.sideMenuContainer}>
+            <Tooltip
+                title={props.siderCollapsed ? '展开菜单' : '折叠菜单'}
+                placement={'right'}
+                mouseEnterDelay={0.3}
+            >
+                <Button
+                    icon={props.siderCollapsed ? <MenuUnfoldOutlined/> : <MenuFoldOutlined/>}
+                    // type={'text'}
+                    onClick={foldingSideMenu}
+                    style={{
+                        width: '100%',
+                    }}
+
+                >
+                    {/*{props.siderCollapsed ? '' : '折叠菜单'}*/}
+                </Button>
+            </Tooltip>
+
             <Menu
                 theme="light"
                 selectedKeys={selectedKeys}

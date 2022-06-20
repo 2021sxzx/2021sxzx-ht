@@ -35,6 +35,9 @@ const {Content} = Layout
 export default withRouter(function PageContainer(props) {
     const [curRoute, setCurRoute] = useState([])
     const menuTitle = new Map([])
+    // 根据浏览器宽度动态确定侧边栏菜单是否默认展开
+    const [siderCollapsed, setSiderCollapsed] = useState(document.body.clientWidth <= 800)
+
 
     function getMenuTitle(menu) {
         if (!menu) return
@@ -80,10 +83,16 @@ export default withRouter(function PageContainer(props) {
                     <Sider
                         className={style.sideMenuContainer}
                         theme="light" // 样式主题
-                        collapsible={true} // 是否可收起
+                        // collapsible={true} // 是否可收起
                         collapsedWidth={50}
+                        collapsed={siderCollapsed}
                     >
-                        <SideMenu setCurRoute={setCurRoute} getPathName={getPathName}/>
+                        <SideMenu
+                            setCurRoute={setCurRoute}
+                            getPathName={getPathName}
+                            siderCollapsed={siderCollapsed}
+                            setSiderCollapsed={setSiderCollapsed}
+                        />
                     </Sider>
                     <Layout className={style.rightSideLayout}>
                         <Content
