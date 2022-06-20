@@ -123,16 +123,6 @@ const UnitList = (props) => {
                                             title={'删除部门'}
                                             content={`是否确认删除机构：${nodeData.unit_name}?`}
                                         />
-                                        {/*<Tooltip title={'删除部门'}>*/}
-                                        {/*    /!*删除 unit*!/*/}
-                                        {/*    <Button*/}
-                                        {/*        shape="circle"*/}
-                                        {/*        icon={<DeleteOutlined/>}*/}
-                                        {/*        onClick={() => {*/}
-                                        {/*            showDeleteConfirm(nodeData)*/}
-                                        {/*        }}*/}
-                                        {/*    />*/}
-                                        {/*</Tooltip>*/}
                                     </Space>
                                 </div>
                             )}
@@ -172,36 +162,6 @@ const UnitList = (props) => {
             </div>
         )
     }
-
-
-    // return (
-    //     <div>
-    //
-    //         {/*/!*由于异步加载数据晚于 tree 的默认展开，会导致默认展开的设置无效。通过增加一个判断来让获取数据之后再展示 tree*!/*/}
-    //         {/*{*/}
-    //         {/*    // treeData.length > 0*/}
-    //         {/*    //     ?*/}
-    //         {/*    <Tree*/}
-    //         {/*        showLine // 是否展示连接线*/}
-    //         {/*        switcherIcon={<DownOutlined/>} // 展开收缩图标*/}
-    //         {/*        defaultExpandedKeys={treeDataRef.current?[treeDataRef.current[0].unit_id]:[]} // 默认展开的节点，这里是默认展开根节点*/}
-    //         {/*        // defaultExpandAll // 默认展开全部*/}
-    //         {/*        onSelect={onSelect} // 选择事件回调*/}
-    //         {/*        treeData={treeDataRef.current?treeDataRef.current:[]} // 数据源*/}
-    //         {/*        fieldNames={{ // 自定义数据对应的结构*/}
-    //         {/*            title: 'unit_name',*/}
-    //         {/*            key: 'unit_id',*/}
-    //         {/*            children: 'children',*/}
-    //         {/*        }}*/}
-    //         {/*        titleRender={nodeRender}// 自定义渲染节点 (nodeData) => ReactNode*/}
-    //         {/*        onRightClick={handleRightClick} // 右键*/}
-    //         {/*    />*/}
-    //         {/*    // :*/}
-    //         {/*    // <div/>*/}
-    //         {/*}*/}
-    //     </div>
-    //
-    // );
 };
 
 export default React.memo(UnitList);

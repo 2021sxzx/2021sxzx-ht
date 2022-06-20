@@ -1,5 +1,6 @@
 .userManageContainer {
   height: 100%;
+  //min-width: 800px;
 
   .drawerContainer {
     display: flex;
@@ -16,6 +17,6 @@
 
   .userAccountContainer {
     height: 100%;
-    overflow: hidden;
+    overflow: auto;
   }
 }

@@ -94,6 +94,8 @@ export default function UserManageAccount() {
             },
             drawerContainerOpenStyle: {
                 height: '100%',
+                width:'25vw',
+                minWidth:'200px',
             },
         }
     }, [])

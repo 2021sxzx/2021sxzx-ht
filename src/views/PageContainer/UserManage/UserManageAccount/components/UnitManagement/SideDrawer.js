@@ -53,7 +53,7 @@ const SideDrawer = (props) => {
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     height: '100%',
-                                    width: '30px',
+                                    width: '25px',
                                     background: '#EEEEEE',
                                     cursor: "pointer"
                                 }}

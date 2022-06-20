@@ -4,6 +4,8 @@ $headContainerHeight: 8%;
 .siteLayout {
   height: 100vh;
   width: 100vw;
+  min-height: 660px;
+  min-width: 880px;
 
   .headerContainer {
     height: $headContainerHeight;
@@ -29,6 +31,7 @@ $headContainerHeight: 8%;
         overflow: auto;
         float: left;
         box-shadow: 2px 0 2px 0 #d9d9d9;
+        position: relative;
       }
 
       .rightSideLayout {
