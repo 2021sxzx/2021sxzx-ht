@@ -34,7 +34,6 @@ import ChartsTe from "./ChartsTe";
 // import BarChart from "./BarChart";
 import UsersChart from "./UsersChart";
 
-import testAPI from '../../../../api/test';
 const { TabPane } = Tabs;
 
 //弹窗Modal
