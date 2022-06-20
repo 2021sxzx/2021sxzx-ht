@@ -6,7 +6,7 @@ import Meta from "antd/es/card/Meta";
 import PersonalDescription from "./components/PersonalDescription";
 import UserModal from "../UserManage/UserManageAccount/components/UserModal";
 import apiPersonal from "../../../api/personal";
-
+import api from '../../../api/user'
 
 function Personal() {
     // 用户信息
@@ -41,8 +41,16 @@ function Personal() {
                             unit_id: userInfo.unit_id,
                             unit_name: userInfo.unit_name,
                         }}
-                        saveInfoFunction={() => {
-                            message.success('修改个人信息成功（test）')
+                        saveInfoFunction={(data) => {
+                            console.log('saveInfoFunction',data)
+                            api.UpdateUser(data).then(() => {
+                                message.success('修改个人信息成功')
+                            }).catch(()=>{
+                                message.error('修改个人信息失败')
+                            }).finally(()=>{
+                                // 刷新
+                                location.reload()
+                            })
                         }}
                         roleReadOnly={true}
                         unitReadOnly={true}

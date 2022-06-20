@@ -13,7 +13,7 @@ const {confirm} = Modal;
  *     buttonText:string = undefined, // 删除按钮的文字
  *     tooltipSuccessTitle:string, // 设置按钮正常使用时的文字提醒
  *     tooltipErrorTitle:string, // 设置按钮 disable = true 时的文字提醒
- *     deleteCallback:function|undefined, // 对话框确认按钮的回调
+ *     okCallback:function|undefined, // 对话框确认按钮的回调
  *     cancelCallback:function|undefined, // 对话框取消按钮的回调
  *     title:string = `是否确认删除?`, // 对话框标题
  *     icon:ReactNode = <ExclamationCircleOutlined/>, // 对话框图标
@@ -41,7 +41,7 @@ function SimpleModalButton(props) {
             cancelText: props.cancelText ? props.cancelText : '取消',
 
             onOk() {
-                props.deleteCallback ? props.deleteCallback() : null
+                props.okCallback ? props.okCallback() : null
             },
             onCancel() {
                 props.cancelCallback ? props.cancelCallback() : null
