@@ -33,6 +33,8 @@ import ChartsTe from "./ChartsTe";
 // import LineChart from "./LineChart";
 // import BarChart from "./BarChart";
 import UsersChart from "./UsersChart";
+
+import testAPI from '../../../../api/test';
 const { TabPane } = Tabs;
 
 //弹窗Modal
@@ -80,6 +82,7 @@ const BarChart = (props) => {
     myChart.dispose(); //销毁
   }
   React.useEffect(() => {
+    testAPI.test();
     var chartDom = document.getElementById(props.id);
     myChart = echarts.init(chartDom);
     myChart.setOption({
