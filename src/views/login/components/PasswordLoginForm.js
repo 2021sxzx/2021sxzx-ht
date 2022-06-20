@@ -1,8 +1,9 @@
 import {Button, Col, Form, Row, Input, message} from "antd";
 import {LockOutlined, UserOutlined} from "@ant-design/icons";
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import api from "../../../api/login";
 import UrlJump from "../../../utils/UrlJump";
+import {loginStateContext} from "../../../router/IndexRouter";
 
 /**
  * 账号密码登录
@@ -11,7 +12,8 @@ import UrlJump from "../../../utils/UrlJump";
  */
 export default function PasswordLoginForm() {
     const historyAccount = localStorage.getItem('account') ? localStorage.getItem('account') : '';
-    const [account, setAccount] = useState(historyAccount);
+    const [account, setAccount] = useState(historyAccount)
+    const {setLoginState} = useContext(loginStateContext)
 
     const onFinish = (values) => {
         api.Login({
@@ -20,6 +22,7 @@ export default function PasswordLoginForm() {
         }).then(async response => {
             // 保存用户信息：账号密码用户id
             saveUserInfo(response, values)
+            setLoginState('login')
             // 展现 0.1s 的登录成功操作提示并自动跳转到首页
             message.success('登录成功', 0.1, () => {
                 UrlJump.goto('#/home')
