@@ -82,7 +82,6 @@ const BarChart = (props) => {
     myChart.dispose(); //销毁
   }
   React.useEffect(() => {
-    testAPI.test();
     var chartDom = document.getElementById(props.id);
     myChart = echarts.init(chartDom);
     myChart.setOption({
