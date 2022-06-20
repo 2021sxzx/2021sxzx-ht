@@ -11,7 +11,6 @@ const BatchImportUserButton = (props) => {
 
     // 用于批量导入的触发
     useEffect(() => {
-        console.log('xlsxData', xlsxData);
         if(xlsxData instanceof Array && xlsxData.length>0) {
             api.BatchImportUser(xlsxData).then(() => {
                 message.success('批量导入用户成功')
