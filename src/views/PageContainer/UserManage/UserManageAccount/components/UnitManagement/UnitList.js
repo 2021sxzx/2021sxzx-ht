@@ -23,16 +23,15 @@ import SimpleModalButton from "../../../../../../components/SimpleModalButton";
  */
 const UnitList = (props) => {
     const [treeData, setTreeData] = useState([])
-    // const treeDataRef = useRef(treeData)
+
+    useEffect(() => {
+        getUnitAndRefreshTree()
+    }, [])
 
     const getUnitAndRefreshTree = useCallback(() => {
         api.GetUnit().then((res) => {
             setTreeData([res.data.data])
         })
-    }, [])
-
-    useEffect(() => {
-        getUnitAndRefreshTree()
     }, [])
 
     const onSelect = (selectedKeys, info) => {
@@ -122,6 +121,15 @@ const UnitList = (props) => {
                                             tooltipSuccessTitle={'删除部门'}
                                             title={'删除部门'}
                                             content={`是否确认删除机构：${nodeData.unit_name}?`}
+                                            okCallback={() => {
+                                                api.DeletUnit({unit_id: nodeData.unit_id}).then(() => {
+                                                    message.success(`删除部门 “${nodeData.unit_name}” 成功`)
+                                                }).catch(() => {
+                                                    message.error('删除部门失败，请稍后重试')
+                                                }).finally(() => {
+                                                    getUnitAndRefreshTree()
+                                                })
+                                            }}
                                         />
                                     </Space>
                                 </div>
