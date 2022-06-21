@@ -4,7 +4,6 @@ import {Button, Image, Avatar} from 'antd'
 import apiPersonal from '../../../api/personal';
 import api from '../../../api/login';
 import style from './TopHeader.module.scss';
-import logo from './LOGO.jpg'
 
 export default function TopHeader() {
     const history = useHistory();
@@ -32,7 +31,7 @@ export default function TopHeader() {
             <div className={style.logo}>
                 <Image
                     height={'100%'}
-                    src={logo}
+                    src={'http://8.134.73.52/public/imgs/ic_logo.png'}
                     preview={false}
                     onClick={jumpToHome}
                     className={style.getCursor}
