@@ -123,6 +123,10 @@ export default function UnitModal(props) {
                                 required: true,
                                 message: '请输入机构门名称!',
                             },
+                            {
+                                max:64,
+                                message:'机构名称要求小于 64 个字'
+                            },
                         ]}
                     >
                         <Input
@@ -141,6 +145,10 @@ export default function UnitModal(props) {
                                         required: true,
                                         message: '请选择父级机构',
                                     },
+                                    {
+                                        max:64,
+                                        message:'机构名称要求小于 64 个字'
+                                    }
                                 ]}
                             >
                                 {/*<Input defaultValue={props.detailData.parent_name}*/}
