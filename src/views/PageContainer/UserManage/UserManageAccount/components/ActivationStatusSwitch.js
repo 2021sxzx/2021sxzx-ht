@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {message, Switch} from "antd";
+import {message, Switch, Tooltip} from "antd";
 import api from '../../../../../api/user'
 
 /**
@@ -40,17 +40,21 @@ export default function ActivationStatusSwitch(props) {
     }
 
     const disableSwitch = () => {
-        return record._id === localStorage.getItem('_id') || roleName === localStorage.getItem('roleName')
+        return record.account === localStorage.getItem('account') || roleName === localStorage.getItem('roleName')
     }
 
     if (activationStatus === false || activationStatus === true || activationStatus === 1 || activationStatus === 0) {
-        return <Switch
-            disabled={disableSwitch()}
-            checkedChildren={"已激活"}
-            unCheckedChildren={"未激活"}
-            defaultChecked={activationStatus === true || activationStatus === 1}
-            onChange={handleSwitchChangeActivationState}
-        />
+        return (
+            <Tooltip title={disableSwitch() ? '禁止切换自己的激活状态，如果想要注销账户请和相关管理员联系' : ''}>
+                <Switch
+                    disabled={disableSwitch()}
+                    checkedChildren={"已激活"}
+                    unCheckedChildren={"未激活"}
+                    defaultChecked={activationStatus === true || activationStatus === 1}
+                    onChange={handleSwitchChangeActivationState}
+                />
+            </Tooltip>
+        )
     } else {
         return <div>error status</div>
     }
