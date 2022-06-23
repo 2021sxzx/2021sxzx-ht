@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import { useHistory } from "react-router-dom";
-import {Button, Image, Avatar} from 'antd'
+import {useHistory} from "react-router-dom";
+import {Button, Image, Avatar, Tooltip} from 'antd'
 import apiPersonal from '../../../api/personal';
 import api from '../../../api/login';
 import style from './TopHeader.module.scss';
+import {PoweroffOutlined} from "@ant-design/icons";
 
 export default function TopHeader() {
     const history = useHistory();
@@ -19,32 +20,29 @@ export default function TopHeader() {
     }, []);
 
     const jumpToHome = () => {
-      history.push('/home');
+        history.push('/home');
     }
 
     const jumpToPersonal = () => {
-      history.push('/personal')
+        history.push('/personal')
     }
 
     return (
         <div className={style.wrapBox}>
-            <div className={style.logo}>
+            <div className={style.logoContainer}>
                 <Image
+                    className={style.logo}
                     height={'100%'}
                     src={'http://8.134.73.52/public/imgs/ic_logo.png'}
                     preview={false}
                     onClick={jumpToHome}
-                    className={style.getCursor}
                 />
             </div>
 
             <div className={style.functionalZone}>
-                <Button
-                    // type={'link'}
-                    onClick={api.logout}
-                >
-                    登出
-                </Button>
+                <div className={style.userInfo}>
+                    你好，<strong>{userInfo.user_name}</strong>。你是 <strong>{userInfo.unit_name}</strong> 的 <strong>{userInfo.role_name}</strong>
+                </div>
                 <Avatar
                     alt={'用户头像'}
                     src={
@@ -53,11 +51,18 @@ export default function TopHeader() {
                             preview={false}
                         />
                     }
-                    className={style.getCursor}
+                    className={style.avtar}
                     onClick={jumpToPersonal}
-                  />
-                <div>
-                    你好，<strong>{userInfo.user_name}</strong>。你是 <strong>{userInfo.unit_name}</strong> 的 <strong>{userInfo.role_name}</strong>
+                />
+                <div className={style.logoutContainer}>
+                    <Tooltip title={'登出'}>
+                        <Button
+                            // type={'text'}
+                            shape={'circle'}
+                            icon={<PoweroffOutlined/>}
+                            onClick={api.logout}
+                        />
+                    </Tooltip>
                 </div>
             </div>
         </div>

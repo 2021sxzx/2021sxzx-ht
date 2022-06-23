@@ -2,30 +2,41 @@
   display: flex;
   height: 100%;
   width: 100%;
-  padding: 0 5px;
+  padding: 1px 10px;
   align-items: center;
-  position: relative;
+  justify-content: space-between;
 
-  .logo {
-    height: 90%;
+  .logoContainer {
+    height: 100%;
     width: max-content;
-    //background: #722ed1;
-    margin: 5px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    .logo{
+      height: 100%;
+    }
   }
 
   .functionalZone {
     display: inline-flex;
-    float: right;
-    flex-direction: row-reverse; // flex右排
-    gap: 24px; // 子元素之间的宽度
+    //flex-direction: row-reverse; // flex右排
+    gap: 10px; // 子元素之间的宽度
     height: 100%;
     align-items: center;
-    position: absolute;
-    right: 0;
-    top: 0;
+    margin: 0 10px;
+
+    .userInfo{
+      margin: 0 10px;
+    }
+
+    .avtar{
+      cursor: pointer;
+    }
+
+    .logoutContainer{
+
+    }
   }
 }
 
-.getCursor {
-  cursor: pointer;
-}

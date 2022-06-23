@@ -1,5 +1,5 @@
 /* 想要修改一些 antd 组件的样式好像有时必须写一个 .scss 没法模模块化， 在 module.scss 难以准确指定到目标标签 */
-$headContainerHeight: 8%;
+$headContainerHeight: 6.5%;
 
 .siteLayout {
   height: 100vh;
@@ -15,8 +15,10 @@ $headContainerHeight: 8%;
       height: 100%;
       width: 100%;
       background-color: #FFFFFF;
-      padding: 5px 5px;
       border-bottom: 1px solid #d9d9d9;
+      display: flex;
+      align-items: center;
+      padding: 3px 5px;
     }
   }
 
