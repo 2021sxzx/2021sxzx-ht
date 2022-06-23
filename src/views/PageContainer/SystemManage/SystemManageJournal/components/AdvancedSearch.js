@@ -52,8 +52,6 @@ function AdvancedSearch() {
     return (
         <div style={{
             display: 'flex',
-            // justifyContent:'space-between',
-            // alignItems: 'center',
             gap: '25px',
         }}>
             <Form
@@ -82,8 +80,8 @@ function AdvancedSearch() {
                             '最近两周': [moment().startOf('day').subtract(2, 'weeks'), moment()],
                             '最近一个月': [moment().startOf('day').subtract(1, 'month'), moment()],
                             '最近三个月': [moment().startOf('day').subtract(3, 'month'), moment()],
-                            '最近半年':[moment().startOf('day').subtract(6, 'month'), moment()],
-                            '最近一年':[moment().startOf('day').subtract(1, 'year'), moment()],
+                            '最近半年': [moment().startOf('day').subtract(6, 'month'), moment()],
+                            '最近一年': [moment().startOf('day').subtract(1, 'year'), moment()],
                         }}
                     />
                 </Form.Item>
@@ -95,7 +93,11 @@ function AdvancedSearch() {
                             name={['typeSearch', 'searchType']}
                             rules={[{required: true, message: '请选择搜索字段'}]}
                         >
-                            <Select>
+                            <Select
+                                style={{
+                                    width: '100px',
+                                }}
+                            >
                                 <Option value="账号">账号</Option>
                                 <Option value="操作人">操作人</Option>
                                 <Option value="操作描述">操作描述</Option>
@@ -109,7 +111,11 @@ function AdvancedSearch() {
                             ]}
                         >
                             <Input
+                                style={{
+                                    width: '250px',
+                                }}
                                 placeholder="在所选字段上进行搜索"
+                                allowClear
                             />
                         </Form.Item>
                     </Input.Group>
