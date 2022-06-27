@@ -43,7 +43,7 @@ const UserTableFunctionalZone = (props) => {
             justifyContent:'space-between',
             alignItems:'center',
             width: '100%',
-            height:'6%',
+            height:'max-content',
             margin:'0 0 1% 0',
         }}>
             <div style={{
