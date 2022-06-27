@@ -168,7 +168,6 @@ function UserModal(props) {
                                 :
                                 <Input
                                     placeholder={'请输入用户账号（手机号码）'}
-                                    maxLength={32}
                                     allowClear={true}
                                 />
                         }
@@ -196,7 +195,6 @@ function UserModal(props) {
                                 :
                                 <Input
                                     placeholder={'请输入用户名'}
-                                    maxLength={32}
                                     allowClear={true}
                                 />
                         }
@@ -232,7 +230,6 @@ function UserModal(props) {
                                 :
                                 <Input
                                     placeholder={'请输入用户密码'}
-                                    maxLength={32}
                                     allowClear={true}
                                 />
                         }
@@ -245,10 +242,6 @@ function UserModal(props) {
                             {
                                 required: true,
                                 message: '请选择角色!',
-                            },
-                            {
-                                max: 32,
-                                message: '角色名长度要求不大于 32 位'
                             },
                         ]}
                     >
@@ -272,10 +265,6 @@ function UserModal(props) {
                             {
                                 required: true,
                                 message: '请选择机构!',
-                            },
-                            {
-                                max:64,
-                                message:'机构名称要求小于 64 个字'
                             },
                         ]}
                     >
