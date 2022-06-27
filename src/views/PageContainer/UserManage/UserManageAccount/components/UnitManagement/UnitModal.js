@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {Button, Form, Input, Modal} from "antd";
+import React, {useState} from "react";
+import {Button, Form, Input, message, Modal} from "antd";
 
 /**
  * 部门管理相关的弹窗
@@ -29,52 +29,39 @@ import {Button, Form, Input, Modal} from "antd";
 export default function UnitModal(props) {
     // 初始化部门弹窗的展示状态
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [form] = Form.useForm()
 
-    // 储存部门信息
-    const [unitName, setUnitName] = useState(props.detailData.unit_name)
-    // const [parentUnit, setParentUnit] = useState(props.detailData.parent_unit)
-
-    // 开关弹窗的时候自动刷新表单内容
-    useEffect(() => {
-        if (isModalVisible) {
-            const formDom = document.getElementById(props.detailData.unit_name)
-            if (formDom) {
-                formDom.reset()
-            }
-        }
-    }, [isModalVisible])
+    const initialValues = {
+        unitName: props.detailData.unit_name,
+    }
 
     // 查看详情按钮的触发函数，展示详情弹窗
     const showModal = () => {
         setIsModalVisible(true);
+        form.setFieldsValue(initialValues)
     };
 
     // 保存按钮的触发函数，关闭详情弹窗并保存信息的修改
     const handleOk = () => {//  保存信息的修改
-        setIsModalVisible(false);
-        props.callback({
-            // 用于添加 unit
-            unit_name: unitName,
-            parent_unit: props.detailData.parent_unit,
-            // 用于修改 unit
-            new_unit_name: unitName,
-            unit_id: props.detailData.unit_id,
+        form.validateFields().then(() => {
+            setIsModalVisible(false);
+            props.callback({
+                // 用于添加 unit
+                unit_name: form.getFieldValue('unitName'),
+                parent_unit: props.detailData.parent_unit,
+                // 用于修改 unit
+                new_unit_name: form.getFieldValue('unitName'),
+                unit_id: props.detailData.unit_id,
+            })
+        }).catch(() => {
+            message.warn('请正确完成表单填写')
         })
-    };
+    }
 
     // Cancel按钮的触发函数，关闭详情弹窗
     const handleCancel = () => {
         setIsModalVisible(false);
-    };
-
-    const handleInputChangeUnitName = (event) => {
-        setUnitName(event.target.value);
     }
-
-    // const handleInputChangeParentUnit = (event) => {
-    //     setParentUnit(event.target.value);
-    // }
-
 
     return (
         <>
@@ -101,6 +88,7 @@ export default function UnitModal(props) {
                 ]}
             >
                 <Form
+                    form={form}
                     id={props.detailData.department_name}
                     name="basic"
                     labelCol={{
@@ -109,30 +97,24 @@ export default function UnitModal(props) {
                     wrapperCol={{
                         span: 16,
                     }}
-                    initialValues={{
-                        departmentName: props.detailData.unit_name,
-
-                    }}
+                    initialValues={initialValues}
                     autoComplete="off"
                 >
                     <Form.Item
                         label="机构名称"
-                        name="departmentName"
+                        name="unitName"
                         rules={[
                             {
                                 required: true,
                                 message: '请输入机构门名称!',
                             },
                             {
-                                max:64,
-                                message:'机构名称要求小于 64 个字'
+                                max: 64,
+                                message: '机构名称要求小于 64 个字'
                             },
                         ]}
                     >
-                        <Input
-                            // defaultValue={props.detailData.unit_name}
-                            placeholder={'请输入机构名称'}
-                            onChange={handleInputChangeUnitName}/>
+                        <Input placeholder={'请输入机构名称'}/>
                     </Form.Item>
                     {
                         props.detailData.parent_name
@@ -146,16 +128,11 @@ export default function UnitModal(props) {
                                         message: '请选择父级机构',
                                     },
                                     {
-                                        max:64,
-                                        message:'机构名称要求小于 64 个字'
+                                        max: 64,
+                                        message: '机构名称要求小于 64 个字'
                                     }
                                 ]}
                             >
-                                {/*<Input defaultValue={props.detailData.parent_name}*/}
-                                {/*       placeholder={'请选择父级机构'}*/}
-                                {/*       onChange={handleInputChangeParentUnit}*/}
-                                {/*       disabled={true}*/}
-                                {/*/>*/}
                                 {props.detailData.parent_name}
                             </Form.Item>
                             :
@@ -164,5 +141,5 @@ export default function UnitModal(props) {
                 </Form>
             </Modal>
         </>
-    );
-};
+    )
+}
