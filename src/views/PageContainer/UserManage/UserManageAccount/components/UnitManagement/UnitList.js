@@ -125,7 +125,7 @@ const UnitList = (props) => {
                                                 api.DeletUnit({unit_id: nodeData.unit_id}).then(() => {
                                                     message.success(`删除部门 “${nodeData.unit_name}” 成功`)
                                                 }).catch(() => {
-                                                    message.error('删除部门失败，请稍后重试')
+                                                    message.error('删除部门失败，请检查网络并保证该部门下没有用户或子部门')
                                                 }).finally(() => {
                                                     getUnitAndRefreshTree()
                                                 })
