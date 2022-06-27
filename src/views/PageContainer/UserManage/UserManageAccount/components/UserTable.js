@@ -149,7 +149,7 @@ function UserTable(props) {
                 scroll={{ //表格是否可滚动，也可以指定滚动区域的宽、高
                     scrollToFirstRowOnChange: true, // 当分页、排序、筛选变化后是否滚动到表格顶部
                     x: true,//'100%', // 设置横向滚动，也可用于指定滚动区域的宽
-                    y: '52vh', //设置纵向滚动，也可用于指定滚动区域的高
+                    // y: '52vh', //设置纵向滚动，也可用于指定滚动区域的高
                 }}
                 pagination={{//分页器
                     // defaultPageSize: 5,// 默认每页的数量
