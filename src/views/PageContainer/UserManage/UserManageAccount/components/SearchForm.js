@@ -10,42 +10,45 @@ import React, {useState} from "react";
  */
 export default function SearchForm(props) {
     const [form] = Form.useForm();
-    const formLayout = 'inline';
-
-    const [searchValue, setSearchValue] = useState('');
-
-    // 保存搜索输入框的搜索关键字
-    const handleInputChangeSearchValue = (e) => {
-        setSearchValue(e.target.value)
-    }
 
     // 搜索对应的角色
-    const searchUser = () => {
-        const data = {
-            searchValue: searchValue
-        }
-        props.getSearch(data)
+    function searchUser() {
+        props.getSearch({
+            searchValue: form.getFieldValue('searchValue')
+        })
     }
 
     return (
         <Form
-            layout={formLayout}
+            layout={'inline'}
             form={form}
             initialValues={{
-                layout: formLayout,
+                searchValue: '',
             }}
+            onFinish={searchUser}
+            autoComplete="off"
         >
-            <Form.Item label={"综合搜索"}>
+            <Form.Item
+                label={"综合搜索"}
+                name={'searchValue'}
+                rules={[
+                    {
+                        max: 64,
+                        message: '搜索内容请小于64个字'
+                    }
+                ]}
+            >
                 <Input placeholder="综合搜索"
                        size="middle"
-                       onChange={handleInputChangeSearchValue}
                        type={"search"}
-                       maxLength={50}
                        allowClear={true}
                 />
             </Form.Item>
             <Form.Item>
-                <Button type="primary" onClick={searchUser}>搜索</Button>
+                <Button
+                    type="primary"
+                    htmlType={'submit'}
+                >搜索</Button>
             </Form.Item>
         </Form>
     )
