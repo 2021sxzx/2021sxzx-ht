@@ -28,6 +28,13 @@ const api ={
             url: "v1/viewProcessMessage",
             data
         })
+    },
+
+    GetPeopleStatus(){
+        return service.request({
+            method:'get',
+            url:'v1/peopleStatus',
+        })
     }
 }
 
