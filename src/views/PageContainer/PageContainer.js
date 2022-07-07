@@ -1,9 +1,10 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useRef} from 'react'
 import {Redirect, Switch, Route, withRouter} from 'react-router-dom'
 
 import {Layout, Breadcrumb} from 'antd'
 import SideMenu from '../../components/page-container/SideMenu/SideMenu.js'
 import TopHeader from '../../components/page-container/TopHeader/TopHeader.js'
+import api from '../../api/login'
 
 // 导入页面内容
 import Home from './Home/Home'
@@ -13,12 +14,9 @@ import ItemAudit from './ItemAudit/ItemAudit.js'
 import CommentManageList from './CommentManageList/CommentManageList.js'
 import CommentManageReport from './CommentManageReport/CommentManageReport.js'
 import MetaData from './SystemManage/MetaData/MetaData.js'
-import SystemManageJournal
-    from "./SystemManage/SystemManageJournal/SystemManageJournal.js";
-import SystemManageResource
-    from "./SystemManage/SystemManageResource/SystemManageResource.js";
-import UserManageAccount
-    from './UserManage/UserManageAccount/UserManageAccount'
+import SystemManageJournal from "./SystemManage/SystemManageJournal/SystemManageJournal.js";
+import SystemManageResource from "./SystemManage/SystemManageResource/SystemManageResource.js";
+import UserManageAccount from './UserManage/UserManageAccount/UserManageAccount'
 import UserManageRole from './UserManage/UserManageRole/UserManageRole'
 import SystemManageFailure from './SystemManage/SystemManageFailure/SystemManageFailure.js';
 import SystemManageBasic from './SystemManage/SystemManageBasic/SystemManageBasic.js'
@@ -60,6 +58,44 @@ export default withRouter(function PageContainer(props) {
 
     }
 
+    // 心跳
+    // 1. 每 4 分 55 秒发送一次心跳（5 秒缓冲）
+    // 2. 避免多用户同时心跳，在一个合适区间内随机化心跳时间
+    const [shouldHeartbeat, setHeartbeat] = useState(true);
+    const heartbeatRef = useRef(shouldHeartbeat)
+    const heartbeatIntervalTime = 1000;// 每 1 秒检查一次是否要心跳
+    useEffect(() => {
+        heartbeatRef.current = shouldHeartbeat;
+    });
+    useEffect(() => {
+        let count = 0; // 计时器
+        const timeInterval = [5, 10]; // 心跳时间区间
+        const threshold = 1 / (timeInterval[1] - count); // 检测阈值
+        let heartbeat = setInterval(() => {
+            // 心跳逻辑：当计时器大于等于最小心跳时间，且随机数 checker 小于检测阈值时心跳，反之计时器自增
+            const checker = Math.random();
+            console.log(`interval = ${heartbeatRef.current}, count = ${count}, checker = ${checker.toFixed(2)}, threshold = ${threshold.toFixed(2)}`);
+            if (count >= timeInterval[0] && checker < threshold) {
+                console.log('checking heartbeat');
+                count = 0;
+                if (heartbeatRef.current) {
+                    setHeartbeat(false);
+                    api.IsLogin().then();
+                } else api.clearStorageAndRedirect();
+            } else ++count;
+        }, heartbeatIntervalTime);
+        return () => clearInterval(heartbeat);
+    }, [])
+    useEffect(() => {
+        const body = document.body;
+        body.onmousemove = body.onmousedown = body.onkeydown = () => {
+            setHeartbeat(true);
+            console.log('body event heartbeat = ' + shouldHeartbeat);
+        }
+        return () => body.onmousemove = body.onmousedown = body.onkeydown = null
+    }, [])
+    // end 心跳
+
     useEffect(() => {
         MenuList.getAndStorageMenuList((menuList) => {
             if (!menuList) return
@@ -68,83 +104,77 @@ export default withRouter(function PageContainer(props) {
         })
     }, [])
 
-    return (
-        <Layout className={style.siteLayout}>
-            {/*<Layout>*/}
-            <div className={style.headerContainer}>
-                <Header className={style.header}>
-                    <TopHeader/>
-                </Header>
-            </div>
-            <Content
-                className={style.siteContainer}
-            >
-                <Layout className={style.leftRightLayout}>
-                    <Sider
-                        className={style.sideMenuContainer}
-                        theme="light" // 样式主题
-                        // collapsible={true} // 是否可收起
-                        collapsedWidth={50}
-                        collapsed={siderCollapsed}
+    return (<Layout className={style.siteLayout}>
+        {/*<Layout>*/}
+        <div className={style.headerContainer}>
+            <Header className={style.header}>
+                <TopHeader/>
+            </Header>
+        </div>
+        <Content
+            className={style.siteContainer}
+        >
+            <Layout className={style.leftRightLayout}>
+                <Sider
+                    className={style.sideMenuContainer}
+                    theme="light" // 样式主题
+                    // collapsible={true} // 是否可收起
+                    collapsedWidth={50}
+                    collapsed={siderCollapsed}
+                >
+                    <SideMenu
+                        setCurRoute={setCurRoute}
+                        getPathName={getPathName}
+                        siderCollapsed={siderCollapsed}
+                        setSiderCollapsed={setSiderCollapsed}
+                    />
+                </Sider>
+                <Layout className={style.rightSideLayout}>
+                    <Content
+                        className={style.mainContentContainer}
+                        // style={{ margin: '0 10px' }}
                     >
-                        <SideMenu
-                            setCurRoute={setCurRoute}
-                            getPathName={getPathName}
-                            siderCollapsed={siderCollapsed}
-                            setSiderCollapsed={setSiderCollapsed}
-                        />
-                    </Sider>
-                    <Layout className={style.rightSideLayout}>
-                        <Content
-                            className={style.mainContentContainer}
-                            // style={{ margin: '0 10px' }}
-                        >
-                            <Breadcrumb className={style.breadcrumb}>
-                                {
-                                    curRoute.map(item => {
-                                        return (
-                                            <Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>
-                                        )
-                                    })
-                                }
-                            </Breadcrumb>
-                            <div className={style.mainContent}>
-                                <Switch>
-                                    {/* 首页 */}
-                                    <Route path="/home" component={Home}/>
-                                    {/* 用户评价 */}
-                                    <Route path="/comment-manage/list" component={CommentManageList}/>
-                                    {/* 评价报告 */}
-                                    <Route path="/comment-manage/report" component={CommentManageReport}/>
-                                    {/* 个人中心 */}
-                                    <Route path="/personal" component={Personal}/>
-                                    {/* 事项过程管理 */}
-                                    <Route path="/item-manage" component={ItemManage}/>
-                                    <Route path="/item-audit" component={ItemAudit}/>
-                                    {/* 日志管理 */}
-                                    <Route path="/system-manage/journal" component={SystemManageJournal}/>
-                                    {/* 资源管理 */}
-                                    <Route path="/system-manage/resource" component={SystemManageResource}/>
-                                    {/* 后台账号管理 */}
-                                    <Route path="/user-manage/account/user" component={UserManageAccount}/>
-                                    {/* 角色管理 */}
-                                    <Route path="/user-manage/account/role" component={UserManageRole}/>
-                                    {/* 单位管理 */}
-                                    <Route path="/user-manage/register" component={RegisterManagement}/>
-                                    {/*/!* 部门管理 *!/*/}
-                                    {/*<Route path="/user-manage/department" component={DepartmentManagement} />*/}
-                                    <Route path="/system-manage/failure" component={SystemManageFailure}/>
-                                    <Route path="/system-manage/meta-data" component={MetaData}/>
-                                    <Route path="/system-manage/backup" component={SystemManageBackup}/>
-                                    <Route path="/system-manage/basic" component={SystemManageBasic}/>
-                                    <Redirect from="/" to="/home" exact/>
-                                    <Route path="*" component={NoPermission}/>
-                                </Switch>
-                            </div>
-                        </Content>
-                    </Layout>
+                        <Breadcrumb className={style.breadcrumb}>
+                            {curRoute.map(item => {
+                                return (<Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>)
+                            })}
+                        </Breadcrumb>
+                        <div className={style.mainContent}>
+                            <Switch>
+                                {/* 首页 */}
+                                <Route path="/home" component={Home}/>
+                                {/* 用户评价 */}
+                                <Route path="/comment-manage/list" component={CommentManageList}/>
+                                {/* 评价报告 */}
+                                <Route path="/comment-manage/report" component={CommentManageReport}/>
+                                {/* 个人中心 */}
+                                <Route path="/personal" component={Personal}/>
+                                {/* 事项过程管理 */}
+                                <Route path="/item-manage" component={ItemManage}/>
+                                <Route path="/item-audit" component={ItemAudit}/>
+                                {/* 日志管理 */}
+                                <Route path="/system-manage/journal" component={SystemManageJournal}/>
+                                {/* 资源管理 */}
+                                <Route path="/system-manage/resource" component={SystemManageResource}/>
+                                {/* 后台账号管理 */}
+                                <Route path="/user-manage/account/user" component={UserManageAccount}/>
+                                {/* 角色管理 */}
+                                <Route path="/user-manage/account/role" component={UserManageRole}/>
+                                {/* 单位管理 */}
+                                <Route path="/user-manage/register" component={RegisterManagement}/>
+                                {/*/!* 部门管理 *!/*/}
+                                {/*<Route path="/user-manage/department" component={DepartmentManagement} />*/}
+                                <Route path="/system-manage/failure" component={SystemManageFailure}/>
+                                <Route path="/system-manage/meta-data" component={MetaData}/>
+                                <Route path="/system-manage/backup" component={SystemManageBackup}/>
+                                <Route path="/system-manage/basic" component={SystemManageBasic}/>
+                                <Redirect from="/" to="/home" exact/>
+                                <Route path="*" component={NoPermission}/>
+                            </Switch>
+                        </div>
+                    </Content>
                 </Layout>
-            </Content>
-        </Layout>
-    )
+            </Layout>
+        </Content>
+    </Layout>)
 })
