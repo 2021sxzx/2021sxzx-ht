@@ -58,7 +58,6 @@ const SubmitFailure = (props) => {
     const [failurePicture, setFailurePicture] = useState([]);
     const showModal = () => setIsModalVisible(true);
 
-
     const onFinish = async () => {
         let data = form.getFieldsValue();
         if (data.failureName === undefined || data.failureDescription === undefined || data.failureName === '' || data.failureDescription === '') {
@@ -70,31 +69,27 @@ const SubmitFailure = (props) => {
         data.user_name = (await apiPersonal.getTopHeaderData()).data.data.user_name;
         data.create_time = new Date(new Date().getTime() + 8 * 3600 * 1000);
         data.fileSizeList = [];
-        // by lhy 判断空数组
-        if (failurePicture.length > 0) {
-            const FailurePictureFormData = new FormData();
-            failurePicture.forEach(file => {
-                FailurePictureFormData.append('file', file);
-                data.fileSizeList.push(file.size)
-            })
-            fetch('http://localhost:5001/api/v1/system-failure-picture-upload', {
-                method: 'POST', body: FailurePictureFormData, mode: "cors"
-            }).then(res => {
-                res.json().then((res) => {
-                    data.pictureList = res;
-                    api.CreateSystemFailure(data).then(props.getFailure());
+        try {
+            // by lhy 判断空数组 若数组不为空表示有上传图片
+            if (failurePicture.length > 0) {
+                const FailurePictureFormData = new FormData();
+                failurePicture.forEach(file => {
+                    FailurePictureFormData.append('file', file);
+                    data.fileSizeList.push(file.size)
                 })
-            }).then(() => {
-                // 上传之后删除浏览器的图片，这里好像失败了没清除也没关闭弹窗
                 setFailurePicture([]);
-                form.resetFields();
-                setIsModalVisible(false);
-                message.success('提交故障成功.');
-            }).catch(e => {
-                console.log(e)
-                message.error('提交故障失败.');
-            })
-        } else message.warn('请选择故障图片');
+                data.pictureList = await (await fetch('http://localhost:5001/api/v1/system-failure-picture-upload', {
+                    method: 'POST', body: FailurePictureFormData, mode: "cors"
+                })).json();
+            }
+            await api.CreateSystemFailure(data);
+            props.getFailure();
+            form.resetFields();
+            setIsModalVisible(false);
+            message.success('提交故障成功.');
+        } catch (e) {
+            message.error('提交故障失败，错误信息：' + e);
+        }
     };
 
     const handleCancel = () => {
