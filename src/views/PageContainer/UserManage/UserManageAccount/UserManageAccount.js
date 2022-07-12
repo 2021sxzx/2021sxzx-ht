@@ -112,7 +112,6 @@ export default function UserManageAccount() {
                 </SideDrawer>
             </div>
             <div className={style.userAccountContainer}>
-                {/*<Space direction="vertical" size={12} style={{width: '100%',height:'100%'}}>*/}
                 {/* 功能区 */}
                 <UserTableFunctionalZone
                     getSearch={getSearchUser}
@@ -126,7 +125,6 @@ export default function UserManageAccount() {
                     refreshTableData={getUserByID}
                     loading={loading}
                 />
-                {/*</Space>*/}
             </div>
         </div>
     )

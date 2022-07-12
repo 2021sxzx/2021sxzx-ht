@@ -545,7 +545,9 @@ export default function SystemManageResource() {
     const getPeopleStatus = () => {
         api.GetPeopleStatus().then(res => {
             setUserNum(res.data.data.userOnline)
-        }).catch();
+        }).catch(() => {
+        //    TODO
+        });
     };
 
     const getDisk = () => {

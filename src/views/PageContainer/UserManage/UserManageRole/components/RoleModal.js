@@ -26,30 +26,14 @@ function RoleModal(props) {
     // 初始化新增用户弹窗的展示状态
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    // // 储存角色信息
-    // const [roleName, setRoleName] = useState(props.detailData.role_name)
-    // const [roleDescribe, setRoleDescribe] = useState(props.detailData.role_describe)
-    // const [permissionIdentifierArray, setPermissionIdentifierArray] = useState(props.detailData.permission_identifier)
-    // // const permissions = props.detailData.permission
-
     // 表单实例
     const [form] = Form.useForm()
-
-    // // 每次打开弹窗重置表单内容
-    // useEffect(() => {
-    //     if (isModalVisible) {
-    //         const formDom = document.getElementById('role-model-' + props.detailData.role_name)
-    //         if (formDom) {
-    //             formDom.reset()
-    //         }
-    //     }
-    // }, [isModalVisible])
 
     // 表单初始化数据
     const initialValues = {
         roleName: props.detailData.role_name,
         roleDescribe: props.detailData.role_describe,
-        permission: props.detailData.permission_identifier,
+        permission: props.detailData.permission_identifier_array,
     }
 
     // 查看详情按钮的触发函数，展示详情弹窗
@@ -66,7 +50,6 @@ function RoleModal(props) {
             .then((value) => {
                 setIsModalVisible(false);
                 props.callback({
-                    // role_name_old:props.detailData.role_name,
                     role_id: props.detailData.role_id,
                     role_name: value.roleName,
                     role_describe: value.roleDescribe,
@@ -111,7 +94,6 @@ function RoleModal(props) {
                 <Form
                     form={form}
                     id={'role-model-' + props.detailData.role_name}
-                    name="basic"
                     labelCol={{
                         span: 8,
                     }}
@@ -166,7 +148,7 @@ function RoleModal(props) {
                         ]}
                     >
                         <PermissionMultipleSelect
-                            defaultValue={props.detailData.permission_identifier_array}
+                            defaultValue={initialValues.permission}
                             placeholder={'请选择角色权限'}
                             onChange={handleMultipleSelectChange}
                         />

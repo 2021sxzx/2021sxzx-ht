@@ -55,17 +55,5 @@ export default function UnitTreeSelect(props) {
                 }}
             />
         </div>
-        // <Select
-        //     allowClear
-        //     showSearch
-        //     placeholder={props.placeholder}
-        //     defaultValue={props.defaultValue}
-        //     onChange={props.onChange}
-        //     filterOption={(input, option) => {
-        //         option.children.toLowerCase().includes(input.toLowerCase())
-        //     }}
-        // >
-        //     {options}
-        // </Select>
     )
 }
