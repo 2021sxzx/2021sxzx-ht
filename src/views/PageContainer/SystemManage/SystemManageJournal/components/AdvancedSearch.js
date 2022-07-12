@@ -107,7 +107,7 @@ function AdvancedSearch() {
                             name={['typeSearch', 'searchValue']}
                             rules={[
                                 // {required: true, message: '请输入搜索内容'},
-                                {max: 128, message: '搜索栏最多不能超过 128 个字'}
+                                {max: 64, message: '搜索栏最多不能超过 64 个字'}
                             ]}
                         >
                             <Input
