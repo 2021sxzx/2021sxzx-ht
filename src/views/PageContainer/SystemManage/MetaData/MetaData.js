@@ -337,17 +337,27 @@ const Demo = () => {
   const [websiteSettingsForm] = Form.useForm();
   const [coreSettingsForm] = Form.useForm();
   const [interfaceConfigurationForm] = Form.useForm();
-  const [WebsiteStatus, setWebsiteStatus] = React.useState(true);
-  const [fileList, setFileList] = React.useState(null);
+
+  // const [WebsiteStatus, setWebsiteStatus] = React.useState(true);
+  // const [fileList, setFileList] = React.useState(null);
   const [BackstageLogoFile, setBackstageLogoFile] = React.useState(null);
   const [WebsiteLogoFile, setWebsiteLogoFile] = React.useState(null);
   const [AddressBarIconFile, setAddressBarIconFile] = React.useState(null);
   const [MobileLogoFile, setMobileLogoFile] = React.useState(null);
   const [QRCodeFile, setQRCodeFile] = React.useState(null);
+
+  //QRCode
+  const [GZRSOfficeQRCode, setGZRSOfficeQRCode,] = React.useState(null);
+  const [GZRSWechatQRCode, setGZRSWechatQRCode] = React.useState(null);
+  const [SHBAPPQRCode, setSHBAPPQRCode] = React.useState(null);
+
+  //InterfaceEntrance
   const [officialWebsite, setOfficialWebsite] = React.useState(null);
   const [officialAccount, setOfficialAccount] = React.useState(null);
-  const [APP, setAPP] = React.useState(null);
-  const [cloudPlatform, setCloudPlatform] = React.useState(null);
+  const [SHBAPP,setSHBAPP] = React.useState(null)
+
+  // const [APP, setAPP] = React.useState(null);
+  // const [cloudPlatform, setCloudPlatform] = React.useState(null);
   // const handleUpload = () => {
   //   const formData = new FormData();
   //   fileList.forEach(file => {
@@ -531,6 +541,72 @@ const Demo = () => {
           message.error("二维码上传失败.");
         });
     }
+
+    if (GZRSOfficeQRCode) {
+      const GZRSOfficeQRCodeFormData = new FormData();
+      GZRSOfficeQRCodeFormData.append("file", GZRSOfficeQRCode);
+      fetch("http://localhost:5001/api/v1/QRCode-upload", {//需要设置fetch地址
+        method: "POST",
+        body: GZRSOfficeQRCodeFormData,
+        mode: "cors",
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
+      })
+        .then((res) => res.json())
+        .then(() => {
+          //上传之后删除浏览器的图片
+          setGZRSOfficeQRCode(null);
+          message.success("二维码上传成功.");
+        })
+        .catch(() => {
+          message.error("二维码上传失败.");
+        });
+    }
+
+    if (GZRSWechatQRCode) {
+      const GZRSWechatQRCodeFileFormData = new FormData();
+      GZRSWechatQRCodeFileFormData.append("file", GZRSWechatQRCode);
+      fetch("http://localhost:5001/api/v1/QRCode-upload", {//需要设置fetch地址
+        method: "POST",
+        body: GZRSWechatQRCodeFileFormData,
+        mode: "cors",
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
+      })
+        .then((res) => res.json())
+        .then(() => {
+          //上传之后删除浏览器的图片
+          setQRCodeFile(null);
+          message.success("二维码上传成功.");
+        })
+        .catch(() => {
+          message.error("二维码上传失败.");
+        });
+    }
+
+    if (GZRSOfficeQRCode) {
+      const GZRSOfficeQRCodeFileFormData = new FormData();
+      GZRSOfficeQRCodeFileFormData.append("file", GZRSOfficeQRCode);
+      fetch("http://localhost:5001/api/v1/QRCode-upload", {//需要设置fetch地址
+        method: "POST",
+        body: GZRSOfficeQRCodeFileFormData,
+        mode: "cors",
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
+      })
+        .then((res) => res.json())
+        .then(() => {
+          //上传之后删除浏览器的图片
+          setQRCodeFile(null);
+          message.success("二维码上传成功.");
+        })
+        .catch(() => {
+          message.error("二维码上传失败.");
+        });
+    }
     message.success("修改成功");
   };
 
@@ -601,6 +677,7 @@ const Demo = () => {
       });
       setOfficialWebsite(response.data.OfficialWebsite);
       setOfficialAccount(response.data.OfficialAccount);
+      setSHBAPP(response.data.SHBAPP)
       // setAPP(response.data.APP)
       // setCloudPlatform(response.data.CloudPlatform)
     });
@@ -624,7 +701,6 @@ const Demo = () => {
                   <UsersChart id="xi" />
                 </Card>
               </Col>
-              {/* <Col span={8}> <Card size='small'><div style={{width: '250px', height: '170px', display: 'inline-block'}} id="ha" data={itemBrowseCount15} today={itemBrowseCountToday}/></Card></Col> */}
               <Col span={8}>
                 {" "}
                 <Card size="small">
@@ -644,13 +720,6 @@ const Demo = () => {
             </Row>
           </div>
           <Divider />
-          {/* <Image width={800} src={require("./1.png").default} />
-          <Image width={400} src={require("./2.png").default} /> */}
-          {/* <ChartsT id="Users" name="用户并发数" used={82} total={100}></ChartsT>
-          <ChartsTe id="zyk" name="用户并发数" used={82} total={100}></ChartsTe> */}
-          {/*<Charts id="yk"/>*/}
-          {/*<LineChart id="k"/>*/}
-          {/* <img src="./1.png"></img> */}
         </TabPane>
         <TabPane tab="网站设置" key="2">
           <Form
@@ -675,7 +744,7 @@ const Demo = () => {
               name="WebsiteAbbreviation"
               rules={[{ message: "Please input your username!" }]}
             >
-              <Input style={{ width: "700px" }} />
+              <Input style={{ width: "200px" }} />
             </Form.Item>
             <Form.Item label="网站logo" name="WebsiteLogo" layout="inline">
               <Upload
@@ -777,47 +846,56 @@ const Demo = () => {
                 图片地址
               </Upload>
             </Form.Item>
-            <Form.Item
-              label="网站域名"
-              name="WebsiteDomainName"
-              rules={[{ message: "Please input your username!" }]}
-            >
-              <Input style={{ width: "700px" }} />
+            <Form.Item label="广州市人设局官网" name="QRCode" layout="inline">
+              <Upload
+                listType="picture"
+                className="upload-list-inline"
+                accept=".png"
+                beforeUpload={(file) => {
+                  setQRCodeFile(file);
+                  // console.log(QRCodeFile);
+                  return false;
+                }}
+                maxCount={1}
+                name="QRCode"
+              >
+                <Button icon={<UploadOutlined />}>Upload</Button>
+                图片地址
+              </Upload>
             </Form.Item>
-            <Form.Item
-              label="版权信息"
-              name="CopyrightInformation"
-              rules={[{ message: "Please input your username!" }]}
-            >
-              <Input style={{ width: "700px" }} />
+            <Form.Item label="广州市人设局公众号" name="QRCode" layout="inline">
+              <Upload
+                listType="picture"
+                className="upload-list-inline"
+                accept=".png"
+                beforeUpload={(file) => {
+                  setQRCodeFile(file);
+                  // console.log(QRCodeFile);
+                  return false;
+                }}
+                maxCount={1}
+                name="QRCode"
+              >
+                <Button icon={<UploadOutlined />}>Upload</Button>
+                图片地址
+              </Upload>
             </Form.Item>
-            <Form.Item
-              label="备案号"
-              name="RecordNumber"
-              rules={[{ message: "Please input your username!" }]}
-            >
-              <Input style={{ width: "700px" }} />
-            </Form.Item>
-            <Form.Item
-              label="服务热线"
-              name="ServiceHotline"
-              rules={[{ message: "Please input your username!" }]}
-            >
-              <Input style={{ width: "700px" }} />
-            </Form.Item>
-            <Form.Item
-              label="地址"
-              name="Address"
-              rules={[{ message: "Please input your username!" }]}
-            >
-              <Input style={{ width: "700px" }} />
-            </Form.Item>
-            <Form.Item
-              label="免责声明"
-              name="Disclaimers"
-              rules={[{ message: "Please input your username!" }]}
-            >
-              <Input style={{ width: "700px" }} />
+            <Form.Item label="穗好办APP" name="QRCode" layout="inline">
+              <Upload
+                listType="picture"
+                className="upload-list-inline"
+                accept=".png"
+                beforeUpload={(file) => {
+                  setQRCodeFile(file);
+                  // console.log(QRCodeFile);
+                  return false;
+                }}
+                maxCount={1}
+                name="QRCode"
+              >
+                <Button icon={<UploadOutlined />}>Upload</Button>
+                图片地址
+              </Upload>
             </Form.Item>
             <Form.Item wrapperCol={{ offset: 10, span: 16 }}>
               <Button type="primary" htmlType="submit">
@@ -833,54 +911,62 @@ const Demo = () => {
             onFinishFailed={onFinishFailed}
             form={coreSettingsForm}
             name="CoreSettings"
+            labelAlign="left"
           >
+            <h2>备案号设置</h2>
             <Form.Item
-              label="移动端域名"
-              name="MobileDomainName"
+              label="粤公安网备案号"
+              name="RecordNumber"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
-              label="PC端域名"
-              name="PCDomainName"
+              label="粤ICP备案号"
+              name="RecordNumber"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
-            <Form.Item label="使用DigicertSSL" name="DigicertSSL">
-              <Switch
-                checked={WebsiteStatus}
-                checkedChildren="开"
-                unCheckedChildren="关"
-                onChange={() => {
-                  setWebsiteStatus(!WebsiteStatus);
-                }}
-              />{" "}
-            </Form.Item>
-            <Form.Item label="DigicertSSL证书" name="WebsiteStatus">
-              <Button>配置证书</Button>
-            </Form.Item>
-            <Form.Item label="使用https" name="httpsService">
-              <Switch
-                checked={WebsiteStatus}
-                checkedChildren="开"
-                unCheckedChildren="关"
-                onChange={() => {
-                  setWebsiteStatus(!WebsiteStatus);
-                }}
-              />{" "}
-            </Form.Item>
+            <h2>网页下方超链接设置</h2>
             <Form.Item
-              label="后台路径"
-              name="BackgroundPath"
+              label="关于我们"
+              name="about_us"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
-              label="数据库备份目录"
-              name="DatabaseBackupDirectory"
+              label="联系方式"
+              name="contact_detail"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="隐私安全"
+              name="privacy_security"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="网站声明"
+              name="website_statement"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="粤公安网备"
+              name="network_record"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="粤ICP备案"
+              name="icp_record"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
@@ -890,33 +976,7 @@ const Demo = () => {
                 确认更改
               </Button>
             </Form.Item>
-          </Form>
-        </TabPane>
-        <TabPane tab="URL配置" key="4">
-          <h3>URL模式</h3>
-          <h3>伪静态模式</h3>
-          <Form>
-            <Form.Item label="测试upload" name="BackstageLogo">
-              <Upload>
-                <Button icon={<UploadOutlined />}>Upload</Button>
-              </Upload>
-            </Form.Item>
-            <Form.Item label="后台logo" name="BackstageLogo">
-              <Upload
-                action="http://localhost:5001/api/v1/picture-upload"
-                listType="picture"
-                className="upload-list-inline"
-                accept=".png,.jpg"
-              >
-                <Button icon={<UploadOutlined />}>Upload</Button>
-                图片地址
-              </Upload>
-            </Form.Item>
-            <Form.Item wrapperCol={{ offset: 10, span: 16 }}>
-              <Button type="primary" htmlType="submit">
-                确认更改
-              </Button>
-            </Form.Item>
+
           </Form>
         </TabPane>
         <TabPane tab="接口配置" key="5">
@@ -953,14 +1013,8 @@ const Demo = () => {
                   name="APP"
                   rules={[{ message: "Please input your username!" }]}
                 >
-                  <Input style={{ width: "700px" }} />
-                </Form.Item>
-                <Form.Item
-                  label="智能服务机器人云平台"
-                  name="CloudPlatform"
-                  rules={[{ message: "Please input your username!" }]}
-                >
-                  <Input style={{ width: "700px" }} />
+                  {/* <Input style={{ width: "700px" }} /> */}
+                  {SHBAPP}
                 </Form.Item>
                 <h2>出口配置</h2>
                 <Form.Item
@@ -970,17 +1024,17 @@ const Demo = () => {
                 >
                   <Input style={{ width: "700px" }} />
                 </Form.Item>
-                <h2>其他配置</h2>
                 <Form.Item
-                  label="百度地图"
-                  name="BaiduMaps"
+                  label="智能服务机器人云平台"
+                  name="CloudPlatform"
                   rules={[{ message: "Please input your username!" }]}
                 >
                   <Input style={{ width: "700px" }} />
                 </Form.Item>
+                <h2>其他配置</h2>
                 <Form.Item
-                  label="QQ客服咨询"
-                  name="QQCustomerService"
+                  label="百度地图"
+                  name="BaiduMaps"
                   rules={[{ message: "Please input your username!" }]}
                 >
                   <Input style={{ width: "700px" }} />
@@ -1035,12 +1089,25 @@ const Demo = () => {
                 <Form.Item label="百度地图接口" name="OfficialWebsite">
                   良好
                 </Form.Item>
-                <Form.Item label="QQ客服接口" name="OfficialWebsite">
-                  良好
-                </Form.Item>
               </Form>
             </Col>
           </Row>
+        </TabPane>
+        <TabPane tab="URL配置" key="4">
+          <Form labelCol={{ span: 4 }}>
+            <Form.Item label="系统日志路径" name="SystemLogPath" width="200px">
+              /root/sxzx/sxzx/log
+            </Form.Item>
+            <Form.Item label="数据库日志路径" name="DatabaseLogPath">
+              /usr/local/mongodb/logs
+            </Form.Item>
+            <Form.Item label="操作系统日志路径" name="OSLogPath">
+              /var/log
+            </Form.Item>
+            <Form.Item label="中间件日志路径" name="MiddleWareLogPath">
+              /usr/local/redis/log
+            </Form.Item>
+          </Form>
         </TabPane>
       </Tabs>
     </div>
