@@ -83,7 +83,7 @@ export default function RoleTable(props) {
             columns={tableColumns}
             dataSource={props.tableData !== {} ? props.tableData : {}}
             rowKey={record => record.role_id + record.role_name}
-            sticky={true} //设置粘性头部和滚动条
+            // sticky={true} //设置粘性头部和滚动条
             scroll={{ //表格是否可滚动，也可以指定滚动区域的宽、高
                 scrollToFirstRowOnChange: true, // 当分页、排序、筛选变化后是否滚动到表格顶部
                 x: 'max-content',//'100%', // 设置横向滚动，也可用于指定滚动区域的宽

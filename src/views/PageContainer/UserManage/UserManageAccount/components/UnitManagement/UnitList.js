@@ -40,7 +40,7 @@ const UnitList = (props) => {
 
     const nodeRender = (nodeData) => {
         if (!nodeData) {
-            return <div/>
+            return <></>
         } else {
             return (
                 <Space size={'small'}>
@@ -122,7 +122,7 @@ const UnitList = (props) => {
                                             title={'删除部门'}
                                             content={`是否确认删除机构：${nodeData.unit_name}?`}
                                             okCallback={() => {
-                                                api.DeletUnit({unit_id: nodeData.unit_id}).then(() => {
+                                                api.DeleteUnit({unit_id: nodeData.unit_id}).then(() => {
                                                     message.success(`删除部门 “${nodeData.unit_name}” 成功`)
                                                 }).catch(() => {
                                                     message.error('删除部门失败，请检查网络并保证该部门下没有用户或子部门')

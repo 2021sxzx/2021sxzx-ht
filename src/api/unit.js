@@ -21,7 +21,7 @@ const api = {
             data
         })
     },
-    DeletUnit(data) {
+    DeleteUnit(data) {
         return service.request({
             method: 'delete',
             url: '/v1/unit',
