@@ -37,21 +37,27 @@ const api ={
             data
         })
     },
-    InterfaceConfiguration(data){
+    GetNetworkStatus(data) {
         return service.request({
-            method:"get",
-            url: "v1/interface-configuration",
+            method: "get",
+            url: "v1/interface/NetworkStatus",
             data
-        })
+        });
     },
-    ChangeInterfaceConfiguration(data){
+    SetInterfaceUrl(data){
         return service.request({
-            method:"post",
-            url: "v1/interface-configuration",
+            method: "patch",
+            url: "v1/interface",
             data
-        })
+        });
+    },
+    GetInterfaceUrl(data){
+        return service.request({
+            method: "get",
+            url: "v1/interface",
+            data
+        });
     }
-
 }
 
 export default api

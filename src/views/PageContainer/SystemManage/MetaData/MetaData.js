@@ -22,12 +22,8 @@ import * as echarts from "echarts";
 import api from "../../../../api/systemBasic";
 import apiLog from "../../../../api/log";
 import "./MetaData.css";
-import ChartsT from "./ChartsT";
-import Charts from "./UsersChart";
-import ChartsTe from "./ChartsTe";
-// import LineChart from "./LineChart";
-// import BarChart from "./BarChart";
 import UsersChart from "./UsersChart";
+
 
 const { TabPane } = Tabs;
 
@@ -81,7 +77,7 @@ const BarChart = (props) => {
     myChart = echarts.init(chartDom);
     myChart.setOption({
       title: {
-        text: "日志记录",
+        text: "事项数目",
         subtext: "5000",
         textStyle: {
           fontSize: "12px",
@@ -198,13 +194,6 @@ const LineChart = (props) => {
     // getItemBrowseCount();
   });
   return (
-    /*        <div id={props.id} style={{
-              width: "250px",
-              height: "170px",
-              paddingLeft: "10px",
-              display: "inline-block",
-              float: "left"
-          }}/>*/
     <div
       style={{
         width: "250px",
@@ -222,113 +211,6 @@ const LineChart = (props) => {
     </div>
   );
 };
-// const LineChart = (props) => {
-//   React.useEffect(() => {
-//     var chartDom = document.getElementById(props.id);
-//     var myChart = echarts.init(chartDom);
-//     var option;
-
-//     const dataCount = 5e5;
-//     const data = generateData(dataCount);
-//     option = {
-//       title: {
-//         text: echarts.format.addCommas(dataCount) + ' Data',
-//         left: 10
-//       },
-//       toolbox: {
-//         feature: {
-//           dataZoom: {
-//             yAxisIndex: false
-//           },
-//           saveAsImage: {
-//             pixelRatio: 2
-//           }
-//         }
-//       },
-//       tooltip: {
-//         trigger: 'axis',
-//         axisPointer: {
-//           type: 'shadow'
-//         }
-//       },
-//       grid: {
-//         bottom: 90
-//       },
-//       dataZoom: [
-//         {
-//           type: 'inside'
-//         },
-//         {
-//           type: 'slider'
-//         }
-//       ],
-//       xAxis: {
-//         data: data.categoryData,
-//         silent: false,
-//         splitLine: {
-//           show: false
-//         },
-//         splitArea: {
-//           show: false
-//         }
-//       },
-//       yAxis: {
-//         splitArea: {
-//           show: false
-//         }
-//       },
-//       series: [
-//         {
-//           type: 'bar',
-//           data: data.valueData,
-//           // Set `large` for large data amount
-//           large: true
-//         }
-//       ]
-//     };
-//     function generateData(count) {
-//       let baseValue = Math.random() * 1000;
-//       let time = +new Date(2011, 0, 1);
-//       let smallBaseValue;
-//       function next(idx) {
-//         smallBaseValue =
-//           idx % 30 === 0
-//             ? Math.random() * 700
-//             : smallBaseValue + Math.random() * 500 - 250;
-//         baseValue += Math.random() * 20 - 10;
-//         return Math.max(0, Math.round(baseValue + smallBaseValue) + 3000);
-//       }
-//       const categoryData = [];
-//       const valueData = [];
-//       for (let i = 0; i < count; i++) {
-//         categoryData.push(
-//           echarts.format.formatTime('yyyy-MM-dd\nhh:mm:ss', time, false)
-//         );
-//         valueData.push(next(i).toFixed(2));
-//         time += 1000;
-//       }
-//       return {
-//         categoryData: categoryData,
-//         valueData: valueData
-//       };
-//     }
-
-//     option && myChart.setOption(option);
-//     return (
-//   <div style={{
-//       width: "250px",
-//       height: "170px",
-//       display: "inline-block",
-//   }}>
-//       <div id={props.id} style={{width:"100%",height:"100%"}}/>
-//       <Divider style={{marginTop:"-42px",marginBottom:"0px"}}/>
-//       <div>
-//           <Paragraph style={{marginLeft:"12px",marginRight:"20px"}}>近15日日均访问量 14512</Paragraph>
-//       </div>
-//   </div>
-//   );
-//   })
-// }
 const Demo = () => {
   const [websiteSettingsForm] = Form.useForm();
   const [coreSettingsForm] = Form.useForm();
@@ -347,124 +229,19 @@ const Demo = () => {
   const [GZRSWechatQRCode, setGZRSWechatQRCode] = React.useState(null);
   const [SHBAPPQRCode, setSHBAPPQRCode] = React.useState(null);
 
-  //InterfaceEntrance
-  const [officialWebsite, setOfficialWebsite] = React.useState(null);
-  const [officialAccount, setOfficialAccount] = React.useState(null);
-  const [SHBAPP, setSHBAPP] = React.useState(null);
+  //Interface
+  const [api_GZSRSJGW, setApi_GZSRSJGW] = React.useState(null);
+  const [api_GZSRSJWX, setApi_GZSRSJWX] = React.useState(null);
+  const [api_SHBAPP, setApi_SHBAPP] = React.useState(null);
+  const [api_GDZWFWPT, setApi_GDZWFWPT] = React.useState(null);
+  const [api_ZNFWJQRPT, setApi_ZNFWJQRPT] = React.useState(null);
+  const [api_BDDT, setApi_BDDT] = React.useState(null);
+  const [interfaceStatus, setInterfaceStatus] = React.useState({});
 
-  // const [APP, setAPP] = React.useState(null);
-  // const [cloudPlatform, setCloudPlatform] = React.useState(null);
-  // const handleUpload = () => {
-  //   const formData = new FormData();
-  //   fileList.forEach(file => {
-  //     formData.append('files[]', file);
-  //   });
-  //   setUploading(true)
-  //   // You can use any AJAX library you like
-  //   fetch('https://www.mocky.io/v2/5cc8019d300000980a055e76', {
-  //     method: 'POST',
-  //     body: formData,
-  //   })
-  //     .then(res => res.json())
-  //     .then(() => {
-  //       setFileList([])
-  //       message.success('upload successfully.');
-  //     })
-  //     .catch(() => {
-  //       message.error('upload failed.');
-  //     })
-  // };
-
-  // const fileList = [
-  //   {
-  //     uid: "-1",
-  //     name: "xxx.png",
-  //     status: "done",
-  //     url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-  //     thumbUrl:
-  //       "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-  //   },
-  //   {
-  //     uid: "-2",
-  //     name: "yyy.png",
-  //     status: "error",
-  //   },
-  // ];
   const onFinish = (values) => {
     api.ChangeSiteSettings(values);
-    // let formData = new FormData();
-    // fileList.forEach(file => {
-    //   formData.append('file', file);
-    // });
-    // websiteSettingsForm.validateFields((err,data)=>{
-    //   let { filename, filetype, describe } = values;
-    //   formData.append('name', filename);
-    //   formData.append('type', filetype);
-
-    //   UploadFile(formData).then(res => { //这个是请求
-    //     if (res.status == 200 && res.data != undefined) {
-    //       notification.success({
-    //         message: "上传成功",
-    //         description: res.data,
-    //       });
-    //     } else {
-    //       notification.error({
-    //         message: "上传失败",
-    //         description: res.status,
-    //       });
-    //     }
-    //   })
-    //     .then(res => res.json())
-    //     .then(() => {
-    //       setFileList([])
-    //       message.success('upload successfully.');
-    //     })
-    //     .catch(() => {
-    //       message.error('upload failed.');
-    //     })
-    // };
-
-    // const fileList = [
-    //   {
-    //     uid: "-1",
-    //     name: "xxx.png",
-    //     status: "done",
-    //     url: "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-    //     thumbUrl:
-    //       "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
-    //   },
-    //   {
-    //     uid: "-2",
-    //     name: "yyy.png",
-    //     status: "error",
-    //   },
-    // ];
     const onFinish = (values) => {
       api.ChangeSiteSettings(values);
-      // let formData = new FormData();
-      // fileList.forEach(file => {
-      //   formData.append('file', file);
-      // });
-      // websiteSettingsForm.validateFields((err,data)=>{
-      //   let { filename, filetype, describe } = values;
-      //   formData.append('name', filename);
-      //   formData.append('type', filetype);
-
-      //   UploadFile(formData).then(res => { //这个是请求
-      //     if (res.status == 200 && res.data != undefined) {
-      //       notification.success({
-      //         message: "上传成功",
-      //         description: res.data,
-      //       });
-      //     } else {
-      //       notification.error({
-      //         message: "上传失败",
-      //         description: res.status,
-      //       });
-      //     }
-      //   })
-
-      // })
       if (BackstageLogoFile) {
         const formData = new FormData();
         // fileList.forEach(file => {
@@ -595,7 +372,7 @@ const Demo = () => {
     };
 
     const ChangeInterfaceConfiguration = (values) => {
-      api.ChangeInterfaceConfiguration(values);
+      api.SetInterfaceUrl(values);
       message.success("接口修改成功");
     };
 
@@ -633,31 +410,33 @@ const Demo = () => {
       api.SiteSettings().then((response) => {
         websiteSettingsForm.setFieldsValue({
           WebsiteAbbreviation: response.data.WebsiteAbbreviation,
-          WebsiteDomainName: response.data.WebsiteDomainName,
-          CopyrightInformation: response.data.CopyrightInformation,
-          RecordNumber: response.data.RecordNumber,
-          ServiceHotline: response.data.ServiceHotline,
-          Address: response.data.Address,
-          Disclaimers: response.data.Disclaimers,
         });
         // console.log('ii')
         // apiLog.MetaDataLog().then(response =>{setLogData15(response.data)} )
       });
       api.CoreSettings().then((response) => {
         coreSettingsForm.setFieldsValue({
-          MobileDomainName: response.data.MobileDomainName,
-          PCDomainName: response.data.PCDomainName,
+          ICP_record_number: response.data.ICP_record_number,
+          network_record_number: response.data.network_record_number,
+          url_about_us: response.data.url_about_us,
+          url_contact_detail: response.data.url_contact_detail,
+          url_privacy_security: response.data.url_privacy_security,
+          url_website_statement: response.data.url_website_statement,
+          url_website_map: response.data.url_website_map,
+          url_help: response.data.url_help,
+          url_icp_record: response.data.url_icp_record,
+          url_network_record: response.data.url_network_record,
         });
       });
-      api.InterfaceConfiguration().then((response) => {
+      api.GetInterfaceUrl().then((response) => {
         interfaceConfigurationForm.setFieldsValue({
-          OfficialWebsite: response.data.OfficialWebsite,
-          OfficialAccount: response.data.OfficialAccount,
+          api_GZSRSJGW: response.data.data.api_GZSRSJGW,
+          api_GZSRSJWX: response.data.data.api_GZSRSJWX,
+          api_SHBAPP: response.data.data.api_SHBAPP,
+          api_GDZWFWPT: response.data.data.api_GDZWFWPT,
+          api_ZNFWJQRPT: response.data.data.api_ZNFWJQRPT,
+          api_BDDT: response.data.data.api_BDDT,
         });
-        setOfficialWebsite(response.data.OfficialWebsite);
-        setOfficialAccount(response.data.OfficialAccount);
-        // setAPP(response.data.APP)
-        // setCloudPlatform(response.data.CloudPlatform)
       });
       getLog();
     }, []);
@@ -835,7 +614,7 @@ const Demo = () => {
   };
 
   const ChangeInterfaceConfiguration = (values) => {
-    api.ChangeInterfaceConfiguration(values);
+    api.SetInterfaceUrl(values);
     message.success("接口修改成功");
   };
 
@@ -872,34 +651,41 @@ const Demo = () => {
   useEffect(() => {
     api.SiteSettings().then((response) => {
       websiteSettingsForm.setFieldsValue({
-        WebsiteAbbreviation: response.data.WebsiteAbbreviation,
-        WebsiteDomainName: response.data.WebsiteDomainName,
-        CopyrightInformation: response.data.CopyrightInformation,
-        RecordNumber: response.data.RecordNumber,
-        ServiceHotline: response.data.ServiceHotline,
-        Address: response.data.Address,
-        Disclaimers: response.data.Disclaimers,
+        WebsiteAbbreviation: response.data.WebsiteAbbreviation
       });
       // console.log('ii')
       // apiLog.MetaDataLog().then(response =>{setLogData15(response.data)} )
     });
     api.CoreSettings().then((response) => {
       coreSettingsForm.setFieldsValue({
-        MobileDomainName: response.data.MobileDomainName,
-        PCDomainName: response.data.PCDomainName,
+        ICP_record_number: response.data.ICP_record_number,
+        network_record_number: response.data.network_record_number,
+        url_about_us: response.data.url_about_us,
+        url_contact_detail: response.data.url_contact_detail,
+        url_privacy_security: response.data.url_privacy_security,
+        url_website_statement: response.data.url_website_statement,
+        url_website_map: response.data.url_website_map,
+        url_help: response.data.url_help,
+        url_icp_record: response.data.url_icp_record,
+        url_network_record: response.data.url_network_record,
       });
     });
-    api.InterfaceConfiguration().then((response) => {
+    api.GetInterfaceUrl().then((response) => {
       interfaceConfigurationForm.setFieldsValue({
-        OfficialWebsite: response.data.OfficialWebsite,
-        OfficialAccount: response.data.OfficialAccount,
+        api_GZSRSJGW: response.data.data.api_GZSRSJGW,
+        api_GZSRSJWX: response.data.data.api_GZSRSJWX,
+        api_SHBAPP: response.data.data.api_SHBAPP,
+        api_GDZWFWPT: response.data.data.api_GDZWFWPT,
+        api_ZNFWJQRPT: response.data.data.api_ZNFWJQRPT,
+        api_BDDT: response.data.data.api_BDDT,
       });
-      setOfficialWebsite(response.data.OfficialWebsite);
-      setOfficialAccount(response.data.OfficialAccount);
-      setSHBAPP(response.data.SHBAPP);
-      // setAPP(response.data.APP)
-      // setCloudPlatform(response.data.CloudPlatform)
     });
+    api
+      .GetNetworkStatus()
+      .then((response) => {
+        setInterfaceStatus(response.data.data)
+      })
+      .catch((error) => console.log(error));
     getLog();
   }, []);
 
@@ -948,16 +734,6 @@ const Demo = () => {
             form={websiteSettingsForm}
             name="websiteSettings"
           >
-            {/* <Form.Item label="网站状态" name="WebsiteStatus">
-    <Switch
-      checked={WebsiteStatus}
-      checkedChildren="开"
-      unCheckedChildren="关"
-      onChange={() => {
-        setWebsiteStatus(!WebsiteStatus);
-      }}
-    />{" "}
-  </Form.Item> */}
             <Form.Item
               label="网站简称"
               name="WebsiteAbbreviation"
@@ -1135,14 +911,14 @@ const Demo = () => {
             <h2>备案号设置</h2>
             <Form.Item
               label="粤公安网备案号"
-              name="RecordNumber"
+              name="network_record_number"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
               label="粤ICP备案号"
-              name="RecordNumber"
+              name="ICP_record_number"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
@@ -1150,42 +926,56 @@ const Demo = () => {
             <h2>网页下方超链接设置</h2>
             <Form.Item
               label="关于我们"
-              name="about_us"
+              name="url_about_us"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
               label="联系方式"
-              name="contact_detail"
+              name="url_contact_detail"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
               label="隐私安全"
-              name="privacy_security"
+              name="url_privacy_security"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
               label="网站声明"
-              name="website_statement"
+              name="url_website_statement"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="网站地图"
+              name="url_website_map"
+              rules={[{ message: "Please input your username!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="使用帮助"
+              name="url_help"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
               label="粤公安网备"
-              name="network_record"
+              name="url_icp_record"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
               label="粤ICP备案"
-              name="icp_record"
+              name="url_network_record"
               rules={[{ message: "Please input your username!" }]}
             >
               <Input style={{ width: "700px" }} />
@@ -1210,41 +1000,38 @@ const Demo = () => {
                 <h2>入口配置</h2>
                 <Form.Item
                   label="广州市人社局官网"
-                  name="OfficialWebsite"
+                  name="api_GZSRSJGW"
                   rules={[{ message: "Please input your username!" }]}
                   // validateStatus="success"
                   // hasFeedback
                 >
-                  {/*<Input style={{ width: "700px" }} bordered={false} disabled={true} />*/}
-                  {officialWebsite}
+                  <Input style={{ width: "700px" }}/>
                 </Form.Item>
                 <Form.Item
                   label="广州市人社局微信公众号"
-                  name="OfficialAccount"
+                  name="api_GZSRSJWX"
                   rules={[{ message: "Please input your username!" }]}
                 >
-                  {/*<Input  style={{ width: "700px" }} />*/}
-                  {officialAccount}
+                  <Input  style={{ width: "700px" }} />
                 </Form.Item>
                 <Form.Item
                   label="穗好办APP"
-                  name="APP"
-                  rules={[{ message: "Please input your username!" }]}
-                >
-                  {/* <Input style={{ width: "700px" }} /> */}
-                  {SHBAPP}
-                </Form.Item>
-                <h2>出口配置</h2>
-                <Form.Item
-                  label="广东省政务综合服务平台"
-                  name="ServicePlatform"
+                  name="api_SHBAPP"
                   rules={[{ message: "Please input your username!" }]}
                 >
                   <Input style={{ width: "700px" }} />
                 </Form.Item>
+                <h2>出口配置</h2>
+                <Form.Item
+                  label="广东省政务综合服务平台"
+                  name="api_GDZWFWPT"
+                  rules={[{ message: "Please input your username!" }]}
+                >
+                  <Input style={{ width: "700px" }}/>
+                </Form.Item>
                 <Form.Item
                   label="智能服务机器人云平台"
-                  name="CloudPlatform"
+                  name="api_ZNFWJQRPT"
                   rules={[{ message: "Please input your username!" }]}
                 >
                   <Input style={{ width: "700px" }} />
@@ -1252,7 +1039,7 @@ const Demo = () => {
                 <h2>其他配置</h2>
                 <Form.Item
                   label="百度地图"
-                  name="BaiduMaps"
+                  name="api_BDDT"
                   rules={[{ message: "Please input your username!" }]}
                 >
                   <Input style={{ width: "700px" }} />
@@ -1281,31 +1068,32 @@ const Demo = () => {
                   }
                 </Form.Item>
                 <Form.Item label="广州市人社局接口" name="OfficialWebsite">
-                  {getMyState(0)}
+                  {/* {getMyState(0)} */}
+                  {interfaceStatus.GZSRSJGW}
                 </Form.Item>
                 <Form.Item
                   label="广州人设微信公众号接口"
                   name="OfficialWebsite"
                 >
-                  良好
+                  {interfaceStatus.GZSRSJWX}
                 </Form.Item>
                 <Form.Item label="穗好办APP接口" name="OfficialWebsite">
-                  良好
+                {interfaceStatus.SHBAPP}
                 </Form.Item>
                 <Form.Item
                   label="智能服务机器人云平台接口"
                   name="OfficialWebsite"
                 >
-                  良好
+                  {interfaceStatus.ZNFWJQRYPT}
                 </Form.Item>
                 <Form.Item
                   label="广东省政务服务综合平台接口"
                   name="OfficialWebsite"
                 >
-                  良好
+                  {interfaceStatus.GDZWFWPT}
                 </Form.Item>
                 <Form.Item label="百度地图接口" name="OfficialWebsite">
-                  良好
+                {interfaceStatus.BDDT}
                 </Form.Item>
               </Form>
             </Col>
