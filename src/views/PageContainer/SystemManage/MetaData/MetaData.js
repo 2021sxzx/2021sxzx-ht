@@ -412,16 +412,18 @@ const Demo = () => {
       });
       api.CoreSettings().then((response) => {
         coreSettingsForm.setFieldsValue({
-          ICP_record_number: response.data.ICP_record_number,
-          network_record_number: response.data.network_record_number,
-          url_about_us: response.data.url_about_us,
-          url_contact_detail: response.data.url_contact_detail,
-          url_privacy_security: response.data.url_privacy_security,
-          url_website_statement: response.data.url_website_statement,
-          url_website_map: response.data.url_website_map,
-          url_help: response.data.url_help,
-          url_icp_record: response.data.url_icp_record,
-          url_network_record: response.data.url_network_record,
+          ICP_record_number: response.data.data.ICP_record_number,
+          network_record_number: response.data.data.network_record_number,
+          url_about_us: response.data.data.url_about_us,
+          url_contact_detail: response.data.data.url_contact_detail,
+          url_privacy_security: response.data.data.url_privacy_security,
+          url_website_statement: response.data.data.url_website_statement,
+          url_website_map: response.data.data.url_website_map,
+          url_help: response.data.data.url_help,
+          url_icp_record: response.data.data.url_icp_record,
+          url_network_record: response.data.data.url_network_record,
+          copyright: response.data.data.copyright,
+          siteCode: response.data.data.siteCode
         });
       });
       api.GetInterfaceUrl().then((response) => {
@@ -664,6 +666,8 @@ const Demo = () => {
         url_help: response.data.data.url_help,
         url_icp_record: response.data.data.url_icp_record,
         url_network_record: response.data.data.url_network_record,
+        copyright: response.data.data.copyright,
+        siteCode: response.data.data.siteCode
       });
     });
     api.GetInterfaceUrl().then((response) => {
@@ -914,14 +918,14 @@ const Demo = () => {
             <Form.Item
               label="粤公安网备案号"
               name="network_record_number"
-              rules={[{ message: "Please input your username!" }]}
+              rules={[{ message: "Please input network_record_number!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
               label="粤ICP备案号"
               name="ICP_record_number"
-              rules={[{ message: "Please input your username!" }]}
+              rules={[{ message: "Please input ICP_record_number!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
@@ -929,56 +933,71 @@ const Demo = () => {
             <Form.Item
               label="关于我们"
               name="url_about_us"
-              rules={[{ message: "Please input your username!" }]}
+              rules={[{ message: "Please input url_about_us!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
               label="联系方式"
               name="url_contact_detail"
-              rules={[{ message: "Please input your username!" }]}
+              rules={[{ message: "Please input url_contact_detail!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
               label="隐私安全"
               name="url_privacy_security"
-              rules={[{ message: "Please input your username!" }]}
+              rules={[{ message: "Please input url_privacy_security!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
               label="网站声明"
               name="url_website_statement"
-              rules={[{ message: "Please input your username!" }]}
+              rules={[{ message: "Please input url_website_statement!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
               label="网站地图"
               name="url_website_map"
-              rules={[{ message: "Please input your username!" }]}
+              rules={[{ message: "Please input url_website_map!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
               label="使用帮助"
               name="url_help"
-              rules={[{ message: "Please input your username!" }]}
+              rules={[{ message: "Please input url_help!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
               label="粤公安网备"
               name="url_icp_record"
-              rules={[{ message: "Please input your username!" }]}
+              rules={[{ message: "Please input url_icp_record!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
             <Form.Item
               label="粤ICP备案"
               name="url_network_record"
-              rules={[{ message: "Please input your username!" }]}
+              rules={[{ message: "Please input url_network_record!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <h2>其他设置</h2>
+            <Form.Item
+              label="版权所有"
+              name="copyright"
+              rules={[{ message: "Please input copyright!" }]}
+            >
+              <Input style={{ width: "700px" }} />
+            </Form.Item>
+            <Form.Item
+              label="网站标识码"
+              name="siteCode"
+              rules={[{ message: "Please input siteCode!" }]}
             >
               <Input style={{ width: "700px" }} />
             </Form.Item>
