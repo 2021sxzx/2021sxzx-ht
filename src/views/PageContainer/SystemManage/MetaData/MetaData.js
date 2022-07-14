@@ -24,7 +24,6 @@ import apiLog from "../../../../api/log";
 import "./MetaData.css";
 import UsersChart from "./UsersChart";
 
-
 const { TabPane } = Tabs;
 
 //弹窗Modal
@@ -230,13 +229,10 @@ const Demo = () => {
   const [SHBAPPQRCode, setSHBAPPQRCode] = React.useState(null);
 
   //Interface
-  const [api_GZSRSJGW, setApi_GZSRSJGW] = React.useState(null);
-  const [api_GZSRSJWX, setApi_GZSRSJWX] = React.useState(null);
-  const [api_SHBAPP, setApi_SHBAPP] = React.useState(null);
-  const [api_GDZWFWPT, setApi_GDZWFWPT] = React.useState(null);
-  const [api_ZNFWJQRPT, setApi_ZNFWJQRPT] = React.useState(null);
-  const [api_BDDT, setApi_BDDT] = React.useState(null);
   const [interfaceStatus, setInterfaceStatus] = React.useState({});
+
+  //LogPath
+  const [logPath, setLogPath] = React.useState({});
 
   const onFinish = (values) => {
     api.ChangeSiteSettings(values);
@@ -651,7 +647,7 @@ const Demo = () => {
   useEffect(() => {
     api.SiteSettings().then((response) => {
       websiteSettingsForm.setFieldsValue({
-        WebsiteAbbreviation: response.data.WebsiteAbbreviation
+        WebsiteAbbreviation: response.data.WebsiteAbbreviation,
       });
       // console.log('ii')
       // apiLog.MetaDataLog().then(response =>{setLogData15(response.data)} )
@@ -683,7 +679,13 @@ const Demo = () => {
     api
       .GetNetworkStatus()
       .then((response) => {
-        setInterfaceStatus(response.data.data)
+        setInterfaceStatus(response.data.data);
+      })
+      .catch((error) => console.log(error));
+    api
+      .GetLogPath()
+      .then((response) => {
+        setLogPath(response.data)
       })
       .catch((error) => console.log(error));
     getLog();
@@ -987,7 +989,7 @@ const Demo = () => {
             </Form.Item>
           </Form>
         </TabPane>
-        <TabPane tab="接口配置" key="5">
+        <TabPane tab="接口设置" key="5">
           <Row>
             <Col span={18}>
               <Form
@@ -1005,14 +1007,14 @@ const Demo = () => {
                   // validateStatus="success"
                   // hasFeedback
                 >
-                  <Input style={{ width: "700px" }}/>
+                  <Input style={{ width: "700px" }} />
                 </Form.Item>
                 <Form.Item
                   label="广州市人社局微信公众号"
                   name="api_GZSRSJWX"
                   rules={[{ message: "Please input your username!" }]}
                 >
-                  <Input  style={{ width: "700px" }} />
+                  <Input style={{ width: "700px" }} />
                 </Form.Item>
                 <Form.Item
                   label="穗好办APP"
@@ -1027,7 +1029,7 @@ const Demo = () => {
                   name="api_GDZWFWPT"
                   rules={[{ message: "Please input your username!" }]}
                 >
-                  <Input style={{ width: "700px" }}/>
+                  <Input style={{ width: "700px" }} />
                 </Form.Item>
                 <Form.Item
                   label="智能服务机器人云平台"
@@ -1078,7 +1080,7 @@ const Demo = () => {
                   {interfaceStatus.GZSRSJWX}
                 </Form.Item>
                 <Form.Item label="穗好办APP接口" name="OfficialWebsite">
-                {interfaceStatus.SHBAPP}
+                  {interfaceStatus.SHBAPP}
                 </Form.Item>
                 <Form.Item
                   label="智能服务机器人云平台接口"
@@ -1093,25 +1095,25 @@ const Demo = () => {
                   {interfaceStatus.GDZWFWPT}
                 </Form.Item>
                 <Form.Item label="百度地图接口" name="OfficialWebsite">
-                {interfaceStatus.BDDT}
+                  {interfaceStatus.BDDT}
                 </Form.Item>
               </Form>
             </Col>
           </Row>
         </TabPane>
-        <TabPane tab="URL配置" key="4">
+        <TabPane tab="日志路径查看" key="4">
           <Form labelCol={{ span: 4 }}>
             <Form.Item label="系统日志路径" name="SystemLogPath" width="200px">
-              /root/sxzx/sxzx/log
+              {logPath.systemLogPath}
             </Form.Item>
             <Form.Item label="数据库日志路径" name="DatabaseLogPath">
-              /usr/local/mongodb/logs
+              {logPath.databaseLogPath}
             </Form.Item>
             <Form.Item label="操作系统日志路径" name="OSLogPath">
-              /var/log
+              {logPath.OSLogPath}
             </Form.Item>
             <Form.Item label="中间件日志路径" name="MiddleWareLogPath">
-              /usr/local/redis/log
+              {logPath.middlewareLogPath}
             </Form.Item>
           </Form>
         </TabPane>

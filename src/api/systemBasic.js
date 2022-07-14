@@ -57,6 +57,13 @@ const api ={
             url: "v1/interface",
             data
         });
+    },
+    GetLogPath(data){
+        return service.request({
+            method: "get",
+            url: "/v1/log-path",
+            data
+        });
     }
 }
 
