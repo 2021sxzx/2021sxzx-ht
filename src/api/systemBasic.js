@@ -32,7 +32,7 @@ const api ={
     },
     ChangeCoreSettings(data){
         return service.request({
-            method:"post",
+            method:"patch",
             url: "v1/core-settings",
             data
         })

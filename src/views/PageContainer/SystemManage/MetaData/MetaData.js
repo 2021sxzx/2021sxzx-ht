@@ -654,16 +654,16 @@ const Demo = () => {
     });
     api.CoreSettings().then((response) => {
       coreSettingsForm.setFieldsValue({
-        ICP_record_number: response.data.ICP_record_number,
-        network_record_number: response.data.network_record_number,
-        url_about_us: response.data.url_about_us,
-        url_contact_detail: response.data.url_contact_detail,
-        url_privacy_security: response.data.url_privacy_security,
-        url_website_statement: response.data.url_website_statement,
-        url_website_map: response.data.url_website_map,
-        url_help: response.data.url_help,
-        url_icp_record: response.data.url_icp_record,
-        url_network_record: response.data.url_network_record,
+        ICP_record_number: response.data.data.ICP_record_number,
+        network_record_number: response.data.data.network_record_number,
+        url_about_us: response.data.data.url_about_us,
+        url_contact_detail: response.data.data.url_contact_detail,
+        url_privacy_security: response.data.data.url_privacy_security,
+        url_website_statement: response.data.data.url_website_statement,
+        url_website_map: response.data.data.url_website_map,
+        url_help: response.data.data.url_help,
+        url_icp_record: response.data.data.url_icp_record,
+        url_network_record: response.data.data.url_network_record,
       });
     });
     api.GetInterfaceUrl().then((response) => {
