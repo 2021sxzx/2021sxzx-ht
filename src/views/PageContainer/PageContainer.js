@@ -69,19 +69,15 @@ export default withRouter(function PageContainer(props) {
     });
     useEffect(() => {
         let count = 0; // 计时器
-        const timeInterval = [55, 60]; // 心跳时间区间
+        const timeInterval = [590, 600]; // 心跳时间区间
         let heartbeat = setInterval(() => {
             const threshold = 1 / (timeInterval[1] - count); // 检测阈值
-            // 心跳逻辑：当计时器大于等于最小心跳时间，且随机数 checker 小于检测阈值时心跳，反之计时器自增
             const checker = Math.random();
-            console.log(`interval = ${heartbeatRef.current}, count = ${count}, checker = ${checker.toFixed(2)}, threshold = ${threshold.toFixed(2)}`);
             if (count >= timeInterval[0] && checker < threshold) {
-                console.log(`checking heartbeat = ${heartbeatRef.current}`);
                 count = 0;
                 if (heartbeatRef.current) {
                     setHeartbeat(false);
                     api.IsLogin().then((res) => {
-                        console.log(`api.IsLogin() = ${res}`);
                         if (!res) api.logout();
                     });
                 } else api.logout();
@@ -93,7 +89,6 @@ export default withRouter(function PageContainer(props) {
         const body = document.body;
         body.onmousemove = body.onmousedown = body.onkeydown = () => {
             setHeartbeat(true);
-            console.log('body event heartbeat = ' + shouldHeartbeat);
         }
         return () => body.onmousemove = body.onmousedown = body.onkeydown = null
     }, [])
