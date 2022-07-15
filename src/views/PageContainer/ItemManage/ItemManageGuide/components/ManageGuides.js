@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { Dropdown, Space, Menu, Tabs, Button, Table, Modal, message } from 'antd'
-const { TabPane } = Tabs
-import { getYMD } from "../../../../../utils/TimeStamp"
+import React, {useEffect, useState} from 'react'
+import {Dropdown, Space, Menu, Tabs, Button, Table, Modal, message} from 'antd'
+
+const {TabPane} = Tabs
+import {getYMD} from "../../../../../utils/TimeStamp"
 import api from '../../../../../api/rule'
 import SelectForm from './SelectForm'
 
@@ -18,22 +19,22 @@ export default function ManageGuide(props) {
     // 用于获取批量处理的事项规则id
     const [selectedRowKeys, setSelectedRowKeys] = useState([])
     const [isBatching, setIsBatching] = useState(false)
-    const onSelectionChange = keys=>{
+    const onSelectionChange = keys => {
         setIsBatching(keys.length > 0)
         setSelectedRowKeys(keys)
     }
     const rowSelection = {
         selectedRowKeys,
         onChange: onSelectionChange,
-        getCheckboxProps: (record)=>({
+        getCheckboxProps: (record) => ({
             // 不允许删除中间节点
             disabled: (record.task_status === 1)
         })
     }
     // 当前展示的页数，用于重置时归零
-    const [current, setCurrent] = useState(0) 
-    const [currPageSize, setCurrPageSize] = useState(10) 
-    const [totalSize, setTotalSize] = useState(0) 
+    const [current, setCurrent] = useState(0)
+    const [currPageSize, setCurrPageSize] = useState(10)
+    const [totalSize, setTotalSize] = useState(0)
 
     const serviceType = {
         '1': '自然人',
@@ -117,7 +118,7 @@ export default function ManageGuide(props) {
             title: '创建时间',
             key: 'create_time',
             width: 120,
-            render: (text, record)=>(
+            render: (text, record) => (
                 <Space size='middle'>
                     {getYMD(record.create_time)}
                 </Space>
@@ -127,42 +128,49 @@ export default function ManageGuide(props) {
             title: '操作',
             key: 'operation',
             width: 120,
-            render: (text, record)=>(
-                <Dropdown overlay={
-                    <Menu>
-                        <Menu.Item key='0'>
-                            <Button type='primary' style={{width: 88}} onClick={function(){
-                                modifyItemGuide(record.task_code)
-                            }}>
-                                编辑
-                            </Button>
-                        </Menu.Item>
-                        <Menu.Item key='1'>
-                            <Button type='primary' onClick={function(){
-                                getGuideDetail(record.task_code)
-                            }}>
-                                查看详情
-                            </Button>
-                        </Menu.Item>
-                        <Menu.Item key='2'>
-                            <Button type='primary' style={{width: 88}} onClick={function(){
-                                message.info('导出！')
-                            }}>
-                                导出
-                            </Button>
-                        </Menu.Item>
-                        {
-                            record.task_status === 0 &&
-                            <Menu.Item key='3'>
-                                <Button style={{backgroundColor: 'red', color: 'white', width: 88}} onClick={function(){
-                                    deleteSingleItem(record.task_code)
+            render: (text, record) => (
+                <Dropdown
+                    overlay={
+                        <Menu>
+                            <Menu.Item key='0'>
+                                <Button type='primary' style={{width: 88}} onClick={function () {
+                                    modifyItemGuide(record.task_code)
                                 }}>
-                                    删除
+                                    编辑
                                 </Button>
                             </Menu.Item>
-                        }
-                    </Menu>
-                } trigger={['click']}>
+                            <Menu.Item key='1'>
+                                <Button type='primary' onClick={function () {
+                                    getGuideDetail(record.task_code)
+                                }}>
+                                    查看详情
+                                </Button>
+                            </Menu.Item>
+                            <Menu.Item key='2'>
+                                <Button type='primary' style={{width: 88}} onClick={function () {
+                                    message.info('导出！')
+                                }}>
+                                    导出
+                                </Button>
+                            </Menu.Item>
+                            {
+                                record.task_status === 0 &&
+                                <Menu.Item key='3'>
+                                    <Button style={{backgroundColor: 'red', color: 'white', width: 88}}
+                                            onClick={function () {
+                                                deleteSingleItem(record.task_code)
+                                            }}>
+                                        删除
+                                    </Button>
+                                </Menu.Item>
+                            }
+                        </Menu>
+                    }
+                    trigger={['click', 'hover']}
+                    getPopupContainer={(triggerNode) => {
+                        return triggerNode.parentNode
+                    }}
+                >
                     <Button type='primary'>
                         操作
                     </Button>
@@ -171,10 +179,10 @@ export default function ManageGuide(props) {
         }
     ]
 
-    const getGuideDetail = (task_code)=>{
+    const getGuideDetail = (task_code) => {
         api.GetItemGuide({
             task_code: task_code
-        }).then(response=>{
+        }).then(response => {
             // 将数据处理为有序格式
             let data = response.data.data
             let detailTable = []
@@ -192,8 +200,8 @@ export default function ManageGuide(props) {
             })
             // 政策依据数组处理
             let tempLegalBasis = ''
-            if (data.legal_basis){
-                for (let i = 0; i < data.legal_basis.length; i++){
+            if (data.legal_basis) {
+                for (let i = 0; i < data.legal_basis.length; i++) {
                     tempLegalBasis += ((i + 1) + '.' + data.legal_basis[i].name + '\n')
                 }
             }
@@ -210,34 +218,34 @@ export default function ManageGuide(props) {
             detailTable.push({
                 'detailType': '申办所需材料',
                 'detailInfo': (!data.submit_documents || data.submit_documents.length === 0) ? '' :
-                <Tabs defaultActiveKey='0' tabPosition='left' style={{whiteSpace: 'pre-wrap'}}>
-                    {
-                        data.submit_documents.map((item, index)=>(
-                            'materials_name' in item &&
-                            <TabPane tab={item.materials_name} key={index}>
-                                {
-                                    ('原件数量： ' + item.origin) +
-                                    ('\n复印件数量： ' + item.copy) + 
-                                    (item.material_form ? ('\n材料形式： ' + formType[item.material_form]) : '') + 
-                                    (item.page_format ? ('\n纸质材料规格： ' + item.page_format) : '') +
-                                    (item.material_necessity ? ('\n是否必要： ' + necessityType[item.material_necessity]) : '') +
-                                    (item.material_type ? ('\n材料类型： ' + typesType[item.material_type]) : '') +
-                                    (item.submissionrequired ? ('\n是否免提交： ' + requiredType[item.submissionrequired]) : '')
-                                }
-                            </TabPane>
-                        ))
-                    }
-                </Tabs>
+                    <Tabs defaultActiveKey='0' tabPosition='left' style={{whiteSpace: 'pre-wrap'}}>
+                        {
+                            data.submit_documents.map((item, index) => (
+                                'materials_name' in item &&
+                                <TabPane tab={item.materials_name} key={index}>
+                                    {
+                                        ('原件数量： ' + item.origin) +
+                                        ('\n复印件数量： ' + item.copy) +
+                                        (item.material_form ? ('\n材料形式： ' + formType[item.material_form]) : '') +
+                                        (item.page_format ? ('\n纸质材料规格： ' + item.page_format) : '') +
+                                        (item.material_necessity ? ('\n是否必要： ' + necessityType[item.material_necessity]) : '') +
+                                        (item.material_type ? ('\n材料类型： ' + typesType[item.material_type]) : '') +
+                                        (item.submissionrequired ? ('\n是否免提交： ' + requiredType[item.submissionrequired]) : '')
+                                    }
+                                </TabPane>
+                            ))
+                        }
+                    </Tabs>
             })
             // 审核时限格式处理
             let tempTimeLimit = ''
-            if (data.legal_period_type){
-                tempTimeLimit += ('法定办结时限：' + data.legal_period + '个' + 
+            if (data.legal_period_type) {
+                tempTimeLimit += ('法定办结时限：' + data.legal_period + '个' +
                     (data.legal_period_type === '1' ? '工作日' : '自然日'))
             }
-            if (data.promised_period_type){
+            if (data.promised_period_type) {
                 if (tempTimeLimit !== '') tempTimeLimit += '\n'
-                tempTimeLimit += ('承诺办结时限：' + data.promised_period + '个' + 
+                tempTimeLimit += ('承诺办结时限：' + data.promised_period + '个' +
                     (data.promised_period_type === '1' ? '工作日' : '自然日'))
             }
             detailTable.push({
@@ -271,30 +279,31 @@ export default function ManageGuide(props) {
             detailTable.push({
                 'detailType': '办理点信息',
                 'detailInfo': (!data.windows || data.windows.length === 0) ? '' :
-                <Tabs defaultActiveKey='0' tabPosition='left' style={{whiteSpace: 'pre-wrap'}}>
-                    {
-                        data.windows.map((item, index)=>(
-                            'name' in data.windows[index] &&
-                            <TabPane tab={data.windows[index].name} key={index}>
-                                {
-                                    '办理地点： ' + data.windows[index].address +
-                                    '\n\n咨询及投诉电话： ' + data.windows[index].phone + 
-                                    '\n\n办公时间： ' + data.windows[index].office_hour
-                                }
-                            </TabPane>
-                        ))
-                    }
-                </Tabs>
+                    <Tabs defaultActiveKey='0' tabPosition='left' style={{whiteSpace: 'pre-wrap'}}>
+                        {
+                            data.windows.map((item, index) => (
+                                'name' in data.windows[index] &&
+                                <TabPane tab={data.windows[index].name} key={index}>
+                                    {
+                                        '办理地点： ' + data.windows[index].address +
+                                        '\n\n咨询及投诉电话： ' + data.windows[index].phone +
+                                        '\n\n办公时间： ' + data.windows[index].office_hour
+                                    }
+                                </TabPane>
+                            ))
+                        }
+                    </Tabs>
             })
             detailTable.push({
                 'detailType': '二维码',
-                'detailInfo': data.qr_code === '' ? '暂无' : 
-                <img style={{height: 128, width: 128}} src={(api.GetServerIP() === '/api' ? 'http://localhost:5001' : api.GetServerIP()) + data.qr_code}/>
+                'detailInfo': data.qr_code === '' ? '暂无' :
+                    <img style={{height: 128, width: 128}}
+                         src={(api.GetServerIP() === '/api' ? 'http://localhost:5001' : api.GetServerIP()) + data.qr_code}/>
             })
             // 服务对象类型数组处理
             let type = data.service_object_type.split(',')
             let tempServiceType = ''
-            for (let i = 0; i < type.length; i++){
+            for (let i = 0; i < type.length; i++) {
                 if (tempServiceType !== '') tempServiceType += '、'
                 tempServiceType += serviceType[type[i]]
             }
@@ -303,48 +312,48 @@ export default function ManageGuide(props) {
                 'detailInfo': tempServiceType
             })
             setGuideDetail(detailTable)
-        }).catch(error=>{
+        }).catch(error => {
             props.showError('获取事项详情失败！')
             console.log(error)
         })
     }
 
-    const endShowing = ()=>{
+    const endShowing = () => {
         setIsDetailShown(false)
         setGuideDetail({})
     }
 
-    useEffect(function(){
-        for (let key in guideDetail){
+    useEffect(function () {
+        for (let key in guideDetail) {
             setIsDetailShown(true)
             break
         }
     }, [guideDetail])
 
-    const getItemGuides = ()=>{
+    const getItemGuides = () => {
         setTableLoading(true)
         let data = originData
         data['page_num'] = current
         data['page_size'] = currPageSize
         // 获取所有事项指南
-        api.GetItemGuides(data).then(response=>{
+        api.GetItemGuides(data).then(response => {
             let guides = response.data.data.data
             setTotalSize(response.data.data.total)
-            for (let i = 0; i < guides.length; i++){
+            for (let i = 0; i < guides.length; i++) {
                 guides[i]['creator_name'] = guides[i].creator.name
                 guides[i]['department_name'] = guides[i].creator.department_name
                 guides[i]['status'] = guides[i].task_status === 0 ? '未绑定' : '已绑定'
             }
             setTableData(guides)
             setTableLoading(false)
-        }).catch(error=>{
+        }).catch(error => {
             console.log(error)
             props.showError('获取指南失败！')
             setTableLoading(false)
         })
     }
 
-    const deleteSingleItem = (id)=>{
+    const deleteSingleItem = (id) => {
         // 删除单个事项，将事项id设为deletingIds
         let str = '确定删除该节点吗？'
         let nodes = [id]
@@ -352,46 +361,46 @@ export default function ManageGuide(props) {
             centered: true,
             title: '删除确认',
             content: str,
-            onOk: function(){
+            onOk: function () {
                 finishDeleting(nodes)
             }
         })
     }
 
-    const handleBatchDelete = ()=>{
+    const handleBatchDelete = () => {
         // 删除多个事项，将selectedRowKeys全部推进deletingIds
-        let str = '确定删除该' + selectedRowKeys.length + '个节点吗？'      
+        let str = '确定删除该' + selectedRowKeys.length + '个节点吗？'
         Modal.confirm({
             centered: true,
             title: '删除确认',
             content: str,
-            onOk: function(){
+            onOk: function () {
                 finishDeleting(selectedRowKeys)
             },
             style: {whiteSpace: 'pre-wrap'}
         })
     }
 
-    const finishDeleting = (id)=>{
+    const finishDeleting = (id) => {
         // 确定删除，调用接口，通过hook触发
         setDeletingIds(id)
     }
 
-    useEffect(function(){
+    useEffect(function () {
         // 避免初始化触发或误触发
         if (deletingIds.length === 0) return
         deleteItemGuides()
     }, [deletingIds])
 
-    const deleteItemGuides = ()=>{
+    const deleteItemGuides = () => {
         let data = {
             task_code: deletingIds
-        } 
+        }
         // 根据事项规则id删除事项规则，删除完之后重新载入事项规则
-        api.DeleteItemGuides(data).then(response=>{ 
+        api.DeleteItemGuides(data).then(response => {
             getItemGuides()
             props.showSuccess()
-        }).catch(error=>{
+        }).catch(error => {
             // 删除报错时，弹出报错框并重新加载数据
             props.showError('删除指南失败！')
             setCurrent(0)
@@ -399,43 +408,43 @@ export default function ManageGuide(props) {
         })
     }
 
-    const searchItemGuide = (data)=>{
+    const searchItemGuide = (data) => {
         setTableLoading(true)
         // 搜索时重置table
         setOriginData(data)
         let totalData = data
         totalData['page_num'] = 0
         totalData['page_size'] = currPageSize
-        api.GetItemGuides(totalData).then(response=>{
+        api.GetItemGuides(totalData).then(response => {
             let guides = response.data.data.data
             setCurrent(0)
             setTotalSize(response.data.data.total)
-            for (let i = 0; i < guides.length; i++){
+            for (let i = 0; i < guides.length; i++) {
                 guides[i]['creator_name'] = guides[i].creator.name
                 guides[i]['department_name'] = guides[i].creator.department_name
                 guides[i]['status'] = guides[i].task_status === 0 ? '未绑定' : '已绑定'
             }
             setTableData(guides)
             setTableLoading(false)
-        }).catch(error=>{
+        }).catch(error => {
             props.showError('搜索指南失败！')
             setTableLoading(false)
         })
     }
 
-    const modifyItemGuide = (id)=>{
+    const modifyItemGuide = (id) => {
         setTableLoading(true)
         api.GetItemGuide({
             task_code: id
-        }).then(response=>{
+        }).then(response => {
             let data = response.data.data
             let tempGuideContent = {}
             tempGuideContent['guideName'] = data.task_name
             tempGuideContent['guideCode'] = data.task_code
             tempGuideContent['guideContent'] = data.apply_content
             let tempAccord = []
-            if (data.legal_basis){
-                for (let i = 0; i < data.legal_basis.length; i++){
+            if (data.legal_basis) {
+                for (let i = 0; i < data.legal_basis.length; i++) {
                     tempAccord.push(data.legal_basis[i].name)
                 }
             }
@@ -458,25 +467,25 @@ export default function ManageGuide(props) {
             tempGuideContent['principleId'] = data.creator.id
             let type = data.service_object_type.split(',')
             let tempServiceType = []
-            for (let i = 0; i < type.length; i++){
+            for (let i = 0; i < type.length; i++) {
                 tempServiceType.push(parseInt(type[i]))
             }
             tempGuideContent['guideServiceType'] = tempServiceType
 
             props.setModifyId(id)
             props.setModifyContent(tempGuideContent)
-        }).catch(error=>{
+        }).catch(error => {
             props.showError('编辑指南时获取指南详情失败！')
-        }) 
+        })
     }
 
-    const handleCreate = ()=>{
+    const handleCreate = () => {
         props.setModifyId('')
         props.setModifyContent({})
         props.setPageType(2)
     }
 
-    const resetSearch = ()=>{
+    const resetSearch = () => {
         setTableLoading(true)
         // 回 归 本 源
         setOriginData({})
@@ -484,24 +493,24 @@ export default function ManageGuide(props) {
         api.GetItemGuides({
             page_num: 0,
             page_size: currPageSize
-        }).then(response=>{
+        }).then(response => {
             let guides = response.data.data.data
             setTotalSize(response.data.data.total)
-            for (let i = 0; i < guides.length; i++){
+            for (let i = 0; i < guides.length; i++) {
                 guides[i]['creator_name'] = guides[i].creator.name
                 guides[i]['department_name'] = guides[i].creator.department_name
                 guides[i]['status'] = guides[i].task_status === 0 ? '未绑定' : '已绑定'
             }
             setTableData(guides)
             setTableLoading(false)
-        }).catch(error=>{
+        }).catch(error => {
             console.log(error)
             props.showError('重置失败！')
             setTableLoading(false)
         })
     }
 
-    const changePage = (page, pageSize)=>{
+    const changePage = (page, pageSize) => {
         // 换页时清空选择
         setSelectedRowKeys([])
         // 更新页面数据
@@ -512,22 +521,22 @@ export default function ManageGuide(props) {
         totalData['page_num'] = page - 1
         totalData['page_size'] = pageSize
         setTableLoading(true)
-        api.GetItemGuides(totalData).then(response=>{
+        api.GetItemGuides(totalData).then(response => {
             let guides = response.data.data.data
-            for (let i = 0; i < guides.length; i++){
+            for (let i = 0; i < guides.length; i++) {
                 guides[i]['creator_name'] = guides[i].creator.name
                 guides[i]['department_name'] = guides[i].creator.department_name
                 guides[i]['status'] = guides[i].task_status === 1 ? '已绑定' : '未绑定'
             }
             setTableData(guides)
             setTableLoading(false)
-        }).catch(error=>{
+        }).catch(error => {
             props.showError('换页时获取指南失败！')
             setTableLoading(false)
         })
     }
 
-    useEffect(()=>{
+    useEffect(() => {
         setCurrent(0)
         resetSearch()
     }, [])
@@ -536,17 +545,19 @@ export default function ManageGuide(props) {
         <>
             <Space direction='vertical' size={12} style={{width: '100%'}}>
                 <Modal width={800} title={guideDetail.task_name} visible={isDetailShown}
-                    destroyOnClose={true} onCancel={endShowing} footer={null}>
-                    <Table style={{whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-all'}} columns={detailColumns} dataSource={guideDetail} rowKey='detailType'/>
+                       destroyOnClose={true} onCancel={endShowing} footer={null}>
+                    <Table style={{whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-all'}}
+                           columns={detailColumns} dataSource={guideDetail} rowKey='detailType'/>
                 </Modal>
-                <SelectForm getSearch={searchItemGuide} reset={resetSearch}></SelectForm>
+                <SelectForm getSearch={searchItemGuide} reset={resetSearch}/>
                 <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
                     <Button type='primary' onClick={handleCreate}>创建指南</Button>
                     <Button type='primary' disabled={!isBatching}>批量导出</Button>
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>
                 </Space>
                 <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='task_code'
-                    pagination={{onChange: changePage, current: current + 1, total: totalSize}} loading={tableLoading}/>
+                       pagination={{onChange: changePage, current: current + 1, total: totalSize}}
+                       loading={tableLoading}/>
             </Space>
         </>
     )
