@@ -9,6 +9,7 @@ if (process.env.NODE_ENV === "development") {
 } else if (process.env.NODE_ENV === "production") {
     BASEURL = 'http://8.134.73.52:80/api'
 }
+//对axios请求进行二次封装，timeout是没执行成功就执行错误消息
 const instance = axios.create({
     baseURL: BASEURL,
     timeout: 100000,
@@ -18,6 +19,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
     function (config) {
         let headers = config.headers
+        //localStorage进行身份验证
         headers.userId = localStorage.getItem('_id') ? localStorage.getItem('_id') : ''
         console.log('请求拦截器',config);
         return config;
