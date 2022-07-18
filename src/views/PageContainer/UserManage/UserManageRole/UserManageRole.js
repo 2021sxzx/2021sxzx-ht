@@ -13,14 +13,27 @@ import style from './UserManageRole.module.scss'
 export default function UserManageRole() {
     const [tableData, setTableData] = useState([])
     const [loading, setLoading] = useState(true)
-
+    // const [tablechanging,setTableChanging] = useState(false)
     // 第一次渲染组件的的时候加载表格数据
     useEffect(() => {
         getRole()
     }, [])
 
     // 从服务器获取角色表格的数据，保存到 tableData 中
-    const getRole = useCallback(() => {
+    // const getRole = useCallback(() => {
+    //     console.log("getting role")
+    //     setLoading(true)
+    //     api.GetRole().then(response => {
+    //         setTableData(response.data.data)
+    //         // console.log(response.data.data[6].permission)
+    //     }).catch(() => {
+    //         message.error('获取角色失败，请稍后重试')
+    //     }).finally(() => {
+    //         setLoading(false)
+    //     })
+    // }, [])
+    const getRole = () => {
+        console.log("getting role")
         setLoading(true)
         api.GetRole().then(response => {
             setTableData(response.data.data)
@@ -29,7 +42,7 @@ export default function UserManageRole() {
         }).finally(() => {
             setLoading(false)
         })
-    }, [])
+    }
 
     // 从服务器中获取搜索结果，保存到 tableData 中
     const getSearchRole = useCallback((data) => {

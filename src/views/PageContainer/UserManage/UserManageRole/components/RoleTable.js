@@ -1,5 +1,5 @@
 import {message, Table, Tag} from "antd";
-import React, {useCallback} from "react";
+import React, {useCallback, useEffect} from "react";
 import api from "../../../../../api/role";
 import RoleModal from "./RoleModal";
 
@@ -14,20 +14,38 @@ import RoleModal from "./RoleModal";
  * @constructor
  */
 export default function RoleTable(props) {
+    // const [tabledata,setTableData] = useState({})
 
     const UpdateRoleInfoAndRefresh = useCallback((data) => {
-        Promise.all([api.UpdateRole(data), api.UpdateRolePermission(data)])
-            .then(() => {
+        console.log("data:",data)
+        // Promise.all([api.UpdateRole(data), api.UpdateRolePermission(data)])
+        //     .then(() => {
+        //         message.success('修改角色信息成功')
+        //     })
+        //     .catch(() => {
+        //         message.error('修改角色信息发生错误')
+        //     })
+        //     .finally(() => {
+        //         props.refreshTableData()
+        //     })
+        api.UpdateRolePermission(data)
+        .then(()=>{
+            api.UpdateRole(data)
+            .then(()=>{
                 message.success('修改角色信息成功')
-            })
-            .catch(() => {
+            }).catch(()=>{
                 message.error('修改角色信息发生错误')
-            })
-            .finally(() => {
-                // 刷新表格
+            }).finally(()=>{
                 props.refreshTableData()
             })
+        }).catch(()=>{
+            message.error('修改角色信息发生错误')
+        })
     }, [])
+
+    // useEffect(()=>[
+
+    // ])
 
     // 表格的属性/列名
     const tableColumns = [
