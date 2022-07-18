@@ -32,26 +32,39 @@ const api ={
     },
     ChangeCoreSettings(data){
         return service.request({
-            method:"post",
+            method:"patch",
             url: "v1/core-settings",
             data
         })
     },
-    InterfaceConfiguration(data){
+    GetNetworkStatus(data) {
         return service.request({
-            method:"get",
-            url: "v1/interface-configuration",
+            method: "get",
+            url: "v1/interface/NetworkStatus",
             data
-        })
+        });
     },
-    ChangeInterfaceConfiguration(data){
+    SetInterfaceUrl(data){
         return service.request({
-            method:"post",
-            url: "v1/interface-configuration",
+            method: "patch",
+            url: "v1/interface",
             data
-        })
+        });
+    },
+    GetInterfaceUrl(data){
+        return service.request({
+            method: "get",
+            url: "v1/interface",
+            data
+        });
+    },
+    GetLogPath(data){
+        return service.request({
+            method: "get",
+            url: "/v1/log-path",
+            data
+        });
     }
-
 }
 
 export default api

@@ -156,7 +156,7 @@ function UserTable(props) {
                     pageSizeOptions: ['5', '10', '15', '20', '25'], // 允许的每页数量
                     showSizeChanger: true, // 是否展示 pageSize 切换器
                     responsive: true, // 当 size 未指定时，根据屏幕宽度自动调整尺寸
-                    showQuickJumper: true, // 是否可以快速跳转至某页
+                    // showQuickJumper: true, // 是否可以快速跳转至某页
                     showTotal: (total) => {// 展示数据总数
                         return (
                             <span

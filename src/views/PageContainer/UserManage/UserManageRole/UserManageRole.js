@@ -10,7 +10,7 @@ import SelectForm from "./components/SelectForm";
 import RoleTable from "./components/RoleTable";
 import style from './UserManageRole.module.scss'
 
-export default function UserManageList() {
+export default function UserManageRole() {
     const [tableData, setTableData] = useState([])
     const [loading, setLoading] = useState(true)
 

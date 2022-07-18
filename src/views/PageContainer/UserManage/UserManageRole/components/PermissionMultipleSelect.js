@@ -1,4 +1,4 @@
-import {Select} from "antd";
+import {message, Select} from "antd";
 import React, {useEffect, useRef, useState} from "react";
 import api from "../../../../../api/role";
 
@@ -15,13 +15,13 @@ import api from "../../../../../api/role";
 export default function PermissionMultipleSelect(props) {
     const {Option} = Select
     const [options, setOptions] = useState([])
-    let componetMounted = useRef(true)
+    let componentMounted = useRef(true)
 
     // 只在初次渲染的时候请求权限列表
     useEffect(() => {
         api.GetPermission().then(response => {
             // When component is still mounted
-            if (componetMounted.current) {
+            if (componentMounted.current) {
                 setOptions(
                     response.data.data.map((item) => {
                         return (
@@ -34,11 +34,12 @@ export default function PermissionMultipleSelect(props) {
                 )
             }
         }).catch(() => {
+            message.error('获取角色权限失败')
         })
 
         // This code runs when component is unmounted
         return () => {
-            componetMounted.current = false
+            componentMounted.current = false
         }
     }, [])
 
