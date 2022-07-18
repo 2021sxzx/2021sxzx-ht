@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from 'react'
 import style from './Personal.module.scss'
-import {Avatar, Card, Image, message} from "antd";
+import {Avatar, Card, Image, Input, message} from "antd";
 import {EditOutlined,} from "@ant-design/icons";
 import Meta from "antd/es/card/Meta";
 import PersonalDescription from "./components/PersonalDescription";
-import UserModal from "../UserManage/UserManageAccount/components/UserModal";
+// import UserModal from "../UserManage/UserManageAccount/components/UserModal";
 import apiPersonal from "../../../api/personal";
 import api from '../../../api/user'
+import ModifyPWDForm from './components/ModifyPwdForm'
 
 function Personal() {
     // 用户信息
@@ -23,7 +24,7 @@ function Personal() {
             <Card
                 className={style.cardStyle}
                 extra={(
-                    <UserModal
+                    <ModifyPWDForm
                         buttonProps={{
                             type: 'text',
                             shape: "circle", // 按钮形状
@@ -75,7 +76,7 @@ function Personal() {
                             display: "inline",
                             fontSize: 20,
                             margin: '15px',
-                        }}>
+                        }}>                           
                             {userInfo.user_name}
                         </div>
                     </div>
@@ -87,6 +88,7 @@ function Personal() {
                     )}
                     className={style.cardMeta}
                 />
+
             </Card>
         </div>
     )
