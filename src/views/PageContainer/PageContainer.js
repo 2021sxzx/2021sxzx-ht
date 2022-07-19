@@ -14,19 +14,19 @@ import ItemAudit from './ItemAudit/ItemAudit.js'
 import CommentManageList from './CommentManageList/CommentManageList.js'
 import CommentManageReport from './CommentManageReport/CommentManageReport.js'
 import MetaData from './SystemManage/MetaData/MetaData.js'
-import SystemManageJournal from "./SystemManage/SystemManageJournal/SystemManageJournal.js";
-import SystemManageResource from "./SystemManage/SystemManageResource/SystemManageResource.js";
+import SystemManageJournal from './SystemManage/SystemManageJournal/SystemManageJournal.js'
+import SystemManageResource from './SystemManage/SystemManageResource/SystemManageResource.js'
 import UserManageAccount from './UserManage/UserManageAccount/UserManageAccount'
 import UserManageRole from './UserManage/UserManageRole/UserManageRole'
-import SystemManageFailure from './SystemManage/SystemManageFailure/SystemManageFailure.js';
+import SystemManageFailure from './SystemManage/SystemManageFailure/SystemManageFailure.js'
 import SystemManageBasic from './SystemManage/SystemManageBasic/SystemManageBasic.js'
 import SystemManageBackup from './SystemManage/SystemManageBackup/SystemManageBackup.js'
 import NoPermission from './NoPermission/NoPermission.js'
-import RegisterManagement from "./UserManage/RegisterManagement/RegisterManagement";
-import style from "./PageContainer.module.scss";
-import Sider from "antd/es/layout/Sider";
-import MenuList from "../../utils/MenuList";
-import {Header} from "antd/es/layout/layout";
+import RegisterManagement from './UserManage/RegisterManagement/RegisterManagement'
+import style from './PageContainer.module.scss'
+import Sider from 'antd/es/layout/Sider'
+import MenuList from '../../utils/MenuList'
+import {Header} from 'antd/es/layout/layout'
 
 const {Content} = Layout
 
@@ -40,77 +40,69 @@ export default withRouter(function PageContainer(props) {
     if (!menu) return
     menu.map(item => {
       menuTitle.set(item.key, item.title)
-      if (item.children?.length > 0) {
-        getMenuTitle(item.children)
-      }
+      if (item.children?.length > 0) getMenuTitle(item.children)
     })
   }
 
   const getPathName = (path, menuTitle) => {
     let mid = path.split('/')
     for (let i = 0; i < mid.length; i++) {
-      if (i < mid.length - 1) mid[i + 1] = mid[i] + '/' + mid[i + 1]
+      if (i < mid.length - 1) mid[i + 1] = `${mid[i]}/${mid[i + 1]}`
       if (i > 0) mid[i] = menuTitle.get(mid[i])
     }
     mid.splice(0, 1)
     return mid
-
   }
 
   // 心跳
-  // 1. 每 4 分 55 秒发送一次心跳（5 秒缓冲）
-  // 2. 避免多用户同时心跳，在一个合适区间内随机化心跳时间
-  const [shouldHeartbeat, setHeartbeat] = useState(true);
+  // 避免多用户同时心跳，在一个合适区间内随机化心跳时间
+  const [shouldHeartbeat, setHeartbeat] = useState(true)
   const heartbeatRef = useRef(shouldHeartbeat)
-  const heartbeatIntervalTime = 1000;// 每 1 秒检查一次是否要心跳
+  const heartbeatIntervalTime = 1000 // 每 1 秒检查一次是否要心跳
   useEffect(() => {
-    heartbeatRef.current = shouldHeartbeat;
-  });
+    heartbeatRef.current = shouldHeartbeat
+  })
   useEffect(() => {
-    let count = 0; // 计时器
-    const timeInterval = [590, 595]; // 心跳时间区间
+    let count = 0 // 计时器
+    const timeInterval = [590, 595] // 心跳时间区间
     let heartbeat = setInterval(() => {
-      const threshold = 1 / (timeInterval[1] - count); // 检测阈值
-      const checker = Math.random();
+      const threshold = 1 / (timeInterval[1] - count) // 检测阈值
+      const checker = Math.random()
       if (count >= timeInterval[0] && checker < threshold) {
-        count = 0;
+        count = 0
         if (heartbeatRef.current) {
-          setHeartbeat(false);
+          setHeartbeat(false)
           api.IsLogin().then((res) => {
-            if (!res) api.logout();
-          });
-        } else api.logout();
-      } else ++count;
-    }, heartbeatIntervalTime);
-    return () => clearInterval(heartbeat);
+            if (!res) api.logout()
+          })
+        } else api.logout()
+      } else ++count
+    }, heartbeatIntervalTime)
+    return () => clearInterval(heartbeat)
   }, [])
   useEffect(() => {
-    const body = document.body;
-    body.onmousemove = body.onmousedown = body.onkeydown = () => {
-      setHeartbeat(true);
-    }
-    return () => body.onmousemove = body.onmousedown = body.onkeydown = null
+    const body = document.body
+    body.onmousedown = body.onkeydown = () => setHeartbeat(true)
+    return () => body.onmousedown = body.onkeydown = null
   }, [])
   // end 心跳
 
   useEffect(() => {
-    MenuList.getAndStorageMenuList((menuList) => {
+    MenuList.getAndStorageMenuList(menuList => {
       if (!menuList) return
       getMenuTitle(menuList)
       setCurRoute(getPathName(props.location.pathname, menuTitle))
     })
   }, [])
 
-  return (<Layout className={style.siteLayout}>
+  return <Layout className={style.siteLayout}>
     {/*<Layout>*/}
     <div className={style.headerContainer}>
       <Header className={style.header}>
         <TopHeader/>
       </Header>
     </div>
-    <Content
-      className={style.siteContainer}
-    >
+    <Content className={style.siteContainer}>
       <Layout className={style.leftRightLayout}>
         <Sider
           className={style.sideMenuContainer}
@@ -132,9 +124,7 @@ export default withRouter(function PageContainer(props) {
             // style={{ margin: '0 10px' }}
           >
             <Breadcrumb className={style.breadcrumb}>
-              {curRoute.map(item => {
-                return (<Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>)
-              })}
+              {curRoute.map(item => <Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>)}
             </Breadcrumb>
             <div className={style.mainContent}>
               <Switch>
@@ -173,5 +163,5 @@ export default withRouter(function PageContainer(props) {
         </Layout>
       </Layout>
     </Content>
-  </Layout>)
+  </Layout>
 })
