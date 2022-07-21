@@ -1,7 +1,7 @@
-import React, {useEffect, useState, useRef} from 'react'
-import {Redirect, Switch, Route, withRouter} from 'react-router-dom'
+import React, {useEffect, useRef, useState} from 'react'
+import {Redirect, Route, Switch, withRouter} from 'react-router-dom'
 
-import {Layout, Breadcrumb} from 'antd'
+import {Breadcrumb, Layout} from 'antd'
 import SideMenu from '../../components/page-container/SideMenu/SideMenu.js'
 import TopHeader from '../../components/page-container/TopHeader/TopHeader.js'
 import api from '../../api/login'
@@ -70,9 +70,9 @@ export default withRouter(function PageContainer(props) {
       const checker = Math.random()
       if (count >= timeInterval[0] && checker < threshold) {
         count = 0
-        if (heartbeatRef.current) {
+        if (true || heartbeatRef.current) {
           setHeartbeat(false)
-          api.IsLogin().then((res) => {
+          api.IsLogin().then(res => {
             if (!res) api.logout()
           })
         } else api.logout()
