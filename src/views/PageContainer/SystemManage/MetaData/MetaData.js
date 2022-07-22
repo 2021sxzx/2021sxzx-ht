@@ -97,14 +97,14 @@ export default function MetaData() {
   const [coreSettingsForm] = Form.useForm()
   const [interfaceConfigurationForm] = Form.useForm()
 
-  const [backstageLogoFile, setBackstageLogoFile] = useState(null)
-  const [WebsiteLogoFile, setWebsiteLogoFile] = useState(null)
-  const [AddressBarIconFile, setAddressBarIconFile] = useState(null)
-
-  // 二维码
-  const [OfficialQRCode, setOfficialQRCode] = useState(null)
-  const [WechatQRCodeFile, setWechatQRCodeFile] = useState(null)
-  const [AppQRCodeFile, setAppQRCodeFile] = useState(null)
+  let files = {
+    backstageLogoFile: null,
+    websiteLogoFile: null,
+    addressBarIconFile: null,
+    officialQRCode: null,
+    wechatQRCodeFile: null,
+    appQRCodeFile: null
+  }
 
   // Interface
   const [interfaceStatus, setInterfaceStatus] = useState({})
@@ -165,48 +165,42 @@ export default function MetaData() {
   function onFinish() {
     // todo
     // 上传各种图片的流程是相似的。为了减少代码量，只将有区别的部分用数组存储
-    for (let {api: api1, error, file, setter, success} of [{
-      file: WebsiteLogoFile,
+    for (let {api: api1, error, fileName, success} of [{
+      fileName: 'websiteLogoFile',
       api: apiMeta.webSiteLogo,
-      setter: setWebsiteLogoFile,
       success: '网站logo上传成功.',
       error: '网站logo上传失败.'
     }, {
-      file: AddressBarIconFile,
+      fileName: 'addressBarIconFile',
       api: apiMeta.addressBarIcon,
-      setter: setAddressBarIconFile,
       success: '地址栏图标上传成功.',
       error: '地址栏图标上传失败.'
     }, {
-      file: backstageLogoFile,
+      fileName: 'backstageLogoFile',
       api: apiMeta.backstageLogo,
-      setter: setBackstageLogoFile,
       success: '首页轮播图上传成功',
       error: '首页轮播图上传失败'
     }, {
-      file: OfficialQRCode,
+      fileName: 'officialQRCode',
       api: apiMeta.officialQRCode,
-      setter: setOfficialQRCode,
       success: '官网二维码上传成功',
       error: '官网二维码上传失败'
     }, {
-      file: WechatQRCodeFile,
+      fileName: 'wechatQRCodeFile',
       api: apiMeta.wechatOfficialAccountQRCode,
-      setter: setWechatQRCodeFile,
       success: '公众号二维码上传成功',
       error: '公众号二维码上传失败'
     }, {
-      file: AppQRCodeFile,
+      fileName: 'appQRCodeFile',
       api: apiMeta.appQRCode,
-      setter: setAppQRCodeFile,
       success: 'APP二维码上传成功',
       error: 'APP二维码上传失败'
     }]) {
-      if (file) {
+      if (files[fileName]) {
         const data = new FormData()
-        data.append('file', file)
+        data.append('file', files[fileName])
         api1(data).then(() => {
-          setter(null)
+          files[fileName] = null
           message.success(success).then()
         }).catch(() => message.error(error))
       }
@@ -294,20 +288,15 @@ export default function MetaData() {
           form={websiteSettingsForm}
           name="websiteSettings"
         >
-          <Form.Item
-            label="网站简称"
-            name="WebsiteAbbreviation"
-            rules={[{message: 'Please input your username!'}]}
-          >
-            智能咨询平台
-          </Form.Item>
+          <Form.Item label="网站简称" name="WebsiteAbbreviation"
+                     rules={[{message: 'Please input your username!'}]}> 智能咨询平台 </Form.Item>
           <Form.Item label="网站logo" name="WebsiteLogo" layout="inline">
             <Upload
               listType="picture"
               className="upload-list-inline"
               accept=".png"
               beforeUpload={file => {
-                setWebsiteLogoFile(file)
+                files.websiteLogoFile = file
                 return false
               }}
               name="websiteLogo"
@@ -322,12 +311,7 @@ export default function MetaData() {
               className="upload-list-inline"
               accept=".png"
               beforeUpload={file => {
-                // const isPNG = file.type === 'image/jpeg'
-                // if (!isPNG) {
-                //   message.error(`${file.name}不是jpg格式`).then()
-                //   return Upload.LIST_IGNORE
-                // }
-                setBackstageLogoFile(file)
+                files.backstageLogoFile = file
                 return false
               }}
               maxCount={1}
@@ -342,7 +326,7 @@ export default function MetaData() {
               className="upload-list-inline"
               accept=".png"
               beforeUpload={file => {
-                setAddressBarIconFile(file)
+                files.addressBarIconFile = file
                 return false
               }}
               maxCount={1}
@@ -357,7 +341,7 @@ export default function MetaData() {
               className="upload-list-inline"
               accept=".png"
               beforeUpload={file => {
-                setOfficialQRCode(file)
+                files.officialQRCode = file
                 return false
               }}
               maxCount={1}
@@ -372,7 +356,7 @@ export default function MetaData() {
               className="upload-list-inline"
               accept=".png"
               beforeUpload={file => {
-                setWechatQRCodeFile(file)
+                files.wechatQRCodeFile = file
                 return false
               }}
               maxCount={1}
@@ -387,7 +371,7 @@ export default function MetaData() {
               className="upload-list-inline"
               accept=".png"
               beforeUpload={file => {
-                setAppQRCodeFile(file)
+                files.appQRCodeFile = file
                 return false
               }}
               maxCount={1}
