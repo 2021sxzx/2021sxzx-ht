@@ -1,7 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {
-  Space, Form, Button, Table, Tabs, message, InputNumber,
-} from 'antd'
+import {Alert, Button, Form, InputNumber, message, Space, Table, Tabs,} from 'antd'
 import api from '../../../../api/systemBackup.js'
 
 const {TabPane} = Tabs
@@ -99,16 +97,21 @@ export default function SystemManageBackup() {
           <TabPane tab="数据库备份" key="1">
             <Table
               rowKey="_id" // by lhy 来自后人的一个 :) 明明数据返回的是 _id 硬生生写 log_id 成功让我在 rowSelection 卡了半天
-              columns={[{title: '备份名称', dataIndex: 'backup_name'}, {title: '备份人', dataIndex: 'user_name'}, {
+              columns={[{
+                title: '备份名称', dataIndex: 'backup_name', render(_, {backup_name, status}) {
+                  return status === 'ok' ? backup_name : <Alert message="本次备份发生错误" type="error"/>
+                }
+              }, {title: '备份人', dataIndex: 'user_name'}, {
                 title: '备份文件大小', dataIndex: 'file_size', render(_, {file_size}) {
                   // 服务器返回一个数字，表示备份文件的字节数，展示时使用合适单位
                   if (typeof file_size === 'number') {
+                    if (file_size === 0) return ''
                     const power = Math.min(4, Math.floor(Math.log2(file_size) / 10))
                     return `${(file_size / Math.pow(1024, power)).toFixed(2)} ${['B', 'KB', 'MB', 'GB'][power]}`
                   }
                   return file_size // 一般是出错了才会执行到这里
                 }
-              }, {
+              }, {title: '备份时间', dataIndex: 'backup_date'}, {
                 key: 'delete', dataIndex: 'delete', render: (_, record) => <Button
                   style={{border: '1px solid blue'}}
                   onClick={() => {
