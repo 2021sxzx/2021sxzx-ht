@@ -3,14 +3,22 @@ import {Tabs, List} from 'antd'
 import api from '../../../api/rule'
 import style from './Home.module.scss'
 import VirtualList from 'rc-virtual-list'
-
+import apiPersonal from "../../../api/personal";
 const {TabPane} = Tabs
 
 export default function Home(props) {
 
     const [statusCount, setStatusCount] = useState([])
     const [checkResult, setCheckResult] = useState([])
-
+    const [rolename,setRoleName] = useState("ok")
+    useEffect(() => {
+        apiPersonal.getTopHeaderData()
+            .then(value => {
+                console.log(value.data.data)
+                setRoleName(value.data.data.role_name)
+                console.log(rolename)
+            })
+    });
     const getEveryItemStatusCount = () => {
         api.GetEveryItemStatusCount().then(response => {
             setStatusCount(response.data.data)
@@ -58,6 +66,8 @@ export default function Home(props) {
                                                         {'    指南编码：'}
                                                     </div>
                                                     <div className={style.jumpCode} onClick={function () {
+                                                        console.log(rolename)
+                                                    if(rolename!="系统管理员")
                                                         if (item.type === '省政务新增') {
                                                             jumpToGuides()
                                                         } else jumpToProcess(code)
