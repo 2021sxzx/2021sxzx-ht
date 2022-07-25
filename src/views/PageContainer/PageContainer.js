@@ -70,7 +70,7 @@ export default withRouter(function PageContainer(props) {
       const checker = Math.random()
       if (count >= timeInterval[0] && checker < threshold) {
         count = 0
-        if (true || heartbeatRef.current) {
+        if (heartbeatRef.current) {
           setHeartbeat(false)
           api.IsLogin().then(res => {
             if (!res) api.logout()

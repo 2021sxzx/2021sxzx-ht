@@ -18,16 +18,22 @@ const SelectForm = () => {
   // 变量
   // 表单数据
   const [form] = Form.useForm()
+  // 手动备份按钮禁用状态
+  const [backupDisabled, setBackupDisabled] = useState(false)
 
   // 方法
   // 提交表单，修改备份周期
-  const onFinish = values => api.ChangeBackupCycle(values).then(({data}) => {
-    /** @property data.msg */
-    if (data.data === 'success') message.success(data.msg).then()
-    else message.error(data.msg).then()
+  const onFinish = values => api.ChangeBackupCycle(values).then(({data: {data, msg}}) => {
+    if (data === 'success') message.success(msg).then()
+    else message.error(msg).then()
   })
   // 手动备份按钮的动作，立即向服务器发送手动备份请求
-  const backupNow = () => api.HandleBackup().then(() => message.success('备份成功，因备份时间较长，请稍后刷新页面查看备份').then())
+  const backupNow = () => api.HandleBackup().then(({data}) => {
+    if (typeof data === 'boolean')
+      if (data) message.info('系统正在备份中，请勿重复备份').then()
+      else message.success('备份成功，因备份时间较长，请稍后刷新页面查看备份').then()
+    else message.error(`发生错误：${data}`).then()
+  })
 
   // 组件初始化
   // 获取备份周期
@@ -37,10 +43,13 @@ const SelectForm = () => {
     }))
   })
 
-  return (<>
+  return <>
     <Form name="setTime" form={form} layout={'inline'} onFinish={onFinish}>
       <Form.Item>
-        <Button type="primary" onClick={backupNow}>
+        <Button type="primary" onClick={() => {
+          backupNow().then()
+          setBackupDisabled(true)
+        }} disabled={backupDisabled}>
           手动备份
         </Button>
       </Form.Item>
@@ -59,7 +68,7 @@ const SelectForm = () => {
         </Button>
       </Form.Item>
     </Form>
-  </>)
+  </>
 }
 
 // 导出默认组件
