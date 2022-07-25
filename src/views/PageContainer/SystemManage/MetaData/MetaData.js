@@ -1,97 +1,14 @@
 import {useEffect, useState} from 'react'
 import {Button, Card, Col, Divider, Form, Input, message, Row, Tabs, Typography, Upload} from 'antd'
 import {UploadOutlined} from '@ant-design/icons'
-import * as echarts from 'echarts'
 import api from '../../../../api/systemBasic'
-import apiLog from '../../../../api/log'
 import apiMeta from '../../../../api/systemMetadata'
 import './MetaData.css'
-import UsersChart from './UsersChart'
+import LineChart from './components/Chart/LineChart'
 
-const {Title, Paragraph} = Typography
+const {Title} = Typography
 const {TabPane} = Tabs
-let myChart = undefined // echarts全局变量
 
-// 元数据查看的条形图
-const BarChart = ({data, id, today}) => {
-  if (myChart != null && myChart !== '' && myChart !== undefined) myChart.dispose() // 销毁
-
-  useEffect(() => {
-    const chartDom = document.getElementById(id)
-    myChart = echarts.init(chartDom)
-    myChart.setOption({
-      title: {
-        text: '事项数目', subtext: '5000', textStyle: {
-          fontSize: '12px', fontWeight: 'normal',
-        }, subtextStyle: {
-          fontSize: '20px', fontWeight: 'bolder',
-        },
-      }, tooltip: {
-        trigger: 'item', position: () => 'top',
-      }, xAxis: {
-        type: 'category',
-      }, yAxis: {
-        type: 'value', show: false,
-      }, series: [{
-        data: data, type: 'bar',
-      },],
-    })
-  })
-  return <div
-    style={{
-      width: '250px', height: '170px', display: 'inline-block',
-    }}
-  >
-    <div id={id} style={{width: '100%', height: '100%'}}/>
-    <Divider style={{marginTop: '-42px', marginBottom: '0px'}}/>
-    <div>
-      <Paragraph style={{marginLeft: '12px', marginRight: '20px'}}>
-        更改条数 +{today}
-      </Paragraph>
-    </div>
-  </div>
-}
-// 元数据查看的折线图
-const LineChart = ({data, id, today}) => {
-  useEffect(() => {
-    const chartDom = document.getElementById(id)
-    if (myChart != null && myChart !== '' && myChart !== undefined) myChart.dispose() // 销毁
-
-    const myChart0 = echarts.init(chartDom)
-    myChart0.setOption({
-      tooltip: {
-        trigger: 'axis', position(pt) {
-          return [pt[0], '10%']
-        },
-      }, title: {
-        left: 'left', text: '今日事项浏览次数', subtext: today, textStyle: {
-          fontSize: '12px', fontWeight: 'normal',
-        }, subtextStyle: {
-          fontSize: '20px', fontWeight: 'bolder',
-        },
-      }, xAxis: {
-        type: 'time', boundaryGap: false,
-      }, yAxis: {
-        type: 'value', boundaryGap: [0, '100%'], show: false,
-      }, series: [{
-        name: '今日事项浏览次数', type: 'line', smooth: true, symbol: 'none', areaStyle: {}, data: data,
-      },],
-    })
-  })
-  return <div
-    style={{
-      width: '250px', height: '170px', display: 'inline-block',
-    }}
-  >
-    <div id={id} style={{width: '100%', height: '100%'}}/>
-    <Divider style={{marginTop: '-42px', marginBottom: '0px'}}/>
-    <div>
-      <Paragraph style={{marginLeft: '12px', marginRight: '20px'}}>
-        近15日日均访问量 14512 {/* todo by lhy ??? */}
-      </Paragraph>
-    </div>
-  </div>
-}
 export default function MetaData() {
   const [websiteSettingsForm] = Form.useForm()
   const [coreSettingsForm] = Form.useForm()
@@ -159,7 +76,6 @@ export default function MetaData() {
                                 }) => interfaceConfigurationForm.setFieldsValue({
       api_GZSRSJGW, api_GZSRSJWX, api_SHBAPP, api_GDZWFWPT, api_ZNFWJQRPT, api_BDDT,
     }))
-    getLog()
   }, [])
 
   function onFinish() {
@@ -218,21 +134,6 @@ export default function MetaData() {
   }
 
   const onFinishFailed = errorInfo => alert('Failed:' + errorInfo)
-  const [logData15, setLogData15] = useState(false)
-  const [logToday, setLogToday] = useState(false)
-  const [itemBrowseCount15, setItemBrowseCount15] = useState(false)
-  const [itemBrowseCountToday, setItemBrowseCountToday] = useState(false)
-
-  const getLog = () => {
-    apiLog.MetaDataLog().then(({data}) => {
-      setLogData15(data)
-      setLogToday(data[data.length - 1][1])
-    })
-    apiLog.ItemBrowseCount().then(({data}) => {
-      setItemBrowseCount15(data)
-      setItemBrowseCountToday(data[data.length - 1][1])
-    })
-  }
 
   useEffect(() => {
     api.GetNetworkStatus().then(({data: {data}}) => {
@@ -241,7 +142,6 @@ export default function MetaData() {
     api.GetLogPath().then(({data}) => {
       setLogPath(data)
     }).catch((error) => console.log(error))
-    getLog()
   }, [])
 
   function getMyState(data) {
@@ -253,27 +153,29 @@ export default function MetaData() {
     <Tabs type="card">
       <TabPane tab="元数据查看" key="1">
         <div style={{padding: '5px', backgroundColor: '#eeeeee'}}>
-          <Row gutter={10}>
-            <Col span={8}>
+          <Row gutter={16}>
+            <Col span={6}>
               {' '}
               <Card size="small">
-                <UsersChart id="xi"/>
+                <LineChart type='pv'/>
               </Card>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               {' '}
               <Card size="small">
-                <LineChart
-                  id="ha"
-                  data={itemBrowseCount15}
-                  today={itemBrowseCountToday}
-                />
+                <LineChart type='uv'/>
               </Card>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               {' '}
               <Card size="small">
-                <BarChart id="ww" data={logData15} today={logToday}/>
+              <LineChart type='item_num'/>
+              </Card>
+            </Col>
+            <Col span={6}>
+              {' '}
+              <Card size="small">
+              <LineChart type='user_num'/>
               </Card>
             </Col>
           </Row>

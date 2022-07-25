@@ -64,6 +64,15 @@ const api ={
             url: "/v1/log-path",
             data
         });
+    },
+    GetChartData(type){
+        return service.request({
+            method: "get",
+            url: "/v1/chart-data/",
+            params:  {
+                type
+            }
+        });
     }
 }
 
