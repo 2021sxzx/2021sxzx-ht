@@ -8,7 +8,6 @@ import FormListPlus from './forms/FormListPlus.js'
 import FormListMaterial from './forms/FormListMaterial.js'
 import FormTime from './forms/FormTime.js'
 import FormList from './forms/FormList.js'
-import FormImage from './forms/FormImage.js'
 import FormCheckbox from './forms/FormCheckbox.js'
 const { Step } = Steps
 
