@@ -14,9 +14,7 @@ export default function Home(props) {
     useEffect(() => {
         apiPersonal.getTopHeaderData()
             .then(value => {
-                console.log(value.data.data)
                 setRoleName(value.data.data.role_name)
-                console.log(rolename)
             })
     });
     const getEveryItemStatusCount = () => {
@@ -66,7 +64,6 @@ export default function Home(props) {
                                                         {'    指南编码：'}
                                                     </div>
                                                     <div className={style.jumpCode} onClick={function () {
-                                                        console.log(rolename)
                                                     if(rolename!="系统管理员")
                                                         if (item.type === '省政务新增') {
                                                             jumpToGuides()
