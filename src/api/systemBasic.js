@@ -1,79 +1,16 @@
-import service from "./http";
+import service from './http'
 
-const api ={
-    UploadPicture(data) {//可能不需要这个
-        return service.request({
-            method: "post",
-            url: "v1/picture-upload",
-            data, //data:data同名可以直接写 data
-        });
-    },
-    SiteSettings(data){
-        return service.request({
-            method:"get",
-            url:"v1/site-settings",
-            data
-        })
-    },
-    ChangeSiteSettings(data){
-        // console.log("change")
-        return service.request({
-            method:"post",
-            url:"v1/site-settings",
-            data
-        })
-    },
-    CoreSettings(data){
-        return service.request({
-            method:"get",
-            url: "v1/core-settings",
-            data
-        })
-    },
-    ChangeCoreSettings(data){
-        return service.request({
-            method:"patch",
-            url: "v1/core-settings",
-            data
-        })
-    },
-    GetNetworkStatus(data) {
-        return service.request({
-            method: "get",
-            url: "v1/interface/NetworkStatus",
-            data
-        });
-    },
-    SetInterfaceUrl(data){
-        return service.request({
-            method: "patch",
-            url: "v1/interface",
-            data
-        });
-    },
-    GetInterfaceUrl(data){
-        return service.request({
-            method: "get",
-            url: "v1/interface",
-            data
-        });
-    },
-    GetLogPath(data){
-        return service.request({
-            method: "get",
-            url: "/v1/log-path",
-            data
-        });
-    },
-    GetChartData(type){
-        return service.request({
-            method: "get",
-            url: "/v1/chart-data/",
-            params:  {
-                type
-            }
-        });
-    }
+const request = (method, url, data) => service.request({method, url, data})
+export default {
+  SiteSettings: data => request('get', 'v1/site-settings', data),
+  CoreSettings: data => request('get', 'v1/core-settings', data),
+  ChangeCoreSettings: data => request('patch', 'v1/core-settings', data),
+  GetNetworkStatus: data => request('get', 'v1/interface/NetworkStatus', data),
+  SetInterfaceUrl: data => request('patch', 'v1/interface', data),
+  GetInterfaceUrl: data => request('get', 'v1/interface', data),
+  GetLogPath: data => request('get', '/v1/log-path', data),
+  GetChartData: type => service.request({method: 'get', url: '/v1/chart-data/', params: {type}}),
+  // todo 以上这些移动到systemMetadata
+  getTel: () => request('get', '/v1/get-tel'),
+  setTel: data => request('post', '/v1/set-tel', data)
 }
-
-export default api
