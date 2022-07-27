@@ -544,7 +544,7 @@ export default function SystemManageResource() {
 
     const getPeopleStatus = () => {
         api.GetPeopleStatus().then(res => {
-            setUserNum(res.data.data.userOnline)
+            setUserNum(res.data.data)
         }).catch(() => {
         //    TODO
         });
