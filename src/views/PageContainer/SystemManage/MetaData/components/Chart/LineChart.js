@@ -1,6 +1,6 @@
 import * as echarts from "echarts";
 import { useEffect } from "react";
-import api from "../../../../../../api/systemBasic";
+import api from "../../../../../../api/systemMetadata";
 const LineChart = (props) => {
   const map = {
     pv: '今日事项浏览数',

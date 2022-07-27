@@ -41,7 +41,7 @@ const SelectForm = () => {
     api.GetBackupCycle().then(({data: {data}}) => form.setFieldsValue({
       time: data
     }))
-  })
+  }, [])
 
   return <>
     <Form name="setTime" form={form} layout={'inline'} onFinish={onFinish}>

@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react'
 import {Button, Card, Col, Divider, Form, Input, message, Row, Tabs, Typography, Upload} from 'antd'
 import {UploadOutlined} from '@ant-design/icons'
-import api from '../../../../api/systemBasic'
+import apiBasic from '../../../../api/systemBasic'
 import apiMeta from '../../../../api/systemMetadata'
 import './MetaData.css'
 import LineChart from './components/Chart/LineChart'
@@ -31,12 +31,7 @@ export default function MetaData() {
 
   // 组件初始化
   useEffect(() => {
-    api.SiteSettings().then(({data: {WebsiteAbbreviation}}) => {
-      websiteSettingsForm.setFieldsValue({
-        WebsiteAbbreviation
-      })
-    })
-    api.CoreSettings().then(({
+    apiMeta.CoreSettings().then(({
                                data: {
                                  data: {
                                    ICP_record_number,
@@ -67,7 +62,7 @@ export default function MetaData() {
       copyright,
       siteCode
     }))
-    api.GetInterfaceUrl().then(({
+    apiMeta.GetInterfaceUrl().then(({
                                   data: {
                                     data: {
                                       api_BDDT, api_GDZWFWPT, api_GZSRSJGW, api_GZSRSJWX, api_SHBAPP, api_ZNFWJQRPT
@@ -79,67 +74,35 @@ export default function MetaData() {
   }, [])
 
   function onFinish() {
-    // todo
-    // 上传各种图片的流程是相似的。为了减少代码量，只将有区别的部分用数组存储
-    for (let {api: api1, error, fileName, success} of [{
-      fileName: 'websiteLogoFile',
-      api: apiMeta.webSiteLogo,
-      success: '网站logo上传成功.',
-      error: '网站logo上传失败.'
-    }, {
-      fileName: 'addressBarIconFile',
-      api: apiMeta.addressBarIcon,
-      success: '地址栏图标上传成功.',
-      error: '地址栏图标上传失败.'
-    }, {
-      fileName: 'backstageLogoFile',
-      api: apiMeta.backstageLogo,
-      success: '首页轮播图上传成功',
-      error: '首页轮播图上传失败'
-    }, {
-      fileName: 'officialQRCode',
-      api: apiMeta.officialQRCode,
-      success: '官网二维码上传成功',
-      error: '官网二维码上传失败'
-    }, {
-      fileName: 'wechatQRCodeFile',
-      api: apiMeta.wechatOfficialAccountQRCode,
-      success: '公众号二维码上传成功',
-      error: '公众号二维码上传失败'
-    }, {
-      fileName: 'appQRCodeFile',
-      api: apiMeta.appQRCode,
-      success: 'APP二维码上传成功',
-      error: 'APP二维码上传失败'
-    }]) {
+    const data = new FormData()
+    for (let fileName of ['websiteLogoFile', 'addressBarIconFile', 'backstageLogoFile',
+      'officialQRCode', 'wechatQRCodeFile', 'appQRCodeFile']) {
       if (files[fileName]) {
-        const data = new FormData()
-        data.append('file', files[fileName])
-        api1(data).then(() => {
-          files[fileName] = null
-          message.success(success).then()
-        }).catch(() => message.error(error))
+        data.append(fileName, files[fileName])
+        files[fileName] = null
       }
     }
+    apiMeta.websiteSettings(data).then(() => message.success('图片上传成功'))
+      .catch(() => message.error('图片上传失败'))
   }
 
   const ChangeCoreSettings = (values) => {
-    api.ChangeCoreSettings(values).then()
+    apiMeta.ChangeCoreSettings(values).then()
     message.success('核心设置修改成功').then()
   }
 
   const ChangeInterfaceConfiguration = (values) => {
-    api.SetInterfaceUrl(values).then()
+    apiMeta.SetInterfaceUrl(values).then()
     message.success('接口修改成功').then()
   }
 
   const onFinishFailed = errorInfo => alert('Failed:' + errorInfo)
 
   useEffect(() => {
-    api.GetNetworkStatus().then(({data: {data}}) => {
+    apiMeta.GetNetworkStatus().then(({data: {data}}) => {
       setInterfaceStatus(data)
     }).catch((error) => console.log(error))
-    api.GetLogPath().then(({data}) => {
+    apiMeta.GetLogPath().then(({data}) => {
       setLogPath(data)
     }).catch((error) => console.log(error))
   }, [])
@@ -157,25 +120,25 @@ export default function MetaData() {
             <Col span={6}>
               {' '}
               <Card size="small">
-                <LineChart type='pv'/>
+                <LineChart type="pv"/>
               </Card>
             </Col>
             <Col span={6}>
               {' '}
               <Card size="small">
-                <LineChart type='uv'/>
+                <LineChart type="uv"/>
               </Card>
             </Col>
             <Col span={6}>
               {' '}
               <Card size="small">
-              <LineChart type='item_num'/>
+                <LineChart type="item_num"/>
               </Card>
             </Col>
             <Col span={6}>
               {' '}
               <Card size="small">
-              <LineChart type='user_num'/>
+                <LineChart type="user_num"/>
               </Card>
             </Col>
           </Row>
