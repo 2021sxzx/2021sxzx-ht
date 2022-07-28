@@ -1,42 +1,10 @@
-import service from "./http";
+import service from './http'
 
-const api = {
-  GetBackupCycle(data) {
-    return service.request({
-      method: "get",
-      url: "v1/mongo-backup-cycle",
-      data, //data:data同名可以直接写 data
-    });
-  },
-  ChangeBackupCycle(data) {
-    // console.log("change")
-    return service.request({
-      method: "post",
-      url: "v1/change-backup-cycle",
-      data
-    })
-  },
-  HandleBackup(data) {
-    return service.request({
-      method: "get",
-      url: "v1/handle-backup",
-      data
-    })
-  },
-  GetBackup(data) {
-    return service.request({
-      method: "get",
-      url: "v1/mongo-backup",
-      data
-    })
-  },
-  DeleteSystemBackup(data) {
-    return service.request({
-      method: "post",
-      url: "v1/delete-system-backup",
-      data
-    })
-  },
+const request = (method, url, data) => service.request({method, url, data})
+export default {
+  GetBackupCycle: data => request('get', 'v1/mongo-backup-cycle', data),
+  ChangeBackupCycle: data => request('post', 'v1/change-backup-cycle', data),
+  HandleBackup: data => request('get', 'v1/handle-backup', data),
+  GetBackup: data => request('get', 'v1/mongo-backup', data),
+  DeleteSystemBackup: data => request('post', 'v1/delete-system-backup', data),
 }
-
-export default api
