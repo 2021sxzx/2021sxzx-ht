@@ -68,6 +68,15 @@ const api = {
     //获取权限列表
     GetPermission() {
         return service.get('/v1/permissionList')
+    },
+
+    //获取角色权限
+    GetRolePermission(data){
+        return service.request({
+            method:"post",
+            url :"/v1/getRolePermission",
+            data,
+        });
     }
 }
 

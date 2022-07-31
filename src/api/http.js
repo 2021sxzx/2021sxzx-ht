@@ -1,5 +1,6 @@
 import axios from "axios";
-
+import api from "./login";
+import {message} from "antd"
 let BASEURL
 if (process.env.NODE_ENV === "development") {
     BASEURL = '/api'
@@ -33,6 +34,12 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
     function (response) {
         console.log('响应拦截器',response);
+        //如果用户状态突然被管理员切换至未激活
+        if(response.data.loginstate == "loginout")
+        {
+            message.error('该用户未激活请重新联系管理员')
+            api.clearStorageAndRedirect()
+        }
         // 对响应数据做点什么
         return response
     },

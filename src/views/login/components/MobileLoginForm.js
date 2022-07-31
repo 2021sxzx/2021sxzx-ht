@@ -1,17 +1,51 @@
 import {Button, Col, Form, Input, Row} from "antd";
 import {MobileOutlined, UserOutlined} from "@ant-design/icons";
-import React from "react";
+import React,{useContext, useEffect, useState}from "react";
 import CountDownButton from "./CountDownButton";
-
+import {loginStateContext} from "../../../router/IndexRouter";
 /**
  * 手机验证码登录
  * @returns {JSX.Element}
  * @constructor
  */
 export default function MobileLoginForm() {
-    const onFinish = () => {
-    };
+    const historyAccount = localStorage.getItem('account') ? localStorage.getItem('account') : '';
+    const [account, setAccount] = useState(historyAccount)
+    const {setLoginState} = useContext(loginStateContext)
+    const [verificationCode,setVerificationCode] = useState("")
+    useEffect(()=>{
+        getVC()
+    },[])
+    const getVC = ()=>{
+        let verificationCode = ""
+        for(let i=0;i<8;i++)
+            verificationCode += Math.floor(Math.random()*10)
+        setVerificationCode(verificationCode)
+        console.log("In getVC",verificationCode)
+    }
 
+    const onFinish = (value) => {
+        api.Login({
+            account:value.phoneNumber
+        }).then(async response => {
+            // 保存用户信息：账号密码用户id
+            saveUserInfo(response, values)
+            setLoginState('login')
+            // 展现 0.1s 的登录成功操作提示并自动跳转到首页
+            message.success('登录成功', 0.1, () => {
+                UrlJump.goto('#/home')
+            })
+        }).catch((error) => {
+            message.error(typeof error.response.data === 'string' ? error.response.data : '登录发生错误，请稍后重试')
+        })
+    };
+    const saveUserInfo = (response, values) => {
+        // 保存账号
+        localStorage.setItem('account', values.account);
+        localStorage.setItem('_id', response.data.data._id);
+        localStorage.setItem('roleID', response.data.data.role_id);
+        setAccount(values.account);
+    }
     const onFinishFailed = () => {
     };
 
@@ -77,7 +111,7 @@ export default function MobileLoginForm() {
                                allowClear={true}/>
                     </Col>
                     <Col span={7} offset={1}>
-                        <CountDownButton/>
+                        <CountDownButton verificationCode={verificationCode} getVC={getVC}/>
                     </Col>
                 </Row>
             </Form.Item>
