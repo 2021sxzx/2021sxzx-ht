@@ -1,97 +1,14 @@
 import {useEffect, useState} from 'react'
 import {Button, Card, Col, Divider, Form, Input, message, Row, Tabs, Typography, Upload} from 'antd'
 import {UploadOutlined} from '@ant-design/icons'
-import * as echarts from 'echarts'
-import api from '../../../../api/systemBasic'
-import apiLog from '../../../../api/log'
+import apiBasic from '../../../../api/systemBasic'
 import apiMeta from '../../../../api/systemMetadata'
 import './MetaData.css'
-import UsersChart from './UsersChart'
+import LineChart from './components/Chart/LineChart'
 
-const {Title, Paragraph} = Typography
+const {Title} = Typography
 const {TabPane} = Tabs
-let myChart = undefined // echarts全局变量
 
-// 元数据查看的条形图
-const BarChart = ({data, id, today}) => {
-  if (myChart != null && myChart !== '' && myChart !== undefined) myChart.dispose() // 销毁
-
-  useEffect(() => {
-    const chartDom = document.getElementById(id)
-    myChart = echarts.init(chartDom)
-    myChart.setOption({
-      title: {
-        text: '事项数目', subtext: '5000', textStyle: {
-          fontSize: '12px', fontWeight: 'normal',
-        }, subtextStyle: {
-          fontSize: '20px', fontWeight: 'bolder',
-        },
-      }, tooltip: {
-        trigger: 'item', position: () => 'top',
-      }, xAxis: {
-        type: 'category',
-      }, yAxis: {
-        type: 'value', show: false,
-      }, series: [{
-        data: data, type: 'bar',
-      },],
-    })
-  })
-  return <div
-    style={{
-      width: '250px', height: '170px', display: 'inline-block',
-    }}
-  >
-    <div id={id} style={{width: '100%', height: '100%'}}/>
-    <Divider style={{marginTop: '-42px', marginBottom: '0px'}}/>
-    <div>
-      <Paragraph style={{marginLeft: '12px', marginRight: '20px'}}>
-        更改条数 +{today}
-      </Paragraph>
-    </div>
-  </div>
-}
-// 元数据查看的折线图
-const LineChart = ({data, id, today}) => {
-  useEffect(() => {
-    const chartDom = document.getElementById(id)
-    if (myChart != null && myChart !== '' && myChart !== undefined) myChart.dispose() // 销毁
-
-    const myChart0 = echarts.init(chartDom)
-    myChart0.setOption({
-      tooltip: {
-        trigger: 'axis', position(pt) {
-          return [pt[0], '10%']
-        },
-      }, title: {
-        left: 'left', text: '今日事项浏览次数', subtext: today, textStyle: {
-          fontSize: '12px', fontWeight: 'normal',
-        }, subtextStyle: {
-          fontSize: '20px', fontWeight: 'bolder',
-        },
-      }, xAxis: {
-        type: 'time', boundaryGap: false,
-      }, yAxis: {
-        type: 'value', boundaryGap: [0, '100%'], show: false,
-      }, series: [{
-        name: '今日事项浏览次数', type: 'line', smooth: true, symbol: 'none', areaStyle: {}, data: data,
-      },],
-    })
-  })
-  return <div
-    style={{
-      width: '250px', height: '170px', display: 'inline-block',
-    }}
-  >
-    <div id={id} style={{width: '100%', height: '100%'}}/>
-    <Divider style={{marginTop: '-42px', marginBottom: '0px'}}/>
-    <div>
-      <Paragraph style={{marginLeft: '12px', marginRight: '20px'}}>
-        近15日日均访问量 14512 {/* todo by lhy ??? */}
-      </Paragraph>
-    </div>
-  </div>
-}
 export default function MetaData() {
   const [websiteSettingsForm] = Form.useForm()
   const [coreSettingsForm] = Form.useForm()
@@ -114,12 +31,7 @@ export default function MetaData() {
 
   // 组件初始化
   useEffect(() => {
-    api.SiteSettings().then(({data: {WebsiteAbbreviation}}) => {
-      websiteSettingsForm.setFieldsValue({
-        WebsiteAbbreviation
-      })
-    })
-    api.CoreSettings().then(({
+    apiMeta.CoreSettings().then(({
                                data: {
                                  data: {
                                    ICP_record_number,
@@ -150,7 +62,7 @@ export default function MetaData() {
       copyright,
       siteCode
     }))
-    api.GetInterfaceUrl().then(({
+    apiMeta.GetInterfaceUrl().then(({
                                   data: {
                                     data: {
                                       api_BDDT, api_GDZWFWPT, api_GZSRSJGW, api_GZSRSJWX, api_SHBAPP, api_ZNFWJQRPT
@@ -159,89 +71,40 @@ export default function MetaData() {
                                 }) => interfaceConfigurationForm.setFieldsValue({
       api_GZSRSJGW, api_GZSRSJWX, api_SHBAPP, api_GDZWFWPT, api_ZNFWJQRPT, api_BDDT,
     }))
-    getLog()
   }, [])
 
   function onFinish() {
-    // todo
-    // 上传各种图片的流程是相似的。为了减少代码量，只将有区别的部分用数组存储
-    for (let {api: api1, error, fileName, success} of [{
-      fileName: 'websiteLogoFile',
-      api: apiMeta.webSiteLogo,
-      success: '网站logo上传成功.',
-      error: '网站logo上传失败.'
-    }, {
-      fileName: 'addressBarIconFile',
-      api: apiMeta.addressBarIcon,
-      success: '地址栏图标上传成功.',
-      error: '地址栏图标上传失败.'
-    }, {
-      fileName: 'backstageLogoFile',
-      api: apiMeta.backstageLogo,
-      success: '首页轮播图上传成功',
-      error: '首页轮播图上传失败'
-    }, {
-      fileName: 'officialQRCode',
-      api: apiMeta.officialQRCode,
-      success: '官网二维码上传成功',
-      error: '官网二维码上传失败'
-    }, {
-      fileName: 'wechatQRCodeFile',
-      api: apiMeta.wechatOfficialAccountQRCode,
-      success: '公众号二维码上传成功',
-      error: '公众号二维码上传失败'
-    }, {
-      fileName: 'appQRCodeFile',
-      api: apiMeta.appQRCode,
-      success: 'APP二维码上传成功',
-      error: 'APP二维码上传失败'
-    }]) {
+    const data = new FormData()
+    for (let fileName of ['websiteLogoFile', 'addressBarIconFile', 'backstageLogoFile',
+      'officialQRCode', 'wechatQRCodeFile', 'appQRCodeFile']) {
       if (files[fileName]) {
-        const data = new FormData()
-        data.append('file', files[fileName])
-        api1(data).then(() => {
-          files[fileName] = null
-          message.success(success).then()
-        }).catch(() => message.error(error))
+        data.append(fileName, files[fileName])
+        files[fileName] = null
       }
     }
+    apiMeta.websiteSettings(data).then(() => message.success('图片上传成功'))
+      .catch(() => message.error('图片上传失败'))
   }
 
   const ChangeCoreSettings = (values) => {
-    api.ChangeCoreSettings(values).then()
+    apiMeta.ChangeCoreSettings(values).then()
     message.success('核心设置修改成功').then()
   }
 
   const ChangeInterfaceConfiguration = (values) => {
-    api.SetInterfaceUrl(values).then()
+    apiMeta.SetInterfaceUrl(values).then()
     message.success('接口修改成功').then()
   }
 
   const onFinishFailed = errorInfo => alert('Failed:' + errorInfo)
-  const [logData15, setLogData15] = useState(false)
-  const [logToday, setLogToday] = useState(false)
-  const [itemBrowseCount15, setItemBrowseCount15] = useState(false)
-  const [itemBrowseCountToday, setItemBrowseCountToday] = useState(false)
-
-  const getLog = () => {
-    apiLog.MetaDataLog().then(({data}) => {
-      setLogData15(data)
-      setLogToday(data[data.length - 1][1])
-    })
-    apiLog.ItemBrowseCount().then(({data}) => {
-      setItemBrowseCount15(data)
-      setItemBrowseCountToday(data[data.length - 1][1])
-    })
-  }
 
   useEffect(() => {
-    api.GetNetworkStatus().then(({data: {data}}) => {
+    apiMeta.GetNetworkStatus().then(({data: {data}}) => {
       setInterfaceStatus(data)
     }).catch((error) => console.log(error))
-    api.GetLogPath().then(({data}) => {
+    apiMeta.GetLogPath().then(({data}) => {
       setLogPath(data)
     }).catch((error) => console.log(error))
-    getLog()
   }, [])
 
   function getMyState(data) {
@@ -253,27 +116,29 @@ export default function MetaData() {
     <Tabs type="card">
       <TabPane tab="元数据查看" key="1">
         <div style={{padding: '5px', backgroundColor: '#eeeeee'}}>
-          <Row gutter={10}>
-            <Col span={8}>
+          <Row gutter={16}>
+            <Col span={6}>
               {' '}
               <Card size="small">
-                <UsersChart id="xi"/>
+                <LineChart type="pv"/>
               </Card>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               {' '}
               <Card size="small">
-                <LineChart
-                  id="ha"
-                  data={itemBrowseCount15}
-                  today={itemBrowseCountToday}
-                />
+                <LineChart type="uv"/>
               </Card>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               {' '}
               <Card size="small">
-                <BarChart id="ww" data={logData15} today={logToday}/>
+                <LineChart type="item_num"/>
+              </Card>
+            </Col>
+            <Col span={6}>
+              {' '}
+              <Card size="small">
+                <LineChart type="user_num"/>
               </Card>
             </Col>
           </Row>

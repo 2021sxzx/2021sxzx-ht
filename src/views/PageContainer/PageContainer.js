@@ -63,20 +63,21 @@ export default withRouter(function PageContainer(props) {
     heartbeatRef.current = shouldHeartbeat
   })
   useEffect(() => {
-    let count = 0 // 计时器
+    let start = new Date()
     const timeInterval = [590, 595] // 心跳时间区间
     let heartbeat = setInterval(() => {
+      const count = (new Date() - start).valueOf() / 1000
       const threshold = 1 / (timeInterval[1] - count) // 检测阈值
       const checker = Math.random()
-      if (count >= timeInterval[0] && checker < threshold) {
-        count = 0
-        if (true || heartbeatRef.current) {
+      if (count >= timeInterval[1] || count >= timeInterval[0] && checker < threshold) {
+        start = new Date()
+        if (heartbeatRef.current) {
           setHeartbeat(false)
           api.IsLogin().then(res => {
             if (!res) api.logout()
           })
         } else api.logout()
-      } else ++count
+      }
     }, heartbeatIntervalTime)
     return () => clearInterval(heartbeat)
   }, [])

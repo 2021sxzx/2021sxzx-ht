@@ -37,7 +37,8 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": []
+    "extends": [],
+    "parser": "babel-eslint"
   },
   "browserslist": {
     "production": [

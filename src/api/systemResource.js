@@ -22,14 +22,6 @@ const api ={
             data, //data:data同名可以直接写 data
         });
     },
-    GetProcessCount(data){
-        return service.request({
-            method: "get",
-            url: "v1/viewProcessMessage",
-            data
-        })
-    },
-
     GetPeopleStatus(){
         return service.request({
             method:'get',
