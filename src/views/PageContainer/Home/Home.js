@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react'
-import {Tabs, List} from 'antd'
+import React, {useEffect, useState,useRef} from 'react'
+import {Tabs, List, message, Button} from 'antd'
 import api from '../../../api/rule'
 import style from './Home.module.scss'
 import VirtualList from 'rc-virtual-list'
@@ -8,15 +8,15 @@ import apiRole from "../../../api/role";
 const {TabPane} = Tabs
 
 export default function Home(props) {
-
     const [statusCount, setStatusCount] = useState([])
     const [checkResult, setCheckResult] = useState([])
     const [permission,setPermission] = useState([])
+    const [shouldUpdate, setShouldUpdate] = useState(false)
     
     useEffect(() => {
-        apiPersonal.getTopHeaderData()
+          apiPersonal.getTopHeaderData()
             .then(value => {
-                apiRole.GetRole().then((res)=>{
+                   apiRole.GetRole().then((res)=>{
                     for(let item of res.data.data)
                     {
                         if(item.role_name == value.data.data.role_name)
@@ -25,9 +25,12 @@ export default function Home(props) {
                             break
                         }
                     }
-                    })
-            })
-        
+                    }).catch((e)=>{
+                        message.error("获取用户信息失败")
+                    })  
+            }).catch((e)=>{
+
+            })       
     },[]);
     const getEveryItemStatusCount = () => {
         api.GetEveryItemStatusCount().then(response => {
@@ -57,10 +60,19 @@ export default function Home(props) {
         getEveryItemStatusCount()
     }, [])
 
+    useEffect(function(){
+        if(checkResult.length!=0)
+            api.UpdateCheckResult(checkResult).then(response => {
+                setCheckResult(response.data.data)
+            }).catch(() => {
+
+            })
+    },[shouldUpdate])
+
     return (
         <div className={style.flex}>
             <div className={style.checkResult}>
-                <Tabs className={style.tabs} defaultActiveKey='0' tabPosition='top'>
+                <Tabs className={style.tabs} defaultActiveKey='0' tabPosition='top' id="tabss">
                     {
                         checkResult.map((item, index) => (
                             <TabPane tab={item.type + '(' + item.guides.length + ')'} key={index}>
@@ -70,12 +82,12 @@ export default function Home(props) {
                                         data={item.guides}
                                     >
                                         {
-                                            code => (
-                                                <List.Item className={style.listItem}>
+                                            (code,num) => (
+                                                <List.Item className={style.listItem} key={item.guides[num]}>
                                                     <div>
-                                                        {'    指南编码：'}
+                                                        {'    '+index==0?"指南编码：":item.item_name[num]+'：'}
                                                     </div>
-                                                    <div className={style.jumpCode} onClick={function () {
+                                                    <div className={style.jumpCode} style={{color:item.handle[num]?'auto':'#A9A9A9'}} onClick={function () {
                                                     if(permission.indexOf("事项指南管理")!=-1)
                                                         if (item.type === '省政务新增') {
                                                             jumpToGuides()
@@ -83,6 +95,14 @@ export default function Home(props) {
                                                     }}>
                                                         {code}
                                                     </div>
+                                                    {
+                                                        <Button type='primary' className={style.handled} style={{display:item.handle[num]?'block':'none'}} onClick={()=>{      
+                                                            let arr = item.handle
+                                                            arr[num] = 0    
+                                                            setShouldUpdate(!shouldUpdate)
+                                                        }}>已处理</Button>
+                                                    }
+                                                    
                                                 </List.Item>
                                             )
                                         }

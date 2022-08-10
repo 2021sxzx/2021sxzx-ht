@@ -1,6 +1,6 @@
 import axios from "axios";
 import api from "./login";
-import {message} from "antd"
+import {message, notification} from "antd"
 let BASEURL
 if (process.env.NODE_ENV === "development") {
     BASEURL = '/api'
@@ -35,15 +35,30 @@ instance.interceptors.response.use(
     function (response) {
         console.log('响应拦截器',response);
         //如果用户状态突然被管理员切换至未激活
-        if(response.data.loginstate == "loginout")
-        {
-            message.error('该用户未激活请重新联系管理员')
-            api.clearStorageAndRedirect()
-        }
+        // if(response.data.loginstate == "loginout")
+        // {
+        //     api.clearStorageAndRedirect()
+        //     notification.error({
+        //         maxCount:1,
+        //         duration:0,
+        //         message:"账号未激活请联系管理员"
+        //     })
+        // }
         // 对响应数据做点什么
         return response
     },
     function (error) {
+        // console.log("MISTAKE")
+        if(error.response.status==401)
+            {
+                api.clearStorageAndRedirect()
+                notification.error({
+                key :"errorkey",
+                maxCount:1,
+                duration:0,
+                message:"账号未激活请联系管理员"
+            })
+            }
         // 对响应错误做点什么
         return Promise.reject(error);
     }

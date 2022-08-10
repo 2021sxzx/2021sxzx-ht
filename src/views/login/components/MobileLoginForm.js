@@ -21,7 +21,7 @@ export default function MobileLoginForm() {
         for(let i=0;i<8;i++)
             verificationCode += Math.floor(Math.random()*10)
         setVerificationCode(verificationCode)
-        console.log("In getVC",verificationCode)
+        // console.log("In getVC",verificationCode)
     }
 
     const onFinish = (value) => {

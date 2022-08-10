@@ -16,6 +16,8 @@ function Personal() {
         apiPersonal.getTopHeaderData()
             .then(value => {
                 setUserInfo(value.data.data)
+            }).catch((e)=>{
+                
             })
     }, []);
 

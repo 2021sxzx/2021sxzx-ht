@@ -192,6 +192,16 @@ const api ={
             url: "/v1/getCheckResult"
         })
     },
+    UpdateCheckResult(data){
+        return service.request({
+            method:"post",
+            url:"/v1/updateCheckResult",
+            headers: {
+                'Content-Type': 'application/json'
+            },  
+            data
+        })
+    },
     GetEveryItemStatusCount(){
         return service.request({
             method: "get",

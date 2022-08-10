@@ -238,6 +238,7 @@ export default function ManageProcess(props) {
                 items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
                 items[i]['status'] = statusScheme[items[i].item_status].cn_name
             }
+            console.log(items)
             setTableLoading(false)
             setTableData(items)
         }).catch(error => {
