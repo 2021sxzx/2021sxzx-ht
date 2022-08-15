@@ -88,7 +88,7 @@ export default function Home(props) {
                                             (code, num) => (
                                                 <List.Item className={style.listItem} key={item.guides[num]}>
                                                     <div>
-                                                        {'    ' + index == 0 ? "指南编码：" : item.item_name[num] + '：'}
+                                                        {index === 0 ? "指南编码：" : item.item_name[num] + '：'}
                                                     </div>
                                                     <div className={style.jumpCode}
                                                          style={{color: item.handle[num] ? 'auto' : '#A9A9A9'}}
