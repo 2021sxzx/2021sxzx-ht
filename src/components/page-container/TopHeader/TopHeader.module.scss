@@ -5,16 +5,20 @@
   padding: 1px 10px;
   align-items: center;
   justify-content: space-between;
+  background: #a0d911;
+  z-index: 10000000;
 
   .logoContainer {
     height: 100%;
-    width: max-content;
+    //width: max-content;
     display: flex;
     align-items: center;
     cursor: pointer;
 
     .logo{
       height: 100%;
+      display: flex;
+      align-items: center;
     }
   }
 
@@ -27,14 +31,23 @@
     margin: 0 10px;
 
     .userInfo{
+      height: 100%;
       margin: 0 10px;
+      display: flex;
+      align-items: center;
     }
 
     .avtar{
+      height: 100%;
       cursor: pointer;
+      display: flex;
+      align-items: center;
     }
 
     .logoutContainer{
+      height: 100%;
+      display: flex;
+      align-items: center;
 
     }
   }

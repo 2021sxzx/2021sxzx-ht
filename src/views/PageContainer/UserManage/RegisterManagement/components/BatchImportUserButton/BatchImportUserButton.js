@@ -40,6 +40,7 @@ const BatchImportUserButton = (props) => {
                 // 判断文件各个字段是否合法
                 !(typeof item.unit_name === 'string' && item.unit_name.length <= 32 && item.unit_name.length >= 1) ?
                     errorCase = 'UnitNameError' : null;
+                // TODO (zzj): 添加对机构名称的校验
                 !(typeof item.user_name === 'string' && item.user_name.length <= 32 && item.user_name.length >= 1) ?
                     errorCase = 'userNameError' : null;
                 !(typeof item.role_name === 'string' && item.role_name.length <= 32 && item.role_name.length >= 1) ?
