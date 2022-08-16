@@ -429,6 +429,14 @@ export default function ManageProcess(props) {
                 'detailInfo': data.task_code
             })
             detailTable.push({
+                'detailType': '实施主体名称',
+                'detailInfo': data.service_agent_name
+            })
+            detailTable.push({
+                'detailType': '实施主体编码',
+                'detailInfo': data.service_agent_code
+            })
+            detailTable.push({
                 'detailType': '事项内容',
                 'detailInfo': data.apply_content
             })
