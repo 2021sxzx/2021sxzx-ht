@@ -131,15 +131,7 @@ const api = {
     },
 
     DownloadTemplate() {
-        let BASEURL
-        if (process.env.NODE_ENV === "development") {
-            BASEURL = 'http://127.0.0.1:5001/xlsx/template.xlsx'
-        } else if (process.env.NODE_ENV === "test") {
-            BASEURL = 'http://127.0.0.1:5001/xlsx/template.xlsx'
-        } else if (process.env.NODE_ENV === "production") {
-            BASEURL = 'http://8.134.73.52:5001/xlsx/template.xlsx'
-        }
-        window.open(BASEURL);
+        window.open('/xlsx/template.xlsx');
     },
 
     BatchImportUser(data) {

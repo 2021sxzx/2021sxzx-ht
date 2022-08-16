@@ -1,37 +1,51 @@
-import React, {useEffect, useState,useRef} from 'react'
+import React, {useEffect, useState} from 'react'
 import {Tabs, List, message, Button} from 'antd'
 import api from '../../../api/rule'
 import style from './Home.module.scss'
 import VirtualList from 'rc-virtual-list'
 import apiPersonal from "../../../api/personal";
 import apiRole from "../../../api/role";
+
 const {TabPane} = Tabs
 
 export default function Home(props) {
     const [statusCount, setStatusCount] = useState([])
     const [checkResult, setCheckResult] = useState([])
-    const [permission,setPermission] = useState([])
+    const [permission, setPermission] = useState([])
     const [shouldUpdate, setShouldUpdate] = useState(false)
-    
+
     useEffect(() => {
-          apiPersonal.getTopHeaderData()
+        apiPersonal.getTopHeaderData()
             .then(value => {
-                   apiRole.GetRole().then((res)=>{
-                    for(let item of res.data.data)
-                    {
-                        if(item.role_name == value.data.data.role_name)
-                        {
+                apiRole.GetRole().then((res) => {
+                    for (let item of res.data.data) {
+                        if (item.role_name === value.data.data.role_name) {
                             setPermission(item.permission)
                             break
                         }
                     }
-                    }).catch((e)=>{
-                        message.error("获取用户信息失败")
-                    })  
-            }).catch((e)=>{
+                }).catch(() => {
+                    message.error("获取用户信息失败")
+                })
+            }).catch(() => {
+                message.error('获取 topHeader 信息失败')
+        })
+    }, []);
 
-            })       
-    },[]);
+    useEffect(function () {
+        getCheckResult()
+        getEveryItemStatusCount()
+    }, [])
+
+    useEffect(function () {
+        if (checkResult.length !== 0)
+            api.UpdateCheckResult(checkResult).then(response => {
+                setCheckResult(response.data.data)
+            }).catch(() => {
+
+            })
+    }, [shouldUpdate])
+
     const getEveryItemStatusCount = () => {
         api.GetEveryItemStatusCount().then(response => {
             setStatusCount(response.data.data)
@@ -55,19 +69,6 @@ export default function Home(props) {
         props.history.push({pathname: '/item-manage/guide'})
     }
 
-    useEffect(function () {
-        getCheckResult()
-        getEveryItemStatusCount()
-    }, [])
-
-    useEffect(function(){
-        if(checkResult.length!=0)
-            api.UpdateCheckResult(checkResult).then(response => {
-                setCheckResult(response.data.data)
-            }).catch(() => {
-
-            })
-    },[shouldUpdate])
 
     return (
         <div className={style.flex}>
@@ -75,15 +76,18 @@ export default function Home(props) {
                 <Tabs className={style.tabs} defaultActiveKey='0' tabPosition='top' id="tabss">
                     {
                         checkResult.map((item, index) => (
-                            <TabPane tab={item.type + '(' + item.guides.length + ')'} key={index}>
+                            <TabPane tab={item.type + '(' + item.guides.length + ')'} key={item.type}>
+
                                 <List className={style.list}>
                                     <VirtualList
                                         height={430}
                                         data={item.guides}
+                                        itemKey={item.guides}
                                     >
                                         {
-                                            (code,num) => (
+                                            (code, num) => (
                                                 <List.Item className={style.listItem} key={item.guides[num]}>
+
                                                     <List.Item.Meta
                                                     title={'    '+index==0?"指南编码":item.item_name[num]}
                                                     description={<div className={style.jumpCode} style={{color:item.handle[num]?'auto':'#A9A9A9'}} onClick={function () {
@@ -97,16 +101,20 @@ export default function Home(props) {
                                                     />
                                                     {/* <div>
                                                         {'    '+index==0?"指南编码：":item.item_name[num]+':'}
+
                                                     </div>
-                                                    <div className={style.jumpCode} style={{color:item.handle[num]?'auto':'#A9A9A9'}} onClick={function () {
-                                                    if(permission.indexOf("事项指南管理")!=-1)
-                                                        if (item.type === '省政务新增') {
-                                                            jumpToGuides()
-                                                        } else jumpToProcess(code)
-                                                    }}>
+                                                    <div className={style.jumpCode}
+                                                         style={{color: item.handle[num] ? 'auto' : '#A9A9A9'}}
+                                                         onClick={function () {
+                                                             if (permission.indexOf("事项指南管理") !== -1)
+                                                                 if (item.type === '省政务新增') {
+                                                                     jumpToGuides()
+                                                                 } else jumpToProcess(code)
+                                                         }}>
                                                         {code}
                                                     </div> */}
                                                     {
+
                                                         <Button type='primary' className={item.handle[num]?style.nonhandled:style.handled} disabled={!item.handle[num]} onClick={()=>{      
                                                             let arr = item.handle
                                                             arr[num] = 0    
@@ -114,6 +122,7 @@ export default function Home(props) {
                                                         }}>{item.handle[num]?"接受/处理":"已处理"}</Button>
                                                         }
                                                    
+
                                                 </List.Item>
                                             )
                                         }
@@ -132,8 +141,10 @@ export default function Home(props) {
                           </div>
                       }>
                     {
+
                         statusCount.map((item, index) => (
                             <List.Item className={style.rightlistItem}>
+
                                 {'    ' + item.status_name + '事项：' + item.count + '项'}
                             </List.Item>
                         ))

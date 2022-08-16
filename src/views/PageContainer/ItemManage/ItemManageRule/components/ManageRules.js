@@ -41,12 +41,12 @@ export default function ManageRules(props) {
             dataIndex: 'rule_path',
             key: 'rule_path'
         },
-        {
-            title: '机构',
-            dataIndex: 'department_name',
-            key: 'department_name',
-            width: 125
-        },
+        // {
+        //     title: '机构',
+        //     dataIndex: 'department_name',
+        //     key: 'department_name',
+        //     width: 125
+        // },
         {
             title: '创建人',
             dataIndex: 'creator_name',

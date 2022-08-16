@@ -44,12 +44,12 @@ export default function ManageRegions(props) {
             dataIndex: 'region_path',
             key: 'region_path'
         },
-        {
-            title: '机构',
-            dataIndex: 'department_name',
-            key: 'department_name',
-            width: 125
-        },
+        // {
+        //     title: '机构',
+        //     dataIndex: 'department_name',
+        //     key: 'department_name',
+        //     width: 125
+        // },
         {
             title: '创建人',
             dataIndex: 'creator_name',

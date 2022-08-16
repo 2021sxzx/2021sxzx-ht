@@ -3,12 +3,14 @@ import * as XLSX from 'xlsx';
 import './BatchImportUserButton.css';
 import api from '../../../../../../api/user'
 import apiRole from '../../../../../../api/role'
+import apiUnit from '../../../../../../api/unit'
 import {message} from "antd";
 
 const BatchImportUserButton = (props) => {
 
     const [xlsxData, setXlsxData] = useState([]);
     const initialPassword = props.initialPassword ? props.initialPassword : '11AAaa@@';
+    let unitSet = null
 
     // 文件字段错误情况和对应的错误提示信息
     const errorMsg = new Map([
@@ -16,8 +18,9 @@ const BatchImportUserButton = (props) => {
         ['passwordError', '批量导入文件中密码要求长度为 8 到 32 位，并同时使用大小写字母，数字和部分特殊字符(@#$%&*_+-=)，不支持空格，请修改后重新提交。'],
         ['roleNameError', '批量导入文件中角色名称要求长度为 1 到 32 位，请修改后重新提交。'],
         ['userNameError', '批量导入文件中用户名称要求长度为 1 到 32 位，请修改后重新提交。'],
-        ['UnitNameError', '批量导入文件中部门名称要求长度为 1 到 32 位，请修改后重新提交。'],
-        ['roleUnavailableError', '批量导入文件中存在不可用的角色名称，请修改后重新提交。']
+        ['unitNameError', '批量导入文件中机构名称要求长度为 1 到 32 位，请修改后重新提交。'],
+        ['noUnit', '该机构不存在，请重新检查机构名称'],
+        ['roleUnavailableError', '批量导入文件中存在不可用的角色名称，请修改后重新提交。'],
     ])
 
     // 用于批量导入的触发
@@ -35,11 +38,26 @@ const BatchImportUserButton = (props) => {
                 role.add(roleData.role_name);
             }
             console.log(role);
+
+            // 重新获取所有部门名称，用于验证批量导入的部门信息
+            unitSet = new Set()
+            apiUnit.GetUnit().then(res => {
+                if (Array.isArray(res.data)) {
+                    for (let unitInfo of res.data) {
+                        unitSet.add(unitInfo.department_name)
+                    }
+                }
+            })
+
             // 检查文件各个字段是否合法并输出错误信息
             for (let item of xlsxData) {
                 // 判断文件各个字段是否合法
                 !(typeof item.unit_name === 'string' && item.unit_name.length <= 32 && item.unit_name.length >= 1) ?
-                    errorCase = 'UnitNameError' : null;
+                    errorCase = 'unitNameError' : null;
+                // 检查批量导入的机构是否存在
+                if (!unitSet.has(item.unit_name)) {
+                    errorCase = 'noUnit'
+                }
                 !(typeof item.user_name === 'string' && item.user_name.length <= 32 && item.user_name.length >= 1) ?
                     errorCase = 'userNameError' : null;
                 !(typeof item.role_name === 'string' && item.role_name.length <= 32 && item.role_name.length >= 1) ?
