@@ -664,20 +664,41 @@ export default function ManageProcess(props) {
     return (
         <>
             <Space direction='vertical' size={12} style={{width: '100%'}}>
-                <Modal width={800} title={guideDetail.task_name} visible={isDetailShown}
-                       destroyOnClose={true} onCancel={endShowing} footer={null}>
-                    <Table style={{whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-all'}}
-                           columns={detailColumns} dataSource={guideDetail} rowKey='detailType'/>
+                <Modal width={800}
+                       title={guideDetail.task_name}
+                       visible={isDetailShown}
+                       destroyOnClose={true}
+                       onCancel={endShowing}
+                       footer={null}
+                       style={{
+                           display: "flex",
+                           justifyContent: "center",
+                       }}>
+                    <Table columns={detailColumns}
+                           dataSource={guideDetail}
+                           rowKey='detailType'
+                           style={{
+                               whiteSpace: 'pre-wrap',
+                               wordWrap: 'break-word',
+                               wordBreak: 'break-all',
+                           }}/>
                 </Modal>
-                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData}
-                            fullType={fullType} jumpCode={props.jumpCode}
-                            bindedData={props.bindedData} setBindedData={props.setBindedData} statusType={statusType}/>
+                <SelectForm getSearch={searchItems}
+                            reset={resetSearch}
+                            setOriginData={setOriginData}
+                            fullType={fullType}
+                            jumpCode={props.jumpCode}
+                            bindedData={props.bindedData}
+                            setBindedData={props.setBindedData}
+                            statusType={statusType}/>
                 <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
                     <Button type='primary' disabled={unableCreate} onClick={handleCreate}>绑定事项</Button>
                     <Button type='primary' disabled={!isBatching}>批量导出</Button>
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量解绑</Button>
                 </Space>
-                <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='_id'
+                <Table rowSelection={rowSelection}
+                       columns={tableColumns}
+                       dataSource={tableData} rowKey='_id'
                        pagination={{onChange: changePage, current: current + 1, total: totalSize}}
                        loading={tableLoading}/>
             </Space>
