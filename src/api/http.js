@@ -8,7 +8,7 @@ if (process.env.NODE_ENV === "development") {
     BASEURL = 'http://8.134.73.52:80/api'
     // BASEURL = 'http://127.0.0.1:5001/api'
 } else if (process.env.NODE_ENV === "production") {
-    BASEURL = 'http://8.134.73.52:80/api'
+    BASEURL = 'http://localhost:80/api'
 }
 //对axios请求进行二次封装，timeout是没执行成功就执行错误消息
 const instance = axios.create({
