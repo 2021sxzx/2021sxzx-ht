@@ -103,11 +103,17 @@ export default function ManageProcess(props) {
             key: 'item_path'
         },
         {
-            title: '机构',
-            dataIndex: 'department_name',
-            key: 'department_name',
-            width: 100
+            title: '实施主体名称',
+            dataIndex: 'service_agent_name',
+            key: 'service_agent_name',
+            width: 125
         },
+        // {
+        //     title: '机构',
+        //     dataIndex: 'department_name',
+        //     key: 'department_name',
+        //     width: 100
+        // },
         {
             title: '负责人',
             dataIndex: 'creator_name',

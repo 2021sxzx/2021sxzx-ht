@@ -66,12 +66,12 @@ export default function ManageAudit(props) {
       dataIndex: 'item_path',
       key: 'item_path'
     },
-    {
-      title: '机构',
-      dataIndex: 'department_name',
-      key: 'department_name',
-      width: 100
-    },
+    // {
+    //   title: '机构',
+    //   dataIndex: 'department_name',
+    //   key: 'department_name',
+    //   width: 100
+    // },
     {
       title: '创建人',
       dataIndex: 'creator_name',

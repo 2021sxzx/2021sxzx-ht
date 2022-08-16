@@ -97,11 +97,17 @@ export default function ManageGuide(props) {
       key: 'task_name'
     },
     {
-      title: '机构',
-      dataIndex: 'department_name',
-      key: 'department_name',
+      title: '实施主体名称',
+      dataIndex: 'service_agent_name',
+      key: 'service_agent_name',
       width: 125
     },
+    // {
+    //   title: '机构',
+    //   dataIndex: 'department_name',
+    //   key: 'department_name',
+    //   width: 125
+    // },
     {
       title: '负责人',
       dataIndex: 'creator_name',
@@ -394,7 +400,7 @@ export default function ManageGuide(props) {
     api.DeleteItemGuides(data).then(response => {
       getItemGuides()
       props.showSuccess()
-    }).catch(error => {
+    }).catch(() => {
       // 删除报错时，弹出报错框并重新加载数据
       props.showError('删除指南失败！')
       setCurrent(0)
@@ -420,7 +426,7 @@ export default function ManageGuide(props) {
       }
       setTableData(guides)
       setTableLoading(false)
-    }).catch(error => {
+    }).catch(() => {
       props.showError('搜索指南失败！')
       setTableLoading(false)
     })
@@ -468,7 +474,7 @@ export default function ManageGuide(props) {
 
       props.setModifyId(id)
       props.setModifyContent(tempGuideContent)
-    }).catch(error => {
+    }).catch(() => {
       props.showError('编辑指南时获取指南详情失败！')
     })
   }
@@ -524,7 +530,7 @@ export default function ManageGuide(props) {
       }
       setTableData(guides)
       setTableLoading(false)
-    }).catch(error => {
+    }).catch(() => {
       props.showError('换页时获取指南失败！')
       setTableLoading(false)
     })

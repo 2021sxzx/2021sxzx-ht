@@ -1,108 +1,107 @@
-import React, { useEffect, useState } from 'react'
-import { DatePicker, Checkbox, Form, Input, Button, Modal } from 'antd'
-import { getTimeStamp } from "../../../../../utils/TimeStamp"
-const { RangePicker } = DatePicker
+import React, {useEffect, useState} from 'react'
+import {DatePicker, Checkbox, Form, Input, Button, Modal} from 'antd'
+import {getTimeStamp} from "../../../../../utils/TimeStamp"
 
-export default function SelectForm(props){
+const {RangePicker} = DatePicker
+
+export default function SelectForm(props) {
     const [form] = Form.useForm()
     const [start_time, setStartTime] = useState('')
     const [end_time, setEndTime] = useState('')
     const [time, setTime] = useState([null, null])
     const [task_code, setTaskCode] = useState('')
     const [item_name, setItemRuleName] = useState('')
-    const [department, setDepartment] = useState('')
+    const [serviceAgent, setServiceAgent] = useState('')
     const [creator, setCreator] = useState('')
     const [rule_id, setRuleId] = useState('')
     const [region_code, setRegionCode] = useState('')
     const [item_status, setItemStatus] = useState([])
 
-    const handleTaskCodeChange = (e)=>{
+    const handleTaskCodeChange = (e) => {
         setTaskCode(e.target.value)
     }
-    const handleItemNameChange = (e)=>{
+    const handleItemNameChange = (e) => {
         setItemRuleName(e.target.value)
     }
-    const handleDepartmentChange = (e)=>{
-        setDepartment(e.target.value)
+    const handleServiceAgentChange = (e) => {
+        setServiceAgent(e.target.value)
     }
-    const handleCreatorChange = (e)=>{
+    const handleCreatorChange = (e) => {
         setCreator(e.target.value)
     }
-    const handleRuleIdChange = (e)=>{
+    const handleRuleIdChange = (e) => {
         setRuleId(e.target.value)
     }
-    const handleRegionCodeChange = (e)=>{
+    const handleRegionCodeChange = (e) => {
         setRegionCode(e.target.value)
     }
-    const handleItemStatusChange = (value)=>{
+    const handleItemStatusChange = (value) => {
         setItemStatus(value)
     }
 
-    useEffect(function(){
+    useEffect(function () {
         // 初始化搜索栏中的信息
-        for (let key in props.bindedData){
-            if ('rule_id' in props.bindedData){
+        for (let key in props.bindedData) {
+            if ('rule_id' in props.bindedData) {
                 let rule_id = parseIds(props.bindedData.rule_id)
                 setRuleId(rule_id)
             }
-            if ('region_code' in props.bindedData){
+            if ('region_code' in props.bindedData) {
                 let region_code = parseIds(props.bindedData.region_code)
                 setRegionCode(region_code)
             }
             break
         }
-        if (props.jumpCode && props.jumpCode !== ''){
+        if (props.jumpCode && props.jumpCode !== '') {
             setTaskCode(props.jumpCode)
         }
     }, [props.bindedData, props.jumpCode])
 
-    useEffect(function(){
+    useEffect(function () {
         setItemStatus(props.fullType)
     }, [props.fullType])
 
-    const splitIds = (id)=>{
-        let ids = []
+    const splitIds = (id) => {
         let noEmpty = id.replace(/\s*/g, '').replace('，', ',')
-        ids = noEmpty.split(',')
-        return ids
+        return noEmpty.split(',')
     }
 
-    const parseIds = (ids)=>{
+    const parseIds = (ids) => {
         let result = ''
-        for (let i = 0; i < ids.length; i++){
-            if (result !== '') result +=','
+        for (let i = 0; i < ids.length; i++) {
+            if (result !== '') result += ','
             result += ids[i]
         }
         return result
     }
 
-    const inj_judge = (str)=>{
+    // 输入字段的安全检查
+    const inj_judge = (str) => {
         let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
             'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
-        for (let i = 0; i < inj_str.length; i++){
-            if (str.indexOf(inj_str[i]) >= 0){
+        for (let i = 0; i < inj_str.length; i++) {
+            if (str.indexOf(inj_str[i]) >= 0) {
                 return true
             }
         }
         return false
     }
 
-    const Search = ()=>{
+    const Search = () => {
         const data = {}
-        if (inj_judge(task_code) || inj_judge(item_name) || inj_judge(creator) || inj_judge(department)
-            || inj_judge(rule_id) || inj_judge(region_code)){
+        if (inj_judge(task_code) || inj_judge(item_name) || inj_judge(creator) || inj_judge(serviceAgent)
+            || inj_judge(rule_id) || inj_judge(region_code)) {
             Modal.warning({
                 centered: true,
                 title: '非法输入',
                 content: '输入信息中有非法输入内容，请检查输入！'
-            }) 
-        }
-        else{
+            })
+        } else {
             if (start_time !== '') data['create_start_time'] = start_time
             if (end_time !== '') data['create_end_time'] = end_time
             if (task_code !== '') data['task_code'] = splitIds(task_code)
             if (item_name !== '') data['item_name'] = item_name
-            if (department !== '') data['department_name'] = department
+            if (serviceAgent !== '') data['service_agent_name'] = serviceAgent
             if (creator !== '') data['creator_name'] = creator
             if (rule_id !== '') data['rule_id'] = splitIds(rule_id)
             if (region_code !== '') data['region_code'] = splitIds(region_code)
@@ -112,23 +111,23 @@ export default function SelectForm(props){
         }
     }
 
-    const handleDateChange = (value, dataString)=>{
-        if (value){
+    const handleDateChange = (value, dataString) => {
+        if (value) {
             setStartTime(getTimeStamp(dataString[0]))
             setEndTime(getTimeStamp(dataString[1]))
             setTime(value)
-        }
-        else{
+        } else {
             setEndTime('')
             setStartTime('')
             setTime([null, null])
         }
     }
 
-    const clear = ()=>{
+    const clear = () => {
         setTaskCode('')
         setItemRuleName('')
-        setDepartment('')
+        setServiceAgent('')
+        // setDepartment('')
         setCreator('')
         setRuleId('')
         setRegionCode('')
@@ -138,7 +137,7 @@ export default function SelectForm(props){
         setItemStatus(props.fullType)
     }
 
-    const reset = ()=>{
+    const reset = () => {
         clear()
         props.reset()
     }
@@ -154,32 +153,49 @@ export default function SelectForm(props){
             >
                 <Form.Item label='指南编码' style={{width: '25%'}}>
                     <Input value={task_code}
-                        placeholder='请输入编码' size='middle' onChange={handleTaskCodeChange}></Input>
+                           placeholder='请输入编码'
+                           size='middle'
+                           onChange={handleTaskCodeChange}/>
                 </Form.Item>
                 <Form.Item label='指南名称' style={{width: '25%'}}>
                     <Input value={item_name}
-                        placeholder='请输入名称' size='middle' onChange={handleItemNameChange}></Input>
+                           placeholder='请输入名称'
+                           size='middle'
+                           onChange={handleItemNameChange}/>
                 </Form.Item>
-                <Form.Item label='机构' style={{width: '22%'}}>
-                    <Input value={department}
-                        placeholder='请输入机构' size='middle' onChange={handleDepartmentChange}></Input>
+                <Form.Item label='实施主体名称' style={{width: '22%'}}>
+                    <Input value={serviceAgent}
+                           placeholder='请输入实施主体名称'
+                           size='middle'
+                           onChange={handleServiceAgentChange}/>
                 </Form.Item>
+                {/*            <Form.Item label='机构' style={{width: '22%'}}>*/}
+                {/*                <Input value={department}*/}
+                {/*placeholder='请输入机构' size='middle' onChange={handleDepartmentChange}/>*/}
+                {/*            </Form.Item>*/}
                 <Form.Item label='创建人' style={{width: '22%'}}>
                     <Input value={creator}
-                        placeholder='请输入创建人' size='middle' onChange={handleCreatorChange}></Input>
+                           placeholder='请输入创建人'
+                           size='middle'
+                           onChange={handleCreatorChange}/>
                 </Form.Item>
 
                 <Form.Item label='业务规则编码' style={{marginTop: 10, width: '25%'}}>
                     <Input value={rule_id}
-                        placeholder='请输入业务规则编码' size='middle' onChange={handleRuleIdChange}></Input>
+                           placeholder='请输入业务规则编码'
+                           size='middle'
+                           onChange={handleRuleIdChange}/>
                 </Form.Item>
                 <Form.Item label='区划规则编码' style={{marginTop: 10, width: '25%'}}>
                     <Input value={region_code}
-                        placeholder='请输入区划规则编码' size='middle' onChange={handleRegionCodeChange}></Input>
+                           placeholder='请输入区划规则编码'
+                           size='middle'
+                           onChange={handleRegionCodeChange}/>
                 </Form.Item>
                 <Form.Item label='起始时间' style={{marginTop: 10, width: '45%'}}>
-                    <RangePicker value={time} style={{width: '100%'}} 
-                        onChange={handleDateChange}/>      
+                    <RangePicker value={time}
+                                 style={{width: '100%'}}
+                                 onChange={handleDateChange}/>
                 </Form.Item>
                 <Form.Item label='事项状态' style={{marginTop: 10, width: '85%'}}>
                     <Checkbox.Group options={props.statusType} value={item_status} onChange={handleItemStatusChange}/>
