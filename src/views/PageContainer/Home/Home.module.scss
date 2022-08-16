@@ -1,5 +1,6 @@
 .flex {
     display: flex;
+    min-width: 800px;
 }
 
 .checkResult {
@@ -26,11 +27,26 @@
 
 .listItem {
     display: flex;
+    height: 63px;
+    line-height: 47px;
+    white-space: pre;
+    justify-content: left;
+}
+
+.listItem {
+    display: flex;
     height: 47px;
     line-height: 47px;
     white-space: pre;
     justify-content: left;
 }
+// .row {
+//     display: flex;
+//     height: 47px;
+//     line-height: 47px;
+//     white-space: pre;
+//     justify-content: left;
+// }
 
 .statusCount {
     position: relative;
@@ -64,7 +80,20 @@
     text-align: left;
 }
 
+.nonhandled{
+    margin-left: auto;
+    margin-right: 20px;
+    background: rgba(255,255,255,0.8);
+    color: rgb(95,155,249);
+    outline: none;
+    border-radius: 40px;
+}
+
 .handled{
     margin-left: auto;
     margin-right: 20px;
+    background: rgba(255,255,255,0.8);
+    outline: none;
+    border-radius: 40px;
+    color: rgb(95,155,249);
 }

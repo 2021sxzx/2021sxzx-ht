@@ -84,8 +84,19 @@ export default function Home(props) {
                                         {
                                             (code,num) => (
                                                 <List.Item className={style.listItem} key={item.guides[num]}>
-                                                    <div>
-                                                        {'    '+index==0?"指南编码：":item.item_name[num]+'：'}
+                                                    <List.Item.Meta
+                                                    title={'    '+index==0?"指南编码":item.item_name[num]}
+                                                    description={<div className={style.jumpCode} style={{color:item.handle[num]?'auto':'#A9A9A9'}} onClick={function () {
+                                                        if(permission.indexOf("事项指南管理")!=-1)
+                                                            if (item.type === '省政务新增') {
+                                                                jumpToGuides()
+                                                            } else jumpToProcess(code)
+                                                        }}>
+                                                            {code}
+                                                        </div> }
+                                                    />
+                                                    {/* <div>
+                                                        {'    '+index==0?"指南编码：":item.item_name[num]+':'}
                                                     </div>
                                                     <div className={style.jumpCode} style={{color:item.handle[num]?'auto':'#A9A9A9'}} onClick={function () {
                                                     if(permission.indexOf("事项指南管理")!=-1)
@@ -94,15 +105,15 @@ export default function Home(props) {
                                                         } else jumpToProcess(code)
                                                     }}>
                                                         {code}
-                                                    </div>
+                                                    </div> */}
                                                     {
-                                                        <Button type='primary' className={style.handled} style={{display:item.handle[num]?'block':'none'}} onClick={()=>{      
+                                                        <Button type='primary' className={item.handle[num]?style.nonhandled:style.handled} disabled={!item.handle[num]} onClick={()=>{      
                                                             let arr = item.handle
                                                             arr[num] = 0    
                                                             setShouldUpdate(!shouldUpdate)
-                                                        }}>已处理</Button>
-                                                    }
-                                                    
+                                                        }}>{item.handle[num]?"接受/处理":"已处理"}</Button>
+                                                        }
+                                                   
                                                 </List.Item>
                                             )
                                         }
@@ -122,7 +133,7 @@ export default function Home(props) {
                       }>
                     {
                         statusCount.map((item, index) => (
-                            <List.Item className={style.listItem}>
+                            <List.Item className={style.rightlistItem}>
                                 {'    ' + item.status_name + '事项：' + item.count + '项'}
                             </List.Item>
                         ))
