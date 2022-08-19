@@ -70,7 +70,6 @@ export default function CountDownButton(props) {
         // }).catch((err)=>{
         //     console.log("发送失败",err)
         // })
-        console.log(verifycode)
         props.getVC()
         //TODO 待 API 完善
         console.log("已发送验证码")
