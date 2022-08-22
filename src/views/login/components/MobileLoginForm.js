@@ -45,10 +45,10 @@ export default function MobileLoginForm() {
             userid:v_account.userid,
             pwd:md5(pwd),
             mobile:"18420058402",
-            content:"%e9%aa%8c%e8%af%81%e7%a0%81%ef%bc%9a6666%ef%bc%8c%e6%89%93%e6%ad%bb%e9%83%bd%e4%b8%8d%e8%a6%81%e5%91%8a%e8%af%89%e5%88%ab%e4%ba%ba%e5%93%a6%ef%bc%81",
+            // content:"%e9%aa%8c%e8%af%81%e7%a0%81%ef%bc%9a6666%ef%bc%8c%e6%89%93%e6%ad%bb%e9%83%bd%e4%b8%8d%e8%a6%81%e5%91%8a%e8%af%89%e5%88%ab%e4%ba%ba%e5%93%a6%ef%bc%81",
 
-            // content:verificationCode
-            timestamp:TimeStamp
+            content:verificationCode,
+            // timestamp:TimeStamp
         }).then((res)=>{
             console.log("发送短信成功",res)
         }).catch((err)=>{
