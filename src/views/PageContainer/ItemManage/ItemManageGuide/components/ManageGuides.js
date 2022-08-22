@@ -346,6 +346,7 @@ export default function ManageGuide(props) {
         // 获取所有事项指南
         api.GetItemGuides(data).then(response => {
             let guides = response.data.data.data
+            // console.log(guides)
             setTotalSize(response.data.data.total)
             for (let i = 0; i < guides.length; i++) {
                 guides[i]['creator_name'] = guides[i].creator.name
@@ -450,6 +451,8 @@ export default function ManageGuide(props) {
             tempGuideContent['guideName'] = data.task_name
             tempGuideContent['guideCode'] = data.task_code
             tempGuideContent['guideContent'] = data.apply_content
+            tempGuideContent['serviceAgentName'] = data.service_agent_name
+            tempGuideContent['serviceAgentCode'] = data.service_agent_code
             let tempAccord = []
             if (data.legal_basis) {
                 for (let i = 0; i < data.legal_basis.length; i++) {
@@ -479,7 +482,7 @@ export default function ManageGuide(props) {
                 tempServiceType.push(parseInt(type[i]))
             }
             tempGuideContent['guideServiceType'] = tempServiceType
-
+            console.log(tempGuideContent)
             props.setModifyId(id)
             props.setModifyContent(tempGuideContent)
         }).catch(() => {

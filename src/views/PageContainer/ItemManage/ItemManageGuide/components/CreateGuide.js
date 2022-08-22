@@ -27,6 +27,8 @@ export default function CreateGuide(props) {
         useState(isUpdating ? props.modifyContent.guideCode : '')
     const [serviceAgentName, setServiceAgentName] =
         useState(isUpdating ? props.modifyContent.serviceAgentName : '')
+    const [serviceAgentCode, setServiceAgentCode] =
+        useState(isUpdating ? props.modifyContent.serviceAgentCode : '')
     const [guideContent, setGuideContent] =
         useState(isUpdating ? props.modifyContent.guideContent : '')
     const [guideAccord, setGuideAccord] =
@@ -104,6 +106,9 @@ export default function CreateGuide(props) {
     const handleServiceAgentName = (e) => {
         setServiceAgentName(e.target.value)
     }
+    const handleServiceAgentCode = (e) => {
+        setServiceAgentCode(e.target.value)
+    }
     const handleGuideContentChange = (e) => {
         setGuideContent(e.target.value)
     }
@@ -147,6 +152,7 @@ export default function CreateGuide(props) {
                     <FormArea handleChange={handleGuideNameChange} formName='事项名称' value={guideName}/>
                     <FormArea handleChange={handleGuideCodeChange} formName='事项代码' value={guideCode}/>
                     <FormArea handleChange={handleServiceAgentName} formName='实施主体名称' value={serviceAgentName}/>
+                    <FormArea handleChange={handleServiceAgentCode} formName='实施主体编码' value={serviceAgentCode}/>
                     <FormArea handleChange={handleGuideContentChange} formName='事项内容' value={guideContent}/>
                     <FormList setData={setGuideAccord} addBtn='添加政策依据' formName='政策依据' value={guideAccord}/>
                 </Space>
@@ -204,6 +210,7 @@ export default function CreateGuide(props) {
         if (guideName === '') emptyArea.push('事项名称')
         if (guideCode === '') emptyArea.push('事项编码')
         if (serviceAgentName === '') emptyArea.push('实施主体名称')
+        if (serviceAgentCode === '') emptyArea.push('实施主体编码')
         if (guideContent === '') emptyArea.push('事项内容')
         // 政策依据数组处理
         if (guideAccord.length === 0) {
@@ -367,7 +374,7 @@ export default function CreateGuide(props) {
         let data = {}
         setButtonLoading(true)
         if (inj_judge(guideName) || inj_judge(guidePCAddress) || inj_judge(guideCondition)
-            || inj_judge(guideContent) || inj_judge(serviceAgentName)  || inj_judge(guidePEAddress) || inj_judge(guidePlatform)
+            || inj_judge(guideContent) || inj_judge(serviceAgentName) || inj_judge(serviceAgentCode)  || inj_judge(guidePEAddress) || inj_judge(guidePlatform)
             || inj_judge(guideSelfmadeAddress) || inj_judge(guideOfflineProcess) || inj_judge(guideOnlineProcess)) {
             showInlegal()
             return
@@ -376,6 +383,7 @@ export default function CreateGuide(props) {
                 user_id: principleId,
                 task_name: guideName,
                 service_agent_name: serviceAgentName,
+                service_agent_code: serviceAgentCode,
                 wsyy: guidePCAddress,
                 service_object_type: guideServiceType,
                 conditions: guideCondition,
@@ -509,7 +517,7 @@ export default function CreateGuide(props) {
     useEffect(function () {
         let tempStatus = ['', '', '', '']
         // 事项基本信息
-        if (guideName !== '' && guideCode !== '' && serviceAgentName !== '' && guideContent !== '' && guideAccord.length !== 0) {
+        if (guideName !== '' && guideCode !== '' && serviceAgentName !== ''  && serviceAgentCode !== '' && guideContent !== '' && guideAccord.length !== 0) {
             tempStatus[0] = 'finish'
             for (let i = 0; i < guideAccord.length; i++) {
                 if (guideAccord[i] === '') {
