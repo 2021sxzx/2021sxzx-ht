@@ -1,4 +1,4 @@
-import {Button, Col, Form, Input, Row} from "antd";
+import {Button, Col, Form, Input, message, Row} from "antd";
 import {MobileOutlined, UserOutlined} from "@ant-design/icons";
 import React,{useContext, useEffect, useState}from "react";
 import CountDownButton from "./CountDownButton";
@@ -7,6 +7,7 @@ import api from "../../../api/login";
 import axios from "axios";
 import md5 from 'js-md5'
 import v_account from '../../../account/verification_account.json'
+import UrlJump from "../../../utils/UrlJump";
 /**
  * 手机验证码登录
  * @returns {JSX.Element}
@@ -16,18 +17,21 @@ export default function MobileLoginForm() {
     const historyAccount = localStorage.getItem('account') ? localStorage.getItem('account') : '';
     const [account, setAccount] = useState(historyAccount)
     const {setLoginState} = useContext(loginStateContext)
+    const [phoneNumber,setPhoneNumber] = useState('')
     const [verificationCode,setVerificationCode] = useState("")
     // useEffect(()=>{
     //     getVC()
     // },[])
     const getVC = ()=>{
-        console.log(v_account.userid)
+        // console.log(v_account.userid)
         let verificationCode = ""
         for(let i=0;i<8;i++)
             verificationCode += Math.floor(Math.random()*10)
+        localStorage.setItem("VerificationCode",verificationCode)
+        console.log(localStorage.getItem("VerificationCode"))
             // encodeURIComponent
-        let userid = 'JU5098'
-        let userpwd = "918823"
+        // let userid = 'JU5098'
+        // let userpwd = "918823"
         let now = new Date()
         let month = now.getMonth()+1<10?"0"+(now.getMonth()+1).toString():(now.getMonth()+1).toString()
         let day = now.getDate()<10?"0"+now.getDate().toString():now.getDate().toString()
@@ -35,19 +39,19 @@ export default function MobileLoginForm() {
         let minute = now.getMinutes()<10?"0"+now.getMinutes().toString():now.getMinutes().toString()
         let second = now.getSeconds()<10?"0"+now.getSeconds().toString():now.getSeconds().toString()
         let TimeStamp = month+day+hour+minute+second
-        console.log("Time:",TimeStamp)
-        let pwd = userid+'00000000'+v_account.pwd+TimeStamp
-        console.log(pwd)
-        console.log(md5(pwd))
-        console.log(verificationCode)
-        axios.get("http://10.147.25.152:8082/sms/v2/std/send_single",
+        // console.log("Time:",TimeStamp)
+        let pwd = v_account.userid+'00000000'+v_account.pwd+TimeStamp
+        console.log(pwd,md5(pwd),TimeStamp)
+        // console.log(md5(pwd))
+        // console.log(verificationCode)
+        // console.log(phoneNumber)
+        axios.post("http://10.147.25.152:8082/sms/v2/std/send_single",
         {
-            userid:v_account.userid,
-            pwd:md5(pwd),
-            mobile:"18420058402",
-            // content:"%e9%aa%8c%e8%af%81%e7%a0%81%ef%bc%9a6666%ef%bc%8c%e6%89%93%e6%ad%bb%e9%83%bd%e4%b8%8d%e8%a6%81%e5%91%8a%e8%af%89%e5%88%ab%e4%ba%ba%e5%93%a6%ef%bc%81",
-
-            content:verificationCode,
+            userid:v_account.userid,//字符串
+            pwd:v_account.pwd,
+            // pwd:md5(pwd),//md5加密
+            mobile:phoneNumber,//字符串
+            content:verificationCode//这个直接传数字
             // timestamp:TimeStamp
         }).then((res)=>{
             console.log("发送短信成功",res)
@@ -59,19 +63,27 @@ export default function MobileLoginForm() {
     }
 
     const onFinish = (value) => {
-        api.Login({
-            account:value.phoneNumber
-        }).then(async response => {
-            // 保存用户信息：账号密码用户id
-            saveUserInfo(response, values)
-            setLoginState('login')
-            // 展现 0.1s 的登录成功操作提示并自动跳转到首页
-            message.success('登录成功', 0.1, () => {
-                UrlJump.goto('#/home')
+        if(localStorage.getItem("VerificationCode")==value.verificationCode)
+            api.Login({
+                account:value.phoneNumber,
+                //1 donate 验证码登录
+                state:1
+            }).then(async response => {
+                // 保存用户信息：账号密码用户id
+                saveUserInfo(response, value)
+                setLoginState('login')
+                // 展现 0.1s 的登录成功操作提示并自动跳转到首页
+                message.success('登录成功', 0.1, () => {
+                    UrlJump.goto('#/home')
+                })
+            }).catch((error) => {
+                if(error.response.data!=undefined)
+                    message.error(typeof error.response.data === 'string' ? error.response.data : '登录发生错误，请稍后重试')
+                else
+                    message.error("登录错误")
             })
-        }).catch((error) => {
-            message.error(typeof error.response.data === 'string' ? error.response.data : '登录发生错误，请稍后重试')
-        })
+        else
+            message.error("验证码输入错误,请重新输入")
     };
     const saveUserInfo = (response, values) => {
         // 保存账号
@@ -82,6 +94,11 @@ export default function MobileLoginForm() {
     }
     const onFinishFailed = () => {
     };
+
+    const handlePhoneNumber = (e)=>{
+        // console.log(e.target.value)
+        setPhoneNumber(e.target.value)
+    }
 
     return (
         <Form
@@ -120,6 +137,7 @@ export default function MobileLoginForm() {
                        maxLength={32}
                        prefix={<UserOutlined className="site-form-item-icon"/>}
                        allowClear={true}
+                       onChange={handlePhoneNumber}
                 />
             </Form.Item>
             {/*验证码*/}

@@ -18,7 +18,8 @@ export default function PasswordLoginForm() {
     const onFinish = (values) => {
         api.Login({
             account: values.account,
-            password: values.password
+            password: values.password,
+            state : 0
         }).then(async response => {
             // 保存用户信息：账号密码用户id
             saveUserInfo(response, values)
