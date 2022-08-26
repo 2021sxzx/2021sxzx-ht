@@ -108,7 +108,7 @@ export default function GuideModal(props){
         }
         if (task_code !== ''){
             let code = splitIds(task_code)
-            data['task_code'] = code
+            data['task_code'] = code[0]
         }
         if (task_name !== '') data['task_name'] = task_name
         search(data)
