@@ -1,7 +1,6 @@
 import {useEffect, useState} from 'react'
 import {Button, Card, Col, Divider, Form, Input, message, Row, Tabs, Typography, Upload} from 'antd'
 import {UploadOutlined} from '@ant-design/icons'
-import apiBasic from '../../../../api/systemBasic'
 import apiMeta from '../../../../api/systemMetadata'
 import './MetaData.css'
 import LineChart from './components/Chart/LineChart'
@@ -32,23 +31,23 @@ export default function MetaData() {
   // 组件初始化
   useEffect(() => {
     apiMeta.CoreSettings().then(({
-                               data: {
-                                 data: {
-                                   ICP_record_number,
-                                   copyright,
-                                   network_record_number,
-                                   siteCode,
-                                   url_about_us,
-                                   url_contact_detail,
-                                   url_help,
-                                   url_icp_record,
-                                   url_network_record,
-                                   url_privacy_security,
-                                   url_website_map,
-                                   url_website_statement
-                                 }
-                               }
-                             }) => coreSettingsForm.setFieldsValue({
+                                   data: {
+                                     data: {
+                                       ICP_record_number,
+                                       copyright,
+                                       network_record_number,
+                                       siteCode,
+                                       url_about_us,
+                                       url_contact_detail,
+                                       url_help,
+                                       url_icp_record,
+                                       url_network_record,
+                                       url_privacy_security,
+                                       url_website_map,
+                                       url_website_statement
+                                     }
+                                   }
+                                 }) => coreSettingsForm.setFieldsValue({
       ICP_record_number,
       network_record_number,
       url_about_us,
@@ -63,26 +62,29 @@ export default function MetaData() {
       siteCode
     }))
     apiMeta.GetInterfaceUrl().then(({
-                                  data: {
-                                    data: {
-                                      api_BDDT, api_GDZWFWPT, api_GZSRSJGW, api_GZSRSJWX, api_SHBAPP, api_ZNFWJQRPT
-                                    }
-                                  }
-                                }) => interfaceConfigurationForm.setFieldsValue({
+                                      data: {
+                                        data: {
+                                          api_BDDT, api_GDZWFWPT, api_GZSRSJGW, api_GZSRSJWX, api_SHBAPP, api_ZNFWJQRPT
+                                        }
+                                      }
+                                    }) => interfaceConfigurationForm.setFieldsValue({
       api_GZSRSJGW, api_GZSRSJWX, api_SHBAPP, api_GDZWFWPT, api_ZNFWJQRPT, api_BDDT,
     }))
   }, [])
 
   function onFinish() {
     const data = new FormData()
+    let empty = true
     for (let fileName of ['websiteLogoFile', 'addressBarIconFile', 'backstageLogoFile',
       'officialQRCode', 'wechatQRCodeFile', 'appQRCodeFile']) {
       if (files[fileName]) {
         data.append(fileName, files[fileName])
         files[fileName] = null
+        empty = false
       }
     }
-    apiMeta.websiteSettings(data).then(() => message.success('图片上传成功'))
+    if (empty) message.error('请选择图片后再上传').then()
+    else apiMeta.websiteSettings(data).then(() => message.success('图片上传成功'))
       .catch(() => message.error('图片上传失败'))
   }
 
@@ -110,6 +112,14 @@ export default function MetaData() {
   function getMyState(data) {
     if (data === 0) return <span style={{color: '#63c044'}}>良好</span>
     else return <span style={{color: 'red'}}>不良</span>
+  }
+
+  // 检查图片格式和大小
+  function imageBeforeUpload(file) {
+    const isPng = file.type === 'image/png', isLt20M = file.size <= 20 * 1024 ** 2
+    if (!isPng) message.error('只能上传 PNG 图片。').then()
+    if (!isLt20M) message.error('文件大小须小于 20MB。').then()
+    return isPng && isLt20M
   }
 
   return <div className="card-container">
@@ -161,11 +171,14 @@ export default function MetaData() {
               className="upload-list-inline"
               accept=".png"
               beforeUpload={file => {
-                files.websiteLogoFile = file
-                return false
+                const check = imageBeforeUpload(file)
+                if (check) files.websiteLogoFile = file
+                return check ? false : Upload.LIST_IGNORE
+                // Antd 的 Upload 有点逆天，返回 true 会自动上传，需要返回 false 禁止上传。当上传了错误的文件时，应返回 Upload.LIST_IGNORE 阻止上传
               }}
               name="websiteLogo"
               maxCount={1}
+              onRemove={() => files.websiteLogoFile = null}
             >
               <Button icon={<UploadOutlined/>}>Upload</Button>
             </Upload>
@@ -176,11 +189,13 @@ export default function MetaData() {
               className="upload-list-inline"
               accept=".png"
               beforeUpload={file => {
-                files.backstageLogoFile = file
-                return false
+                const check = imageBeforeUpload(file)
+                if (check) files.backstageLogoFile = file
+                return check ? false : Upload.LIST_IGNORE
               }}
               maxCount={1}
               name="logo"
+              onRemove={() => files.backstageLogoFile = null}
             >
               <Button icon={<UploadOutlined/>}>Upload</Button>
             </Upload>
@@ -191,11 +206,13 @@ export default function MetaData() {
               className="upload-list-inline"
               accept=".png"
               beforeUpload={file => {
-                files.addressBarIconFile = file
-                return false
+                const check = imageBeforeUpload(file)
+                if (check) files.addressBarIconFile = file
+                return check ? false : Upload.LIST_IGNORE
               }}
               maxCount={1}
               name="addressBarIconFile"
+              onRemove={() => files.addressBarIconFile = null}
             >
               <Button icon={<UploadOutlined/>}>Upload</Button>
             </Upload>
@@ -206,11 +223,13 @@ export default function MetaData() {
               className="upload-list-inline"
               accept=".png"
               beforeUpload={file => {
-                files.officialQRCode = file
-                return false
+                const check = imageBeforeUpload(file)
+                if (check) files.officialQRCode = file
+                return check ? false : Upload.LIST_IGNORE
               }}
               maxCount={1}
               name="QRCode"
+              onRemove={() => files.officialQRCode = null}
             >
               <Button icon={<UploadOutlined/>}>Upload</Button>
             </Upload>
@@ -221,11 +240,13 @@ export default function MetaData() {
               className="upload-list-inline"
               accept=".png"
               beforeUpload={file => {
-                files.wechatQRCodeFile = file
-                return false
+                const check = imageBeforeUpload(file)
+                if (check) files.wechatQRCodeFile = file
+                return check ? false : Upload.LIST_IGNORE
               }}
               maxCount={1}
               name="QRCode"
+              onRemove={() => files.wechatQRCodeFile = null}
             >
               <Button icon={<UploadOutlined/>}>Upload</Button>
             </Upload>
@@ -236,11 +257,13 @@ export default function MetaData() {
               className="upload-list-inline"
               accept=".png"
               beforeUpload={file => {
-                files.appQRCodeFile = file
-                return false
+                const check = imageBeforeUpload(file)
+                if (check) files.appQRCodeFile = file
+                return check ? false : Upload.LIST_IGNORE
               }}
               maxCount={1}
               name="QRCode"
+              onRemove={() => files.appQRCodeFile = null}
             >
               <Button icon={<UploadOutlined/>}>Upload</Button>
             </Upload>
