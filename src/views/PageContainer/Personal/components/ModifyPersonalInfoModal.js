@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {Button, Form, Input, message, Modal, Tooltip} from "antd";
-import api from "../../../../../api/personal";
+import RoleMultiSelect from "../../UserManage/UserManageAccount/components/RoleMultiSelect";
+import UnitTreeSelect from "../../UserManage/UserManageAccount/components/UnitManagement/UnitTreeSelect";
 
 /**
  * 用户管理相关的弹窗
@@ -32,20 +33,22 @@ import api from "../../../../../api/personal";
  * }
  * @returns {JSX.Element}
  */
-function ModifyPassword(props) {
+function ModifyPersonalInfoModal(props) {
     // 初始化新增用户弹窗的展示状态
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [nowPassword, setNowPassword] = useState("")
-    const [newPassword, setNewPassword] = useState("")
+
     // 创建表单实例
     const [form] = Form.useForm();
 
-
     // 表单初始化数据
     const initialValues = {
-        password: "",
-        confirm_password: ""
+        account: props.detailData.account,
+        user_name: props.detailData.user_name,
+        password: props.detailData.password,
+        role: props.detailData.role_id,
+        unit: props.detailData.unit_id,
     }
+
     // 查看详情按钮的触发函数，展示详情弹窗
     const showModal = () => {
         // 打开对话框
@@ -62,23 +65,17 @@ function ModifyPassword(props) {
         form.validateFields()
             // 通过校验
             .then(value => {
-                if (nowPassword !== newPassword)
-                    message.warn('新密码跟旧密码不一致,请重新填写')
-                else {
-                    api.modifyPassword({
-                        account: !!(props.detailData.account) ? props.detailData.account : value.account,
-                        pwd: newPassword
-                    })
-                        .then(res => {
-                            console.log("修改密码成功", res)
-                        })
-                        .catch(err => {
-                            message.error("修改密码出错:", err.message)
-                        })
-
-                    // 关闭对话框
-                    setIsModalVisible(false);
-                }
+                // 关闭对话框
+                setIsModalVisible(false);
+                // 调用回填函数处理表单信息
+                props.saveInfoFunction({
+                    user_name: value.user_name,
+                    account: !!(props.detailData.account) ? props.detailData.account : value.account,// 如果初始值为 ‘’ 说明是创建用户，否则为修改用户
+                    new_account: value.account,
+                    password: value.password,
+                    role_id: value.role,
+                    unit_id: value.unit,
+                })
             })
             // 没通过校验
             .catch(() => {
@@ -91,6 +88,14 @@ function ModifyPassword(props) {
         setIsModalVisible(false);
     };
 
+    const handleInputChangeRoleID = (value) => {
+        // setRoleID(value)
+        form.setFieldsValue({role: value})
+    }
+    const handleInputChangeUnit = (value) => {
+        // setUnitID(value)
+        form.setFieldsValue({unit: value})
+    }
 
     return (
         <>
@@ -125,7 +130,7 @@ function ModifyPassword(props) {
                         htmlType="submit"
                         onClick={handleOk}
                     >
-                        确定
+                        保存
                     </Button>,
                 ]}
             >
@@ -144,69 +149,75 @@ function ModifyPassword(props) {
                 >
 
                     <Form.Item
-                        label="新密码"
-                        name="password"
+                        label="用户名"
+                        name="user_name"
                         rules={[
                             {
                                 required: true,
-                                message: '请输入新密码！',
-                            },
-                            {
-                                min: 8,
-                                message: '密码长度要求不小于 8 位'
+                                message: '请输入用户名!',
                             },
                             {
                                 max: 32,
-                                message: '密码长度要求不大于 32 位'
+                                message: '用户名长度要求不大于 32 位'
                             },
-                            {
-                                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%&*_\-+=])[\w\d@#$%&*_\-+=]*$/,
-                                message: '要求同时使用大小写字母，数字和部分特殊字符(@#$%&*_+-=)，不支持空格'
-                            }
                         ]}
                     >
                         {
+                            props.userNameReadOnly === true
+                                ?
+                                <div>{props.detailData.user_name}</div>
+                                :
+                                <Input
+                                    placeholder={'请输入用户名'}
+                                    allowClear={true}
+                                />
+                        }
 
-                            <Input.Password
-                                placeholder={'请输入新密码'}
-                                allowClear={true}
-                                onChange={(e) => {
-                                    setNowPassword(e.target.value)
-                                }}
-                            />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="角色"
+                        name="role"
+                        rules={[
+                            {
+                                required: true,
+                                message: '请选择角色!',
+                            },
+                        ]}
+                    >
+                        {
+                            props.roleReadOnly === true
+                                ?
+                                <div>{props.detailData.role_name}</div>
+                                :
+                                <RoleMultiSelect
+                                    defaultValue={props.detailData.role_id}
+                                    placeholder={'请选择角色'}
+                                    onChange={handleInputChangeRoleID}
+                                />
                         }
                     </Form.Item>
 
                     <Form.Item
-                        label="确认新密码"
-                        name="confirm_password"
+                        label="机构"
+                        name="unit"
                         rules={[
                             {
                                 required: true,
-                                message: '请输入新密码！',
+                                message: '请选择机构!',
                             },
-                            {
-                                min: 8,
-                                message: '密码长度要求不小于 8 位'
-                            },
-                            {
-                                max: 32,
-                                message: '密码长度要求不大于 32 位'
-                            },
-                            {
-                                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%&*_\-+=])[\w\d@#$%&*_\-+=]*$/,
-                                message: '要求同时使用大小写字母，数字和部分特殊字符(@#$%&*_+-=)，不支持空格'
-                            }
                         ]}
                     >
                         {
-                            <Input.Password
-                                placeholder={'请确认新密码'}
-                                allowClear={true}
-                                onChange={(e) => {
-                                    setNewPassword(e.target.value)
-                                }}
-                            />
+                            props.unitReadOnly === true
+                                ?
+                                <div>{props.detailData.unit_name}</div>
+                                :
+                                <UnitTreeSelect
+                                    defaultValue={props.detailData.unit_id}
+                                    placeholder={'请选择机构'}
+                                    onChange={handleInputChangeUnit}
+                                />
                         }
                     </Form.Item>
                 </Form>
@@ -215,4 +226,4 @@ function ModifyPassword(props) {
     )
 }
 
-export default ModifyPassword
+export default ModifyPersonalInfoModal

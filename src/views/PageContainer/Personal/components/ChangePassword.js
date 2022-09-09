@@ -1,9 +1,7 @@
-import React, {useState,useEffect} from "react";
+import React, {useState} from "react";
 import {Button, Form, Input, message, Modal, Tooltip} from "antd";
-import RoleMultiSelect from "./RoleMultiSelect";
-import UnitTreeSelect from "./UnitManagement/UnitTreeSelect";
-import api from "../../../../../api/personal";
-import axios from 'axios'
+import api from "../../../../api/personal";
+
 /**
  * 用户管理相关的弹窗
  * @param props = {
@@ -34,43 +32,20 @@ import axios from 'axios'
  * }
  * @returns {JSX.Element}
  */
-
-let timer
-function ModifyPassword(props) {
+function ChangePassword(props) {
     // 初始化新增用户弹窗的展示状态
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [btnContent, setBtnContent] = useState('获取验证码')
-    const [btnDisabled, setBtnDisabled] = useState(false) 
-    const [time, setTime] = useState(60)
+    const [nowPassword, setNowPassword] = useState("")
+    const [newPassword, setNewPassword] = useState("")
     // 创建表单实例
     const [form] = Form.useForm();
-    //初始化调用一次之后不再执行，相当于componentDidMount
-    // useEffect(() => {
-    //     clearInterval(timer)
-    //     return () => clearInterval(timer)
-    //   }, [])
-    
-      useEffect(() => {
-        if (time > 0 && time < 60) {
-          setBtnContent(`${time}s后重发`)
-        } else {
-          clearInterval(timer)
-          setBtnDisabled(false)
-          setTime(60)
-        }
-      }, [time])
+
 
     // 表单初始化数据
     const initialValues = {
-        account: props.detailData.account,
-        user_name: props.detailData.user_name,
-        password: props.detailData.password,
-        role: props.detailData.role_id,
-        unit: props.detailData.unit_id,
+        password: "",
+        confirm_password: ""
     }
-    //用于保存你验证码，以至于可以全局访问
-    const ver_code = []
-
     // 查看详情按钮的触发函数，展示详情弹窗
     const showModal = () => {
         // 打开对话框
@@ -87,17 +62,23 @@ function ModifyPassword(props) {
         form.validateFields()
             // 通过校验
             .then(value => {
-                // 关闭对话框
-                setIsModalVisible(false);
-                // 调用回填函数处理表单信息
-                props.saveInfoFunction({
-                    user_name: value.user_name,
-                    account: !!(props.detailData.account) ? props.detailData.account : value.account,// 如果初始值为 ‘’ 说明是创建用户，否则为修改用户
-                    new_account: value.account,
-                    password: value.password,
-                    role_id: value.role,
-                    unit_id: value.unit,
-                })
+                if (nowPassword !== newPassword)
+                    message.warn('新密码跟旧密码不一致,请重新填写')
+                else {
+                    api.modifyPassword({
+                        account: !!(props.detailData.account) ? props.detailData.account : value.account,
+                        pwd: newPassword
+                    })
+                        .then(res => {
+                            console.log("修改密码成功", res)
+                        })
+                        .catch(err => {
+                            message.error("修改密码出错:", err.message)
+                        })
+
+                    // 关闭对话框
+                    setIsModalVisible(false);
+                }
             })
             // 没通过校验
             .catch(() => {
@@ -109,57 +90,7 @@ function ModifyPassword(props) {
     const handleCancel = () => {
         setIsModalVisible(false);
     };
-    //生成SMS
-    const genSMS = ()=>{
-        
-        var rand = (min,max)=>{
-            return Math.floor(Math.random()*(max-min))+min
-        }
-        while(ver_code.length)
-            ver_code.shift()
-        ver_code.push(rand(100000,999999))
-    };
 
-    const sendSMS = () =>{
-        console.log("sendSMS...")
-        
-        genSMS()
-        timer = setInterval(() => setTime(pre =>pre-1), 1000)
-        setBtnDisabled(true)
-        // axios.get('http://10.196.133.5:80/sms/v2/std/send_single',
-        // {
-        //     userid:'J97114',
-        //     pwd:'190330',
-        //     mobile:initialValues.account,
-        //     content:ver_code[0]   
-        // }).then(res=>{
-        //     console.log("发短信返回结果",res)
-        // })
-        // .catch(err=>{
-        //     message.error("发信息出错")
-        // })
-        // api.modifyPassword({
-        //     userid:'J97114',
-        //     pwd:'190330',
-        //     mobile:initialValues.account,
-        //     content:ver_code[0]
-        // })
-        // .then(res=>{
-        //     console.log("发短信返回结果",res)
-        // })
-        // .catch(err=>{
-        //     message.error("发信息出错")
-        // })
-    }
-
-    const handleInputChangeRoleID = (value) => {
-        // setRoleID(value)
-        form.setFieldsValue({role: value})
-    }
-    const handleInputChangeUnit = (value) => {
-        // setUnitID(value)
-        form.setFieldsValue({unit: value})
-    }
 
     return (
         <>
@@ -211,7 +142,7 @@ function ModifyPassword(props) {
                     initialValues={initialValues}
                     autoComplete="off"
                 >
-                    
+
                     <Form.Item
                         label="新密码"
                         name="password"
@@ -235,11 +166,14 @@ function ModifyPassword(props) {
                         ]}
                     >
                         {
-                            
-                                <Input
-                                    placeholder={'请输入新密码'}
-                                    allowClear={true}
-                                />
+
+                            <Input.Password
+                                placeholder={'请输入新密码'}
+                                allowClear={true}
+                                onChange={(e) => {
+                                    setNowPassword(e.target.value)
+                                }}
+                            />
                         }
                     </Form.Item>
 
@@ -266,48 +200,19 @@ function ModifyPassword(props) {
                         ]}
                     >
                         {
-                            
-                                <Input
-                                    placeholder={'请确认新密码'}
-                                    allowClear={true}
-                                />
+                            <Input.Password
+                                placeholder={'请确认新密码'}
+                                allowClear={true}
+                                onChange={(e) => {
+                                    setNewPassword(e.target.value)
+                                }}
+                            />
                         }
                     </Form.Item>
-
-                    {/* <Form.Item
-                        label="短信验证码"
-                        name="verification"
-                        rules={[
-                            {
-                                required: true,
-                                message: '请输入短信验证码！',
-                            },
-                            {
-                                pattern: /[0-9](6)$/,
-                                message: '请输入6位验证码'
-                            }
-                        ]}
-                    >
-                        {
-                            <div>
-                                <Input
-                                    placeholder={'请输入短信验证码'}
-                                    allowClear={true}
-                                    style={{width:'160px'}}
-                                />
-                                <Button style={{marginLeft:'20px'}} onClick={sendSMS} disabled={btnDisabled}>
-                                {!btnDisabled ? '获取验证码': `${time}s后重发`}
-                                </Button>
-                            </div>
-                        }
-                    </Form.Item> */}
-
-                    
-
                 </Form>
             </Modal>
         </>
     )
 }
 
-export default ModifyPassword
+export default ChangePassword

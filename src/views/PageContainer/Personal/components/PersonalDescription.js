@@ -1,9 +1,9 @@
-import {Button,Form} from "antd";
+import {Form} from "antd";
 import React from "react";
 import style from "./PersonalDescription.module.scss"
-import ModifyPassword from "../../UserManage/UserManageAccount/components/ModifyPassword";
-import ChangePassword from '../../UserManage/UserManageAccount/components/ChangePassword'
+import ChangePassword from './ChangePassword'
 import {EditOutlined,} from "@ant-design/icons";
+
 /**
  * 个人中心中展示的数据表单
  * @param props = {
@@ -35,58 +35,59 @@ function PersonalDescription(props) {
             <Form
                 form={form}
                 initialValues={initialValues}
-                
+
             >
                 <Form.Item
                     label="账号/手机号码"
                     name="account"
                 >
-                <div>
-                  <div id="left" className={style.show_l} suppressContentEditableWarning contentEditable="false">{props.data.account} </div>
-                {/* <Button className={style.show_r} onClick={changeDiv("left")}>编辑</Button> 
+                    <div>
+                        <div id="left" className={style.show_l} suppressContentEditableWarning
+                             contentEditable="false">{props.data.account} </div>
+                        {/* <Button className={style.show_r} onClick={changeDiv("left")}>编辑</Button>
                 <Button className={style.show_r} onClick={changeDiv("left")}>取消</Button>  */}
-                </div>    
+                    </div>
 
                 </Form.Item>
-                
+
                 <Form.Item
                     label="密码"
                     name="password"
                 >
                     <div>
                         **********
-                        
-                    <ChangePassword
-                        buttonProps={{
-                            type: 'text',
-                            shape: "circle", // 按钮形状
-                            icon: <EditOutlined/>, // 按钮图标
-                            size: 'large',
-                        }}
-                        tooltipSuccessTitle={'修改密码'}
-                        title={'修改密码'}
-                        detailData={{
-                            user_name: props.data.user_name,
-                            account: props.data.account,
-                            password: props.data.password,
-                            role_id: props.data.role_id,
 
-                        }}
-                        saveInfoFunction={(data) => {
-                            console.log('saveInfoFunction',data)
-                            api.UpdateUser(data).then(() => {
-                                message.success('修改个人信息成功')
-                            }).catch(()=>{
-                                message.error('修改个人信息失败')
-                            }).finally(()=>{
-                                // 刷新
-                                location.reload()
-                            })
-                        }}
-                        roleReadOnly={true}
-                        unitReadOnly={true}
-                    />
-               
+                        <ChangePassword
+                            buttonProps={{
+                                type: 'text',
+                                shape: "circle", // 按钮形状
+                                icon: <EditOutlined/>, // 按钮图标
+                                size: 'large',
+                            }}
+                            tooltipSuccessTitle={'修改密码'}
+                            title={'修改密码'}
+                            detailData={{
+                                user_name: props.data.user_name,
+                                account: props.data.account,
+                                password: props.data.password,
+                                role_id: props.data.role_id,
+
+                            }}
+                            saveInfoFunction={(data) => {
+                                console.log('saveInfoFunction', data)
+                                api.UpdateUser(data).then(() => {
+                                    message.success('修改个人信息成功')
+                                }).catch(() => {
+                                    message.error('修改个人信息失败')
+                                }).finally(() => {
+                                    // 刷新
+                                    location.reload()
+                                })
+                            }}
+                            roleReadOnly={true}
+                            unitReadOnly={true}
+                        />
+
                     </div>
                 </Form.Item>
 
