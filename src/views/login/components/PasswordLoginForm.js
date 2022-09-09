@@ -19,7 +19,7 @@ export default function PasswordLoginForm() {
         api.Login({
             account: values.account,
             password: values.password,
-            state : 0
+            state: 0
         }).then(async response => {
             // 保存用户信息：账号密码用户id
             saveUserInfo(response, values)
@@ -29,7 +29,7 @@ export default function PasswordLoginForm() {
                 UrlJump.goto('#/home')
             })
         }).catch((error) => {
-            message.error(typeof error.response.data === 'string' ? error.response.data : '登录发生错误，请稍后重试')
+            message.error(error.response.data && typeof error.response.data.msg === 'string' ? error.response.data.msg : '登录发生错误，请稍后重试')
         })
     }
 
@@ -62,8 +62,8 @@ export default function PasswordLoginForm() {
                 span: 8,
             }}
             initialValues={{
-              account: account,
-              remember: true,
+                account: account,
+                remember: true,
             }}
             autoComplete="off"
             onFinish={onFinish}
