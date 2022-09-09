@@ -1,9 +1,7 @@
-import React, {useState,useEffect} from "react";
+import React, {useState} from "react";
 import {Button, Form, Input, message, Modal, Tooltip} from "antd";
-import RoleMultiSelect from "./RoleMultiSelect";
-import UnitTreeSelect from "./UnitManagement/UnitTreeSelect";
 import api from "../../../../../api/personal";
-import axios from 'axios'
+
 /**
  * 用户管理相关的弹窗
  * @param props = {
@@ -34,8 +32,6 @@ import axios from 'axios'
  * }
  * @returns {JSX.Element}
  */
-
-let timer
 function ModifyPassword(props) {
     // 初始化新增用户弹窗的展示状态
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -43,7 +39,7 @@ function ModifyPassword(props) {
     const [newPassword, setNewPassword] = useState("")
     // 创建表单实例
     const [form] = Form.useForm();
-   
+
 
     // 表单初始化数据
     const initialValues = {
@@ -66,23 +62,23 @@ function ModifyPassword(props) {
         form.validateFields()
             // 通过校验
             .then(value => {
-                if(nowPassword!==newPassword)
+                if (nowPassword !== newPassword)
                     message.warn('新密码跟旧密码不一致,请重新填写')
-                else{  
+                else {
                     api.modifyPassword({
                         account: !!(props.detailData.account) ? props.detailData.account : value.account,
-                        pwd : newPassword
+                        pwd: newPassword
+                    })
+                        .then(res => {
+                            console.log("修改密码成功", res)
                         })
-                        .then(res=>{
-                            console.log("修改密码成功",res)
+                        .catch(err => {
+                            message.error("修改密码出错:", err.message)
                         })
-                        .catch(err=>{
-                            message.error("修改密码出错")
-                        })
-                
-                // 关闭对话框
-                setIsModalVisible(false);
-            }
+
+                    // 关闭对话框
+                    setIsModalVisible(false);
+                }
             })
             // 没通过校验
             .catch(() => {
@@ -94,7 +90,7 @@ function ModifyPassword(props) {
     const handleCancel = () => {
         setIsModalVisible(false);
     };
-   
+
 
     return (
         <>
@@ -146,7 +142,7 @@ function ModifyPassword(props) {
                     initialValues={initialValues}
                     autoComplete="off"
                 >
-                    
+
                     <Form.Item
                         label="新密码"
                         name="password"
@@ -170,12 +166,14 @@ function ModifyPassword(props) {
                         ]}
                     >
                         {
-                            
-                                <Input.Password
-                                    placeholder={'请输入新密码'}
-                                    allowClear={true}
-                                    onChange = {(e)=>{setNowPassword(e.target.value)}}
-                                />
+
+                            <Input.Password
+                                placeholder={'请输入新密码'}
+                                allowClear={true}
+                                onChange={(e) => {
+                                    setNowPassword(e.target.value)
+                                }}
+                            />
                         }
                     </Form.Item>
 
@@ -201,17 +199,16 @@ function ModifyPassword(props) {
                             }
                         ]}
                     >
-                        {                            
-                                <Input.Password
-                                    placeholder={'请确认新密码'}
-                                    allowClear={true}
-                                    onChange = {(e)=>{setNewPassword(e.target.value)}}
-                                />
+                        {
+                            <Input.Password
+                                placeholder={'请确认新密码'}
+                                allowClear={true}
+                                onChange={(e) => {
+                                    setNewPassword(e.target.value)
+                                }}
+                            />
                         }
                     </Form.Item>
-
-                    
-
                 </Form>
             </Modal>
         </>

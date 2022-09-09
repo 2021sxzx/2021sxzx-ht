@@ -12,7 +12,7 @@ export default function ManageProcess(props) {
     const [originData, setOriginData] = useState({})
     const [tableLoading, setTableLoading] = useState(true)
     const [unableCreate, setUnableCreate] = useState(true)
-    const [guideDetail, setGuideDetail] = useState({})
+    const [guideDetail, setGuideDetail] = useState([])
     const [isDetailShown, setIsDetailShown] = useState(false)
     // 状态映射表
     const [statusScheme, setStatusScheme] = useState({})
@@ -248,7 +248,7 @@ export default function ManageProcess(props) {
             setTableLoading(false)
             setTableData(items)
         }).catch(error => {
-            props.showError('获取事项失败！')
+            props.showError('获取事项失败！', error.message)
             setTableLoading(false)
         })
     }
@@ -297,14 +297,14 @@ export default function ManageProcess(props) {
             items: deletingIds
         }
         // 根据事项规则id删除事项规则，删除完之后重新载入事项规则
-        api.DeleteItems(data).then(response => {
+        api.DeleteItems(data).then(() => {
             getItems()
             props.showSuccess()
         }).catch(error => {
             // 删除报错时，弹出报错框并重新加载数据
             getItems()
             setCurrent(0)
-            props.showError('解绑事项失败！')
+            props.showError('解绑事项失败！', error.message)
         })
     }
 
@@ -318,13 +318,13 @@ export default function ManageProcess(props) {
         api.ChangeItemStatus({
             user_id: props.userId,
             items: items
-        }).then(response => {
+        }).then(() => {
             // 更新完毕后重新获取事项
             getItems()
         }).catch(error => {
             getItems()
             setCurrent(0)
-            props.showError('更新事项状态失败！')
+            props.showError('更新事项状态失败！', error.message)
         })
     }
 
@@ -349,7 +349,7 @@ export default function ManageProcess(props) {
             setTableData(items)
             setTableLoading(false)
         }).catch(error => {
-            props.showError('搜索事项失败！')
+            props.showError('搜索事项失败！', error.message)
             setTableLoading(false)
         })
     }
@@ -379,7 +379,7 @@ export default function ManageProcess(props) {
             setTableLoading(false)
             setTableData(items)
         }).catch(error => {
-            props.showError('重置失败！')
+            props.showError('重置失败！', error.message)
             setTableLoading(false)
         })
     }
@@ -407,7 +407,7 @@ export default function ManageProcess(props) {
             setTableData(items)
             setTableLoading(false)
         }).catch(error => {
-            props.showError('换页时获取事项信息失败！')
+            props.showError('换页时获取事项信息失败！', error.message)
             setTableLoading(false)
         })
     }
@@ -569,13 +569,12 @@ export default function ManageProcess(props) {
 
     const endShowing = () => {
         setIsDetailShown(false)
-        setGuideDetail({})
+        setGuideDetail([])
     }
 
     useEffect(function () {
-        for (let key in guideDetail) {
+        if (guideDetail.length > 0) {
             setIsDetailShown(true)
-            break
         }
     }, [guideDetail])
 
@@ -589,7 +588,7 @@ export default function ManageProcess(props) {
                 // 除了审核不通过之外都是可获取事项
                 if (scheme[key].eng_name !== 'Failure') {
                     for (let i = 0; i < props.canOperate.length; i++) {
-                        if (key == props.canOperate[i]) {
+                        if (key === props.canOperate[i] + '') {
                             type.push({
                                 label: scheme[key].cn_name,
                                 value: parseInt(key)
@@ -603,7 +602,7 @@ export default function ManageProcess(props) {
             setFullType(fullType)
             setStatusScheme(scheme)
         }).catch(error => {
-            props.showError('初始化状态表失败！')
+            props.showError('初始化状态表失败！', error.message)
         })
     }
 
