@@ -52,6 +52,7 @@ export default function RoleMultiSelect(props) {
             showSearch
             placeholder={props.placeholder}
             defaultValue={props.defaultValue}
+            value={props.value || undefined}
             onChange={props.onChange}
             filterOption={(input, option) => {
                 return option.children.toLowerCase().includes(input.toLowerCase())

@@ -49,6 +49,7 @@ export default function PermissionMultipleSelect(props) {
             allowClear
             placeholder={props.placeholder}
             defaultValue={props.defaultValue}
+            value={props.value || undefined}
             onChange={props.onChange}
         >
             {options}
