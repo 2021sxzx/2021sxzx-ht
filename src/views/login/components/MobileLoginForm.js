@@ -23,43 +23,31 @@ export default function MobileLoginForm() {
     //     getVC()
     // },[])
     const getVC = ()=>{
-        // console.log(v_account.userid)
         let verificationCode = ""
         for(let i=0;i<8;i++)
             verificationCode += Math.floor(Math.random()*10)
         localStorage.setItem("VerificationCode",verificationCode)
-        console.log(localStorage.getItem("VerificationCode"))
-            // encodeURIComponent
-        // let userid = 'JU5098'
-        // let userpwd = "918823"
-        let now = new Date()
-        let month = now.getMonth()+1<10?"0"+(now.getMonth()+1).toString():(now.getMonth()+1).toString()
-        let day = now.getDate()<10?"0"+now.getDate().toString():now.getDate().toString()
-        let hour = now.getHours()<10?"0"+now.getHours().toString():now.getHours().toString()
-        let minute = now.getMinutes()<10?"0"+now.getMinutes().toString():now.getMinutes().toString()
-        let second = now.getSeconds()<10?"0"+now.getSeconds().toString():now.getSeconds().toString()
-        let TimeStamp = month+day+hour+minute+second
-        // console.log("Time:",TimeStamp)
-        let pwd = v_account.userid+'00000000'+v_account.pwd+TimeStamp
-        console.log(pwd,md5(pwd),TimeStamp)
-        // console.log(md5(pwd))
-        // console.log(verificationCode)
-        // console.log(phoneNumber)
+        // let now = new Date()
+        // let month = now.getMonth()+1<10?"0"+(now.getMonth()+1).toString():(now.getMonth()+1).toString()
+        // let day = now.getDate()<10?"0"+now.getDate().toString():now.getDate().toString()
+        // let hour = now.getHours()<10?"0"+now.getHours().toString():now.getHours().toString()
+        // let minute = now.getMinutes()<10?"0"+now.getMinutes().toString():now.getMinutes().toString()
+        // let second = now.getSeconds()<10?"0"+now.getSeconds().toString():now.getSeconds().toString()
+        // let TimeStamp = month+day+hour+minute+second
+        // let pwd = v_account.userid+'00000000'+v_account.pwd+TimeStamp
+        //明文模式
         axios.post("http://10.147.25.152:8082/sms/v2/std/send_single",
         {
             userid:v_account.userid,//字符串
             pwd:v_account.pwd,
-            // pwd:md5(pwd),//md5加密
             mobile:phoneNumber,//字符串
-            content:verificationCode//这个直接传数字
-            // timestamp:TimeStamp
+            content:"验证码："+verificationCode+',请妥善保管。'
         }).then((res)=>{
             console.log("发送短信成功",res)
         }).catch((err)=>{
             console.log("发送失败",err)
         })
         setVerificationCode(verificationCode)
-        // console.log("In getVC",verificationCode)
     }
 
     const onFinish = (value) => {
