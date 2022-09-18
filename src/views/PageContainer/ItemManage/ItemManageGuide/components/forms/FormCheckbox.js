@@ -23,7 +23,7 @@ export default function FormCheckbox(props){
     return(
         <div className={style.form}>
             <div className={style.inputLabel}>
-                <span style={{color: 'red'}}>*</span>
+                {props.required === true &&<span style={{color: 'red'}}>*</span>}
                 <span style={{marginLeft: 5}}>{props.formName}：</span>
             </div>
             <div className={style.input}>

@@ -9,7 +9,7 @@ import axios from "axios"
  */
 export default function CountDownButton(props) {
     // 初始化倒计时的常数属性和设置倒计时状态
-    const maxCount = 6
+    const maxCount = 60
     const toSendText = '获取验证码'
     const [verifycode,setVerifyCode] = useState(props.verificationCode)
     useEffect(()=>{

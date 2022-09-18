@@ -149,10 +149,10 @@ export default function CreateGuide(props) {
                 <Space className={style.form} direction='vertical' size={15} style={{width: '95%'}}>
                     <FormUser setPrinciple={setPrinciple} setPrincipleId={setPrincipleId} formName='负责人'
                               value={principle} showError={props.showError}/>
-                    <FormArea handleChange={handleGuideNameChange} formName='事项名称' value={guideName}/>
-                    <FormArea handleChange={handleGuideCodeChange} formName='事项代码' value={guideCode}/>
-                    <FormArea handleChange={handleServiceAgentName} formName='实施主体名称' value={serviceAgentName}/>
-                    <FormArea handleChange={handleServiceAgentCode} formName='实施主体编码' value={serviceAgentCode}/>
+                    <FormArea handleChange={handleGuideNameChange} formName='事项名称' value={guideName} required={true}/>
+                    <FormArea handleChange={handleGuideCodeChange} formName='事项代码' value={guideCode} required={true}/>
+                    <FormArea handleChange={handleServiceAgentName} formName='实施主体名称' value={serviceAgentName} required={true}/>
+                    <FormArea handleChange={handleServiceAgentCode} formName='实施主体编码' value={serviceAgentCode} required={true}/>
                     <FormArea handleChange={handleGuideContentChange} formName='事项内容' value={guideContent}/>
                     <FormList setData={setGuideAccord} addBtn='添加政策依据' formName='政策依据' value={guideAccord}/>
                 </Space>
@@ -190,9 +190,9 @@ export default function CreateGuide(props) {
                     <FormArea handleChange={handleGuideOfflineProcessChange} formName='线下办理流程'
                               value={guideOfflineProcess}/>
                     <FormListPlus addBtn='添加办理点' formName='办理点信息'
-                                  data={guideWindows} setData={setGuideWindows}/>
+                                  data={guideWindows} setData={setGuideWindows} required={true}/>
                     {/*<FormImage setImageUpdated={setImageUpdated} setData={setGuideQRCode} handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>*/}
-                    <FormCheckbox setData={setGuideServiceType} formName='服务对象类型' value={guideServiceType}/>
+                    <FormCheckbox setData={setGuideServiceType} formName='服务对象类型' value={guideServiceType} required={true}/>
                 </Space>
         }
     ]
@@ -211,94 +211,96 @@ export default function CreateGuide(props) {
         if (guideCode === '') emptyArea.push('事项编码')
         if (serviceAgentName === '') emptyArea.push('实施主体名称')
         if (serviceAgentCode === '') emptyArea.push('实施主体编码')
-        if (guideContent === '') emptyArea.push('事项内容')
+        // if (guideContent === '') emptyArea.push('事项内容')
         // 政策依据数组处理
-        if (guideAccord.length === 0) {
-            emptyArea.push('政策依据')
-        } else {
-            for (let i = 0; i < guideAccord.length; i++) {
-                if (guideAccord[i] === '') {
-                    emptyArea.push('政策依据')
-                    break
-                }
-            }
-        }
-        if (guideCondition === '') emptyArea.push('申办所需资格条件')
+        // if (guideAccord.length === 0) {
+        //     emptyArea.push('政策依据')
+        // } else {
+        //     for (let i = 0; i < guideAccord.length; i++) {
+        //         if (guideAccord[i] === '') {
+        //             emptyArea.push('政策依据')
+        //             break
+        //         }
+        //     }
+        // }
+        // if (guideCondition === '') emptyArea.push('申办所需资格条件')
         // 所需申办材料数组处理
-        if (guideMaterial.length === 0) {
-            emptyArea.push('申办所需材料')
-        } else {
-            for (let i = 0; i < guideMaterial.length; i++) {
-                let empty = false
-                let origin = -1
-                let copy = -1
-                for (let key in guideMaterial[i]) {
-                    if (guideMaterial[i][key] === '') {
-                        // 只有当非电子版时需要检测page_format
-                        if (key === 'page_format' && guideMaterial[i].material_form === '2') continue
-                        empty = true
-                        break
-                    } else {
-                        if (key === 'origin') {
-                            origin = parseInt(guideMaterial[i][key])
-                        }
-                        if (key === 'copy') {
-                            copy = parseInt(guideMaterial[i][key])
-                        }
-                    }
-                }
-                if (isNaN(origin) || isNaN(copy) || origin < 0 || copy < 0) {
-                    notGood = true
-                }
-                if (empty) {
-                    emptyArea.push('申办所需材料')
-                    break
-                }
-            }
-        }
+        // if (guideMaterial.length === 0) {
+        //     emptyArea.push('申办所需材料')
+        // } else {
+        //     for (let i = 0; i < guideMaterial.length; i++) {
+        //         let empty = false
+        //         let origin = -1
+        //         let copy = -1
+        //         for (let key in guideMaterial[i]) {
+        //             if (guideMaterial[i][key] === '') {
+        //                 // 只有当非电子版时需要检测page_format
+        //                 if (key === 'page_format' && guideMaterial[i].material_form === '2') continue
+        //                 empty = true
+        //                 break
+        //             } else {
+        //                 if (key === 'origin') {
+        //                     origin = parseInt(guideMaterial[i][key])
+        //                 }
+        //                 if (key === 'copy') {
+        //                     copy = parseInt(guideMaterial[i][key])
+        //                 }
+        //             }
+        //         }
+        //         if (isNaN(origin) || isNaN(copy) || origin < 0 || copy < 0) {
+        //             notGood = true
+        //         }
+        //         if (empty) {
+        //             emptyArea.push('申办所需材料')
+        //             break
+        //         }
+        //     }
+        // }
         // 申办时限数据处理
-        if (legalType !== '0' || promisedType !== '0') {
-            if ((legalType !== '0' && legalPeriod === '') || (promisedType !== '0' && promisedPeriod === '')) {
-                emptyArea.push('申办时限')
-            } else {
-                let legal = 0
-                let promised = 0
-                if (legalType !== '0') {
-                    legal = parseInt(legalPeriod)
-                }
-                if (promisedType !== '0') {
-                    promised = parseInt(promisedPeriod)
-                }
-                if (isNaN(legal) || isNaN(promised) || (legalType !== '0' && legal <= 0) || (promisedType !== '0' && promised <= 0)) {
-                    notNum = true
-                }
-            }
-        } else {
-            emptyArea.push('申办时限')
-        }
-        if (guidePlatform === '') emptyArea.push('咨询平台')
-        if (guidePCAddress === '') emptyArea.push('网办PC端')
-        if (guidePEAddress === '') emptyArea.push('网办移动端')
-        if (guideSelfmadeAddress === '') emptyArea.push('自助终端')
+        // if (legalType !== '0' || promisedType !== '0') {
+        //     if ((legalType !== '0' && legalPeriod === '') || (promisedType !== '0' && promisedPeriod === '')) {
+        //         emptyArea.push('申办时限')
+        //     } else {
+        //         let legal = 0
+        //         let promised = 0
+        //         if (legalType !== '0') {
+        //             legal = parseInt(legalPeriod)
+        //         }
+        //         if (promisedType !== '0') {
+        //             promised = parseInt(promisedPeriod)
+        //         }
+        //         if (isNaN(legal) || isNaN(promised) || (legalType !== '0' && legal <= 0) || (promisedType !== '0' && promised <= 0)) {
+        //             notNum = true
+        //         }
+        //     }
+        // } else {
+        //     emptyArea.push('申办时限')
+        // }
+        // if (guidePlatform === '') emptyArea.push('咨询平台')
+        // if (guidePCAddress === '') emptyArea.push('网办PC端')
+        // if (guidePEAddress === '') emptyArea.push('网办移动端')
+        // if (guideSelfmadeAddress === '') emptyArea.push('自助终端')
         if (guideWindows.length === 0) {
             emptyArea.push('办理点信息')
         } else {
+            let empty = false
             for (let i = 0; i < guideWindows.length; i++) {
-                let empty = false
                 for (let key in guideWindows[i]) {
-                    if (guideWindows[i].key === '') {
+                    if (guideWindows[i][key]=== '') {
                         empty = true
                         break
                     }
                 }
-                if (empty) {
-                    emptyArea.push('办理点信息')
-                    break
+                
+               
+            } 
+            // console.log("empty:",empty)
+            if (empty) {
+                emptyArea.push('办理点信息')
                 }
-            }
         }
-        if (guideOnlineProcess === '') emptyArea.push('网上办理流程')
-        if (guideOfflineProcess === '') emptyArea.push('线下办理流程')
+        // if (guideOnlineProcess === '') emptyArea.push('网上办理流程')
+        // if (guideOfflineProcess === '') emptyArea.push('线下办理流程')
         // if (guideQRCode === '') emptyArea.push('二维码')
         if (guideServiceType.length === 0) emptyArea.push('服务对象类型')
         if (emptyArea.length === 0 && !notNum && !notGood) {
@@ -517,7 +519,7 @@ export default function CreateGuide(props) {
     useEffect(function () {
         let tempStatus = ['', '', '', '']
         // 事项基本信息
-        if (guideName !== '' && guideCode !== '' && serviceAgentName !== ''  && serviceAgentCode !== '' && guideContent !== '' && guideAccord.length !== 0) {
+        if (guideName !== '' && guideCode !== '' && serviceAgentName !== ''  && serviceAgentCode !== '' ) {
             tempStatus[0] = 'finish'
             for (let i = 0; i < guideAccord.length; i++) {
                 if (guideAccord[i] === '') {
@@ -529,35 +531,45 @@ export default function CreateGuide(props) {
             tempStatus[0] = 'wait'
         }
         // 资格审核信息
-        if (guideCondition !== '' && guideMaterial !== '') {
-            if (legalType === '0' && legalType === '0') {
-                tempStatus[1] = 'wait'
-            } else {
-                if ((legalType !== '0' && legalPeriod === '') || (promisedType !== '0' && promisedPeriod === '')) {
-                    tempStatus[1] = 'wait'
-                } else {
-                    tempStatus[1] = 'finish'
-                    for (let i = 0; i < guideMaterial.length; i++) {
-                        for (let key in guideMaterial[i]) {
-                            if (guideMaterial[i][key] === '') {
-                                if (key === 'page_format' && guideMaterial[i].material_form === '2') continue
-                                else tempStatus[1] = 'wait'
-                            }
-                        }
-                    }
+        tempStatus[1] = 'finish'
+        for (let i = 0; i < guideMaterial.length; i++) {
+            for (let key in guideMaterial[i]) {
+                if (guideMaterial[i][key] === '') {
+                    if (key === 'page_format' && guideMaterial[i].material_form === '2') continue
+                    else tempStatus[1] = 'wait'
                 }
             }
-        } else {
-            tempStatus[1] = 'wait'
         }
+        // if (guideCondition !== '' && guideMaterial !== '') {
+        //     if (legalType === '0' && legalType === '0') {
+        //         tempStatus[1] = 'wait'
+        //     } else {
+        //         if ((legalType !== '0' && legalPeriod === '') || (promisedType !== '0' && promisedPeriod === '')) {
+        //             tempStatus[1] = 'wait'
+        //         } else {
+        //             tempStatus[1] = 'finish'
+        //             for (let i = 0; i < guideMaterial.length; i++) {
+        //                 for (let key in guideMaterial[i]) {
+        //                     if (guideMaterial[i][key] === '') {
+        //                         if (key === 'page_format' && guideMaterial[i].material_form === '2') continue
+        //                         else tempStatus[1] = 'wait'
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // } else {
+        //     tempStatus[1] = 'wait'
+        // }
         // 业务咨询信息
-        if (guidePlatform !== '' && guidePCAddress !== '' && guidePEAddress !== '') {
-            tempStatus[2] = 'finish'
-        } else {
-            tempStatus[2] = 'wait'
-        }
+        tempStatus[2] = 'finish'
+        // if (guidePlatform !== '' && guidePCAddress !== '' && guidePEAddress !== '') {
+        //     tempStatus[2] = 'finish'
+        // } else {
+        //     tempStatus[2] = 'wait'
+        // }
         // 业务办理信息
-        if (guideSelfmadeAddress !== '' && guideOnlineProcess !== '' && guideOfflineProcess !== '' && guideWindows.length !== 0/* && guideQRCode !== ''*/) {
+        if ( guideWindows.length !== 0 && guideServiceType.length !== 0) {
             tempStatus[3] = 'finish'
             for (let i = 0; i < guideWindows.length; i++) {
                 for (let key in guideWindows[i]) {
@@ -569,6 +581,18 @@ export default function CreateGuide(props) {
         } else {
             tempStatus[3] = 'wait'
         }
+        // if (guideSelfmadeAddress !== '' && guideOnlineProcess !== '' && guideOfflineProcess !== '' && guideWindows.length !== 0/* && guideQRCode !== ''*/) {
+        //     tempStatus[3] = 'finish'
+        //     for (let i = 0; i < guideWindows.length; i++) {
+        //         for (let key in guideWindows[i]) {
+        //             if (guideWindows[i].key === '') {
+        //                 tempStatus[3] = 'wait'
+        //             }
+        //         }
+        //     }
+        // } else {
+        //     tempStatus[3] = 'wait'
+        // }
         tempStatus[current] = 'process'
         setStepStatus(tempStatus)
     }, [current])

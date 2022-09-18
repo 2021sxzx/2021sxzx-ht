@@ -63,7 +63,7 @@ export default function FormTime(props){
     return(
         <div className={style.form}>
             <div className={style.inputLabel}>
-                <span className={style.redDot}>*</span>
+                {props.required === true &&<span style={{color: 'red'}}>*</span>}
                 <span className={style.formName}>{props.formName}：</span>
             </div>
             <div className={style.input}>
