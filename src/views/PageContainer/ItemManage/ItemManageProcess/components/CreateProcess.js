@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 import style from './CreateProcess.module.scss'
-import { Space, Button, Modal } from 'antd'
+import {Space, Button, Modal, Tooltip} from 'antd'
 import TagsArea from './TagsArea.js'
 import GuideModal from './GuideModal.js'
 import api from '../../../../../api/rule'
 
-export default function CreateProcess(props){
+export default function CreateProcess(props) {
     // 页面中用以展示的基础数据
     const [taskCode, setTaskCode] = useState('')
     const [taskName, setTaskName] = useState('')
@@ -23,20 +23,20 @@ export default function CreateProcess(props){
     }])
     // 加载效果
     const [isLoading, setIsLoading] = useState(false)
-    
-    useEffect(()=>{
+
+    useEffect(() => {
         // 两种类型的子节点处理
         chooseRuleApi(props.ruleRoot)
         chooseRegionApi(props.regionRoot)
-    },[])
+    }, [])
 
-    const startChoosingGuide = ()=>{
+    const startChoosingGuide = () => {
         setChoosingGuide(true)
     }
 
-    const chooseTag = (index, type)=>{
+    const chooseTag = (index, type) => {
         // 暂不处理推荐事项
-        if (type === '3'){
+        if (type === '3') {
             Modal.info({
                 title: '暂不处理',
                 content: '推荐项暂未进行处理',
@@ -44,26 +44,24 @@ export default function CreateProcess(props){
             })
         }
 
-        let currTags = []
-        if (type === 'rule'){
+        if (type === 'rule') {
             let tag = ruleTags[index]
             chooseRuleApi(tag)
-        }
-        else if (type === 'region'){
+        } else if (type === 'region') {
             let tag = regionTags[index]
             chooseRegionApi(tag)
-        }   
+        }
     }
 
-    const chooseRuleApi = (tag)=>{
+    const chooseRuleApi = (tag) => {
         // 点击某个节点
         api.GetRules({
             parentId: [tag.nodeId]
-        }).then(response=>{
+        }).then(response => {
             let data = response.data.data
             // 子节点处理
             let children = []
-            for (let i = 0; i < data.length; i++){
+            for (let i = 0; i < data.length; i++) {
                 children.push({
                     nodeId: data[i].rule_id,
                     nodeName: data[i].rule_name
@@ -71,7 +69,7 @@ export default function CreateProcess(props){
             }
             // 已选择节点处理
             let chosen = []
-            for (let i = 0; i < chosenRules.length; i++){
+            for (let i = 0; i < chosenRules.length; i++) {
                 chosen.push(chosenRules[i])
             }
             chosen.push(tag)
@@ -81,19 +79,19 @@ export default function CreateProcess(props){
             setChosenRules(chosen)
             setTaskRule(path)
             setRuleTags(children)
-        }).catch(error=>{
+        }).catch(error => {
             props.showError('获取规则子节点失败！')
         })
     }
 
-    const chooseRegionApi = (tag)=>{
+    const chooseRegionApi = (tag) => {
         api.GetRegions({
             parentId: [tag.nodeId]
-        }).then(response=>{
+        }).then(response => {
             let data = response.data.data
             // 子节点处理
             let children = []
-            for (let i = 0; i < data.length; i++){
+            for (let i = 0; i < data.length; i++) {
                 children.push({
                     nodeId: data[i]._id,
                     nodeCode: data[i].region_code,
@@ -102,7 +100,7 @@ export default function CreateProcess(props){
             }
             // 已选择节点处理
             let chosen = []
-            for (let i = 0; i < chosenRegions.length; i++){
+            for (let i = 0; i < chosenRegions.length; i++) {
                 chosen.push(chosenRegions[i])
             }
             chosen.push(tag)
@@ -112,19 +110,19 @@ export default function CreateProcess(props){
             setRegionTags(children)
             setChosenRegions(chosen)
             setTaskRegion(path)
-        }).catch(error=>{
+        }).catch(error => {
             props.showError('获取子节点失败！')
         })
     }
 
-    const getBackRuleApi = (index)=>{
+    const getBackRuleApi = (index) => {
         api.GetRules({
             parentId: [chosenRules[index].nodeId]
-        }).then(response=>{
+        }).then(response => {
             let data = response.data.data
             // 子节点处理
             let children = []
-            for (let i = 0; i < data.length; i++){
+            for (let i = 0; i < data.length; i++) {
                 children.push({
                     nodeId: data[i].rule_id,
                     nodeName: data[i].rule_name
@@ -133,7 +131,7 @@ export default function CreateProcess(props){
             // 已选择节点与规则名称处理
             let chosen = []
             let path = ''
-            for (let i = 0; i <= index; i++){
+            for (let i = 0; i <= index; i++) {
                 chosen.push(chosenRules[i])
                 path += (chosenRules[i].nodeName + '\\')
             }
@@ -141,19 +139,19 @@ export default function CreateProcess(props){
             setChosenRules(chosen)
             setTaskRule(path)
             setRuleTags(children)
-        }).catch(error=>{
+        }).catch(error => {
             props.showError('获取子节点失败！')
         })
     }
 
-    const getBackRegionApi = (index)=>{
+    const getBackRegionApi = (index) => {
         api.GetRegions({
             parentId: [chosenRegions[index].nodeId]
-        }).then(response=>{
+        }).then(response => {
             let data = response.data.data
             // 子节点处理
             let children = []
-            for (let i = 0; i < data.length; i++){
+            for (let i = 0; i < data.length; i++) {
                 children.push({
                     nodeId: data[i]._id,
                     nodeCode: data[i].region_code,
@@ -163,7 +161,7 @@ export default function CreateProcess(props){
             // 已选择节点与规则名称处理
             let chosen = []
             let path = ''
-            for (let i = 0; i <= index; i++){
+            for (let i = 0; i <= index; i++) {
                 chosen.push(chosenRegions[i])
                 path += (chosenRegions[i].nodeName + '\\')
             }
@@ -171,28 +169,27 @@ export default function CreateProcess(props){
             setChosenRegions(chosen)
             setTaskRegion(path)
             setRegionTags(children)
-        }).catch(error=>{
+        }).catch(error => {
             props.showError('撤回失败！')
         })
     }
 
-    const getBack = (index, type)=>{
+    const getBack = (index, type) => {
         // 已选择节点的回退
-        if (type === 'rule'){
+        if (type === 'rule') {
             if (index === chosenRules.length - 1) return
             getBackRuleApi(index)
-        }
-        else{
+        } else {
             if (index === chosenRegions.length - 1) return
             getBackRegionApi(index)
         }
     }
 
-    const handleCancel = ()=>{
+    const handleCancel = () => {
         props.setPageType(1)
     }
 
-    const createItem = ()=>{
+    const createItem = () => {
         setIsLoading(true)
         let items = [{
             task_code: taskCode,
@@ -203,18 +200,18 @@ export default function CreateProcess(props){
         api.CreateItems({
             user_id: props.userId,
             items: items
-        }).then(response=>{
+        }).then(response => {
             setIsLoading(false)
             props.showSuccess()
             props.setPageType(1)
-        }).catch(error=>{
+        }).catch(error => {
             setIsLoading(false)
             props.showError('绑定事项失败')
         })
     }
 
-    const handleCreate = ()=>{
-        if (taskCode === ''){
+    const handleCreate = () => {
+        if (taskCode === '') {
             Modal.info({
                 title: '未选择指南',
                 content: '请选择要绑定的事项指南！',
@@ -225,16 +222,15 @@ export default function CreateProcess(props){
         api.GetItems({
             rule_id: [chosenRules[chosenRules.length - 1].nodeId],
             region_id: [chosenRegions[chosenRegions.length - 1].nodeId]
-        }).then(response=>{
+        }).then(response => {
             let rules = response.data.data
-            if (rules.length !== 0){
+            if (rules.length !== 0) {
                 Modal.error({
                     title: '已有规则',
                     content: '该事项规则已经存在，请重新选择！',
                     centered: true
                 })
-            }
-            else{
+            } else {
                 let str = '确认绑定规则\“' + taskRule + taskRegion + '\”' +
                     '和指南\“' + taskName + '”吗？'
                 Modal.confirm({
@@ -244,7 +240,7 @@ export default function CreateProcess(props){
                     onOk: createItem
                 })
             }
-        }).catch(error=>{
+        }).catch(error => {
             props.showError('判断规则是否已存在失败！')
         })
     }
@@ -252,7 +248,7 @@ export default function CreateProcess(props){
     return (
         <Space direction='vertical' size={15}>
             <GuideModal setTaskCode={setTaskCode} setTaskName={setTaskName} showError={props.showError}
-                choosingGuide={choosingGuide} setChoosingGuide={setChoosingGuide}/>
+                        choosingGuide={choosingGuide} setChoosingGuide={setChoosingGuide}/>
 
             <div className={style.ruleItem}>
                 <div className={style.itemTitle}>
@@ -297,11 +293,12 @@ export default function CreateProcess(props){
                     <Space className={style.chosenTags} direction='horizontal' size={[12, 4]} wrap>
                         {
                             chosenRules.map((tag, index) =>
-                                <div className={style.chosenRule} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')} onClick={
-                                    value=>{
-                                        getBack(index, 'rule')
-                                    }
-                                }>
+                                <div className={style.chosenRule} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')}
+                                     onClick={
+                                         value => {
+                                             getBack(index, 'rule')
+                                         }
+                                     }>
                                     <div className={style.tagContent}>
                                         {tag.nodeName}
                                     </div>
@@ -310,11 +307,12 @@ export default function CreateProcess(props){
                         }
                         {
                             chosenRegions.map((tag, index) =>
-                                <div className={style.chosenRegion} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')} onClick={
-                                    value=>{
-                                        getBack(index, 'region')
-                                    }
-                                }>
+                                <div className={style.chosenRegion} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')}
+                                     onClick={
+                                         value => {
+                                             getBack(index, 'region')
+                                         }
+                                     }>
                                     <div className={style.tagContent}>
                                         {tag.nodeName}
                                     </div>
@@ -331,7 +329,7 @@ export default function CreateProcess(props){
                         </div>
                         <TagsArea tags={ruleTags} chooseTag={chooseTag} type={'rule'}/>
                     </div>
-                    
+
                     <div className={style.separator1}/>
 
                     <div className={style.chooseTagArea}>
@@ -340,9 +338,9 @@ export default function CreateProcess(props){
                         </div>
                         <TagsArea tags={regionTags} chooseTag={chooseTag} type={'region'}/>
                     </div>
-                    
+
                     <div className={style.separator2}/>
-                    
+
                     <div className={style.chooseTagArea}>
                         <div className={style.chooseBoxTitle3}>
                             候选事项规则项：
@@ -358,11 +356,22 @@ export default function CreateProcess(props){
 
             <div style={{display: 'block', textAlign: 'center'}}>
                 <Button type='default' size='middle' style={{marginRight: 60, width: 100}}
-                    onClick={handleCancel}>取消</Button>
-                <Button type='primary' size='middle' style={{width: 100}}
-                    onClick={handleCreate} loading={isLoading}>
-                    绑定
-                </Button>
+                        onClick={handleCancel}>取消</Button>
+                {
+                    ruleTags.length > 0 ?
+                        <Tooltip title={'请不要在业务规则的中间节点上绑定事项指南'}>
+                            <Button type='primary' size='middle' style={{width: 100}}
+                                    onClick={handleCreate} loading={isLoading} disabled>
+                                绑定
+                            </Button>
+                        </Tooltip>
+                        :
+                        <Button type='primary' size='middle' style={{width: 100}}
+                                onClick={handleCreate} loading={isLoading}>
+                            绑定
+                        </Button>
+
+                }
             </div>
         </Space>
     )
