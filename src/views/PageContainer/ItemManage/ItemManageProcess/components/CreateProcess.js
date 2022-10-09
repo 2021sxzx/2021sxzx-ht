@@ -39,14 +39,18 @@ export default function CreateProcess(props) {
     }
 
     const chooseTag = (index, type) => {
-        if (type === 'rule' || type === 'recommend') {
+        if (type === 'rule') {
             chooseRuleApi(ruleTags[index])
         } else if (type === 'region') {
             chooseRegionApi(regionTags[index])
+        } else if (type === 'recommend') {
+            chooseRuleApi(recommendedTags[index])
         }
     }
 
     const chooseRuleApi = (tag) => {
+        console.log('tag')
+        console.dir(tag)
         // 点击某个节点
         api.GetRules({
             parentId: [tag.nodeId]
