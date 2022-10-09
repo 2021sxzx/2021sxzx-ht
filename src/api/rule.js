@@ -1,39 +1,40 @@
 import service from "./http";
+
 /**
  * 获取验证码
  */
 
-const api ={
+const api = {
     // 业务规则管理
-    CreateRules(data){
+    CreateRules(data) {
         return service.request({
             method: "post",
             url: "/v1/createRules",
             data
         })
     },
-    DeleteRules(data){
+    DeleteRules(data) {
         return service.request({
             method: "post",
             url: "/v1/deleteRules",
             data
         })
     },
-    UpdateRules(data){
+    UpdateRules(data) {
         return service.request({
             method: "post",
             url: "/v1/updateRules",
             data
         })
     },
-    GetRules(data){
+    GetRules(data) {
         return service.request({
             method: "post",
             url: "/v1/getRules",
             data
         })
     },
-    GetRulePaths(data){
+    GetRulePaths(data) {
         return service.request({
             method: "post",
             url: "/v1/getRulePaths",
@@ -41,35 +42,35 @@ const api ={
         })
     },
     // 区划规则管理
-    CreateRegions(data){
+    CreateRegions(data) {
         return service.request({
             method: "post",
             url: "/v1/createRegion",
             data
         })
     },
-    DeleteRegions(data){
+    DeleteRegions(data) {
         return service.request({
             method: "post",
             url: "/v1/deleteRegions",
             data
         })
     },
-    UpdateRegions(data){
+    UpdateRegions(data) {
         return service.request({
             method: "post",
             url: "/v1/updateRegions",
             data
         })
     },
-    GetRegions(data){
+    GetRegions(data) {
         return service.request({
             method: "post",
             url: "/v1/getRegions",
             data
         })
     },
-    GetRegionPaths(data){
+    GetRegionPaths(data) {
         return service.request({
             method: "post",
             url: "/v1/getRegionPaths",
@@ -77,14 +78,14 @@ const api ={
         })
     },
     // 事项指南管理
-    GetItemGuide(data){
+    GetItemGuide(data) {
         return service.request({
             method: "post",
             url: "/v1/getItemGuide",
             data
         })
     },
-    GetItemGuides(data){
+    GetItemGuides(data) {
         let dataPlus = data
         dataPlus['user_id'] = localStorage.getItem('_id')
         return service.request({
@@ -93,7 +94,7 @@ const api ={
             data: dataPlus
         })
     },
-    CreateItemGuide(data){
+    CreateItemGuide(data) {
         return service.request({
             method: "post",
             url: "/v1/createItemGuide",
@@ -104,14 +105,14 @@ const api ={
             data
         })
     },
-    DeleteItemGuides(data){
+    DeleteItemGuides(data) {
         return service.request({
             method: "post",
             url: "/v1/deleteItemGuides",
             data
         })
     },
-    updateItemGuide(data){
+    updateItemGuide(data) {
         return service.request({
             method: "post",
             url: "/v1/updateItemGuide",
@@ -119,28 +120,28 @@ const api ={
         })
     },
     // 事项流程管理
-    CreateItems(data){
+    CreateItems(data) {
         return service.request({
             method: "post",
             url: "/v1/createItems",
             data
         })
     },
-    DeleteItems(data){
+    DeleteItems(data) {
         return service.request({
             method: "post",
             url: "/v1/deleteItems",
             data
         })
     },
-    UpdateItems(data){
+    UpdateItems(data) {
         return service.request({
             method: "post",
             url: "/v1/updateItems",
             data
         })
     },
-    GetItems(data){
+    GetItems(data) {
         let dataPlus = data
         dataPlus['user_id'] = localStorage.getItem('_id')
         return service.request({
@@ -149,21 +150,21 @@ const api ={
             data: dataPlus
         })
     },
-    ChangeItemStatus(data){
+    ChangeItemStatus(data) {
         return service.request({
             method: "post",
             url: "/v1/changeItemStatus",
             data
         })
     },
-    GetItemGuideAndAuditAdvises(data){
+    GetItemGuideAndAuditAdvises(data) {
         return service.request({
             method: "post",
             url: "/v1/getItemGuideAndAuditAdvises",
             data
         })
     },
-    AddAuditAdvise(data){
+    AddAuditAdvise(data) {
         return service.request({
             method: "post",
             url: "/v1/addAuditAdvise",
@@ -171,7 +172,7 @@ const api ={
         })
     },
     // 事项状态表
-    GetItemStatusScheme(data){
+    GetItemStatusScheme(data) {
         return service.request({
             method: "get",
             url: "/v1/getItemStatusScheme",
@@ -179,51 +180,59 @@ const api ={
         })
     },
     // 初始化通用
-    GetUserRank(data){
+    GetUserRank(data) {
         return service.request({
             method: "post",
             url: "/v1/getUserRank",
             data
         })
     },
-    GetCheckResult(){
+    GetCheckResult() {
         return service.request({
             method: "get",
             url: "/v1/getCheckResult"
         })
     },
-    UpdateCheckResult(data){
+    UpdateCheckResult(data) {
         return service.request({
-            method:"post",
-            url:"/v1/updateCheckResult",
+            method: "post",
+            url: "/v1/updateCheckResult",
             headers: {
                 'Content-Type': 'application/json'
-            },  
+            },
             data
         })
     },
-    GetEveryItemStatusCount(){
+    GetEveryItemStatusCount() {
         return service.request({
             method: "get",
             url: "/v1/getEveryItemStatusCount"
         })
     },
-    GetItemUsers(data){
+    GetItemUsers(data) {
         return service.request({
             method: "post",
             url: "/v1/getItemUsers",
             data
         })
     },
-    GetUserNameById(data){
+    GetUserNameById(data) {
         return service.request({
             method: "post",
             url: "/v1/getUserNameById",
             data
         })
     },
-    GetServerIP(){
+    GetServerIP() {
         return (service.defaults.baseURL === '/api' ? '/api' : 'http://8.134.73.52:5001')
+    },
+    // 绑定事项时根据选择的事项规则来推荐相关的事项规则
+    GetRecommend(data) {
+        return service.request({
+            method: "post",
+            url: "/v1/getRecommend",
+            data
+        })
     }
 }
 

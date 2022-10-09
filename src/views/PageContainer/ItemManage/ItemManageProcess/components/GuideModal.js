@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { Form, Input, Button, Table, Modal } from 'antd'
+import React, {useEffect, useState} from 'react'
+import {Form, Input, Button, Table, Modal} from 'antd'
 import api from '../../../../../api/rule'
 
-export default function GuideModal(props){
+export default function GuideModal(props) {
     const [enabledGuides, setEnabledGuides] = useState([])
     const [guidePageNum, setGuidePageNum] = useState(0)
     const [guideTableTotal, setGuideTableTotal] = useState(0)
@@ -14,79 +14,79 @@ export default function GuideModal(props){
 
     const guideTable = {
         whiteSpace: 'pre-wrap',
-        wordWrap: 'break-word', 
+        wordWrap: 'break-word',
         wordBreak: 'break-all'
     }
 
-    const splitIds = (id)=>{
+    const splitIds = (id) => {
         let ids = []
         let noEmpty = id.replace(/\s*/g, '')
         ids = noEmpty.split(',')
         return ids
     }
 
-    const inj_judge = (str)=>{
+    const inj_judge = (str) => {
         let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
             'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
-        for (let i = 0; i < inj_str.length; i++){
-            if (str.indexOf(inj_str[i]) >= 0){
+        for (let i = 0; i < inj_str.length; i++) {
+            if (str.indexOf(inj_str[i]) >= 0) {
                 return true
             }
         }
         return false
     }
 
-    const init = ()=>{
+    const init = () => {
         if (!props.choosingGuide) return
         setTableLoading(true)
         api.GetItemGuides({
             task_status: 0,
             page_size: 8,
             page_num: 0
-        }).then(response=>{
+        }).then(response => {
             let data = response.data.data
             setGuideTableTotal(data.total)
             setEnabledGuides(data.data)
             setTableLoading(false)
-        }).catch(error=>{
+        }).catch(error => {
             setTableLoading(false)
             props.showError('选择指南初始化失败')
         })
     }
 
-    useEffect(function(){
+    useEffect(function () {
         // 当面板打开时获取首页指南
         init()
     }, [props.choosingGuide])
 
-    const handleGuideTableChange = (page)=>{
+    const handleGuideTableChange = (page) => {
         setTableLoading(true)
         let totalData = originData
         totalData['task_status'] = 0
         totalData['page_num'] = page - 1
         totalData['page_size'] = 8
         // 换页的指南获取
-        api.GetItemGuides(totalData).then(response=>{
+        api.GetItemGuides(totalData).then(response => {
             setGuidePageNum(page - 1)
             let data = response.data.data
             setGuideTableTotal(data.total)
             setEnabledGuides(data.data)
             setTableLoading(false)
-        }).catch(error=>{
+        }).catch(error => {
             setTableLoading(false)
             props.showError('选择指南换页失败')
         })
     }
 
-    const handleTaskCodeChange = (e)=>{
+    const handleTaskCodeChange = (e) => {
         setTaskCode(e.target.value)
     }
 
-    const handleTaskNameChange = (e)=>{
+    const handleTaskNameChange = (e) => {
         setTaskName(e.target.value)
     }
 
-    const clear = ()=>{
+    const clear = () => {
         // 清空搜索框
         document.getElementById('taskCodeInput').value = ''
         document.getElementById('taskNameInput').value = ''
@@ -96,17 +96,17 @@ export default function GuideModal(props){
         init()
     }
 
-    const processData = ()=>{
+    const processData = () => {
         let data = {}
-        if (inj_judge(task_code) || inj_judge(task_name)){
+        if (inj_judge(task_code) || inj_judge(task_name)) {
             Modal.warning({
                 centered: true,
                 title: '非法输入',
                 content: '输入信息中有非法输入内容，请检查输入！'
-            }) 
+            })
             return
         }
-        if (task_code !== ''){
+        if (task_code !== '') {
             let code = splitIds(task_code)
             data['task_code'] = code[0]
         }
@@ -114,7 +114,7 @@ export default function GuideModal(props){
         search(data)
     }
 
-    const search = (data)=>{
+    const search = (data) => {
         setTableLoading(true)
         setOriginData(data)
         let totalData = data
@@ -122,18 +122,18 @@ export default function GuideModal(props){
         totalData['page_num'] = 0
         totalData['page_size'] = 8
         // 搜索
-        api.GetItemGuides(totalData).then(response=>{
+        api.GetItemGuides(totalData).then(response => {
             let data = response.data.data
             setGuideTableTotal(data.total)
             setEnabledGuides(data.data)
             setTableLoading(false)
-        }).catch(error=>{
+        }).catch(error => {
             setTableLoading(false)
             props.showError('搜索失败')
         })
     }
 
-    const endChoosingGuide = ()=>{
+    const endChoosingGuide = () => {
         props.setChoosingGuide(false)
         setGuidePageNum(0)
         setEnabledGuides([])
@@ -158,8 +158,8 @@ export default function GuideModal(props){
             title: '选择',
             key: 'choose',
             width: 100,
-            render: (text, record)=>(
-                <Button type='primary' onClick={function(){
+            render: (text, record) => (
+                <Button type='primary' onClick={function () {
                     props.setTaskCode(record.task_code)
                     props.setTaskName(record.task_name)
                     endChoosingGuide()
@@ -171,7 +171,8 @@ export default function GuideModal(props){
     ]
 
     return (
-        <Modal width={800} centered destroyOnClose={true} title='选择指南' visible={props.choosingGuide} footer={false} onCancel={endChoosingGuide}>
+        <Modal width={800} centered destroyOnClose={true} title='选择指南' visible={props.choosingGuide} footer={false}
+               onCancel={endChoosingGuide}>
             <Form
                 layout='inline'
                 initialValues={{
@@ -181,11 +182,11 @@ export default function GuideModal(props){
             >
                 <Form.Item label='指南编码' style={{width: '37%'}}>
                     <Input id='taskCodeInput' value={task_code}
-                        placeholder='请输入指南编码' onChange={handleTaskCodeChange} />
+                           placeholder='请输入指南编码' onChange={handleTaskCodeChange}/>
                 </Form.Item>
                 <Form.Item label='指南名称' style={{width: '37%'}}>
                     <Input id='taskNameInput' value={task_name}
-                        placeholder='请输入指南名称' onChange={handleTaskNameChange} />
+                           placeholder='请输入指南名称' onChange={handleTaskNameChange}/>
                 </Form.Item>
                 <Form.Item style={{width: '8%'}}>
                     <Button type='default' onClick={clear}>重置</Button>
@@ -194,8 +195,15 @@ export default function GuideModal(props){
                     <Button type='primary' onClick={processData}>搜索</Button>
                 </Form.Item>
             </Form>
-            <Table class={guideTable} columns={guideColumns} dataSource={enabledGuides} rowKey='task_code' loading={tableLoading}
-                pagination={{total: guideTableTotal, onChange: handleGuideTableChange, current: guidePageNum + 1, showSizeChanger: false, pageSize: 8}}/>
+            <Table class={guideTable} columns={guideColumns} dataSource={enabledGuides} rowKey='task_code'
+                   loading={tableLoading}
+                   pagination={{
+                       total: guideTableTotal,
+                       onChange: handleGuideTableChange,
+                       current: guidePageNum + 1,
+                       showSizeChanger: false,
+                       pageSize: 8
+                   }}/>
         </Modal>
     )
 }

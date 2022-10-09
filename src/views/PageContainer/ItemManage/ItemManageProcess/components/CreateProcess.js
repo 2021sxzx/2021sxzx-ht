@@ -18,8 +18,8 @@ export default function CreateProcess(props) {
     const [ruleTags, setRuleTags] = useState([])
     const [regionTags, setRegionTags] = useState([])
     const [recommendedTags, setRecommendedTags] = useState([{
-        'nodeName': '暂无',
-        'nodeId': '12345'
+        'nodeName': '请先绑定事项指南',
+        'nodeId': '-1'
     }])
     // 加载效果
     const [isLoading, setIsLoading] = useState(false)
@@ -30,26 +30,19 @@ export default function CreateProcess(props) {
         chooseRegionApi(props.regionRoot)
     }, [])
 
+    useEffect(() => {
+        getRecommend()
+    }, [taskRule, taskName])
+
     const startChoosingGuide = () => {
         setChoosingGuide(true)
     }
 
     const chooseTag = (index, type) => {
-        // 暂不处理推荐事项
-        if (type === '3') {
-            Modal.info({
-                title: '暂不处理',
-                content: '推荐项暂未进行处理',
-                centered: true
-            })
-        }
-
-        if (type === 'rule') {
-            let tag = ruleTags[index]
-            chooseRuleApi(tag)
+        if (type === 'rule' || type === 'recommend') {
+            chooseRuleApi(ruleTags[index])
         } else if (type === 'region') {
-            let tag = regionTags[index]
-            chooseRegionApi(tag)
+            chooseRegionApi(regionTags[index])
         }
     }
 
@@ -81,6 +74,40 @@ export default function CreateProcess(props) {
             setRuleTags(children)
         }).catch(error => {
             props.showError('获取规则子节点失败！')
+        })
+    }
+
+    /**
+     * 根据选择的事项事项指南名称和事项规则来推荐下一级的事项规则
+     * @param tag 选择的父级事项规则.如果没有显式指明 tag，就默认 tag 是最后一个规则项
+     */
+    const getRecommend = (tag = chosenRules[chosenRules.length - 1]) => {
+        if (!taskName) {
+            // 如果未绑定事项指南，不进行推荐
+            return
+        }
+
+        api.GetRecommend({
+            parentId: tag ? tag.nodeId : taskRule.split('\\')[-1],
+            task_name: taskName
+        }).then(response => {
+            if (response.data.data instanceof Array && response.data.data.length > 0) {
+                setRecommendedTags(response.data.data.map(tag => {
+                    return {
+                        nodeId: tag.rule_id,
+                        nodeName: tag.rule_name,
+                    }
+                }))
+            } else {
+                setRecommendedTags([{
+                    nodeId: '-2',
+                    nodeName: '无相关推荐',
+                }])
+            }
+        }).catch(err => {
+            // TODO(zzj)
+            console.log('GetRecommend error')
+            console.dir(err)
         })
     }
 
@@ -349,7 +376,7 @@ export default function CreateProcess(props) {
                         <div className={style.chooseBoxSubTitle}>
                             推荐规则项：
                         </div>
-                        <TagsArea tags={recommendedTags} chooseTag={chooseTag} type={'3'}/>
+                        <TagsArea tags={recommendedTags} chooseTag={chooseTag} type={'recommend'}/>
                     </div>
                 </div>
             </Space>
