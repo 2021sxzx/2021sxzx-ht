@@ -49,8 +49,6 @@ export default function CreateProcess(props) {
     }
 
     const chooseRuleApi = (tag) => {
-        console.log('tag')
-        console.dir(tag)
         // 点击某个节点
         api.GetRules({
             parentId: [tag.nodeId]
@@ -274,6 +272,8 @@ export default function CreateProcess(props) {
                 })
             }
         }).catch(error => {
+            console.log('error')
+            console.log(error)
             props.showError('判断规则是否已存在失败！')
         })
     }
@@ -394,7 +394,7 @@ export default function CreateProcess(props) {
                     ruleTags.length > 0 ?
                         <Tooltip title={'请不要在业务规则的中间节点上绑定事项指南'}>
                             <Button type='primary' size='middle' style={{width: 100}}
-                                    onClick={handleCreate} loading={isLoading} disabled>
+                                    loading={isLoading} disabled>
                                 绑定
                             </Button>
                         </Tooltip>
