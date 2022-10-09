@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import style from './CreateProcess.module.scss'
-import {Space, Button, Modal, Tooltip} from 'antd'
+import {Space, Button, Modal, Tooltip, message} from 'antd'
 import TagsArea from './TagsArea.js'
 import GuideModal from './GuideModal.js'
 import api from '../../../../../api/rule'
@@ -105,9 +105,11 @@ export default function CreateProcess(props) {
                 }])
             }
         }).catch(err => {
-            // TODO(zzj)
-            console.log('GetRecommend error')
-            console.dir(err)
+            message.error('获取规则项推荐发生错误，请稍后重试')
+            setRecommendedTags([{
+                nodeId: '-3',
+                nodeName: '无相关推荐',
+            }])
         })
     }
 

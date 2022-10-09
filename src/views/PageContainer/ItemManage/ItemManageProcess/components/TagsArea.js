@@ -1,5 +1,5 @@
 import {Space, Tooltip} from 'antd'
-import React, {useEffect, useState} from 'react'
+import React from 'react'
 import style from './TagsArea.module.scss'
 
 export default function TagsArea(props) {
@@ -30,6 +30,17 @@ export default function TagsArea(props) {
                                         </div>
                                     </Tooltip>
                                 )
+                            case '-3':{
+                                return (
+                                    <Tooltip title={'获取规则项推荐发生错误，请稍后重试'}>
+                                        <div className={style.tag} key={props.type + '_' + tag.nodeId}>
+                                            <div className={style.tagContent}>
+                                                {tag.nodeName}
+                                            </div>
+                                        </div>
+                                    </Tooltip>
+                                )
+                            }
                             default:
                                 return (
                                     <div className={style.tag} key={props.type + '_' + tag.nodeId} onClick={
