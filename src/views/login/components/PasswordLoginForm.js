@@ -61,14 +61,14 @@ export default function PasswordLoginForm() {
             icon: <ExclamationCircleOutlined/>,
             content: '如果忘记密码，请先使用手机短信验证码完成登录，然后后进入个人中心修改密码。',
             okText: '确认',
-            autoFocusButton:'ok',
-            closable:true,
+            autoFocusButton: 'ok',
+            closable: true,
             mask: true,
-            maskClosable:true,
-            centered:true,
-            cancelButtonProps:{
-                style:{
-                    display:'none',
+            maskClosable: true,
+            centered: true,
+            cancelButtonProps: {
+                style: {
+                    display: 'none',
                 }
             }
         });
