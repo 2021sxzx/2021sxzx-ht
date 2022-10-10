@@ -17,7 +17,6 @@ export default function PasswordLoginForm() {
     const [account, setAccount] = useState(historyAccount)
     const {setLoginState} = useContext(loginStateContext)
 
-
     const onFinish = (values) => {
         api.Login({
             account: values.account,
