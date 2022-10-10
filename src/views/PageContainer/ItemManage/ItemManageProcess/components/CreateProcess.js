@@ -222,12 +222,14 @@ export default function CreateProcess(props) {
 
     const createItem = () => {
         setIsLoading(true)
+
         let items = [{
             task_code: taskCode,
             rule_id: chosenRules[chosenRules.length - 1].nodeId,
             region_code: chosenRegions[chosenRegions.length - 1].nodeCode,
             region_id: chosenRegions[chosenRegions.length - 1].nodeId
         }]
+
         api.CreateItems({
             user_id: props.userId,
             items: items
@@ -237,11 +239,17 @@ export default function CreateProcess(props) {
             props.setPageType(1)
         }).catch(error => {
             setIsLoading(false)
-            props.showError('绑定事项失败')
+            if (error.response.status === 400 && error.response.data.data) {
+                props.showError(error.response.data.data)
+            } else {
+                props.showError('绑定事项失败')
+            }
+
         })
     }
 
     const handleCreate = () => {
+        // 如果指南未绑定，要求先绑定指南
         if (taskCode === '') {
             Modal.info({
                 title: '未选择指南',
@@ -250,20 +258,24 @@ export default function CreateProcess(props) {
             })
             return
         }
+
+        // 向服务器查询选择的事项规则是否已经被绑定
         api.GetItems({
             rule_id: [chosenRules[chosenRules.length - 1].nodeId],
             region_id: [chosenRegions[chosenRegions.length - 1].nodeId]
         }).then(response => {
             let rules = response.data.data
+
             if (rules.length !== 0) {
+                // 如果所选事项规则下已经存在其他事项
                 Modal.error({
                     title: '已有规则',
-                    content: '该事项规则已经存在，请重新选择！',
+                    content: '该事项规则下已经绑定其他事项指南，请重新选择！',
                     centered: true
                 })
             } else {
-                let str = '确认绑定规则\“' + taskRule + taskRegion + '\”' +
-                    '和指南\“' + taskName + '”吗？'
+                let str = '确认绑定规则 \“' + taskRule + taskRegion + '\” ' +
+                    '和指南 \“' + taskName + '\” 吗？'
                 Modal.confirm({
                     title: '确认绑定',
                     content: str,
@@ -272,9 +284,7 @@ export default function CreateProcess(props) {
                 })
             }
         }).catch(error => {
-            console.log('error')
-            console.log(error)
-            props.showError('判断规则是否已存在失败！')
+            props.showError('检查事项规则是否已存在时发生错误，绑定失败')
         })
     }
 
@@ -391,18 +401,32 @@ export default function CreateProcess(props) {
                 <Button type='default' size='middle' style={{marginRight: 60, width: 100}}
                         onClick={handleCancel}>取消</Button>
                 {
+
                     ruleTags.length > 0 ?
+                        // 如果在在业务规则的中间节点上绑定事项指南，就 disable 绑定按钮
                         <Tooltip title={'请不要在业务规则的中间节点上绑定事项指南'}>
                             <Button type='primary' size='middle' style={{width: 100}}
                                     loading={isLoading} disabled>
                                 绑定
                             </Button>
                         </Tooltip>
-                        :
-                        <Button type='primary' size='middle' style={{width: 100}}
-                                onClick={handleCreate} loading={isLoading}>
-                            绑定
-                        </Button>
+                        : (
+                            taskName === '' || taskCode === '' ?
+                                // 如果没有绑定事项指南，就 disable 绑定按钮
+                                <Tooltip title={'请先绑定事项指南'}>
+                                    <Button type='primary' size='middle' style={{width: 100}}
+                                            loading={isLoading} disabled>
+                                        绑定
+                                    </Button>
+                                </Tooltip>
+                                :
+                                // 正常的绑定按钮
+                                <Button type='primary' size='middle' style={{width: 100}}
+                                        onClick={handleCreate} loading={isLoading}>
+                                    绑定
+                                </Button>
+                        )
+
 
                 }
             </div>
