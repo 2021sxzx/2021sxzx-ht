@@ -1,9 +1,11 @@
-import {Button, Col, Form, Row, Input, message} from "antd";
-import {LockOutlined, UserOutlined} from "@ant-design/icons";
+import {Button, Col, Form, Row, Input, message, Modal} from "antd";
+import {ExclamationCircleOutlined, LockOutlined, UserOutlined} from "@ant-design/icons";
 import React, {useContext, useState} from "react";
 import api from "../../../api/login";
 import UrlJump from "../../../utils/UrlJump";
 import {loginStateContext} from "../../../router/IndexRouter";
+
+const {confirm} = Modal;
 
 /**
  * 账号密码登录
@@ -14,6 +16,7 @@ export default function PasswordLoginForm() {
     const historyAccount = localStorage.getItem('account') ? localStorage.getItem('account') : '';
     const [account, setAccount] = useState(historyAccount)
     const {setLoginState} = useContext(loginStateContext)
+
 
     const onFinish = (values) => {
         api.Login({
@@ -51,6 +54,26 @@ export default function PasswordLoginForm() {
         setAccount(values.account);
     }
 
+    // 忘记密码的对话框
+    const forgetPasswordModal = () => {
+        confirm({
+            title: '如果忘记密码了怎么办？',
+            icon: <ExclamationCircleOutlined/>,
+            content: '如果忘记密码，请先使用手机短信验证码完成登录，然后后进入个人中心修改密码。',
+            okText: '确认',
+            autoFocusButton:'ok',
+            closable:true,
+            mask: true,
+            maskClosable:true,
+            centered:true,
+            cancelButtonProps:{
+                style:{
+                    display:'none',
+                }
+            }
+        });
+    };
+
     return (
         <Form
             name="basic"
@@ -79,8 +102,7 @@ export default function PasswordLoginForm() {
                         message: '请输入手机号码!',
                     },
                     {
-                        // TODO：暂时保留了开发人员账号
-                        pattern: /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}|account$/,
+                        pattern: /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/,
                         message: '请输入正确的手机号码或者开发人员账号'
                     },
                 ]}
@@ -110,8 +132,7 @@ export default function PasswordLoginForm() {
                         message: '密码长度要求不大于 32 位'
                     },
                     {
-                        // TODO：暂时保留开发人员密码
-                        pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%&*_\-+=])[\w\d@#$%&*_\-+=]*|password$/,
+                        pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%&*_\-+=])[\w\d@#$%&*_\-+=]*$/,
                         message: '要求同时使用大小写字母，数字和部分特殊字符(@#$%&*_+-=)，不支持空格'
                     }
                 ]}
@@ -134,13 +155,12 @@ export default function PasswordLoginForm() {
                     span: 8,
                 }}
             >
-                {/*TODO：忘记密码待完成*/}
                 <a
                     className="login-form-forgot"
-                    href=""
                     style={{float: "right"}}
+                    onClick={forgetPasswordModal}
                 >
-                    忘记密码（开发中）
+                    忘记密码
                 </a>
             </Form.Item>
             {/*登录按钮*/}
