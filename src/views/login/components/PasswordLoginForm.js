@@ -1,4 +1,4 @@
-import {Button, Col, Form, Row, Input, message, Modal} from "antd";
+import {Button, Col, Form, Row, Input, message, Modal, notification} from "antd";
 import {ExclamationCircleOutlined, LockOutlined, UserOutlined} from "@ant-design/icons";
 import React, {useContext, useState} from "react";
 import api from "../../../api/login";
@@ -17,7 +17,6 @@ export default function PasswordLoginForm() {
     const [account, setAccount] = useState(historyAccount)
     const {setLoginState} = useContext(loginStateContext)
 
-
     const onFinish = (values) => {
         api.Login({
             account: values.account,
@@ -32,7 +31,14 @@ export default function PasswordLoginForm() {
                 UrlJump.goto('#/home')
             })
         }).catch((error) => {
-            message.error(error.response.data && typeof error.response.data.msg === 'string' ? error.response.data.msg : '登录发生错误，请稍后重试')
+            const args = {
+                message: '登录失败',
+                description:
+                    error.response.data && typeof error.response.data.msg === 'string' ? error.response.data.msg : '登录发生错误，请稍后重试',
+                duration: 5,
+                // placement:'top',
+            }
+            notification.error(args)
         })
     }
 

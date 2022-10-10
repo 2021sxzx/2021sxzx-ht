@@ -35,7 +35,6 @@ function PersonalDescription(props) {
             <Form
                 form={form}
                 initialValues={initialValues}
-
             >
                 <Form.Item
                     label="账号/手机号码"
