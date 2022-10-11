@@ -73,7 +73,11 @@ function ChangePassword(props) {
                             console.log("修改密码成功", res)
                         })
                         .catch(err => {
-                            message.error("修改密码出错:", err.message)
+                            if(err.response && err.response.data && err.response.data.msg){
+                                message.error(err.response.data.msg)
+                            } else {
+                                message.error('修改密码时发生错误，请稍后尝试')
+                            }
                         })
 
                     // 关闭对话框
