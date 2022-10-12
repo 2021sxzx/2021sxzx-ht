@@ -346,5 +346,29 @@ export const getGuideTableData = async (data) => {
             reject(err)
         }
     })
+}
 
+export const getDetailOnExportFormat = async (taskCode) => {
+    try{
+        const detail = {}
+        Object.assign(detail, await getDetailData(taskCode))
+
+        // 将办理材料信息转化为字符串
+        let materialsStr = ''
+        for (let item of detail.materials) {
+            materialsStr += `${item.materialName}（\n${item.materialDetail.replace}）;\n`
+        }
+        detail.materials = materialsStr
+
+        // 将办理窗口信息转化为字符串
+        let windowInfo = ''
+        for (let item of detail.windowInfo) {
+            windowInfo += `${item.windowName}（\n${item.windowDetail}）;\n`
+        }
+        detail.windowInfo = windowInfo
+
+        return detail
+    }catch (e){
+        return e
+    }
 }

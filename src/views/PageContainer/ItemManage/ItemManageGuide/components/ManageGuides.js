@@ -3,7 +3,12 @@ import {Button, Dropdown, Menu, message, Modal, Space, Table} from 'antd'
 import {getYMD} from '../../../../../utils/TimeStamp'
 import api from '../../../../../api/itemGuide'
 import SelectForm from './SelectForm'
-import {detailTitle, getDetailData, getGuideDetail, getGuideTableData} from '../../../../../api/itemGuideAdapter'
+import {
+    detailTitle,
+    getDetailOnExportFormat,
+    getGuideDetail,
+    getGuideTableData
+} from '../../../../../api/itemGuideAdapter'
 import jsonToExcel from "../../../../../utils/JsonToExcel";
 
 const detailColumns = [
@@ -120,27 +125,8 @@ export default function ManageGuide(props) {
                                 </Button>
                             </Menu.Item>
                             <Menu.Item key="2">
-                                <Button type="primary" style={{width: 88}} onClick={async () => {
-                                    const detail = {}
-                                    Object.assign(detail, await getDetailData(record.task_code))
-
-                                    // 将办理材料信息转化为字符串
-                                    let materialsStr = ''
-                                    for (let item of detail.materials) {
-                                        materialsStr += `${item.materialName}（\n${item.materialDetail.replace}）;\n`
-                                    }
-                                    detail.materials = materialsStr
-
-                                    // 将办理窗口信息转化为字符串
-                                    let windowInfo = ''
-                                    for (let item of detail.windowInfo) {
-                                        windowInfo += `${item.windowName}（\n${item.windowDetail}）;\n`
-                                    }
-                                    detail.windowInfo = windowInfo
-                                    // jsonToExcel()
-                                    jsonToExcel(Object.values(detailTitle), [detail], '未命名.csv')
-                                    console.log('detail',detail)
-                                    message.info('正在导出...')
+                                <Button type="primary" style={{width: 88}} onClick={()=>{
+                                    exportGuides([record.task_code])
                                 }}>
                                     导出
                                 </Button>
@@ -170,6 +156,29 @@ export default function ManageGuide(props) {
             )
         }
     ]
+
+    /**
+     * 根据所给的一组事项指南编码来导出事项指南详情 csv 文件
+     * @param {string[]} taskCodeArray 需要导出的事项指南的事项编码数组
+     * @return {Promise<void>}
+     */
+    const exportGuides = async (taskCodeArray) => {
+        try{
+            let allDetails = []
+
+            for(let taskCode of taskCodeArray){
+                // 获取符合导出格式的事项详情数据
+                let detail = await getDetailOnExportFormat(taskCode)
+                allDetails.push(detail)
+            }
+
+            // 导出
+            jsonToExcel(Object.values(detailTitle), allDetails, '未命名.csv')
+            message.info('正在导出...')
+        } catch (err) {
+            message.error('导出错误，请稍后重试')
+        }
+    }
 
     /**
      * 获取并展示事项详情弹窗
@@ -418,7 +427,9 @@ export default function ManageGuide(props) {
                 <SelectForm getSearch={searchItemGuide} reset={resetSearch}/>
                 <Space direction="horizontal" size={12} style={{marginLeft: '75%'}}>
                     <Button type="primary" onClick={handleCreate}>创建指南</Button>
-                    <Button type="primary" disabled={!isBatching}>批量导出</Button>
+                    <Button type="primary" disabled={!isBatching} onClick={()=>{
+                        exportGuides(selectedRowKeys)
+                    }}>批量导出</Button>
                     <Button type="primary" disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>
                 </Space>
                 <Table rowSelection={rowSelection}

@@ -6,9 +6,9 @@
  */
 const jsonToExcel = (titles = ['标题1', '标题2', '标题3'],
                      data = [
-                          {key1: '1', key2: '2', key3: '3'},
-                          {key1: '4', key2: '5', key3: '6'},
-                      ],
+                         {key1: '1', key2: '2', key3: '3'},
+                         {key1: '4', key2: '5', key3: '6'},
+                     ],
                      fileName = '未命名.csv') => {
     // 如果输入参数不是数组，就忽略（错误处理）
     if (!(titles instanceof Array && data instanceof Array)) {
@@ -31,7 +31,7 @@ const jsonToExcel = (titles = ['标题1', '标题2', '标题3'],
     // e.g. csvStr = '"标题1","标题2","标题3"\n"1"\t,"2"\t,"3"\t,\n"4"\t,"5"\t,"6"\t,\n'
     for (let col of data) {
         for (let value of Object.values(col)) {
-            csvStr += `"${value}"\t,`
+            csvStr += `"${value.replace(/["]/g, '\"\"')}"\t,`
         }
         // 一个数据结束后需要换行
         csvStr += '\n'
