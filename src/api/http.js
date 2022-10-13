@@ -38,7 +38,7 @@ instance.interceptors.response.use(
     //如果用户状态突然被管理员切换至未激活
     // if(response.data.loginstate == "loginout")
     // {
-    //     api.clearStorageAndRedirect()
+    //     guideApi.clearStorageAndRedirect()
     //     notification.error({
     //         maxCount:1,
     //         duration:0,

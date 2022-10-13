@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import style from './CreateGuide.module.scss'
 import {Steps, Space, Button, Modal} from 'antd'
 import api from '../../../../../api/rule'
+import guideApi from '../../../../../api/itemGuide'
 import FormArea from './forms/FormArea.js'
 import FormUser from './forms/FormUser.js'
 import FormListPlus from './forms/FormListPlus.js'
@@ -15,7 +16,6 @@ const {Step} = Steps
 export default function CreateGuide(props) {
     // 各个事项指南输入项的值
     const isUpdating = 'guideCode' in props.modifyContent
-    const [imageUpdated, setImageUpdated] = useState(false)
     const [buttonLoading, setButtonLoading] = useState(false)
     const [principle, setPrinciple] =
         useState(isUpdating ? props.modifyContent.principle : '')
@@ -147,52 +147,99 @@ export default function CreateGuide(props) {
             title: '事项基本信息',
             content:
                 <Space className={style.form} direction='vertical' size={15} style={{width: '95%'}}>
-                    <FormUser setPrinciple={setPrinciple} setPrincipleId={setPrincipleId} formName='负责人'
-                              value={principle} showError={props.showError}/>
-                    <FormArea handleChange={handleGuideNameChange} formName='事项名称' value={guideName} required={true}/>
-                    <FormArea handleChange={handleGuideCodeChange} formName='事项代码' value={guideCode} required={true}/>
-                    <FormArea handleChange={handleServiceAgentName} formName='实施主体名称' value={serviceAgentName} required={true}/>
-                    <FormArea handleChange={handleServiceAgentCode} formName='实施主体编码' value={serviceAgentCode} required={true}/>
-                    <FormArea handleChange={handleGuideContentChange} formName='事项内容' value={guideContent}/>
-                    <FormList setData={setGuideAccord} addBtn='添加政策依据' formName='政策依据' value={guideAccord}/>
+                    <FormUser setPrinciple={setPrinciple}
+                              setPrincipleId={setPrincipleId}
+                              formName='负责人'
+                              value={principle}
+                              showError={props.showError}/>
+                    <FormArea handleChange={handleGuideNameChange}
+                              formName='事项名称'
+                              value={guideName}
+                              required={true}/>
+                    <FormArea handleChange={handleGuideCodeChange}
+                              formName='事项代码'
+                              value={guideCode}
+                              required={true}/>
+                    <FormArea handleChange={handleServiceAgentName}
+                              formName='实施主体名称'
+                              value={serviceAgentName}
+                              required={true}/>
+                    <FormArea handleChange={handleServiceAgentCode}
+                              formName='实施主体编码'
+                              value={serviceAgentCode}
+                              required={true}/>
+                    <FormArea handleChange={handleGuideContentChange}
+                              formName='事项内容'
+                              value={guideContent}/>
+                    <FormList setData={setGuideAccord}
+                              addBtn='添加政策依据'
+                              formName='政策依据'
+                              value={guideAccord}/>
                 </Space>
         },
         {
             title: '资格审核信息',
             content:
                 <Space className={style.form} direction='vertical' size={15} style={{width: '95%'}}>
-                    <FormArea handleChange={handleGuideConditionChange} formName='申办所需审核条件' value={guideCondition}/>
-                    <FormListMaterial addBtn='添加申办所需材料' formName='申办所需材料'
-                                      data={guideMaterial} setData={setGuideMaterial}/>
-                    <FormTime formName='审核时限' legalPeriod={legalPeriod} legalType={legalType}
-                              promisedPeriod={promisedPeriod} promisedType={promisedType}
-                              setLegalPeriod={setLegalPeriod} setLegalType={setLegalType}
-                              setPromisedPeriod={setPromisedPeriod} setPromisedType={setPromisedType}/>
+                    <FormArea handleChange={handleGuideConditionChange}
+                              formName='申办所需审核条件'
+                              value={guideCondition}/>
+                    <FormListMaterial addBtn='添加申办所需材料'
+                                      formName='申办所需材料'
+                                      data={guideMaterial}
+                                      setData={setGuideMaterial}/>
+                    <FormTime formName='审核时限'
+                              legalPeriod={legalPeriod}
+                              legalType={legalType}
+                              promisedPeriod={promisedPeriod}
+                              promisedType={promisedType}
+                              setLegalPeriod={setLegalPeriod}
+                              setLegalType={setLegalType}
+                              setPromisedPeriod={setPromisedPeriod}
+                              setPromisedType={setPromisedType}/>
                 </Space>
         },
         {
             title: '业务咨询信息',
             content:
-                <Space className={style.form} direction='vertical' size={15} style={{width: '95%'}}>
-                    <FormArea handleChange={handleGuidePlatformChange} formName='咨询平台' value={guidePlatform}/>
-                    <FormArea handleChange={handleGuidePCAddressChange} formName='网办PC端' value={guidePCAddress}/>
-                    <FormArea handleChange={handleGuidePEAddressChange} formName='网办移动端' value={guidePEAddress}/>
+                <Space className={style.form}
+                       direction='vertical'
+                       size={15}
+                       style={{width: '95%'}}>
+                    <FormArea handleChange={handleGuidePlatformChange}
+                              formName='咨询平台'
+                              value={guidePlatform}/>
+                    <FormArea handleChange={handleGuidePCAddressChange}
+                              formName='网办PC端'
+                              value={guidePCAddress}/>
+                    <FormArea handleChange={handleGuidePEAddressChange}
+                              formName='网办移动端'
+                              value={guidePEAddress}/>
                 </Space>
         },
         {
             title: '业务办理信息',
             content:
                 <Space className={style.form} direction='vertical' size={15} style={{width: '95%'}}>
-                    <FormArea handleChange={handleGuideSelfmadeAddressChange} formName='自助终端'
+                    <FormArea handleChange={handleGuideSelfmadeAddressChange}
+                              formName='自助终端'
                               value={guideSelfmadeAddress}/>
-                    <FormArea handleChange={handleGuideOnlineProcessChange} formName='网上办理流程'
+                    <FormArea handleChange={handleGuideOnlineProcessChange}
+                              formName='网上办理流程'
                               value={guideOnlineProcess}/>
-                    <FormArea handleChange={handleGuideOfflineProcessChange} formName='线下办理流程'
+                    <FormArea handleChange={handleGuideOfflineProcessChange}
+                              formName='线下办理流程'
                               value={guideOfflineProcess}/>
-                    <FormListPlus addBtn='添加办理点' formName='办理点信息'
-                                  data={guideWindows} setData={setGuideWindows} required={true}/>
+                    <FormListPlus addBtn='添加办理点'
+                                  formName='办理点信息'
+                                  data={guideWindows}
+                                  setData={setGuideWindows}
+                                  required={true}/>
                     {/*<FormImage setImageUpdated={setImageUpdated} setData={setGuideQRCode} handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>*/}
-                    <FormCheckbox setData={setGuideServiceType} formName='服务对象类型' value={guideServiceType} required={true}/>
+                    <FormCheckbox setData={setGuideServiceType}
+                                  formName='服务对象类型'
+                                  value={guideServiceType}
+                                  required={true}/>
                 </Space>
         }
     ]
@@ -291,9 +338,9 @@ export default function CreateGuide(props) {
                         break
                     }
                 }
-                
-               
-            } 
+
+
+            }
             // console.log("empty:",empty)
             if (empty) {
                 emptyArea.push('办理点信息')
@@ -458,7 +505,7 @@ export default function CreateGuide(props) {
             data['task_code'] = props.modifyId
             data['new_task_code'] = guideCode
             if (props.modifyId !== guideCode) {
-                api.GetItemGuides({
+                guideApi.GetItemGuides({
                     task_code: guideCode
                 }).then(response => {
                     if (response.data.data.length === 0) {
@@ -478,7 +525,7 @@ export default function CreateGuide(props) {
             }
         } else {
             data['task_code'] = guideCode
-            api.GetItemGuides({
+            guideApi.GetItemGuides({
                 task_code: guideCode
             }).then(response => {
                 if (response.data.data.length === 0) {
@@ -498,7 +545,7 @@ export default function CreateGuide(props) {
 
     // api调用
     const createItemGuide = (data) => {
-        api.CreateItemGuide(data).then(response => {
+        guideApi.CreateItemGuide(data).then(() => {
             props.showSuccess()
             props.setPageType(1)
         }).catch(error => {
@@ -507,7 +554,7 @@ export default function CreateGuide(props) {
     }
 
     const updateItemGuide = (data) => {
-        api.updateItemGuide(data).then(response => {
+        guideApi.updateItemGuide(data).then(() => {
             props.showSuccess()
             props.setPageType(1)
         }).catch(error => {
@@ -534,9 +581,8 @@ export default function CreateGuide(props) {
         tempStatus[1] = 'finish'
         for (let i = 0; i < guideMaterial.length; i++) {
             for (let key in guideMaterial[i]) {
-                if (guideMaterial[i][key] === '') {
-                    if (key === 'page_format' && guideMaterial[i].material_form === '2') continue
-                    else tempStatus[1] = 'wait'
+                if (guideMaterial[i][key] === '' && !(key === 'page_format' && guideMaterial[i].material_form === '2')) {
+                    tempStatus[1] = 'wait'
                 }
             }
         }

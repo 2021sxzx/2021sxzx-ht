@@ -1,9 +1,5 @@
-import api from "./itemGuide";
-import { Tabs } from "antd";
 import React from "react";
-import { getYMD, getTimeStamp } from "../utils/TimeStamp";
-
-const { TabPane } = Tabs;
+import { getYMD } from "../utils/TimeStamp";
 
 export const serviceType = {
     1: "自然人",
@@ -53,7 +49,7 @@ export const detailTitle = {
 export const getDetailOnExportFormat = async (regionData) => {
     try {
         const detailArray = [];
-        // Object.assign(detail, await getDetailData(regionCode));
+        // Object.assign(detail, await getItemGuideData(regionCode));
 
         for(let i = 0; i < regionData.length; i++) {
             let temp = {}
@@ -62,7 +58,7 @@ export const getDetailOnExportFormat = async (regionData) => {
             temp.region_path = regionData[i].region_path
             temp.creator = regionData[i].creator.name
             temp.create_time = getYMD(regionData[i].create_time);
-            
+
             if (temp.region_code === undefined) temp.region_code = "";
             if (temp.region_path === undefined) temp.region_path = "";
             if (temp.creator === undefined) temp.creator = "";

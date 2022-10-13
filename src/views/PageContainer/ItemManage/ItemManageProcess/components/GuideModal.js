@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {Form, Input, Button, Table, Modal} from 'antd'
-import api from '../../../../../api/rule'
+import api from '../../../../../api/itemGuide'
 
 export default function GuideModal(props) {
     const [enabledGuides, setEnabledGuides] = useState([])
@@ -19,10 +19,7 @@ export default function GuideModal(props) {
     }
 
     const splitIds = (id) => {
-        let ids = []
-        let noEmpty = id.replace(/\s*/g, '')
-        ids = noEmpty.split(',')
-        return ids
+        return id.replace(/\s*/g, '').split(',')
     }
 
     const inj_judge = (str) => {
@@ -48,7 +45,7 @@ export default function GuideModal(props) {
             setGuideTableTotal(data.total)
             setEnabledGuides(data.data)
             setTableLoading(false)
-        }).catch(error => {
+        }).catch(() => {
             setTableLoading(false)
             props.showError('选择指南初始化失败')
         })
@@ -72,7 +69,7 @@ export default function GuideModal(props) {
             setGuideTableTotal(data.total)
             setEnabledGuides(data.data)
             setTableLoading(false)
-        }).catch(error => {
+        }).catch(() => {
             setTableLoading(false)
             props.showError('选择指南换页失败')
         })
@@ -127,7 +124,7 @@ export default function GuideModal(props) {
             setGuideTableTotal(data.total)
             setEnabledGuides(data.data)
             setTableLoading(false)
-        }).catch(error => {
+        }).catch(() => {
             setTableLoading(false)
             props.showError('搜索失败')
         })

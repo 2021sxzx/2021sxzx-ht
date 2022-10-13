@@ -42,7 +42,8 @@ export const guideStatus = {
     1: '已绑定',
 }
 
-/** 事项详情的属性标题
+/**
+ * 事项指南详情的属性标题
  * 如果需要使用数组格式去访问可以使用：
  * ```Object.values(detailTitle)[下标]```
  * ```Object.values(detailTitle)``` 等价于 ```['事项名称', '事项代码', '实施主体名称', ...]```
@@ -87,7 +88,7 @@ export const detailTitle = {
 }
 
 /**
- * 获取指定格式的事项详情内容
+ * 获取指定格式的事项指南详情内容
  * @param taskCode {string} 事项编码
  * @return {Promise<{
  *     taskName: string,
@@ -115,7 +116,7 @@ export const detailTitle = {
  *     serviceObjectType: string,
  * }>}
  */
-export const getDetailData = async (taskCode) => {
+export const getItemGuideData = async (taskCode) => {
     return new Promise((resolve, reject) => {
         api.GetItemGuide({
             task_code: taskCode
@@ -216,19 +217,19 @@ export const getDetailData = async (taskCode) => {
 }
 
 /**
- * 根据事项编码获取符合事项详情表格的数据规范的数据
+ * 根据事项编码获取符合事项指南详情表格的数据规范的数据
  * @param {string} taskCode 事项编码
  * @return {Promise<[{
  *     detailType: string,
  *     detailInfo: (string|JSX.Element),
  * }]>} 规范的事项详情数据
  */
-export const getGuideDetail = async (taskCode) => {
+export const getItemGuideOnDetailFormat = async (taskCode) => {
     return new Promise(async (resolve, reject) => {
         try {
             // 获取事项详情内容
             const detailData = {}
-            Object.assign(detailData, await getDetailData(taskCode))
+            Object.assign(detailData, await getItemGuideData(taskCode))
 
             // 将 detailData 中的申办材料数组 materials 变成我们想要展示的格式。
             let materials = <></>
@@ -317,14 +318,14 @@ export const getGuideDetail = async (taskCode) => {
 }
 
 /**
- *
+ * 获取符合事项指南表格展示规范的数据
  * @param data
  * @return {Promise<{
  *     total: number,
  *     guides: *[],
  * }>}
  */
-export const getGuideTableData = async (data) => {
+export const getItemGuideOnTableFormat = async (data) => {
     return new Promise(async (resolve, reject) => {
         try {
             const response = await api.GetItemGuides(data)
@@ -348,10 +349,33 @@ export const getGuideTableData = async (data) => {
     })
 }
 
-export const getDetailOnExportFormat = async (taskCode) => {
+/**
+ * 获取符合事项指南导出规范的数据
+ * @param taskCode 事项编码
+ * @return {Promise<{
+ *     taskName: string,
+ *     taskCode: string,
+ *     serviceAgentName: string,
+ *     serviceAgentCode: string,
+ *     applyContent: string,
+ *     legalBasis: string,
+ *     conditions: string,
+ *     materials: string,
+ *     timeLimit: string,
+ *     consultingPlatform: string,
+ *     PCTerminal: string,
+ *     mobileTerminal: string,
+ *     selfServiceTerminal: string,
+ *     onlineProcessingProcess: string,
+ *     offlineProcessingProcess: string,
+ *     windowInfo: string,
+ *     serviceObjectType: string,
+ * }>}
+ */
+export const getItemGuideOnExportFormat = async (taskCode) => {
     try{
         const detail = {}
-        Object.assign(detail, await getDetailData(taskCode))
+        Object.assign(detail, await getItemGuideData(taskCode))
 
         // 将办理材料信息转化为字符串
         let materialsStr = ''

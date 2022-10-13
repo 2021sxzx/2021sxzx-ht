@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {Dropdown, Space, Menu, Tabs, Button, Table, Modal} from 'antd'
 import {getYMD, getYMDHMS} from "../../../../../utils/TimeStamp"
-import api from '../../../../../api/rule'
+import api from '../../../../../api/item'
 import SelectForm from './SelectForm'
 
 const {TabPane} = Tabs
@@ -607,22 +607,17 @@ export default function ManageProcess(props) {
     }
 
     useEffect(() => {
-        for (let key in props.regionRoot) {
-            for (let key in props.ruleRoot) {
-                for (let key in props.canOperate) {
-                    getItemstatusScheme()
-                    break
-                }
-                break
-            }
-            break
+        if (Object.keys(props.regionRoot).length
+            && Object.keys(props.ruleRoot).length
+            && Object.keys(props.canOperate).length) {
+            getItemstatusScheme()
         }
     }, [props.regionRoot, props.ruleRoot, props.canOperate])
 
     useEffect(() => {
-        // 若是跳转过来进行解绑的，处理绑定数据
-        for (let key in props.bindedData) {
-            for (let key in statusScheme) {
+        if (Object.keys(statusScheme).length) {
+            // 若是跳转过来进行解绑的，处理绑定数据
+            if (Object.keys(props.bindedData).length) {
                 let data = {}
                 if ('rule_id' in props.bindedData) {
                     data['rule_id'] = props.bindedData.rule_id
@@ -634,12 +629,9 @@ export default function ManageProcess(props) {
                 searchItems(data)
                 // 只设置一次
                 props.setBindedData({})
-                break
             }
-            return
-        }
-        if (props.jumpCode && props.jumpCode !== '') {
-            for (let key in statusScheme) {
+
+            if (props.jumpCode && props.jumpCode !== '') {
                 let data = {
                     'task_code': [props.jumpCode]
                 }
@@ -647,15 +639,11 @@ export default function ManageProcess(props) {
                 searchItems(data)
                 props.setJumpCode('')
                 setUnableCreate(false)
-                return
-            }
-        } else {
-            for (let key in statusScheme) {
+            } else {
                 setCurrent(0)
                 setUnableCreate(false)
                 setOriginData({})
                 resetSearch()
-                break
             }
         }
     }, [statusScheme])

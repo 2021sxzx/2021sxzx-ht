@@ -5,9 +5,9 @@ import api from '../../../../../api/itemGuide'
 import SelectForm from './SelectForm'
 import {
     detailTitle,
-    getDetailOnExportFormat,
-    getGuideDetail,
-    getGuideTableData
+    getItemGuideOnExportFormat,
+    getItemGuideOnDetailFormat,
+    getItemGuideOnTableFormat
 } from '../../../../../api/itemGuideAdapter'
 import jsonToExcel from "../../../../../utils/JsonToExcel";
 
@@ -34,7 +34,6 @@ export default function ManageGuide(props) {
     const [guideDetail, setGuideDetail] = useState([])
     const [isDetailShown, setIsDetailShown] = useState(false)
     // 是否正在删除，以及删除队列
-    const [isDeleting, setIsDeleting] = useState(false)
     const [deletingIds, setDeletingIds] = useState([])
     // 用于获取批量处理的事项规则id
     const [selectedRowKeys, setSelectedRowKeys] = useState([])
@@ -126,6 +125,7 @@ export default function ManageGuide(props) {
                             </Menu.Item>
                             <Menu.Item key="2">
                                 <Button type="primary" style={{width: 88}} onClick={()=>{
+                                    message.error('hi')
                                     exportGuides([record.task_code])
                                 }}>
                                     导出
@@ -165,10 +165,12 @@ export default function ManageGuide(props) {
     const exportGuides = async (taskCodeArray) => {
         try{
             let allDetails = []
+            console.dir('taskCodeArray',taskCodeArray)
 
             for(let taskCode of taskCodeArray){
                 // 获取符合导出格式的事项详情数据
-                let detail = await getDetailOnExportFormat(taskCode)
+                let detail = await getItemGuideOnExportFormat(taskCode)
+                console.log('d',detail)
                 allDetails.push(detail)
             }
 
@@ -190,7 +192,7 @@ export default function ManageGuide(props) {
     const showDetail = async (taskCode) => {
         try {
             // 根据事项编码获取事项详情
-            const detail = await getGuideDetail(taskCode)
+            const detail = await getItemGuideOnDetailFormat(taskCode)
             // 记录事项详情内容
             setGuideDetail(detail)
             // 展示事项详情弹窗
@@ -212,7 +214,7 @@ export default function ManageGuide(props) {
         data['page_num'] = current
         data['page_size'] = currPageSize
         // 获取所有事项指南
-        getGuideTableData(data).then(res => {
+        getItemGuideOnTableFormat(data).then(res => {
             setTotalSize(res.total)
             setTableData(res.guides)
             setTableLoading(false)
@@ -266,7 +268,7 @@ export default function ManageGuide(props) {
             task_code: deletingIds
         }
         // 根据事项规则id删除事项规则，删除完之后重新载入事项规则
-        api.DeleteItemGuides(data).then(response => {
+        api.DeleteItemGuides(data).then(() => {
             getItemGuides()
             props.showSuccess()
         }).catch(() => {
@@ -285,7 +287,7 @@ export default function ManageGuide(props) {
         totalData['page_num'] = 0
         totalData['page_size'] = currPageSize
 
-        getGuideTableData(totalData).then(res => {
+        getItemGuideOnTableFormat(totalData).then(res => {
             setCurrent(0)
             setTotalSize(res.total)
             setTableData(res.guides)
@@ -360,7 +362,7 @@ export default function ManageGuide(props) {
         setOriginData({})
         setCurrent(0)
 
-        getGuideTableData({
+        getItemGuideOnTableFormat({
             page_num: 0,
             page_size: currPageSize
         }).then(res => {

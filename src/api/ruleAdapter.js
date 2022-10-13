@@ -1,9 +1,5 @@
-import api from "./itemGuide";
-import { Tabs } from "antd";
 import React from "react";
-import { getYMD, getTimeStamp } from "../utils/TimeStamp";
-
-const { TabPane } = Tabs;
+import { getYMD } from "../utils/TimeStamp";
 
 export const serviceType = {
     1: "自然人",
@@ -53,7 +49,7 @@ export const detailTitle = {
 export const getDetailOnExportFormat = async (ruleData) => {
     try {
         const detailArray = [];
-        // Object.assign(detail, await getDetailData(regionCode));
+        // Object.assign(detail, await getItemGuideData(regionCode));
 
         for (let i = 0; i < ruleData.length; i++) {
             let temp = {};
