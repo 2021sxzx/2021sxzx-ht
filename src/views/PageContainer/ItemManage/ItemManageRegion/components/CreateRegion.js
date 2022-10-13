@@ -54,7 +54,7 @@ export default function CreateRegion(props){
         let len = path.length
         let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
         api.GetRegions({
-            parentId: path[len - 2].nodeId
+            parentId: [path[len - 2].nodeId]
         }).then(response=>{
             let data = response.data.data
             let tempPath = ''

@@ -31,6 +31,7 @@ const jsonToExcel = (titles = ['标题1', '标题2', '标题3'],
     // e.g. csvStr = '"标题1","标题2","标题3"\n"1"\t,"2"\t,"3"\t,\n"4"\t,"5"\t,"6"\t,\n'
     for (let col of data) {
         for (let value of Object.values(col)) {
+            // console.log(col)
             csvStr += `"${value.replace(/["]/g, '\"\"')}"\t,`
         }
         // 一个数据结束后需要换行

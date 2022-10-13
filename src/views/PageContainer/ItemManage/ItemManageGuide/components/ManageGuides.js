@@ -173,6 +173,8 @@ export default function ManageGuide(props) {
             }
 
             // 导出
+            console.log("Hello")
+            console.log(allDetails)
             jsonToExcel(Object.values(detailTitle), allDetails, '未命名.csv')
             message.info('正在导出...')
         } catch (err) {
