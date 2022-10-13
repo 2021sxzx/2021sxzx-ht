@@ -125,7 +125,6 @@ export default function ManageGuide(props) {
                             </Menu.Item>
                             <Menu.Item key="2">
                                 <Button type="primary" style={{width: 88}} onClick={()=>{
-                                    message.error('hi')
                                     exportGuides([record.task_code])
                                 }}>
                                     导出
@@ -170,13 +169,10 @@ export default function ManageGuide(props) {
             for(let taskCode of taskCodeArray){
                 // 获取符合导出格式的事项详情数据
                 let detail = await getItemGuideOnExportFormat(taskCode)
-                console.log('d',detail)
                 allDetails.push(detail)
             }
 
             // 导出
-            console.log("Hello")
-            console.log(allDetails)
             jsonToExcel(Object.values(detailTitle), allDetails, '未命名.csv')
             message.info('正在导出...')
         } catch (err) {

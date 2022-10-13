@@ -380,7 +380,7 @@ export const getItemGuideOnExportFormat = async (taskCode) => {
         // 将办理材料信息转化为字符串
         let materialsStr = ''
         for (let item of detail.materials) {
-            materialsStr += `${item.materialName}（\n${item.materialDetail.replace}）;\n`
+            materialsStr += `${item.materialName}（\n${item.materialDetail}）;\n`
         }
         detail.materials = materialsStr
 
