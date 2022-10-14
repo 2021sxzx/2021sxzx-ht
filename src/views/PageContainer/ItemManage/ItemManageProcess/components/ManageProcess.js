@@ -1,13 +1,14 @@
 import React, {useEffect, useState} from 'react'
-import {Dropdown, Space, Menu, Button, Table, Modal} from 'antd'
+import {Dropdown, Space, Menu, Button, Table, Modal, message} from 'antd'
 import {getYMD} from "../../../../../utils/TimeStamp"
 import api from '../../../../../api/item'
 import SelectForm from './SelectForm'
 import {
-    getItemGuideWithAuditOpinionsOnDetailFormat,
-    getItemsDataOnTableFormat,
+    getItemGuideWithAuditOpinionsOnDetailFormat, getItemGuideWithAuditOpinionsOnExportFormat,
+    getItemsDataOnTableFormat, itemDetailTitle,
     itemStatusScheme
 } from "../../../../../api/itemAdapter";
+import jsonToExcel from "../../../../../utils/JsonToExcel";
 
 export default function ManageProcess(props) {
     // 页面的基础数据
@@ -200,6 +201,29 @@ export default function ManageProcess(props) {
     }
 
     /**
+     * 根据所给的一组事项 _id 来导出带有审核意见的事项指南详情 csv 文件
+     * @param {string[]} itemIdArray 需要导出的事项指南的事项 _id 数组
+     * @return {Promise<void>}
+     */
+    const exportGuides = async (itemIdArray) => {
+        try{
+            let allDetails = []
+
+            for(let itemId of itemIdArray){
+                // 获取符合导出格式的事项详情数据
+                let detail = await getItemGuideWithAuditOpinionsOnExportFormat(itemId)
+                allDetails.push(detail)
+            }
+
+            // 导出
+            jsonToExcel(Object.values(itemDetailTitle), allDetails, '未命名.csv')
+            message.info('正在导出...')
+        } catch (err) {
+            message.error('导出错误，请稍后重试')
+        }
+    }
+
+    /**
      * 根据 data 中的条件来获取对应的表格数据，并刷新表格状态
      * @param data {*} （TODO: 重构时没找到接口文档，注释待补充）
      */
@@ -388,14 +412,15 @@ export default function ManageProcess(props) {
             setStatusScheme(scheme)
         } catch (err) {
             props.showError('初始化状态表失败！', err.message)
+            console.dir(err)
         }
     }
 
-    useEffect(() => {
+    useEffect(async () => {
         if (Object.keys(props.regionRoot).length
             && Object.keys(props.ruleRoot).length
             && Object.keys(props.canOperate).length) {
-            getItemStatusScheme()
+            await getItemStatusScheme()
         }
     }, [props.regionRoot, props.ruleRoot, props.canOperate])
 
@@ -466,7 +491,11 @@ export default function ManageProcess(props) {
                             statusType={statusType}/>
                 <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
                     <Button type='primary' disabled={unableCreate} onClick={handleCreate}>绑定事项</Button>
-                    <Button type='primary' disabled={!isBatching}>批量导出</Button>
+                    <Button type='primary' disabled={!isBatching} onClick={()=>{
+                        console.log('export!')
+                        console.dir(selectedRowKeys)
+                        exportGuides(selectedRowKeys)
+                    }}>批量导出</Button>
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量解绑</Button>
                 </Space>
                 <Table rowSelection={rowSelection}

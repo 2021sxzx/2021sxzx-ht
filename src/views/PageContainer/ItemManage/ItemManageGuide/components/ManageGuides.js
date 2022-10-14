@@ -164,7 +164,6 @@ export default function ManageGuide(props) {
     const exportGuides = async (taskCodeArray) => {
         try{
             let allDetails = []
-            console.dir('taskCodeArray',taskCodeArray)
 
             for(let taskCode of taskCodeArray){
                 // 获取符合导出格式的事项详情数据

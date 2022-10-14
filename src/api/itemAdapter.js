@@ -1,6 +1,7 @@
 import {
     detailTitle,
     standardItemGuideToDetailFormat,
+    standardItemGuideToExportFormat,
     standardizingItemGuideData,
 } from "./itemGuideAdapter";
 import api from "./item";
@@ -27,14 +28,13 @@ import {getYMDHMS} from "../utils/TimeStamp";
  *     conditions: string,
  *     onlineProcessingProcess: string,
  *     auditOpinions: string,
- *     itemPath: string,
  * }}
  */
 const detailTitleDecorator = () => {
     const itemDetailTitle = {}
     Object.assign(itemDetailTitle, detailTitle)
     itemDetailTitle.auditOpinions = "审核意见"
-    itemDetailTitle.itemPath = "事项规则"
+    // itemDetailTitle.itemPath = "事项规则"
     return itemDetailTitle
 }
 
@@ -61,7 +61,6 @@ const detailTitleDecorator = () => {
  *     conditions: string,
  *     onlineProcessingProcess: string,
  *     auditOpinions: string,
- *     itemPath: string
  * }}
  */
 export const itemDetailTitle = detailTitleDecorator()
@@ -210,8 +209,8 @@ export const standardizingItemGuideWithAuditOpinions = (data) => {
 
     // 处理审核意见
     const auditOpinions = []
-    if (data.audit_advises && data.audit_advises instanceof Array){
-        for(let opinion of data.audit_advises) {
+    if (data.audit_advises && data.audit_advises instanceof Array) {
+        for (let opinion of data.audit_advises) {
             auditOpinions.push({
                 userName: opinion.user_name,
                 userId: opinion.user_id,
@@ -257,15 +256,118 @@ export const standardItemGuideWithAuditOpinionsToDetailFormat = (detailData) => 
 
     // 审核意见处理
     let auditOpinions = ''
-    for(let opinion of detailData.auditOpinions){
+    for (let opinion of detailData.auditOpinions) {
         auditOpinions += (getYMDHMS(opinion.time) + '：'
             + opinion.userName + '：' + opinion.advise + '\n')
     }
 
     tableData.push({
-        'detailType': '审核意见',
-        'detailInfo': auditOpinions
+        'detailType': itemDetailTitle.auditOpinions,
+        'detailInfo': auditOpinions,
     })
 
     return tableData
+}
+
+/**
+ * 将标准化的带有审核意见的事项详情数据转化为符合导出格式的数据
+ * 使用装饰模式在原有指南详情上增加了审核意见字段的处理
+ * @param detailData {{
+ *     taskName: string,
+ *     taskCode: string,
+ *     serviceAgentName: string,
+ *     serviceAgentCode: string,
+ *     applyContent: string,
+ *     legalBasis: string,
+ *     conditions: string,
+ *     materials: [{
+ *         materialName: string,
+ *         materialDetail: string,
+ *     }],
+ *     timeLimit: string,
+ *     consultingPlatform: string,
+ *     PCTerminal: string,
+ *     mobileTerminal: string,
+ *     selfServiceTerminal: string,
+ *     onlineProcessingProcess: string,
+ *     offlineProcessingProcess: string,
+ *     windowInfo: [{
+ *         windowName: string,
+ *         windowDetail: string,
+ *     }],
+ *     serviceObjectType: string,
+ *     auditOpinions: [{
+ *         userName: string,
+ *         userId: string,
+ *         advise: string,
+ *         time: number,
+ *     }],
+ * }}
+ * @return {{
+ *     taskName: string,
+ *     taskCode: string,
+ *     serviceAgentName: string,
+ *     serviceAgentCode: string,
+ *     applyContent: string,
+ *     legalBasis: string,
+ *     conditions: string,
+ *     materials: string,
+ *     timeLimit: string,
+ *     consultingPlatform: string,
+ *     PCTerminal: string,
+ *     mobileTerminal: string,
+ *     selfServiceTerminal: string,
+ *     onlineProcessingProcess: string,
+ *     offlineProcessingProcess: string,
+ *     windowInfo: string,
+ *     serviceObjectType: string,
+ *     auditOpinions: string,
+ * }}
+ */
+export const standardItemGuideWithAuditOpinionsToExportFormat = (detailData) => {
+
+    let exportData = standardItemGuideToExportFormat(detailData)
+
+    // 审核意见处理
+    let auditOpinions = ''
+    for (let opinion of detailData.auditOpinions) {
+        auditOpinions += (getYMDHMS(opinion.time) + '：'
+            + opinion.userName + '：' + opinion.advise + '\n')
+    }
+
+    exportData.auditOpinions = auditOpinions
+
+    return exportData
+}
+
+/**
+ * 获取符合事项指南导出规范的数据
+ * @param itemId {string} 事项在数据库的主码 _id
+ * @return {Promise<{
+ *     taskName: string,
+ *     taskCode: string,
+ *     serviceAgentName: string,
+ *     serviceAgentCode: string,
+ *     applyContent: string,
+ *     legalBasis: string,
+ *     conditions: string,
+ *     materials: string,
+ *     timeLimit: string,
+ *     consultingPlatform: string,
+ *     PCTerminal: string,
+ *     mobileTerminal: string,
+ *     selfServiceTerminal: string,
+ *     onlineProcessingProcess: string,
+ *     offlineProcessingProcess: string,
+ *     windowInfo: string,
+ *     serviceObjectType: string,
+ *     auditOpinions: string,
+ * }>}
+ */
+export const getItemGuideWithAuditOpinionsOnExportFormat = async (itemId) => {
+    try {
+        return standardItemGuideWithAuditOpinionsToExportFormat(await getItemGuideWithAuditOpinions(itemId))
+    } catch (e) {
+        return e
+    }
 }

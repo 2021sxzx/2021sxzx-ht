@@ -418,7 +418,7 @@ export const getItemGuideOnTableFormat = async (data) => {
 
 /**
  * 获取符合事项指南导出规范的数据
- * @param taskCode 事项编码
+ * @param taskCode {string} 事项编码
  * @return {Promise<{
  *     taskName: string,
  *     taskCode: string,
@@ -441,25 +441,76 @@ export const getItemGuideOnTableFormat = async (data) => {
  */
 export const getItemGuideOnExportFormat = async (taskCode) => {
     try {
-        const detail = {}
-        Object.assign(detail, await getItemGuideData(taskCode))
-
-        // 将办理材料信息转化为字符串
-        let materialsStr = ''
-        for (let item of detail.materials) {
-            materialsStr += `${item.materialName}（\n${item.materialDetail}）;\n`
-        }
-        detail.materials = materialsStr
-
-        // 将办理窗口信息转化为字符串
-        let windowInfo = ''
-        for (let item of detail.windowInfo) {
-            windowInfo += `${item.windowName}（\n${item.windowDetail}）;\n`
-        }
-        detail.windowInfo = windowInfo
-
-        return detail
+        return standardItemGuideToExportFormat(await getItemGuideData(taskCode))
     } catch (e) {
         return e
     }
+}
+
+/**
+ * 将标准的事项指南数据格式转化为导出需要的数据格式。
+ * @param detailData {{
+ *     taskName: string,
+ *     taskCode: string,
+ *     serviceAgentName: string,
+ *     serviceAgentCode: string,
+ *     applyContent: string,
+ *     legalBasis: string,
+ *     conditions: string,
+ *     materials: [{
+ *         materialName: string,
+ *         materialDetail: string,
+ *     }],
+ *     timeLimit: string,
+ *     consultingPlatform: string,
+ *     PCTerminal: string,
+ *     mobileTerminal: string,
+ *     selfServiceTerminal: string,
+ *     onlineProcessingProcess: string,
+ *     offlineProcessingProcess: string,
+ *     windowInfo: [{
+ *         windowName: string,
+ *         windowDetail: string,
+ *     }],
+ *     serviceObjectType: string,
+ * }}
+ * @return {{
+ *     taskName: string,
+ *     taskCode: string,
+ *     serviceAgentName: string,
+ *     serviceAgentCode: string,
+ *     applyContent: string,
+ *     legalBasis: string,
+ *     conditions: string,
+ *     materials: string,
+ *     timeLimit: string,
+ *     consultingPlatform: string,
+ *     PCTerminal: string,
+ *     mobileTerminal: string,
+ *     selfServiceTerminal: string,
+ *     onlineProcessingProcess: string,
+ *     offlineProcessingProcess: string,
+ *     windowInfo: string,
+ *     serviceObjectType: string,
+ * }}
+ */
+export const standardItemGuideToExportFormat = (detailData) => {
+    const exportData = {}
+    Object.assign(exportData, detailData)
+
+    // 将办理材料信息转化为字符串
+    let materialsStr = ''
+    for (let item of exportData.materials) {
+        materialsStr += `${item.materialName}（\n${item.materialDetail}）;\n`
+    }
+    exportData.materials = materialsStr
+
+    // 将办理窗口信息转化为字符串
+    let windowInfo = ''
+    for (let item of exportData.windowInfo) {
+        windowInfo += `${item.windowName}（\n${item.windowDetail}）;\n`
+    }
+    exportData.windowInfo = windowInfo
+
+    return exportData
 }
