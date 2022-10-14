@@ -1,10 +1,13 @@
 import React, {useEffect, useState} from 'react'
-import {Dropdown, Space, Menu, Tabs, Button, Table, Modal} from 'antd'
-import {getYMD, getYMDHMS} from "../../../../../utils/TimeStamp"
+import {Dropdown, Space, Menu, Button, Table, Modal} from 'antd'
+import {getYMD} from "../../../../../utils/TimeStamp"
 import api from '../../../../../api/item'
 import SelectForm from './SelectForm'
-
-const {TabPane} = Tabs
+import {
+    getItemGuideWithAuditOpinionsOnDetailFormat,
+    getItemsDataOnTableFormat,
+    itemStatusScheme
+} from "../../../../../api/itemAdapter";
 
 export default function ManageProcess(props) {
     // 页面的基础数据
@@ -37,38 +40,6 @@ export default function ManageProcess(props) {
     const [currPageSize, setCurrPageSize] = useState(10)
     const [totalSize, setTotalSize] = useState(0)
 
-    const serviceType = {
-        '1': '自然人',
-        '2': '企业法人',
-        '3': '事业法人',
-        '4': '社会组织法人',
-        '5': '非法人企业',
-        '6': '行政机关',
-        '9': '其他组织'
-    }
-
-    const necessityType = {
-        '1': '必要',
-        '2': '非必要',
-        '3': '容缺后补'
-    }
-
-    const typesType = {
-        '1': '证件证书证明',
-        '2': '申请表格文书',
-        '3': '其他'
-    }
-
-    const formType = {
-        '1': '纸质',
-        '2': '电子化',
-        '3': '纸质/电子化'
-    }
-
-    const requiredType = {
-        '0': '否',
-        '1': '是'
-    }
 
     const detailColumns = [
         {
@@ -228,29 +199,29 @@ export default function ManageProcess(props) {
         props.setPageType(2)
     }
 
+    /**
+     * 根据 data 中的条件来获取对应的表格数据，并刷新表格状态
+     * @param data {*} （TODO: 重构时没找到接口文档，注释待补充）
+     */
+    const getAndRefreshTableData = (data) => {
+        getItemsDataOnTableFormat(data).then(res => {
+            setTotalSize(res.total)
+            setTableData(res.items)
+            setTableLoading(false)
+        }).catch(error => {
+            console.dir('err')
+            console.dir(error)
+            props.showError('获取事项失败！', error.message)
+            setTableLoading(false)
+        })
+    }
+
     const getItems = () => {
         setTableLoading(true)
         let data = originData
         data['page_num'] = current
         data['page_size'] = currPageSize
-        // 获取所有事项规则
-        api.GetItems(data).then(response => {
-            let items = response.data.data.data
-            setTotalSize(response.data.data.total)
-            for (let i = 0; i < items.length; i++) {
-                // 规则路径生成、状态码转状态名
-                items[i]['creator_name'] = items[i].creator.name
-                items[i]['department_name'] = items[i].creator.department_name
-                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
-                items[i]['status'] = statusScheme[items[i].item_status].cn_name
-            }
-            console.log(items)
-            setTableLoading(false)
-            setTableData(items)
-        }).catch(error => {
-            props.showError('获取事项失败！', error.message)
-            setTableLoading(false)
-        })
+        getAndRefreshTableData(data)
     }
 
     const deleteSingleItem = (id) => {
@@ -315,6 +286,7 @@ export default function ManageProcess(props) {
             item_id: item_id,
             next_status: next_status
         }]
+
         api.ChangeItemStatus({
             user_id: props.userId,
             items: items
@@ -330,28 +302,14 @@ export default function ManageProcess(props) {
 
     const searchItems = (data) => {
         setTableLoading(true)
-        // 搜索事项
+        setCurrent(0)
         setOriginData(data)
+
+        // 搜索事项
         let totalData = data
         totalData['page_num'] = 0
         totalData['page_size'] = currPageSize
-        api.GetItems(totalData).then(response => {
-            let items = response.data.data.data
-            setCurrent(0)
-            for (let i = 0; i < items.length; i++) {
-                // 规则路径生成、状态码转状态名
-                items[i]['creator_name'] = items[i].creator.name
-                items[i]['department_name'] = items[i].creator.department_name
-                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
-                items[i]['status'] = statusScheme[items[i].item_status].cn_name
-            }
-            setTotalSize(response.data.data.total)
-            setTableData(items)
-            setTableLoading(false)
-        }).catch(error => {
-            props.showError('搜索事项失败！', error.message)
-            setTableLoading(false)
-        })
+        getAndRefreshTableData(totalData)
     }
 
     const resetSearch = () => {
@@ -361,26 +319,11 @@ export default function ManageProcess(props) {
             'item_status': fullType
         })
         setTableLoading(true)
-        // 获取所有事项规则
-        api.GetItems({
+
+        getAndRefreshTableData({
             page_num: 0,
             page_size: currPageSize,
             item_status: fullType
-        }).then(response => {
-            let items = response.data.data.data
-            setTotalSize(response.data.data.total)
-            for (let i = 0; i < items.length; i++) {
-                // 规则路径生成、状态码转状态名
-                items[i]['creator_name'] = items[i].creator.name
-                items[i]['department_name'] = items[i].creator.department_name
-                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
-                items[i]['status'] = statusScheme[items[i].item_status].cn_name
-            }
-            setTableLoading(false)
-            setTableData(items)
-        }).catch(error => {
-            props.showError('重置失败！', error.message)
-            setTableLoading(false)
         })
     }
 
@@ -394,177 +337,19 @@ export default function ManageProcess(props) {
         let totalData = originData
         totalData['page_num'] = page - 1
         totalData['page_size'] = pageSize
-        api.GetItems(totalData).then(response => {
-            let items = response.data.data.data
-            setTotalSize(response.data.data.total)
-            for (let i = 0; i < items.length; i++) {
-                // 规则路径生成、状态码转状态名
-                items[i]['creator_name'] = items[i].creator.name
-                items[i]['department_name'] = items[i].creator.department_name
-                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
-                items[i]['status'] = statusScheme[items[i].item_status].cn_name
-            }
-            setTableData(items)
-            setTableLoading(false)
-        }).catch(error => {
-            props.showError('换页时获取事项信息失败！', error.message)
-            setTableLoading(false)
-        })
+        getAndRefreshTableData(totalData)
     }
 
-    const getGuideDetail = (_id) => {
-        setTableLoading(true)
-        api.GetItemGuideAndAuditAdvises({
-            item_id: _id
-        }).then(response => {
-            // 将数据处理为有序格式
-            let data = response.data.data
-            let detailTable = []
-            detailTable.push({
-                'detailType': '事项名称',
-                'detailInfo': data.task_name
-            })
-            detailTable.push({
-                'detailType': '事项代码',
-                'detailInfo': data.task_code
-            })
-            detailTable.push({
-                'detailType': '实施主体名称',
-                'detailInfo': data.service_agent_name
-            })
-            detailTable.push({
-                'detailType': '实施主体编码',
-                'detailInfo': data.service_agent_code
-            })
-            detailTable.push({
-                'detailType': '事项内容',
-                'detailInfo': data.apply_content
-            })
-            // 政策依据数组处理
-            let tempLegalBasis = ''
-            if (data.legal_basis) {
-                for (let i = 0; i < data.legal_basis.length; i++) {
-                    tempLegalBasis += ((i + 1) + '.' + data.legal_basis[i].name + '\n')
-                }
-            }
-            detailTable.push({
-                'detailType': '政策依据',
-                'detailInfo': tempLegalBasis
-            })
-
-            detailTable.push({
-                'detailType': '申办所需审核条件',
-                'detailInfo': data.conditions
-            })
-            // 申办材料数组处理
-            detailTable.push({
-                'detailType': '申办所需材料',
-                'detailInfo': (!data.submit_documents || data.submit_documents.length === 0) ? '' :
-                    <Tabs defaultActiveKey='0' tabPosition='left' style={{whiteSpace: 'pre-wrap'}}>
-                        {
-                            data.submit_documents.map((item, index) => (
-                                'materials_name' in item &&
-                                <TabPane tab={item.materials_name} key={index}>
-                                    {
-                                        ('原件数量： ' + item.origin) +
-                                        ('\n复印件数量： ' + item.copy) +
-                                        (item.material_form ? ('\n材料形式： ' + formType[item.material_form]) : '') +
-                                        (item.page_format ? ('\n纸质材料规格： ' + item.page_format) : '') +
-                                        (item.material_necessity ? ('\n是否必要： ' + necessityType[item.material_necessity]) : '') +
-                                        (item.material_type ? ('\n材料类型： ' + typesType[item.material_type]) : '') +
-                                        (item.submissionrequired ? ('\n是否免提交： ' + requiredType[item.submissionrequired]) : '')
-                                    }
-                                </TabPane>
-                            ))
-                        }
-                    </Tabs>
-            })
-            // 审核时限格式处理
-            let tempTimeLimit = ''
-            if (data.legal_period_type) {
-                tempTimeLimit += ('法定办结时限：' + data.legal_period + '个' +
-                    (data.legal_period_type === '1' ? '工作日' : '自然日'))
-            }
-            if (data.promised_period_type) {
-                if (tempTimeLimit !== '') tempTimeLimit += '\n'
-                tempTimeLimit += ('承诺办结时限：' + data.promised_period + '个' +
-                    (data.promised_period_type === '1' ? '工作日' : '自然日'))
-            }
-            detailTable.push({
-                'detailType': '审核时限',
-                'detailInfo': tempTimeLimit
-            })
-            detailTable.push({
-                'detailType': '咨询平台',
-                'detailInfo': data.zxpt
-            })
-            detailTable.push({
-                'detailType': '网办PC端',
-                'detailInfo': data.wsyy
-            })
-            detailTable.push({
-                'detailType': '网办移动端',
-                'detailInfo': data.mobile_applt_website
-            })
-            detailTable.push({
-                'detailType': '自助终端',
-                'detailInfo': data.zzzd
-            })
-            detailTable.push({
-                'detailType': '网上办理流程',
-                'detailInfo': data.wsbllc
-            })
-            detailTable.push({
-                'detailType': '线下办理流程',
-                'detailInfo': data.ckbllc
-            })
-            detailTable.push({
-                'detailType': '办理点信息',
-                'detailInfo': (!data.windows || data.windows.length === 0) ? '' :
-                    <Tabs defaultActiveKey='1' tabPosition='left' style={{whiteSpace: 'pre-wrap'}}>
-                        {
-                            data.windows.map((item, index) => (
-                                'name' in data.windows[index] &&
-                                <TabPane tab={data.windows[index].name} key={index}>
-                                    {
-                                        '办理地点： ' + data.windows[index].address +
-                                        '\n\n咨询及投诉电话： ' + data.windows[index].phone +
-                                        '\n\n办公时间： ' + data.windows[index].office_hour
-                                    }
-                                </TabPane>
-                            ))
-                        }
-                    </Tabs>
-            })
-            // 服务对象类型数组处理
-            let type = data.service_object_type.split(',')
-            let tempServiceType = ''
-            for (let i = 0; i < type.length; i++) {
-                if (tempServiceType !== '') tempServiceType += '、'
-                tempServiceType += serviceType[type[i]]
-            }
-            detailTable.push({
-                'detailType': '服务对象类型',
-                'detailInfo': tempServiceType
-            })
-            // 审核意见处理
-            let tempAdvises = ''
-            if ('audit_advises' in data) {
-                for (let i = data.audit_advises.length - 1; i >= 0; i--) {
-                    tempAdvises += (getYMDHMS(data['audit_advises'][i].time) + '：' + data['audit_advises'][i].user_name + '：' + data['audit_advises'][i].advise + '\n')
-                }
-            }
-            detailTable.push({
-                'detailType': '审核意见',
-                'detailInfo': tempAdvises
-            })
+    const getGuideDetail = async (_id) => {
+        try {
+            setTableLoading(true)
+            const detailTable = await getItemGuideWithAuditOpinionsOnDetailFormat(_id)
             setTableLoading(false)
             setGuideDetail(detailTable)
-        }).catch(error => {
-            console.log(error)
+        } catch (err) {
             setTableLoading(false)
             props.showError('获取事项详情失败！')
-        })
+        }
     }
 
     const endShowing = () => {
@@ -578,12 +363,11 @@ export default function ManageProcess(props) {
         }
     }, [guideDetail])
 
-    const getItemstatusScheme = () => {
-        api.GetItemStatusScheme({}).then(response => {
-            // 获取状态表
-            let scheme = response.data.data
-            let type = []
-            let fullType = []
+    const getItemStatusScheme = async () => {
+        try {
+            const scheme = await itemStatusScheme
+            const type = []
+            const fullType = []
             for (let key in scheme) {
                 // 除了审核不通过之外都是可获取事项
                 if (scheme[key].eng_name !== 'Failure') {
@@ -598,19 +382,20 @@ export default function ManageProcess(props) {
                     }
                 }
             }
+
             setStatusType(type)
             setFullType(fullType)
             setStatusScheme(scheme)
-        }).catch(error => {
-            props.showError('初始化状态表失败！', error.message)
-        })
+        } catch (err) {
+            props.showError('初始化状态表失败！', err.message)
+        }
     }
 
     useEffect(() => {
         if (Object.keys(props.regionRoot).length
             && Object.keys(props.ruleRoot).length
             && Object.keys(props.canOperate).length) {
-            getItemstatusScheme()
+            getItemStatusScheme()
         }
     }, [props.regionRoot, props.ruleRoot, props.canOperate])
 
@@ -668,6 +453,7 @@ export default function ManageProcess(props) {
                                whiteSpace: 'pre-wrap',
                                wordWrap: 'break-word',
                                wordBreak: 'break-all',
+                               minWidth: '700px',
                            }}/>
                 </Modal>
                 <SelectForm getSearch={searchItems}

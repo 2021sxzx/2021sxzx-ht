@@ -3,6 +3,7 @@ import {Dropdown, Space, Menu, message, Button, Tabs, Table, Modal} from 'antd'
 import {getYMD, getYMDHMS} from "../../../../utils/TimeStamp"
 import api from '../../../../api/rule'
 import SelectForm from './components/SelectForm'
+import {getItemsDataOnTableFormat, itemStatusScheme} from "../../../../api/itemAdapter";
 
 const {TabPane} = Tabs
 
@@ -225,29 +226,29 @@ export default function ItemManageUnusual(props) {
         }
     ]
 
+    /**
+     * 根据 data 中的条件来获取对应的表格数据，并刷新表格状态
+     * @param data {*} （TODO: 重构时没找到接口文档，注释待补充）
+     */
+    const getAndRefreshTableData = (data) => {
+        getItemsDataOnTableFormat(data).then(res => {
+            setTotalSize(res.total)
+            setTableData(res.items)
+            setTableLoading(false)
+        }).catch(error => {
+            props.showError('获取事项失败！', error.message)
+            setTableLoading(false)
+        })
+    }
+
     const getItems = () => {
         setTableLoading(true)
         let data = originData
         data['page_num'] = current
         data['page_size'] = currPageSize
         data['item_status'] = [parseInt(statusId.Failure)]
-        // 获取所有事项规则
-        api.GetItems(data).then(response => {
-            let items = response.data.data.data
-            setTotalSize(response.data.data.total)
-            for (let i = 0; i < items.length; i++) {
-                // 规则路径生成、状态码转状态名
-                items[i]['creator_name'] = items[i].creator.name
-                items[i]['department_name'] = items[i].creator.department_name
-                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
-                items[i]['status'] = statusScheme[items[i].item_status].cn_name
-            }
-            setTableLoading(false)
-            setTableData(items)
-        }).catch(error => {
-            showError('获取事项失败！')
-            setTableLoading(false)
-        })
+
+        getAndRefreshTableData(data)
     }
 
     const deleteSingleItem = (id) => {
@@ -293,7 +294,7 @@ export default function ItemManageUnusual(props) {
             items: deletingIds
         }
         // 根据事项规则id删除事项规则，删除完之后重新载入事项规则
-        api.DeleteItems(data).then(response => {
+        api.DeleteItems(data).then(() => {
             getItems()
             showSuccess()
         }).catch(error => {
@@ -313,7 +314,7 @@ export default function ItemManageUnusual(props) {
         api.ChangeItemStatus({
             user_id: props.userId,
             items: items
-        }).then(response => {
+        }).then(() => {
             // 更新完毕后重新获取事项
             getItems()
         }).catch(error => {
@@ -356,25 +357,10 @@ export default function ItemManageUnusual(props) {
         setOriginData({})
         setTableLoading(true)
         // 获取所有事项规则
-        api.GetItems({
+        getAndRefreshTableData({
             page_num: 0,
             page_size: currPageSize,
             item_status: [parseInt(statusId.Failure)]
-        }).then(response => {
-            let items = response.data.data.data
-            setTotalSize(response.data.data.total)
-            for (let i = 0; i < items.length; i++) {
-                // 规则路径生成、状态码转状态名
-                items[i]['creator_name'] = items[i].creator.name
-                items[i]['department_name'] = items[i].creator.department_name
-                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
-                items[i]['status'] = statusScheme[items[i].item_status].cn_name
-            }
-            setTableLoading(false)
-            setTableData(items)
-        }).catch(error => {
-            showError('重置失败！')
-            setTableLoading(false)
         })
     }
 
@@ -389,39 +375,23 @@ export default function ItemManageUnusual(props) {
         totalData['page_num'] = page - 1
         totalData['page_size'] = pageSize
         totalData['item_status'] = [parseInt(statusId.Failure)]
-        api.GetItems(totalData).then(response => {
-            let items = response.data.data.data
-            setTotalSize(response.data.data.total)
-            for (let i = 0; i < items.length; i++) {
-                // 规则路径生成、状态码转状态名
-                items[i]['creator_name'] = items[i].creator.name
-                items[i]['department_name'] = items[i].creator.department_name
-                items[i]['item_path'] = items[i]['rule_path'] + items[i]['region_path']
-                items[i]['status'] = statusScheme[items[i].item_status].cn_name
-            }
-            setTableData(items)
-            setTableLoading(false)
-            console.log(response.data.data)
-        }).catch(error => {
-            showError('换页时获取事项信息失败！')
-            setTableLoading(false)
-        })
+
+        getAndRefreshTableData(totalData)
     }
 
-    const getItemstatusScheme = () => {
-        api.GetItemStatusScheme({}).then(response => {
-            // 获取状态表
-            let scheme = response.data.data
-            let wordToName = {}
+    const getItemStatusScheme = async () => {
+        try {
+            const scheme = await itemStatusScheme
+            const wordToName = {}
             for (let key in scheme) {
                 // 状态码对状态名和相关按钮的映射
                 wordToName[scheme[key].eng_name] = key
             }
             setStatusScheme(scheme)
             setStatusId(wordToName)
-        }).catch(error => {
+        } catch (err) {
             showError('初始化状态表失败！')
-        })
+        }
     }
 
     const getGuideDetail = (_id) => {
@@ -574,20 +544,19 @@ export default function ItemManageUnusual(props) {
     }
 
     useEffect(function () {
-        for (let key in guideDetail) {
+        if (Object.keys(guideDetail).length > 0) {
             setIsDetailShown(true)
-            break
         }
     }, [guideDetail])
 
     useEffect(() => {
-        getItemstatusScheme()
+        getItemStatusScheme()
     }, [])
 
     useEffect(() => {
         // 若是跳转过来进行解绑的，处理绑定数据
-        for (let key in props.bindedData) {
-            for (let key in statusId) {
+        if (Object.keys(statusId).length > 0) {
+            if (Object.keys(props.bindedData).length > 0) {
                 let data = {}
                 if ('rule_id' in props.bindedData) {
                     data['rule_id'] = props.bindedData.rule_id
@@ -599,15 +568,11 @@ export default function ItemManageUnusual(props) {
                 searchItems(data)
                 // 只设置一次
                 props.setBindedData({})
-                break
+            } else {
+                setCurrent(0)
+                setOriginData({})
+                getItems()
             }
-            return
-        }
-        for (let key in statusId) {
-            setCurrent(0)
-            setOriginData({})
-            getItems()
-            break
         }
     }, [statusId])
 

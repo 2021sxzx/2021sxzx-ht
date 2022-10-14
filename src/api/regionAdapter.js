@@ -1,44 +1,6 @@
 import React from "react";
 import { getYMD } from "../utils/TimeStamp";
 
-export const serviceType = {
-    1: "自然人",
-    2: "企业法人",
-    3: "事业法人",
-    4: "社会组织法人",
-    5: "非法人企业",
-    6: "行政机关",
-    9: "其他组织",
-};
-
-export const necessityType = {
-    1: "必要",
-    2: "非必要",
-    3: "容缺后补",
-};
-
-export const typesType = {
-    1: "证件证书证明",
-    2: "申请表格文书",
-    3: "其他",
-};
-
-export const formType = {
-    1: "纸质",
-    2: "电子化",
-    3: "纸质/电子化",
-};
-
-export const requiredType = {
-    0: "否",
-    1: "是",
-};
-
-export const guideStatus = {
-    0: "未绑定",
-    1: "已绑定",
-};
-
 export const detailTitle = {
     region_code: "区划编码", // 0（索引，下标）
     region_path: "区划路径", // 1
