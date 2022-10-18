@@ -3,7 +3,6 @@ import SearchBar from './components/SearchBar.js'
 import Charts from './components/Charts.js'
 import api from "../../../api/comment";
 export default function CommentManageReport() {
-	const [type,setType]=useState('')
 	const [chartData,setChartData]=useState({})
 	useEffect(async ()=>{
 		let res=await api.getCommentParams(
@@ -15,8 +14,8 @@ export default function CommentManageReport() {
 	},[])
 	return (
 		<div>
-			<SearchBar setChartData={setChartData}></SearchBar>
-			<Charts chartData={chartData}></Charts>
+			<SearchBar setChartData={setChartData}/>
+			<Charts chartData={chartData}/>
 		</div>
 	)
 }

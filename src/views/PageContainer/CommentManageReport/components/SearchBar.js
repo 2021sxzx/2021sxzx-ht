@@ -40,7 +40,7 @@ export default function SearchBar(props) {
 		<div>
 			<Search
 				addonBefore={selectBefore}
-				placeholder='input search text'
+				placeholder='请输入搜索内容'
 				onSearch={onSearch}
 				enterButton
 				style={{ width: 600, height: 100, marginLeft: 20, marginTop: 20 }}
