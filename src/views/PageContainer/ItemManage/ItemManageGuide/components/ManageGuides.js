@@ -124,7 +124,7 @@ export default function ManageGuide(props) {
                                 </Button>
                             </Menu.Item>
                             <Menu.Item key="2">
-                                <Button type="primary" style={{width: 88}} onClick={()=>{
+                                <Button type="primary" style={{width: 88}} onClick={() => {
                                     exportGuides([record.task_code])
                                 }}>
                                     导出
@@ -162,10 +162,10 @@ export default function ManageGuide(props) {
      * @return {Promise<void>}
      */
     const exportGuides = async (taskCodeArray) => {
-        try{
+        try {
             let allDetails = []
 
-            for(let taskCode of taskCodeArray){
+            for (let taskCode of taskCodeArray) {
                 // 获取符合导出格式的事项详情数据
                 let detail = await getItemGuideOnExportFormat(taskCode)
                 allDetails.push(detail)
@@ -214,7 +214,7 @@ export default function ManageGuide(props) {
             setTableData(res.guides)
             setTableLoading(false)
         }).catch(err => {
-            props.showError('获取指南失败！')
+            props.showError('获取指南失败:' + err.message)
             setTableLoading(false)
         })
     }
@@ -288,7 +288,7 @@ export default function ManageGuide(props) {
             setTableData(res.guides)
             setTableLoading(false)
         }).catch(err => {
-            props.showError('搜索指南失败！')
+            props.showError('搜索指南失败:' + err.message)
             setTableLoading(false)
         })
     }
@@ -365,7 +365,7 @@ export default function ManageGuide(props) {
             setTableData(res.guides)
             setTableLoading(false)
         }).catch(error => {
-            props.showError('刷新表格数据失败，请检查网络并稍后尝试。')
+            props.showError('刷新表格数据失败，请检查网络并稍后尝试。' + error.message)
             setTableLoading(false)
         })
     }
@@ -426,7 +426,7 @@ export default function ManageGuide(props) {
                 <SelectForm getSearch={searchItemGuide} reset={resetSearch}/>
                 <Space direction="horizontal" size={12} style={{marginLeft: '75%'}}>
                     <Button type="primary" onClick={handleCreate}>创建指南</Button>
-                    <Button type="primary" disabled={!isBatching} onClick={()=>{
+                    <Button type="primary" disabled={!isBatching} onClick={() => {
                         exportGuides(selectedRowKeys)
                     }}>批量导出</Button>
                     <Button type="primary" disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>
@@ -435,7 +435,11 @@ export default function ManageGuide(props) {
                        columns={tableColumns}
                        dataSource={tableData}
                        rowKey="task_code"
-                       pagination={{onChange: changePage, current: current + 1, total: totalSize}}
+                       pagination={{
+                           onChange: changePage,
+                           current: current + 1,
+                           total: totalSize
+                       }}
                        loading={tableLoading}/>
             </Space>
         </>

@@ -206,10 +206,10 @@ export default function ManageProcess(props) {
      * @return {Promise<void>}
      */
     const exportGuides = async (itemIdArray) => {
-        try{
+        try {
             let allDetails = []
 
-            for(let itemId of itemIdArray){
+            for (let itemId of itemIdArray) {
                 // 获取符合导出格式的事项详情数据
                 let detail = await getItemGuideWithAuditOpinionsOnExportFormat(itemId)
                 allDetails.push(detail)
@@ -491,7 +491,7 @@ export default function ManageProcess(props) {
                             statusType={statusType}/>
                 <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
                     <Button type='primary' disabled={unableCreate} onClick={handleCreate}>绑定事项</Button>
-                    <Button type='primary' disabled={!isBatching} onClick={()=>{
+                    <Button type='primary' disabled={!isBatching} onClick={() => {
                         console.log('export!')
                         console.dir(selectedRowKeys)
                         exportGuides(selectedRowKeys)
@@ -501,7 +501,11 @@ export default function ManageProcess(props) {
                 <Table rowSelection={rowSelection}
                        columns={tableColumns}
                        dataSource={tableData} rowKey='_id'
-                       pagination={{onChange: changePage, current: current + 1, total: totalSize}}
+                       pagination={{
+                           onChange: changePage,
+                           current: current + 1,
+                           total: totalSize
+                       }}
                        loading={tableLoading}/>
             </Space>
         </>
