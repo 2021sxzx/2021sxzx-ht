@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import style from './CreateGuide.module.scss'
-import {Steps, Space, Button, Modal} from 'antd'
+import {Steps, Space, Button, Modal, message} from 'antd'
 import api from '../../../../../api/rule'
 import guideApi from '../../../../../api/itemGuide'
 import FormArea from './forms/FormArea.js'
@@ -91,7 +91,7 @@ export default function CreateGuide(props) {
         }).then(response => {
             setPrinciple(response.data.data.user_name)
         }).catch(error => {
-            props.showError('获取用户信息时失败！')
+            props.showError('获取用户信息失败，请稍后重试。' + error.message)
         })
     }, [principleId])
 
@@ -333,7 +333,7 @@ export default function CreateGuide(props) {
             let empty = false
             for (let i = 0; i < guideWindows.length; i++) {
                 for (let key in guideWindows[i]) {
-                    if (guideWindows[i][key]=== '') {
+                    if (guideWindows[i][key] === '') {
                         empty = true
                         break
                     }
@@ -344,7 +344,7 @@ export default function CreateGuide(props) {
             // console.log("empty:",empty)
             if (empty) {
                 emptyArea.push('办理点信息')
-                }
+            }
         }
         // if (guideOnlineProcess === '') emptyArea.push('网上办理流程')
         // if (guideOfflineProcess === '') emptyArea.push('线下办理流程')
@@ -423,7 +423,7 @@ export default function CreateGuide(props) {
         let data = {}
         setButtonLoading(true)
         if (inj_judge(guideName) || inj_judge(guidePCAddress) || inj_judge(guideCondition)
-            || inj_judge(guideContent) || inj_judge(serviceAgentName) || inj_judge(serviceAgentCode)  || inj_judge(guidePEAddress) || inj_judge(guidePlatform)
+            || inj_judge(guideContent) || inj_judge(serviceAgentName) || inj_judge(serviceAgentCode) || inj_judge(guidePEAddress) || inj_judge(guidePlatform)
             || inj_judge(guideSelfmadeAddress) || inj_judge(guideOfflineProcess) || inj_judge(guideOnlineProcess)) {
             showInlegal()
             return
@@ -519,6 +519,7 @@ export default function CreateGuide(props) {
                         setButtonLoading(false)
                     }
                 }).catch(error => {
+                    message.error('获取事项指南详情信息失败，请稍后重试。' + error.message)
                 })
             } else {
                 updateItemGuide(data)
@@ -539,6 +540,7 @@ export default function CreateGuide(props) {
                     setButtonLoading(false)
                 }
             }).catch(error => {
+                message.error('获取事项指南详情信息失败，请稍后重试。' + error.message)
             })
         }
     }
@@ -549,7 +551,7 @@ export default function CreateGuide(props) {
             props.showSuccess()
             props.setPageType(1)
         }).catch(error => {
-            props.showError('创建指南失败！')
+            props.showError('创建指南失败，请稍后尝试。' + error.message)
         })
     }
 
@@ -558,7 +560,7 @@ export default function CreateGuide(props) {
             props.showSuccess()
             props.setPageType(1)
         }).catch(error => {
-            props.showError('编辑指南失败！')
+            props.showError('编辑指南失败，请稍后尝试。' + error.message)
         })
     }
 
@@ -566,7 +568,7 @@ export default function CreateGuide(props) {
     useEffect(function () {
         let tempStatus = ['', '', '', '']
         // 事项基本信息
-        if (guideName !== '' && guideCode !== '' && serviceAgentName !== ''  && serviceAgentCode !== '' ) {
+        if (guideName !== '' && guideCode !== '' && serviceAgentName !== '' && serviceAgentCode !== '') {
             tempStatus[0] = 'finish'
             for (let i = 0; i < guideAccord.length; i++) {
                 if (guideAccord[i] === '') {
@@ -615,7 +617,7 @@ export default function CreateGuide(props) {
         //     tempStatus[2] = 'wait'
         // }
         // 业务办理信息
-        if ( guideWindows.length !== 0 && guideServiceType.length !== 0) {
+        if (guideWindows && guideServiceType && guideWindows.length !== 0 && guideServiceType.length !== 0) {
             tempStatus[3] = 'finish'
             for (let i = 0; i < guideWindows.length; i++) {
                 for (let key in guideWindows[i]) {
