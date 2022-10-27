@@ -33,7 +33,7 @@ export default function TopHeader() {
                 <Image
                     className={style.logo}
                     height={'100%'}
-                    src={'http://8.134.73.52/public/imgs/ic_logo.png'}
+                    src={'public/imgs/ic_logo.png'}
                     preview={false}
                     onClick={jumpToHome}
                 />

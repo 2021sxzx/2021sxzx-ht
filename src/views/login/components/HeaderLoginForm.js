@@ -14,7 +14,7 @@ export default function HeaderLoginForm() {
                     <img
                         width={300}
                         // src="https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg"
-                        src={'http://8.134.73.52/public/imgs/ic_logo.png'}
+                        src={'public/imgs/ic_logo.png'}
                         alt=""
                         style={{
                             // 让 LOGO 视觉上居中
