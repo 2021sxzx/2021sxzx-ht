@@ -4,6 +4,7 @@ import React, {useContext, useState} from "react";
 import api from "../../../api/login";
 import UrlJump from "../../../utils/UrlJump";
 import {loginStateContext} from "../../../router/IndexRouter";
+import DownloadUserManual from "./DownloadUserManual";
 
 const {confirm} = Modal;
 
@@ -168,6 +169,7 @@ export default function PasswordLoginForm() {
                 >
                     忘记密码
                 </a>
+                <DownloadUserManual/>
             </Form.Item>
             {/*登录按钮*/}
             <Form.Item>

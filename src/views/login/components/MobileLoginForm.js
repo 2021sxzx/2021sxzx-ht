@@ -1,13 +1,14 @@
 import {Button, Col, Form, Input, message, Row} from "antd";
 import {MobileOutlined, UserOutlined} from "@ant-design/icons";
-import React,{useContext, useEffect, useState}from "react";
+import React, {useContext, useState} from "react";
 import CountDownButton from "./CountDownButton";
 import {loginStateContext} from "../../../router/IndexRouter";
 import api from "../../../api/login";
 import axios from "axios";
-import md5 from 'js-md5'
 import v_account from '../../../account/verification_account.json'
 import UrlJump from "../../../utils/UrlJump";
+import DownloadUserManual from "./DownloadUserManual";
+
 /**
  * 手机验证码登录
  * @returns {JSX.Element}
@@ -17,16 +18,16 @@ export default function MobileLoginForm() {
     const historyAccount = localStorage.getItem('account') ? localStorage.getItem('account') : '';
     const [account, setAccount] = useState(historyAccount)
     const {setLoginState} = useContext(loginStateContext)
-    const [phoneNumber,setPhoneNumber] = useState('')
-    const [verificationCode,setVerificationCode] = useState("")
+    // const [phoneNumber,setPhoneNumber] = useState('')
+    const [verificationCode, setVerificationCode] = useState("")
     // useEffect(()=>{
     //     getVC()
     // },[])
-    const getVC = ()=>{
+    const getVC = () => {
         let verificationCode = ""
-        for(let i=0;i<8;i++)
-            verificationCode += Math.floor(Math.random()*10)
-        localStorage.setItem("VerificationCode",verificationCode)
+        for (let i = 0; i < 8; i++)
+            verificationCode += Math.floor(Math.random() * 10)
+        localStorage.setItem("VerificationCode", verificationCode)
         // let now = new Date()
         // let month = now.getMonth()+1<10?"0"+(now.getMonth()+1).toString():(now.getMonth()+1).toString()
         // let day = now.getDate()<10?"0"+now.getDate().toString():now.getDate().toString()
@@ -37,25 +38,25 @@ export default function MobileLoginForm() {
         // let pwd = v_account.userid+'00000000'+v_account.pwd+TimeStamp
         //明文模式
         axios.post("http://10.147.25.152:8082/sms/v2/std/send_single",
-        {
-            userid:v_account.userid,//字符串
-            pwd:v_account.pwd,
-            mobile:phoneNumber,//字符串
-            content:"验证码："+verificationCode+',请妥善保管。'
-        }).then((res)=>{
-            console.log("发送短信成功",res)
-        }).catch((err)=>{
-            console.log("发送失败",err)
+            {
+                userid: v_account.userid,//字符串
+                pwd: v_account.pwd,
+                mobile: account,//字符串
+                content: "验证码：" + verificationCode + ',请妥善保管。'
+            }).then((res) => {
+            console.log("发送短信成功", res)
+        }).catch((err) => {
+            console.log("发送失败", err)
         })
         setVerificationCode(verificationCode)
     }
 
     const onFinish = (value) => {
-        if(localStorage.getItem("VerificationCode")==value.verificationCode)
+        if (localStorage.getItem("VerificationCode") === value.verificationCode) {
             api.Login({
-                account:value.phoneNumber,
+                account: value.phoneNumber,
                 //1 donate 验证码登录
-                state:1
+                state: 1
             }).then(async response => {
                 // 保存用户信息：账号密码用户id
                 saveUserInfo(response, value)
@@ -65,13 +66,14 @@ export default function MobileLoginForm() {
                     UrlJump.goto('#/home')
                 })
             }).catch((error) => {
-                if(error.response.data!=undefined)
+                if (error.response.data !== undefined)
                     message.error(typeof error.response.data === 'string' ? error.response.data : '登录发生错误，请稍后重试')
                 else
                     message.error("登录错误")
             })
-        else
+        } else {
             message.error("验证码输入错误,请重新输入")
+        }
     };
     const saveUserInfo = (response, values) => {
         // 保存账号
@@ -80,12 +82,13 @@ export default function MobileLoginForm() {
         localStorage.setItem('roleID', response.data.data.role_id);
         setAccount(values.account);
     }
-    const onFinishFailed = () => {
-    };
 
-    const handlePhoneNumber = (e)=>{
+    const onFinishFailed = () => {
+    }
+
+    const handlePhoneNumber = (e) => {
         // console.log(e.target.value)
-        setPhoneNumber(e.target.value)
+        setAccount(e.target.value)
     }
 
     return (
@@ -154,6 +157,10 @@ export default function MobileLoginForm() {
                         <CountDownButton verificationCode={verificationCode} getVC={getVC}/>
                     </Col>
                 </Row>
+            </Form.Item>
+
+            <Form.Item>
+                <DownloadUserManual/>
             </Form.Item>
 
             {/*登录按钮*/}

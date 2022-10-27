@@ -14,7 +14,7 @@ export default function indexRouter() {
     const [loginState, setLoginState] = useState('loading')
 
     // 当前是否是登录页面。不使用 useState 的原因是没有根据 isLoginPage 的变化重新渲染组件的必要
-    const isLoginPage = useRef(false)
+    const shouldCheckLoginState = useRef(false)
 
     // 15 分钟自动检查一次登录状态。这个自动检查时间要比自动登出的时间要长，因为每次检查都会刷新一次服务器的登录过期时间。
     const interval = 15 * 60 * 1000 // TODO(zzj): 不能动态维护登出时间。如果后端自动登出的时间改了，前端也要记得改。
@@ -24,12 +24,13 @@ export default function indexRouter() {
 
     // 根据 url 的变化来统一更新 isLoginPage
     useEffect(() => {
-        isLoginPage.current = (location.hash === '#/login')
-    }, [isLoginPage, location])
+        // 只有登录页面不需要进行身份验证
+        shouldCheckLoginState.current = (location.hash === '#/login')
+    }, [shouldCheckLoginState, location.hash])
 
     // 每次访问（不同的） url 的时候，如果不是在登录页面，就主动验证一次登录状态，并在服务器更新登录过期时间
     useEffect(() => {
-        if (isLoginPage.current === false) {
+        if (shouldCheckLoginState.current === false) {
             checkLoginState()
         }
     }, [location.hash])
@@ -73,7 +74,7 @@ export default function indexRouter() {
 
             case 'logout':// 登出状态
                 // 如果当前页面不是登录页面，就显示超时登出的对话框
-                if (isLoginPage.current === false) {
+                if (shouldCheckLoginState.current === false) {
                     confirm({
                         title: '您已登出，如需要请重新登录',
                         icon: <ExclamationCircleOutlined/>,
