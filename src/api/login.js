@@ -35,7 +35,7 @@ const api = {
             method: "get",
             url: '/v1/isLogin',
         });
-        return res.data.data.isLogin
+        return res.data.data ? res.data.data.isLogin : false
     },
 
     /**
