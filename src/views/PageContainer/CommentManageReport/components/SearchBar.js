@@ -44,6 +44,8 @@ export default function SearchBar(props) {
 				onSearch={onSearch}
 				enterButton
 				style={{ width: 600, height: 100, marginLeft: 20, marginTop: 20 }}
+				maxLength={64}
+				showCount
 			/>
 		</div>
 	)

@@ -169,6 +169,8 @@ function AdvancedSearch() {
                                 }}
                                 placeholder="在所选字段上进行搜索"
                                 allowClear
+                                maxLength={128}
+                                showCount
                             />
                         </Form.Item>
                     </Input.Group>
@@ -182,9 +184,9 @@ function AdvancedSearch() {
                     {/* 新增导出  style={{marginLeft:"816px"}}*/}
                     <Button type="primary" htmlType="submit" style={{marginLeft:"10px"}} onClick = {Output}>
                         导出
-                    </Button> 
+                    </Button>
             </Form>
-            
+
             {/* <button class="btn_output" onClick={console.log("I'm clicked")}></button> */}
         </div>
     )

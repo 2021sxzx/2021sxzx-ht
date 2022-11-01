@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, {useState} from 'react'
 import style from './CreateAudit.module.scss'
 import {Table, Button, Space, Input, Modal} from 'antd'
 import api from '../../../../api/rule'
-const { TextArea } = Input
+
+const {TextArea} = Input
 
 export default function CreateAudit(props) {
     const [comment, setComment] = useState('')
@@ -23,75 +24,71 @@ export default function CreateAudit(props) {
         }
     ]
 
-    const handleCommentChange = (e)=>{
+    const handleCommentChange = (e) => {
         setComment(e.target.value)
     }
 
-    const handleCancel = ()=>{
+    const handleCancel = () => {
         props.setAuditingData({})
         props.setAuditingId('')
         props.setPageType(1)
     }
 
-    const handleRejection = ()=>{
-        if (comment === ''){
+    const handleRejection = () => {
+        if (comment === '') {
             Modal.warning({
                 title: '未输入意见',
                 content: '请输入审核意见！',
                 centered: true
             })
-            return
-        }
-        else if (inj_judge(comment)){
+
+        } else if (inj_judge(comment)) {
             Modal.warning({
                 centered: true,
                 title: '非法输入',
                 content: '输入信息中有非法输入内容，请检查输入！'
             })
-        }
-        else{
+        } else {
             Modal.confirm({
                 title: '确认审核',
                 content: '    您的审核意见为“' + comment + '”，\n' + '    确定' + (isRecalling ? '不同意撤回' : '不通过审核') + '吗？',
                 centered: true,
                 style: {whiteSpace: 'pre-wrap'},
-                onOk: function(){
+                onOk: function () {
                     changeItemStatus(props.statusScheme[props.auditingStatus].next_status.reject, 'reject')
                 }
             })
         }
     }
 
-    const handleAuditing = ()=>{
-        if (comment === ''){
+    const handleAuditing = () => {
+        if (comment === '') {
             Modal.warning({
                 title: '未输入意见',
                 content: '请输入审核意见！',
                 centered: true
             })
-            return
-        }
-        else if (inj_judge(comment)){
+
+        } else if (inj_judge(comment)) {
             Modal.warning({
                 centered: true,
                 title: '非法输入',
                 content: '输入信息中有非法输入内容，请检查输入！'
             })
-        }
-        else{
+        } else {
             Modal.confirm({
                 title: '确认审核',
                 content: '    您的审核意见为“' + comment + '”，\n' + '    确定' + (isRecalling ? '同意撤回' : '通过审核') + '吗？',
                 centered: true,
                 style: {whiteSpace: 'pre-wrap'},
-                onOk: function(){
+                onOk: function () {
                     changeItemStatus(props.statusScheme[props.auditingStatus].next_status.next, 'pass')
                 }
             })
         }
     }
 
-    const changeItemStatus = (next_status, choice)=>{
+    const changeItemStatus = (next_status, choice) => {
         // 审核通过
         api.ChangeItemStatus({
             user_id: props.userId,
@@ -99,34 +96,34 @@ export default function CreateAudit(props) {
                 item_id: props.auditingId,
                 next_status: next_status
             }]
-        }).then(response=>{
+        }).then(() => {
             addAuditAdvise(choice)
-        }).catch(error=>{
-            props.showError('变更状态失败！')
+        }).catch(error => {
+            props.showError('变更状态失败:' + error.message)
         })
     }
 
-    const inj_judge = (str)=>{
+    const inj_judge = (str) => {
         let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
             'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
-        for (let i = 0; i < inj_str.length; i++){
-            if (str.indexOf(inj_str[i]) >= 0){
+        for (let i = 0; i < inj_str.length; i++) {
+            if (str.indexOf(inj_str[i]) >= 0) {
                 return true
             }
         }
         return false
     }
 
-    const addAuditAdvise = (choice)=>{
+    const addAuditAdvise = (choice) => {
         api.AddAuditAdvise({
             item_id: props.auditingId,
             user_id: props.userId,
             advise: ('（' + props.statusScheme[props.auditingStatus].cn_name + (choice === 'pass' ? '）（' : '）（不') + (isRecalling ? '同意撤回）' : '通过审核）') + comment)
-        }).then(response=>{
+        }).then(() => {
             props.showSuccess()
             props.setPageType(1)
-        }).catch(error=>{
-            props.showError('上传审核意见失败！')
+        }).catch(error => {
+            props.showError('上传审核意见失败:' + error.message)
             props.setPageType(1)
         })
     }
@@ -134,24 +131,30 @@ export default function CreateAudit(props) {
     return (
         <Space size={20} direction='vertical' className={style.mainSpace}>
             <Table className={style.table}
-                columns={detailColumns} dataSource={props.auditingData} rowKey='detailType'
-                pagination={{pageSize: 20, hideOnSinglePage: true}} />
+                   columns={detailColumns} dataSource={props.auditingData} rowKey='detailType'
+                   pagination={{pageSize: 20, hideOnSinglePage: true}}/>
             <div>
                 <div className={style.commentTitle}>审核意见：</div>
-                <TextArea autoSize={{minRows: 3}} value={comment} onChange={handleCommentChange} placeholder='请输入审核意见' /> 
-            </div>            
+                <TextArea autoSize={{minRows: 3}}
+                          value={comment}
+                          onChange={handleCommentChange}
+                          placeholder='请输入审核意见'
+                          maxLength={1024}
+                          showCount
+                />
+            </div>
             <Space size={50} direction='horizontal'>
                 <Button onClick={handleCancel}>
-                    取消    
+                    取消
                 </Button>
                 <Button style={{backgroundColor: 'red', color: 'white'}} onClick={handleRejection}>
-                    {isRecalling ? '不同意撤回' : '不通过审核'}  
+                    {isRecalling ? '不同意撤回' : '不通过审核'}
                 </Button>
                 <Button type='primary' onClick={handleAuditing}>
-                    {isRecalling ? '同意撤回' : '通过审核'}  
+                    {isRecalling ? '同意撤回' : '通过审核'}
                 </Button>
             </Space>
         </Space>
-                
+
     )
 }

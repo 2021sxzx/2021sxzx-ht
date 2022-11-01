@@ -1,15 +1,20 @@
-import { Button } from 'antd'
-import React, { useEffect, useState } from 'react'
+import {Button} from 'antd'
+import React, {useState} from 'react'
 import style from './FormUser.module.scss'
 import PrincipleModal from './PrincipleModal.js'
 
-export default function FormUser(props){
+export default function FormUser(props) {
     const [choosingPrinciple, setChoosingPrinciple] = useState(false)
 
-    return(
+    return (
         <>
-            <PrincipleModal setPrinciple={props.setPrinciple} setPrincipleId={props.setPrincipleId} showError={props.showError}
-                choosingPrinciple={choosingPrinciple} setChoosingPrinciple={setChoosingPrinciple} />
+            <PrincipleModal setPrinciple={props.setPrinciple}
+                            setPrincipleId={props.setPrincipleId}
+                            showError={props.showError}
+                            choosingPrinciple={choosingPrinciple}
+                            setChoosingPrinciple={setChoosingPrinciple}
+                            maxLength={props.maxLength}
+            />
             <div className={style.form}>
                 <div className={style.inputLabel}>
                     <span style={{color: 'red'}}>*</span>
@@ -17,7 +22,7 @@ export default function FormUser(props){
                 </div>
                 <div className={style.input}>
                     <div className={style.name}>{props.value}</div>
-                    <Button type='primary' onClick={function(){
+                    <Button type='primary' onClick={function () {
                         setChoosingPrinciple(true)
                     }}>选择负责人</Button>
                 </div>

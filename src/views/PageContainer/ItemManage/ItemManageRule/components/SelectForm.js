@@ -20,18 +20,12 @@ export default function SelectForm(props) {
     const handleTaskRuleChange = (e) => {
         setRuleName(e.target.value)
     }
-    const handleDepartmentChange = (e) => {
-        setDepartment(e.target.value)
-    }
     const handleCreatorChange = (e) => {
         setCreator(e.target.value)
     }
 
     const splitIds = (id) => {
-        let ids = []
-        let noEmpty = id.replace(/\s*/g, '').replace('，', ',')
-        ids = noEmpty.split(',')
-        return ids
+        return id.replace(/\s*/g, '').replace('，', ',').split(',')
     }
 
     const inj_judge = (str) => {
@@ -104,13 +98,19 @@ export default function SelectForm(props) {
                     <Input value={rule_id}
                            placeholder='请输入编码'
                            size='middle'
-                           onChange={handleTaskCodeChange}/>
+                           onChange={handleTaskCodeChange}
+                           maxLength={64}
+                           showCount
+                    />
                 </Form.Item>
                 <Form.Item label='规则名称' style={{width: '25%'}}>
                     <Input value={rule_name}
                            placeholder='请输入名称'
                            size='middle'
-                           onChange={handleTaskRuleChange}/>
+                           onChange={handleTaskRuleChange}
+                           maxLength={64}
+                           showCount
+                    />
                 </Form.Item>
                 {/*<Form.Item label='机构' style={{width: '22%'}}>*/}
                 {/*    <Input value={department}*/}
@@ -122,7 +122,10 @@ export default function SelectForm(props) {
                     <Input value={creator}
                            placeholder='请输入创建人'
                            size='middle'
-                           onChange={handleCreatorChange}/>
+                           onChange={handleCreatorChange}
+                           maxLength={64}
+                           showCount
+                    />
                 </Form.Item>
 
                 <Form.Item label='起始时间' style={{marginTop: 10, width: '35%'}}>

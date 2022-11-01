@@ -75,7 +75,7 @@ export default function CreateProcess(props) {
             setTaskRule(path)
             setRuleTags(children)
         }).catch(error => {
-            props.showError('获取规则子节点失败！')
+            props.showError('获取规则子节点失败！' + error.message)
         })
     }
 
@@ -107,7 +107,7 @@ export default function CreateProcess(props) {
                 }])
             }
         }).catch(err => {
-            message.error('获取规则项推荐发生错误，请稍后重试')
+            message.error('获取规则项推荐发生错误，请稍后重试' + err.message)
             setRecommendedTags([{
                 nodeId: '-3',
                 nodeName: '无相关推荐',
@@ -142,7 +142,7 @@ export default function CreateProcess(props) {
             setChosenRegions(chosen)
             setTaskRegion(path)
         }).catch(error => {
-            props.showError('获取子节点失败！')
+            props.showError('获取子节点失败！' + error.message)
         })
     }
 
@@ -171,7 +171,7 @@ export default function CreateProcess(props) {
             setTaskRule(path)
             setRuleTags(children)
         }).catch(error => {
-            props.showError('获取子节点失败！')
+            props.showError('获取子节点失败！' + error.message)
         })
     }
 
@@ -201,7 +201,7 @@ export default function CreateProcess(props) {
             setTaskRegion(path)
             setRegionTags(children)
         }).catch(error => {
-            props.showError('撤回失败！')
+            props.showError('撤回失败！' + error.message)
         })
     }
 
@@ -233,7 +233,7 @@ export default function CreateProcess(props) {
         api.CreateItems({
             user_id: props.userId,
             items: items
-        }).then(response => {
+        }).then(() => {
             setIsLoading(false)
             props.showSuccess()
             props.setPageType(1)
@@ -284,7 +284,7 @@ export default function CreateProcess(props) {
                 })
             }
         }).catch(error => {
-            props.showError('检查事项规则是否已存在时发生错误，绑定失败')
+            props.showError('检查事项规则是否已存在时发生错误，绑定失败:' + error.message)
         })
     }
 
@@ -338,7 +338,7 @@ export default function CreateProcess(props) {
                             chosenRules.map((tag, index) =>
                                 <div className={style.chosenRule} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')}
                                      onClick={
-                                         value => {
+                                         () => {
                                              getBack(index, 'rule')
                                          }
                                      }>
@@ -352,7 +352,7 @@ export default function CreateProcess(props) {
                             chosenRegions.map((tag, index) =>
                                 <div className={style.chosenRegion} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')}
                                      onClick={
-                                         value => {
+                                         () => {
                                              getBack(index, 'region')
                                          }
                                      }>
@@ -401,7 +401,6 @@ export default function CreateProcess(props) {
                 <Button type='default' size='middle' style={{marginRight: 60, width: 100}}
                         onClick={handleCancel}>取消</Button>
                 {
-
                     ruleTags.length > 0 ?
                         // 如果在在业务规则的中间节点上绑定事项指南，就 disable 绑定按钮
                         <Tooltip title={'请不要在业务规则的中间节点上绑定事项指南'}>
@@ -426,8 +425,6 @@ export default function CreateProcess(props) {
                                     绑定
                                 </Button>
                         )
-
-
                 }
             </div>
         </Space>

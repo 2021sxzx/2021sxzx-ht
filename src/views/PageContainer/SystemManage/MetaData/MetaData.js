@@ -295,14 +295,17 @@ export default function MetaData() {
                         name="network_record_number"
                         rules={[{message: 'Please input network_record_number!'}]}
                     >
-                        <Input style={{width: '700px'}}/>
+                        <Input maxLength={256}
+                               showCount/>
                     </Form.Item>
                     <Form.Item
                         label="粤ICP备案号"
                         name="ICP_record_number"
                         rules={[{message: 'Please input ICP_record_number!'}]}
                     >
-                        <Input style={{width: '700px'}}/>
+                        <Input maxLength={256}
+                               showCount
+                        />
                     </Form.Item>
                     <h2>网页下方超链接设置</h2>
                     <Form.Item
@@ -310,56 +313,64 @@ export default function MetaData() {
                         name="url_about_us"
                         rules={[{message: 'Please input url_about_us!'}]}
                     >
-                        <Input style={{width: '700px'}}/>
+                        <Input maxLength={256}
+                               showCount/>
                     </Form.Item>
                     <Form.Item
                         label="联系方式"
                         name="url_contact_detail"
                         rules={[{message: 'Please input url_contact_detail!'}]}
                     >
-                        <Input style={{width: '700px'}}/>
+                        <Input maxLength={256}
+                               showCount/>
                     </Form.Item>
                     <Form.Item
                         label="隐私安全"
                         name="url_privacy_security"
                         rules={[{message: 'Please input url_privacy_security!'}]}
                     >
-                        <Input style={{width: '700px'}}/>
+                        <Input maxLength={256}
+                               showCount/>
                     </Form.Item>
                     <Form.Item
                         label="网站声明"
                         name="url_website_statement"
                         rules={[{message: 'Please input url_website_statement!'}]}
                     >
-                        <Input style={{width: '700px'}}/>
+                        <Input maxLength={256}
+                               showCount/>
                     </Form.Item>
                     <Form.Item
                         label="网站地图"
                         name="url_website_map"
                         rules={[{message: 'Please input url_website_map!'}]}
                     >
-                        <Input style={{width: '700px'}}/>
+                        <Input maxLength={256}
+                               showCount/>
                     </Form.Item>
                     <Form.Item
                         label="使用帮助"
                         name="url_help"
                         rules={[{message: 'Please input url_help!'}]}
                     >
-                        <Input style={{width: '700px'}}/>
+                        <Input maxLength={256}
+                               showCount/>
                     </Form.Item>
                     <Form.Item
                         label="粤公安网备"
                         name="url_icp_record"
                         rules={[{message: 'Please input url_icp_record!'}]}
                     >
-                        <Input style={{width: '700px'}}/>
+                        <Input maxLength={256}
+                               showCount/>
                     </Form.Item>
                     <Form.Item
                         label="粤ICP备案"
                         name="url_network_record"
                         rules={[{message: 'Please input url_network_record!'}]}
                     >
-                        <Input style={{width: '700px'}}/>
+                        <Input maxLength={256}
+                               showCount/>
                     </Form.Item>
                     <h2>其他设置</h2>
                     <Form.Item
@@ -367,14 +378,16 @@ export default function MetaData() {
                         name="copyright"
                         rules={[{message: 'Please input copyright!'}]}
                     >
-                        <Input style={{width: '700px'}}/>
+                        <Input maxLength={256}
+                               showCount/>
                     </Form.Item>
                     <Form.Item
                         label="网站标识码"
                         name="siteCode"
                         rules={[{message: 'Please input siteCode!'}]}
                     >
-                        <Input style={{width: '700px'}}/>
+                        <Input maxLength={256}
+                               showCount/>
                     </Form.Item>
                     <Form.Item wrapperCol={{offset: 10, span: 16}}>
                         <Button type="primary" htmlType="submit">
@@ -399,21 +412,24 @@ export default function MetaData() {
                                 name="api_GZSRSJGW"
                                 rules={[{message: 'Please input your username!'}]}
                             >
-                                <Input style={{width: '700px'}}/>
+                                <Input maxLength={256}
+                                       showCount/>
                             </Form.Item>
                             <Form.Item
                                 label="广州市人社局微信公众号"
                                 name="api_GZSRSJWX"
                                 rules={[{message: 'Please input your username!'}]}
                             >
-                                <Input style={{width: '700px'}}/>
+                                <Input maxLength={256}
+                                       showCount/>
                             </Form.Item>
                             <Form.Item
                                 label="穗好办APP"
                                 name="api_SHBAPP"
                                 rules={[{message: 'Please input your username!'}]}
                             >
-                                <Input style={{width: '700px'}}/>
+                                <Input maxLength={256}
+                                       showCount/>
                             </Form.Item>
                             <h2>出口配置</h2>
                             <Form.Item
@@ -421,14 +437,16 @@ export default function MetaData() {
                                 name="api_GDZWFWPT"
                                 rules={[{message: 'Please input your username!'}]}
                             >
-                                <Input style={{width: '700px'}}/>
+                                <Input maxLength={256}
+                                       showCount/>
                             </Form.Item>
                             <Form.Item
                                 label="智能服务机器人云平台"
                                 name="api_ZNFWJQRPT"
                                 rules={[{message: 'Please input your username!'}]}
                             >
-                                <Input style={{width: '700px'}}/>
+                                <Input maxLength={256}
+                                       showCount/>
                             </Form.Item>
                             <h2>其他配置</h2>
                             <Form.Item
@@ -436,7 +454,9 @@ export default function MetaData() {
                                 name="api_BDDT"
                                 rules={[{message: 'Please input your username!'}]}
                             >
-                                <Input style={{width: '700px'}}/>
+                                <Input
+                                    maxLength={256}
+                                    showCount/>
                             </Form.Item>
                             <Form.Item wrapperCol={{offset: 10, span: 16}}>
                                 <Button type="primary" htmlType="submit">
@@ -449,6 +469,12 @@ export default function MetaData() {
                         <Form
                             labelCol={{span: 15}}
                             labelAlign="left"
+                            style={{
+                                margin: '20px',
+                                padding: '20px',
+                                border: '1px solid #CCCCCC',
+                                borderRadius: '5px',
+                            }}
                         >
                             <Title level={4}>服务器与接口状态</Title>
                             <Form.Item label="服务器网络" name="OfficialWebsite">
