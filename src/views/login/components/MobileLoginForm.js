@@ -20,6 +20,7 @@ export default function MobileLoginForm() {
     const {setLoginState} = useContext(loginStateContext)
     // const [phoneNumber,setPhoneNumber] = useState('')
     const [verificationCode, setVerificationCode] = useState("")
+    const [failTime, setFailTime] = useState(0)
     // useEffect(()=>{
     //     getVC()
     // },[])
@@ -63,6 +64,7 @@ export default function MobileLoginForm() {
                 setLoginState('login')
                 // 展现 0.1s 的登录成功操作提示并自动跳转到首页
                 message.success('登录成功', 0.1, () => {
+                    setFailTime(0);
                     UrlJump.goto('#/home')
                 })
             }).catch((error) => {
@@ -72,7 +74,11 @@ export default function MobileLoginForm() {
                     message.error("登录错误")
             })
         } else {
-            message.error("验证码输入错误,请重新输入")
+            setFailTime(failTime + 1)
+            if(failTime >= 5)
+                setFailTime(0)
+                setVerificationCode("");
+            message.error("验证码输入错误,错5次就需要重新校验验证码，请重新输入")
         }
     };
     const saveUserInfo = (response, values) => {
