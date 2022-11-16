@@ -1,53 +1,53 @@
-import React, { useEffect, useState } from 'react'
-import { Form, Input, Button, Table, Modal } from 'antd'
+import React, {useEffect, useState} from 'react'
+import {Form, Input, Button, Table, Modal} from 'antd'
 import api from '../../../../../../api/rule'
 
-export default function PrincipleModal(props){
+export default function PrincipleModal(props) {
     const [users, setUsers] = useState([])
     const [department, setDepartment] = useState('')
     const [userName, setUserName] = useState('')
 
     const userTable = {
         whiteSpace: 'pre-wrap',
-        wordWrap: 'break-word', 
+        wordWrap: 'break-word',
         wordBreak: 'break-all'
     }
 
-    const init = ()=>{
+    const init = () => {
         if (!props.choosingPrinciple) return
-        api.GetItemUsers().then(response=>{
+        api.GetItemUsers().then(response => {
             let data = response.data.data
             setUsers(data)
-        }).catch(error=>{
-            props.showError('选择指南初始化失败')
+        }).catch(error => {
+            props.showError('选择指南初始化失败：' + error.message)
         })
     }
 
-    const inj_judge = (str)=>{
+    const inj_judge = (str) => {
         let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
             'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
-        for (let i = 0; i < inj_str.length; i++){
-            if (str.indexOf(inj_str[i]) >= 0){
+        for (let i = 0; i < inj_str.length; i++) {
+            if (str.indexOf(inj_str[i]) >= 0) {
                 return true
             }
         }
         return false
     }
 
-    useEffect(function(){
+    useEffect(function () {
         // 当面板打开时获取首页指南
         init()
     }, [props.choosingPrinciple])
 
-    const handleDepartmentChange = (e)=>{
+    const handleDepartmentChange = (e) => {
         setDepartment(e.target.value)
     }
 
-    const handleUserNameChange = (e)=>{
+    const handleUserNameChange = (e) => {
         setUserName(e.target.value)
     }
 
-    const clear = ()=>{
+    const clear = () => {
         // 清空搜索框
         document.getElementById('departmentInput').value = ''
         document.getElementById('userNameInput').value = ''
@@ -57,32 +57,32 @@ export default function PrincipleModal(props){
         init()
     }
 
-    const processData = ()=>{
-        if (inj_judge(userName) || inj_judge(department)){
+    const processData = () => {
+        if (inj_judge(userName) || inj_judge(department)) {
             Modal.warning({
                 centered: true,
                 title: '非法输入',
                 content: '输入信息中有非法输入内容，请检查输入！'
-            }) 
+            })
             return
         }
         let data = {}
         if (userName !== '') data['user_name'] = userName
-        if (department !== '') data['department_name'] = department  
+        if (department !== '') data['department_name'] = department
         search(data)
     }
 
-    const search = (data)=>{
+    const search = (data) => {
         // 搜索
-        api.GetItemUsers(data).then(response=>{
+        api.GetItemUsers(data).then(response => {
             let data = response.data.data
             setUsers(data)
-        }).catch(error=>{
-            props.showError('搜索失败')
+        }).catch(error => {
+            props.showError('搜索失败:' + error.message)
         })
     }
 
-    const endChoosingPrinciple = ()=>{
+    const endChoosingPrinciple = () => {
         props.setChoosingPrinciple(false)
         setUsers([])
         setDepartment('')
@@ -109,8 +109,8 @@ export default function PrincipleModal(props){
             title: '选择',
             key: 'choose',
             width: 100,
-            render: (text, record)=>(
-                <Button type='primary' onClick={function(){
+            render: (text, record) => (
+                <Button type='primary' onClick={function () {
                     props.setPrinciple(record.user_name)
                     props.setPrincipleId(record._id)
                     endChoosingPrinciple()
@@ -122,7 +122,8 @@ export default function PrincipleModal(props){
     ]
 
     return (
-        <Modal width={800} centered destroyOnClose={true} title='选择指南' visible={props.choosingPrinciple} footer={false} onCancel={endChoosingPrinciple}>
+        <Modal width={800} centered destroyOnClose={true} title='选择指南' visible={props.choosingPrinciple} footer={false}
+               onCancel={endChoosingPrinciple}>
             <Form
                 layout='inline'
                 initialValues={{
@@ -131,12 +132,22 @@ export default function PrincipleModal(props){
                 style={{marginBottom: 10}}
             >
                 <Form.Item label='机构' style={{width: '37%'}}>
-                    <Input id='departmentInput' value={department}
-                        placeholder='请输入业务部门' onChange={handleDepartmentChange} />
+                    <Input id='departmentInput'
+                           value={department}
+                           placeholder='请输入业务部门!'
+                           onChange={handleDepartmentChange}
+                           maxLength={props.maxLength}
+                           showCount
+                    />
                 </Form.Item>
                 <Form.Item label='用户名称' style={{width: '37%'}}>
-                    <Input id='userNameInput' value={userName}
-                        placeholder='请输入用户名称' onChange={handleUserNameChange} />
+                    <Input id='userNameInput'
+                           value={userName}
+                           placeholder='请输入用户名称'
+                           onChange={handleUserNameChange}
+                           maxLength={props.maxLength}
+                           showCount
+                    />
                 </Form.Item>
                 <Form.Item style={{width: '8%'}}>
                     <Button type='default' onClick={clear}>重置</Button>
@@ -145,7 +156,7 @@ export default function PrincipleModal(props){
                     <Button type='primary' onClick={processData}>搜索</Button>
                 </Form.Item>
             </Form>
-            <Table class={userTable} columns={userColumns} dataSource={users} rowKey='department' />
+            <Table class={userTable} columns={userColumns} dataSource={users} rowKey='department'/>
         </Modal>
     )
 }

@@ -49,27 +49,55 @@ export default function FormListPlus(props) {
                         :
                         windows.map((item, index) =>
                             <div className={style.singleLine}>
-                                <TextArea className={style.windowName} onChange={function (e) {
-                                    handleChange(e.target.value, 'name', index)
-                                }} value={windows[index].name} autoSize={true} placeholder='请输入办理点名称'/>
+                                <TextArea className={style.windowName}
+                                          onChange={function (e) {
+                                              handleChange(e.target.value, 'name', index)
+                                          }}
+                                          value={windows[index].name}
+                                          autoSize={true}
+                                          placeholder='请输入办理点名称'
+                                          maxLength={props.maxLength}
+                                          showCount
+                                />
                                 <div className={style.otherDatas}>
                                     <div className={style.oneRow}>
-                                        <TextArea className={style.shortTextArea} onChange={function (e) {
-                                            handleChange(e.target.value, 'address', index)
-                                        }} value={windows[index].address} autoSize={true} placeholder='请输入办理地点'/>
+                                        <TextArea className={style.shortTextArea}
+                                                  onChange={function (e) {
+                                                      handleChange(e.target.value, 'address', index)
+                                                  }}
+                                                  value={windows[index].address}
+                                                  autoSize={true}
+                                                  placeholder='请输入办理地点'
+                                                  maxLength={props.maxLength}
+                                                  showCount
+                                        />
                                         <MinusCircleOutlined className={style.delete} onClick={function () {
                                             handleDelete(index)
                                         }}/>
                                     </div>
                                     <div className={style.oneRow}>
-                                        <TextArea className={style.longTextArea} onChange={function (e) {
-                                            handleChange(e.target.value, 'phone', index)
-                                        }} value={windows[index].phone} autoSize={true} placeholder='请输入咨询及投诉电话'/>
+                                        <TextArea className={style.longTextArea}
+                                                  onChange={function (e) {
+                                                      handleChange(e.target.value, 'phone', index)
+                                                  }}
+                                                  value={windows[index].phone}
+                                                  autoSize={true}
+                                                  placeholder='请输入咨询及投诉电话'
+                                                  maxLength={props.maxLength}
+                                                  showCount
+                                        />
                                     </div>
                                     <div className={style.oneRow}>
-                                        <TextArea className={style.longTextArea} onChange={function (e) {
-                                            handleChange(e.target.value, 'office_hour', index)
-                                        }} value={windows[index].office_hour} autoSize={true} placeholder='请输入办公时间'/>
+                                        <TextArea className={style.longTextArea}
+                                                  onChange={function (e) {
+                                                      handleChange(e.target.value, 'office_hour', index)
+                                                  }}
+                                                  value={windows[index].office_hour}
+                                                  autoSize={true}
+                                                  placeholder='请输入办公时间'
+                                                  maxLength={props.maxLength}
+                                                  showCount
+                                        />
                                     </div>
                                 </div>
                             </div>

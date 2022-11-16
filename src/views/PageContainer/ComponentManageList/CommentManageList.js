@@ -1,26 +1,22 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useState} from 'react'
 
-import { DatePicker, Space, Form, Input, Button, Select, Table, Modal, Descriptions, Badge } from 'antd';
-import { getYMD, getTimeStamp } from "../../../utils/TimeStamp";
+import {DatePicker, Space, Form, Input, Button, Select, Table, Modal, Descriptions, message} from 'antd';
+import {getYMD, getTimeStamp} from "../../../utils/TimeStamp";
 import api from "../../../api/comment";
 
-import {
-    CaretDownOutlined,
-} from '@ant-design/icons';
-
-const { RangePicker } = DatePicker;
-const { Option } = Select;
-// 设置下拉列表的内容   
+const {RangePicker} = DatePicker;
+const {Option} = Select;
+// 设置下拉列表的内容
 const starList = ['全部', '1', '2', '3', '4', '5']
 const idList = ['全部', '证件号', '事项指南名称', '事项指南编码', '事项规则']
 // 下拉列表组件
 const DropSelect = (props) => {
-    const { dataList, setData } = props
+    const {dataList, setData} = props
     const handleChange = (value) => {
         setData(value)
     }
     return (
-        <Select defaultValue={dataList[0]} style={{ width: 120 }} onChange={handleChange}>
+        <Select defaultValue={dataList[0]} style={{width: 120}} onChange={handleChange}>
             {
                 dataList.map((item, index) => {
                     return <Option value={index} key={index}>{item}</Option>
@@ -36,7 +32,7 @@ const tableColumns = [
         dataIndex: 'item_guide_id',
         key: 'item_guide_id',
     },
-    {
+     {
         title: '事项指南名称',
         dataIndex: 'item_guide_name',
         key: 'item_guide_name',
@@ -70,7 +66,7 @@ const tableColumns = [
         key: 'detail',
         render: (text, record) => (//查看详情按钮和详情弹窗
             <Space size="middle">
-                <DetailModal itemDetail={record}></DetailModal>
+                <DetailModal itemDetail={record}/>
             </Space>
         ),
     },
@@ -84,19 +80,11 @@ const SelectForm = (props) => {
     const [type, setType] = useState('')
     const [typeData, setTypeData] = useState('')
     const formLayout = 'inline'
-    const paramTest = (param) => {
-        return (event) => {
-
-            props.getSearch(param)
-        }
-    }
     const handleInputChange = (e) => {
         setTypeData(e.target.value)
-
     }
 
     const Search = () => {
-
         const data = {
             startTime,
             endTime,
@@ -111,8 +99,7 @@ const SelectForm = (props) => {
 
             setStartTime(getTimeStamp(dateString[0]))
             setEndTime(getTimeStamp(dateString[1]))
-        }
-        else {
+        } else {
             setEndTime('')
             setStartTime('')
         }
@@ -126,19 +113,24 @@ const SelectForm = (props) => {
                     layout: formLayout,
                 }}
             >
-                <Form.Item label="起止日期" >
-                    <RangePicker onChange={handleDateChange} />
+                <Form.Item label="起止日期">
+                    <RangePicker onChange={handleDateChange}/>
                 </Form.Item>
                 <Form.Item label="星级排查" name="score">
-                    <DropSelect dataList={starList} setData={setScore} />
+                    <DropSelect dataList={starList} setData={setScore}/>
                 </Form.Item>
                 <Form.Item label="编号排查">
-                    <DropSelect dataList={idList} setData={setType} />
+                    <DropSelect dataList={idList} setData={setType}/>
                 </Form.Item>
-                <Form.Item >
-                    <Input placeholder="请输入编号" size="middle" onChange={handleInputChange} />
+                <Form.Item>
+                    <Input placeholder="请输入编号"
+                           size="middle"
+                           onChange={handleInputChange}
+                           maxLength={64}
+                           showCount
+                    />
                 </Form.Item>
-                <Form.Item >
+                <Form.Item>
                     <Button type="primary" onClick={Search}>搜索</Button>
                 </Form.Item>
             </Form>
@@ -193,8 +185,14 @@ const DetailModal = (props) => {
 
             <Modal title="事项详情" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
                 <Descriptions>
-                    {Object.keys(detailData).map((item, index) => {
-                        return <Descriptions.Item label={key2name[item]} key={item} span={3}>{detailData[item]}</Descriptions.Item>
+                    {Object.keys(detailData).map((item) => {
+                        return (
+                            <Descriptions.Item label={key2name[item]}
+                                               key={item}
+                                               span={3}>
+                                {detailData[item]}
+                            </Descriptions.Item>
+                        )
                     })}
                 </Descriptions>
             </Modal>
@@ -210,6 +208,7 @@ export default function CommentManageList() {
         api.GetComment(data).then(response => {
             setTableData(response.data.data)
         }).catch(error => {
+            message.error('获取评论失败，请稍后尝试：' + error.message)
         })
     }
     // 从服务器中获取搜索结果，保存到 tableData 中
@@ -219,12 +218,13 @@ export default function CommentManageList() {
             console.log('searchData=', response.data.data)
             setTableData(response.data.data)
         }).catch(error => {
+            message.error('搜索失败，请稍后尝试：' + error.message)
         })
     }
     // 获取所有评论表格的数据，组件每渲染一次，该函数就自动执行一次。
     useEffect(() => {
         getComment({
-          pageNum: 1
+            pageNum: 1
         })
     }, []);
 
@@ -232,9 +232,9 @@ export default function CommentManageList() {
         <div>
             <Space direction="vertical" size={12}>
                 {/* 搜索 */}
-                <SelectForm getSearch={getSearchComment}></SelectForm>
+                <SelectForm getSearch={getSearchComment}/>
                 {/* 用户评价的表格 */}
-                <Table columns={tableColumns} dataSource={tableData} />
+                <Table columns={tableColumns} dataSource={tableData}/>
             </Space>,
         </div>
     )

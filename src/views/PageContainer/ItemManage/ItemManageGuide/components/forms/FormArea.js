@@ -15,7 +15,10 @@ export default function FormArea(props) {
                     <TextArea onChange={props.handleChange}
                               placeholder={'请输入' + props.formName}
                               value={props.value}
-                              autoSize={true}/>
+                              autoSize={true}
+                              maxLength={props.maxLength}
+                              showCount
+                    />
                 </div>
             </div>
         </>

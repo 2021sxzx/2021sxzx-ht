@@ -128,6 +128,8 @@ const SelectForm = (props) => {
                         placeholder='请输入编号'
                         size='middle'
                         onChange={handleInputChange}
+                        maxLength={64}
+                        showCount
                     />
                 </Form.Item>
                 <Form.Item>

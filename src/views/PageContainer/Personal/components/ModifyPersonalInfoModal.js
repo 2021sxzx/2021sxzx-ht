@@ -170,6 +170,8 @@ function ModifyPersonalInfoModal(props) {
                                 <Input
                                     placeholder={'请输入用户名'}
                                     allowClear={true}
+                                    maxLength={64}
+                                    showCount
                                 />
                         }
 

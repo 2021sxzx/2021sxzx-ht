@@ -151,30 +151,44 @@ export default function CreateGuide(props) {
                               setPrincipleId={setPrincipleId}
                               formName='负责人'
                               value={principle}
-                              showError={props.showError}/>
+                              showError={props.showError}
+                              maxLength={64}
+                    />
                     <FormArea handleChange={handleGuideNameChange}
                               formName='事项名称'
                               value={guideName}
-                              required={true}/>
+                              required={true}
+                              maxLength={128}
+                    />
                     <FormArea handleChange={handleGuideCodeChange}
                               formName='事项代码'
                               value={guideCode}
-                              required={true}/>
+                              required={true}
+                              maxLength={64}
+                    />
                     <FormArea handleChange={handleServiceAgentName}
                               formName='实施主体名称'
                               value={serviceAgentName}
-                              required={true}/>
+                              required={true}
+                              maxLength={64}
+                    />
                     <FormArea handleChange={handleServiceAgentCode}
                               formName='实施主体编码'
                               value={serviceAgentCode}
-                              required={true}/>
+                              required={true}
+                              maxLength={64}
+                    />
                     <FormArea handleChange={handleGuideContentChange}
                               formName='事项内容'
-                              value={guideContent}/>
+                              value={guideContent}
+                              maxLength={2048}
+                    />
                     <FormList setData={setGuideAccord}
                               addBtn='添加政策依据'
                               formName='政策依据'
-                              value={guideAccord}/>
+                              value={guideAccord}
+                              maxLength={256}
+                    />
                 </Space>
         },
         {
@@ -183,11 +197,15 @@ export default function CreateGuide(props) {
                 <Space className={style.form} direction='vertical' size={15} style={{width: '95%'}}>
                     <FormArea handleChange={handleGuideConditionChange}
                               formName='申办所需审核条件'
-                              value={guideCondition}/>
+                              value={guideCondition}
+                              maxLength={1024}
+                    />
                     <FormListMaterial addBtn='添加申办所需材料'
                                       formName='申办所需材料'
                                       data={guideMaterial}
-                                      setData={setGuideMaterial}/>
+                                      setData={setGuideMaterial}
+                                      maxLength={1024}
+                    />
                     <FormTime formName='审核时限'
                               legalPeriod={legalPeriod}
                               legalType={legalType}
@@ -196,7 +214,9 @@ export default function CreateGuide(props) {
                               setLegalPeriod={setLegalPeriod}
                               setLegalType={setLegalType}
                               setPromisedPeriod={setPromisedPeriod}
-                              setPromisedType={setPromisedType}/>
+                              setPromisedType={setPromisedType}
+                              maxLength={64}
+                    />
                 </Space>
         },
         {
@@ -208,13 +228,19 @@ export default function CreateGuide(props) {
                        style={{width: '95%'}}>
                     <FormArea handleChange={handleGuidePlatformChange}
                               formName='咨询平台'
-                              value={guidePlatform}/>
+                              value={guidePlatform}
+                              maxLength={1024}
+                    />
                     <FormArea handleChange={handleGuidePCAddressChange}
                               formName='网办PC端'
-                              value={guidePCAddress}/>
+                              value={guidePCAddress}
+                              maxLength={1024}
+                    />
                     <FormArea handleChange={handleGuidePEAddressChange}
                               formName='网办移动端'
-                              value={guidePEAddress}/>
+                              value={guidePEAddress}
+                              maxLength={1024}
+                    />
                 </Space>
         },
         {
@@ -223,23 +249,33 @@ export default function CreateGuide(props) {
                 <Space className={style.form} direction='vertical' size={15} style={{width: '95%'}}>
                     <FormArea handleChange={handleGuideSelfmadeAddressChange}
                               formName='自助终端'
-                              value={guideSelfmadeAddress}/>
+                              value={guideSelfmadeAddress}
+                              maxLength={1024}
+                    />
                     <FormArea handleChange={handleGuideOnlineProcessChange}
                               formName='网上办理流程'
-                              value={guideOnlineProcess}/>
+                              value={guideOnlineProcess}
+                              maxLength={2048}
+                    />
                     <FormArea handleChange={handleGuideOfflineProcessChange}
                               formName='线下办理流程'
-                              value={guideOfflineProcess}/>
+                              value={guideOfflineProcess}
+                              maxLength={2048}
+                    />
                     <FormListPlus addBtn='添加办理点'
                                   formName='办理点信息'
                                   data={guideWindows}
                                   setData={setGuideWindows}
-                                  required={true}/>
+                                  required={true}
+                                  maxLength={256}
+                    />
                     {/*<FormImage setImageUpdated={setImageUpdated} setData={setGuideQRCode} handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>*/}
                     <FormCheckbox setData={setGuideServiceType}
                                   formName='服务对象类型'
                                   value={guideServiceType}
-                                  required={true}/>
+                                  required={true}
+                                  maxLength={128}
+                    />
                 </Space>
         }
     ]

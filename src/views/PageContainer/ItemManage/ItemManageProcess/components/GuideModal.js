@@ -178,12 +178,22 @@ export default function GuideModal(props) {
                 style={{marginBottom: 10}}
             >
                 <Form.Item label='指南编码' style={{width: '37%'}}>
-                    <Input id='taskCodeInput' value={task_code}
-                           placeholder='请输入指南编码' onChange={handleTaskCodeChange}/>
+                    <Input id='taskCodeInput'
+                           value={task_code}
+                           placeholder='请输入指南编码'
+                           onChange={handleTaskCodeChange}
+                           maxLength={64}
+                           showCount
+                    />
                 </Form.Item>
                 <Form.Item label='指南名称' style={{width: '37%'}}>
-                    <Input id='taskNameInput' value={task_name}
-                           placeholder='请输入指南名称' onChange={handleTaskNameChange}/>
+                    <Input id='taskNameInput'
+                           value={task_name}
+                           placeholder='请输入指南名称'
+                           onChange={handleTaskNameChange}
+                           maxLength={64}
+                           showCount
+                    />
                 </Form.Item>
                 <Form.Item style={{width: '8%'}}>
                     <Button type='default' onClick={clear}>重置</Button>

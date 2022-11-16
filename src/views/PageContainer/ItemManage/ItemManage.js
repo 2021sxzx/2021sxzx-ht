@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import api from '../../../api/rule';
-import { Modal } from 'antd'
-import { HashRouter as Router, Route, Switch, useRouteMatch } from 'react-router-dom'
+import {Modal} from 'antd'
+import {Route, Switch, useRouteMatch} from 'react-router-dom'
 import ItemManageRule from './ItemManageRule/ItemManageRule'
 import ItemManageRegion from './ItemManageRegion/ItemManageRegion'
 import ItemManageGuide from './ItemManageGuide/ItemManageGuide'
@@ -19,7 +19,7 @@ export default function ItemManage(props) {
     const [bindedData, setBindedData] = useState({})
     const [jumpCode, setJumpCode] = useState(props.location.task_code)
 
-    const showError = (str)=>{
+    const showError = (str) => {
         Modal.warning({
             title: '初始化失败',
             content: str,
@@ -27,50 +27,46 @@ export default function ItemManage(props) {
         })
     }
 
-    const getRuleRoots = ()=>{
+    const getRuleRoots = () => {
         // 获取规则树根节点，用来初始化规则创建
         api.GetRules({
             parentId: ['']
-        }).then(response=>{
+        }).then(response => {
             let data = response.data.data
-            if (data.length !== 1){
+            if (data.length !== 1) {
                 showError('规则树根节点不唯一')
-                return
-            }
-            else{
+            } else {
                 setRuleRoot({
                     'nodeId': data[0].rule_id,
                     'nodeName': data[0].rule_name
                 })
             }
-        }).catch(error=>{
-            showError('初始化规则树根节点失败！')
+        }).catch(error => {
+            showError('初始化规则树根节点失败:' + error.message)
         })
     }
 
-    const getRegionRoots = ()=>{
+    const getRegionRoots = () => {
         // 获取区划树根节点，用来初始化区划创建
         api.GetRegions({
             parentId: ['']
-        }).then(response=>{
+        }).then(response => {
             let data = response.data.data
-            if (data.length !== 1){
+            if (data.length !== 1) {
                 showError('区划树根节点不唯一')
-                return
-            }
-            else{
+            } else {
                 setRegionRoot({
                     'nodeId': data[0]._id,
                     'nodeName': data[0].region_name,
                     'nodeCode': data[0].region_code
                 })
             }
-        }).catch(error=>{
-            showError('初始化区划树根节点失败！')
+        }).catch(error => {
+            showError('初始化区划树根节点失败！' + error.message)
         })
     }
 
-    const init = ()=>{
+    const init = () => {
         // 获取规则和区划树
         getRuleRoots()
         getRegionRoots()
@@ -78,46 +74,51 @@ export default function ItemManage(props) {
         setUserId(localStorage.getItem('_id'))
     }
 
-    const jumpToProcess = ()=>{
+    const jumpToProcess = () => {
         // 跳转至流程管理界面
         props.history.push(path + '/process')
     }
 
-    const jumpToUnusual = ()=>{
+    const jumpToUnusual = () => {
         // 跳转至异常处理界面
         props.history.push(path + '/unusual')
     }
 
-    
-    useEffect(()=>{
+
+    useEffect(() => {
         init()
     }, [])
 
     return (
         <div>
             <Switch>
-                <Route path={`${path}/process`} 
-                    render={()=>(<ItemManageProcess userId={userId} jumpCode={jumpCode}
-                        bindedData={bindedData} setBindedData={setBindedData} setJumpCode={setJumpCode}
-                        regionRoot={regionRoot} ruleRoot={ruleRoot}/>)}/>
+                <Route path={`${path}/process`}
+                       render={() => (<ItemManageProcess userId={userId} jumpCode={jumpCode}
+                                                         bindedData={bindedData} setBindedData={setBindedData}
+                                                         setJumpCode={setJumpCode}
+                                                         regionRoot={regionRoot} ruleRoot={ruleRoot}/>)}/>
 
-                <Route path={`${path}/guide`} 
-                    render={()=>(<ItemManageGuide userId={userId}/>)}/>
+                <Route path={`${path}/guide`}
+                       render={() => (<ItemManageGuide userId={userId}/>)}/>
 
-                <Route path={`${path}/item-rule/rule`} 
-                    render={()=>(<ItemManageRule setBindedData={setBindedData} bindedData={bindedData} userId={userId} 
-                        ruleRoot={ruleRoot} jumpToProcess={jumpToProcess} jumpToUnusual={jumpToUnusual}/>)}/>
+                <Route path={`${path}/item-rule/rule`}
+                       render={() => (
+                           <ItemManageRule setBindedData={setBindedData} bindedData={bindedData} userId={userId}
+                                           ruleRoot={ruleRoot} jumpToProcess={jumpToProcess}
+                                           jumpToUnusual={jumpToUnusual}/>)}/>
 
-                <Route path={`${path}/item-rule/region`} 
-                    render={()=>(<ItemManageRegion setBindedData={setBindedData} bindedData={bindedData} userId={userId} 
-                        regionRoot={regionRoot} jumpToProcess={jumpToProcess} jumpToUnusual={jumpToUnusual}/>)}/>
+                <Route path={`${path}/item-rule/region`}
+                       render={() => (
+                           <ItemManageRegion setBindedData={setBindedData} bindedData={bindedData} userId={userId}
+                                             regionRoot={regionRoot} jumpToProcess={jumpToProcess}
+                                             jumpToUnusual={jumpToUnusual}/>)}/>
 
-                <Route path={`${path}/unusual`} 
-                    render={()=>(<ItemManageUnusual userId={userId} 
-                        bindedData={bindedData} setBindedData={setBindedData}
-                        regionRoot={regionRoot} ruleRoot={ruleRoot}/>)}/>
+                <Route path={`${path}/unusual`}
+                       render={() => (<ItemManageUnusual userId={userId}
+                                                         bindedData={bindedData} setBindedData={setBindedData}
+                                                         regionRoot={regionRoot} ruleRoot={ruleRoot}/>)}/>
             </Switch>
         </div>
-        
+
     )
 }
