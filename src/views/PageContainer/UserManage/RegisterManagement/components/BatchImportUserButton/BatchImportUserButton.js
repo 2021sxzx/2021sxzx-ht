@@ -103,7 +103,7 @@ const BatchImportUserButton = (props) => {
     if (files.length <= 0) {
       return false
     } else if (!/\.(xls|xlsx)$/.test(files[0].name.toLowerCase())) {
-      alert('文件传格式不正确')
+      alert('文件格式不正确')
       return false
     }
 

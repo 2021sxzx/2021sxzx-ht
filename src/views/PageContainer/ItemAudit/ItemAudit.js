@@ -42,7 +42,7 @@ export default function ItemAudit() {
             setStatusScheme(scheme)
             setStatusId(WordToName)
         }).catch(error=>{
-            props.showError('初始化状态表失败！')
+            props.showError('初始化状态表失败，请刷新重试。')
         })
     }
 
@@ -91,9 +91,9 @@ export default function ItemAudit() {
                     statusId={statusId} statusScheme={statusScheme} statusType={statusType} />
             }
             {
-                pageType === 2 && 
+                pageType === 2 &&
                 <CreateAudit auditingData={auditingData} auditingId={auditingId} auditingStatus={auditingStatus}
-                    setAuditingData={setAuditingData} setAuditingId={setAuditingId} setAuditingStatus={setAuditingStatus} 
+                    setAuditingData={setAuditingData} setAuditingId={setAuditingId} setAuditingStatus={setAuditingStatus}
                     setPageType={setPageType} showError={showError} showSuccess={showSuccess}
                     statusId={statusId} statusScheme={statusScheme} userId={userId} />
             }

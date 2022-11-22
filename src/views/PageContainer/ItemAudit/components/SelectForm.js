@@ -90,8 +90,8 @@ export default function SelectForm(props) {
                 content: '输入信息中有非法输入内容，请检查输入！'
             })
         } else {
-            if (start_time !== '') data['start_time'] = start_time
-            if (end_time !== '') data['end_time'] = end_time
+            if (start_time !== '') data['create_start_time'] = start_time
+            if (end_time !== '') data['create_end_time'] = end_time
             if (task_code !== '') data['task_code'] = splitIds(task_code)
             if (item_name !== '') data['item_name'] = item_name
             if (department !== '') data['department_name'] = department
@@ -105,6 +105,9 @@ export default function SelectForm(props) {
     }
 
     const handleDateChange = (value, dataString) => {
+        console.log('time',time)
+        console.log('value',value)
+        console.log('dataStr',dataString)
         if (value) {
             setStartTime(getTimeStamp(dataString[0]))
             setEndTime(getTimeStamp(dataString[1]))
@@ -114,6 +117,8 @@ export default function SelectForm(props) {
             setStartTime('')
             setTime([null, null])
         }
+        console.log('start time', start_time)
+        console.log('end time', end_time)
     }
 
     const clear = () => {
@@ -142,23 +147,33 @@ export default function SelectForm(props) {
                 initialValues={{
                     layout: 'inline'
                 }}
+                onKeyDown={(e) => {
+                    // 当按下enter时，触发搜索功能
+                    if (e.key === 'Enter') {
+                        Search()
+                    }
+                }}
             >
                 <Form.Item label='指南编码' style={{width: '25%'}}>
-                    <Input value={task_code}
-                           placeholder='请输入编码'
-                           size='middle'
-                           onChange={handleTaskCodeChange}
-                           maxLength={64}
-                           showCount
+                    <Input
+                        value={task_code}
+                        placeholder='请输入编码'
+                        size='middle'
+                        onChange={handleTaskCodeChange}
+                        maxLength={64}
+                        showCount
+                        allowClear
                     />
                 </Form.Item>
                 <Form.Item label='指南名称' style={{width: '25%'}}>
-                    <Input value={item_name}
-                           placeholder='请输入名称'
-                           size='middle'
-                           onChange={handleItemNameChange}
-                           maxLength={64}
-                           showCount
+                    <Input
+                        value={item_name}
+                        placeholder='请输入名称'
+                        size='middle'
+                        onChange={handleItemNameChange}
+                        maxLength={64}
+                        showCount
+                        allowClear
                     />
                 </Form.Item>
                 {/*            <Form.Item label='机构' style={{width: '22%'}}>*/}
@@ -166,37 +181,44 @@ export default function SelectForm(props) {
                 {/*placeholder='请输入部门' size='middle' onChange={handleDepartmentChange}/>*/}
                 {/*            </Form.Item>*/}
                 <Form.Item label='创建人' style={{width: '22%'}}>
-                    <Input value={creator}
-                           placeholder='请输入创建人'
-                           size='middle'
-                           onChange={handleCreatorChange}
-                           maxLength={64}
-                           showCount
+                    <Input
+                        value={creator}
+                        placeholder='请输入创建人'
+                        size='middle'
+                        onChange={handleCreatorChange}
+                        maxLength={64}
+                        showCount
+                        allowClear
                     />
                 </Form.Item>
 
                 <Form.Item label='业务规则编码' style={{marginTop: 10, width: '25%'}}>
-                    <Input value={rule_id}
-                           placeholder='请输入业务规则编码'
-                           size='middle'
-                           onChange={handleRuleIdChange}
-                           maxLength={64}
-                           showCount
+                    <Input
+                        value={rule_id}
+                        placeholder='请输入业务规则编码'
+                        size='middle'
+                        onChange={handleRuleIdChange}
+                        maxLength={64}
+                        showCount
+                        allowClear
                     />
                 </Form.Item>
                 <Form.Item label='区划规则编码' style={{marginTop: 10, width: '25%'}}>
-                    <Input value={region_code}
-                           placeholder='请输入区划规则编码'
-                           size='middle'
-                           onChange={handleRegionCodeChange}
-                           maxLength={64}
-                           showCount
+                    <Input
+                        value={region_code}
+                        placeholder='请输入区划规则编码'
+                        size='middle'
+                        onChange={handleRegionCodeChange}
+                        maxLength={64}
+                        showCount
+                        allowClear
                     />
                 </Form.Item>
                 <Form.Item label='起始时间' style={{marginTop: 10, width: '45%'}}>
-                    <RangePicker value={time}
-                                 style={{width: '100%'}}
-                                 onChange={handleDateChange}/>
+                    <RangePicker
+                        value={time}
+                        style={{width: '100%'}}
+                        onChange={handleDateChange}/>
                 </Form.Item>
                 <Form.Item label='事项状态' style={{marginTop: 10, width: '85%'}}>
                     <Checkbox.Group options={props.statusType} value={item_status} onChange={handleItemStatusChange}/>

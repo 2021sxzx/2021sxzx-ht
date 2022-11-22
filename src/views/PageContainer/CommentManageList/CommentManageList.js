@@ -113,7 +113,14 @@ const SelectForm = (props) => {
                 form={form}
                 initialValues={{
                     layout: formLayout
-                }}>
+                }}
+                onKeyDown={(e) => {
+                    // 当按下enter时，触发搜索功能
+                    if (e.key === 'Enter') {
+                        Search()
+                    }
+                }}
+            >
                 <Form.Item label='起止日期'>
                     <RangePicker onChange={handleDateChange}/>
                 </Form.Item>

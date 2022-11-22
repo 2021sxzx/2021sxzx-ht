@@ -150,6 +150,12 @@ export default function SelectForm(props) {
                 initialValues={{
                     layout: 'inline'
                 }}
+                onKeyDown={(e) => {
+                    // 当按下enter时，触发搜索功能
+                    if (e.key === 'Enter') {
+                        Search()
+                    }
+                }}
             >
                 <Form.Item label='指南编码' style={{width: '25%'}}>
                     <Input value={task_code}

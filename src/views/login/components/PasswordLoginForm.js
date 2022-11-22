@@ -114,11 +114,12 @@ export default function PasswordLoginForm() {
                     },
                 ]}
             >
-                <Input placeholder={'手机号码'}
-                       defaultValue={account}
-                       maxLength={32}
-                       prefix={<UserOutlined className="site-form-item-icon"/>}
-                       allowClear={true}
+                <Input
+                    placeholder={'手机号码'}
+                    defaultValue={account}
+                    maxLength={32}
+                    prefix={<UserOutlined className="site-form-item-icon"/>}
+                    allowClear={true}
                 />
             </Form.Item>
             {/*密码*/}
@@ -149,8 +150,7 @@ export default function PasswordLoginForm() {
                     type={"password"}
                     maxLength={32}
                     prefix={<LockOutlined className="site-form-item-icon"/>}
-                    allowClear={true}
-
+                    allowClear
                 />
             </Form.Item>
             {/*是否记住登录状态 & 忘记密码 */}
