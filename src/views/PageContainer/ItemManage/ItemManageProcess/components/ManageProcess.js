@@ -9,6 +9,7 @@ import {
     itemStatusScheme
 } from "../../../../../api/itemAdapter";
 import jsonToExcel from "../../../../../utils/JsonToExcel";
+import {ExclamationCircleOutlined} from "@ant-design/icons";
 
 export default function ManageProcess(props) {
     // 页面的基础数据
@@ -27,10 +28,13 @@ export default function ManageProcess(props) {
     const [deletingIds, setDeletingIds] = useState([])
     // 用于获取批量处理的事项规则id
     const [selectedRowKeys, setSelectedRowKeys] = useState([])
+    const [selectedRows, setSelectedRows] = useState([])
     const [isBatching, setIsBatching] = useState(false)
-    const onSelectionChange = keys => {
+    const onSelectionChange = (keys, row) => {
         setIsBatching(keys.length > 0)
         setSelectedRowKeys(keys)
+        setSelectedRows(row)
+        console.log('selectedRows', row)
     }
     const rowSelection = {
         selectedRowKeys,
@@ -200,6 +204,55 @@ export default function ManageProcess(props) {
         props.setPageType(2)
     }
 
+    const batchSubmission = () => {
+        // 判断是否所有选择的事项都是未提交审核的状态
+        const canBatchSubmission = selectedRows.every(item => {
+            return item.item_status === 0
+        })
+
+        if (canBatchSubmission) {
+            // 所有要提交审核的事项的 _id 的数组
+            const itemIdArray = selectedRows.filter(item => {
+                // 过滤出所有可以提交审核的事项（item_status === 0)，因为前面有判断，其实这一步可以省略
+                return item.item_status === 0
+            }).map(item => {
+                // 转化为合适的数据类型
+                return {
+                    item_id: item._id,
+                    next_status: 1
+                }
+            })
+
+            setTableLoading(true)
+
+            api.ChangeItemStatus({
+                user_id: props.userId,
+                items: itemIdArray
+            }).then(() => {
+                message.success('批量提交审核成功')
+            }).catch(error => {
+                message.error('批量提交审核失败：', error.message)
+            }).finally(() => {
+                // 更新完毕后重新获取事项
+                getItems()
+            })
+        } else {
+            // 如果有事项处于不可提交审核的状态，弹出对话框提示不能批量提交，并引导修改
+            Modal.confirm({
+                title: '批量提交审核失败',
+                icon: <ExclamationCircleOutlined />,
+                content: '批量选择中包含了“未提交审核”以外的其他状态的事项。批量提交审核前请取消这些事项的选择。',
+                okText:'确认',
+                cancelButtonProps:{
+                    style:{
+                        display:'none'
+                    }
+                },
+            });
+        }
+    }
+
+
     /**
      * 根据所给的一组事项 _id 来导出带有审核意见的事项指南详情 csv 文件
      * @param {string[]} itemIdArray 需要导出的事项指南的事项 _id 数组
@@ -355,6 +408,9 @@ export default function ManageProcess(props) {
         setTableLoading(true)
         // 换页时清空选择
         setSelectedRowKeys([])
+        setSelectedRows([])
+        setIsBatching(false)
+
         setCurrent(page - 1)
         setCurrPageSize(pageSize)
         // 换页的内容获取
@@ -411,7 +467,7 @@ export default function ManageProcess(props) {
             setFullType(fullType)
             setStatusScheme(scheme)
         } catch (err) {
-            props.showError('初始化状态表失败！', err.message)
+            props.showError('初始化状态表失败，请刷新重试！', err.message)
             console.dir(err)
         }
     }
@@ -461,25 +517,27 @@ export default function ManageProcess(props) {
     return (
         <>
             <Space direction='vertical' size={12} style={{width: '100%'}}>
-                <Modal width={800}
-                       title={guideDetail.task_name}
-                       visible={isDetailShown}
-                       destroyOnClose={true}
-                       onCancel={endShowing}
-                       footer={null}
-                       style={{
-                           display: "flex",
-                           justifyContent: "center",
-                       }}>
-                    <Table columns={detailColumns}
-                           dataSource={guideDetail}
-                           rowKey='detailType'
-                           style={{
-                               whiteSpace: 'pre-wrap',
-                               wordWrap: 'break-word',
-                               wordBreak: 'break-all',
-                               minWidth: '700px',
-                           }}/>
+                <Modal
+                    width={800}
+                    title={guideDetail.task_name}
+                    visible={isDetailShown}
+                    destroyOnClose={true}
+                    onCancel={endShowing}
+                    footer={null}
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                    }}>
+                    <Table
+                        columns={detailColumns}
+                        dataSource={guideDetail}
+                        rowKey='detailType'
+                        style={{
+                            whiteSpace: 'pre-wrap',
+                            wordWrap: 'break-word',
+                            wordBreak: 'break-all',
+                            minWidth: '700px',
+                        }}/>
                 </Modal>
                 <SelectForm getSearch={searchItems}
                             reset={resetSearch}
@@ -489,24 +547,27 @@ export default function ManageProcess(props) {
                             bindedData={props.bindedData}
                             setBindedData={props.setBindedData}
                             statusType={statusType}/>
-                <Space direction='horizontal' size={12} style={{marginLeft: '75%'}}>
+                <Space direction='horizontal' size={12} style={{
+                    display: "flex",
+                    justifyContent: 'flex-end'
+                }}>
                     <Button type='primary' disabled={unableCreate} onClick={handleCreate}>绑定事项</Button>
+                    <Button type='primary' disabled={!isBatching} onClick={batchSubmission}>批量提交审核</Button>
                     <Button type='primary' disabled={!isBatching} onClick={() => {
-                        console.log('export!')
-                        console.dir(selectedRowKeys)
                         exportGuides(selectedRowKeys)
                     }}>批量导出</Button>
                     <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量解绑</Button>
                 </Space>
-                <Table rowSelection={rowSelection}
-                       columns={tableColumns}
-                       dataSource={tableData} rowKey='_id'
-                       pagination={{
-                           onChange: changePage,
-                           current: current + 1,
-                           total: totalSize
-                       }}
-                       loading={tableLoading}/>
+                <Table
+                    rowSelection={rowSelection}
+                    columns={tableColumns}
+                    dataSource={tableData} rowKey='_id'
+                    pagination={{
+                        onChange: changePage,
+                        current: current + 1,
+                        total: totalSize
+                    }}
+                    loading={tableLoading}/>
             </Space>
         </>
     )
