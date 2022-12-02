@@ -9,5 +9,6 @@ export default {
   GetInterfaceUrl: data => request('get', 'v1/interface', data),
   GetLogPath: data => request('get', '/v1/log-path', data),
   GetChartData: type => service.request({method: 'get', url: '/v1/chart-data/', params: {type}}),
-  websiteSettings: data => request('post', 'v1/website-settings-upload', data)
+  websiteSettings: data => request('post', 'v1/website-settings-upload', data),
+  uploadUserManual: data => request('post', '/v1/user-guide-upload', data),
 }

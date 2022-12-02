@@ -19,7 +19,8 @@ export default function MetaData() {
         addressBarIconFile: null,
         officialQRCode: null,
         wechatQRCodeFile: null,
-        appQRCodeFile: null
+        appQRCodeFile: null,
+        userManual: null,
     }
 
     // Interface
@@ -30,54 +31,69 @@ export default function MetaData() {
 
     // 组件初始化
     useEffect(() => {
-        apiMeta.CoreSettings().then(({
-                                         data: {
-                                             data: {
-                                                 ICP_record_number,
-                                                 copyright,
-                                                 network_record_number,
-                                                 siteCode,
-                                                 url_about_us,
-                                                 url_contact_detail,
-                                                 url_help,
-                                                 url_icp_record,
-                                                 url_network_record,
-                                                 url_privacy_security,
-                                                 url_website_map,
-                                                 url_website_statement
-                                             }
-                                         }
-                                     }) => coreSettingsForm.setFieldsValue({
-            ICP_record_number,
-            network_record_number,
-            url_about_us,
-            url_contact_detail,
-            url_privacy_security,
-            url_website_statement,
-            url_website_map,
-            url_help,
-            url_icp_record,
-            url_network_record,
-            copyright,
-            siteCode
-        }))
-        apiMeta.GetInterfaceUrl().then(({
-                                            data: {
-                                                data: {
-                                                    api_BDDT,
-                                                    api_GDZWFWPT,
-                                                    api_GZSRSJGW,
-                                                    api_GZSRSJWX,
-                                                    api_SHBAPP,
-                                                    api_ZNFWJQRPT
-                                                }
-                                            }
-                                        }) => interfaceConfigurationForm.setFieldsValue({
-            api_GZSRSJGW, api_GZSRSJWX, api_SHBAPP, api_GDZWFWPT, api_ZNFWJQRPT, api_BDDT,
-        }))
+        // 获取核心设置的内容
+        apiMeta.CoreSettings()
+            .then(({
+                       data: {
+                           data: {
+                               ICP_record_number,
+                               copyright,
+                               network_record_number,
+                               siteCode,
+                               url_about_us,
+                               url_contact_detail,
+                               url_help,
+                               url_icp_record,
+                               url_network_record,
+                               url_privacy_security,
+                               url_website_map,
+                               url_website_statement
+                           }
+                       }
+                   }) => {
+                coreSettingsForm.setFieldsValue({
+                    ICP_record_number,
+                    network_record_number,
+                    url_about_us,
+                    url_contact_detail,
+                    url_privacy_security,
+                    url_website_statement,
+                    url_website_map,
+                    url_help,
+                    url_icp_record,
+                    url_network_record,
+                    copyright,
+                    siteCode
+                })
+            })
+
+        // 获取接口设置中的接口 url
+        apiMeta.GetInterfaceUrl()
+            .then(({
+                       data: {
+                           data: {
+                               api_BDDT,
+                               api_GDZWFWPT,
+                               api_GZSRSJGW,
+                               api_GZSRSJWX,
+                               api_SHBAPP,
+                               api_ZNFWJQRPT
+                           }
+                       }
+                   }) => {
+                interfaceConfigurationForm.setFieldsValue({
+                    api_GZSRSJGW,
+                    api_GZSRSJWX,
+                    api_SHBAPP,
+                    api_GDZWFWPT,
+                    api_ZNFWJQRPT,
+                    api_BDDT,
+                })
+            })
     }, [])
 
     function onFinish() {
+        // 上传图片（二维码）
         const data = new FormData()
         let empty = true
         for (let fileName of ['websiteLogoFile', 'addressBarIconFile', 'backstageLogoFile',
@@ -88,9 +104,25 @@ export default function MetaData() {
                 empty = false
             }
         }
-        if (empty) message.error('请选择图片后再上传').then()
-        else apiMeta.websiteSettings(data).then(() => message.success('图片上传成功'))
-            .catch(() => message.error('图片上传失败'))
+        if (!empty) {
+            apiMeta.websiteSettings(data).then(() => {
+                message.success('图片上传成功')
+            }).catch(() => {
+                message.error('图片上传失败')
+            })
+        }
+
+        // 上传用户手册
+        if (files.userManual) { // 如果用户手册有上传文件的话就上传，没有就忽略
+            const data = new FormData()
+            data.append('userManual', files.userManual)
+            files.userManual = null
+            apiMeta.uploadUserManual(data).then(() => {
+                message.success('上传用户手册成功')
+            }).catch(()=>{
+                message.error('上传用户手册失败')
+            })
+        }
     }
 
     const ChangeCoreSettings = (values) => {
@@ -269,6 +301,34 @@ export default function MetaData() {
                             maxCount={1}
                             name="QRCode"
                             onRemove={() => files.appQRCodeFile = null}
+                        >
+                            <Button icon={<UploadOutlined/>}>Upload</Button>
+                        </Upload>
+                    </Form.Item>
+                    <Form.Item label="用户手册" name="userManual" layout="inline">
+                        <Upload
+                            listType="text"
+                            className="upload-list-inline"
+                            accept=".pdf"
+                            beforeUpload={file => {
+                                if (file.type === 'application/pdf' && file.size <= 20 * 1024 ** 2) {
+                                    //  如果是 pdf 文件并且文件大小小于 20M，就停止默认上传行为，将文件保存到 files 中
+                                    // 保存文件信息
+                                    files.userManual = file
+                                    // 停止上传
+                                    return false
+                                } else {
+                                    message.warn('请上传小于 20MB 大小的 PDF 文件。')
+                                    // 列表中将不展示此文件
+                                    return Upload.LIST_IGNORE
+                                }
+                            }}
+                            maxCount={1}
+                            name="userManual"
+                            onRemove={() => {
+                                // 删除保存的文件信息
+                                files.userManual = null
+                            }}
                         >
                             <Button icon={<UploadOutlined/>}>Upload</Button>
                         </Upload>
