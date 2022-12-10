@@ -13,6 +13,7 @@ import jsonToExcel from "../../../../../utils/JsonToExcel";
 export default function ManageRules(props) {
     // 页面的基础数据
     const [tableData, setTableData] = useState([]);
+    const [originData, setOriginData] = useState({});
     const [unableCreate, setUnableCreate] = useState(true);
     const [tableLoading, setTableLoading] = useState(false);
     // 删除队列
@@ -20,6 +21,7 @@ export default function ManageRules(props) {
     // 用于获取批量处理的事项规则id
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const [isBatching, setIsBatching] = useState(false);
+    
     const onSelectionChange = (keys) => {
         setIsBatching(keys.length > 0);
         setSelectedRowKeys(keys);
@@ -34,6 +36,8 @@ export default function ManageRules(props) {
     };
     // 页数处理
     const [current, setCurrent] = useState(1);
+    const [currPageSize, setCurrPageSize] = useState(10);
+    const [totalSize, setTotalSize] = useState(0);
 
     const tableColumns = [
         {
@@ -219,24 +223,28 @@ export default function ManageRules(props) {
 
     const getRules = () => {
         // 无搜索条件获取全数据
-        // 由于数据量较小，不进行分页处理，全部拉取
         setTableLoading(true);
-        api.GetRules({})
-            .then((response) => {
-                let rules = response.data.data;
-                for (let i = 0; i < rules.length; i++) {
-                    rules[i]["is_leaf"] = rules[i].children.length === 0;
-                    rules[i]["department_name"] =
-                        rules[i].creator.department_name;
-                    rules[i]["creator_name"] = rules[i].creator.name;
-                }
-                setTableData(rules);
-                setTableLoading(false);
-            })
-            .catch((error) => {
-                setTableLoading(false);
-                props.showError("获取规则失败！");
-            });
+        api.GetRules({
+            page_num: 0, 
+            page_size: currPageSize
+        }).then((response) => {
+            let rules = response.data.data.data;
+            // let table = []
+            setTotalSize(response.data.data.total)
+            for (let i = 0; i < rules.length; i++) {
+                rules[i]["is_leaf"] = rules[i].children.length === 0;
+                rules[i]["department_name"] =
+                    rules[i].creator.department_name;
+                rules[i]["creator_name"] = rules[i].creator.name;
+                // table.push(rules[i])
+            }
+            setTableData(rules);
+            setTableLoading(false);
+        })
+        .catch((error) => {
+            setTableLoading(false);
+            props.showError("获取规则失败！");
+        });
     };
 
     const modifyRule = (id) => {
@@ -266,20 +274,30 @@ export default function ManageRules(props) {
     const searchRules = (data) => {
         setTableLoading(true);
         // 搜索
-        api.GetRules(data)
+        setOriginData(data);
+        let totalData = data;
+        totalData["page_num"] = 0;
+        totalData["page_size"] = currPageSize;
+        api.GetRules(totalData)
             .then((response) => {
-                let rules = response.data.data;
-                setCurrent(1);
+                let rules = response.data.data.data;
+                console.log(rules)
+                // let table = []
+                setTotalSize(response.data.data.total);
+                setCurrent(0);
                 for (let i = 0; i < rules.length; i++) {
                     rules[i]["is_leaf"] = rules[i].children.length === 0;
                     rules[i]["department_name"] =
                         rules[i].creator.department_name;
                     rules[i]["creator_name"] = rules[i].creator.name;
+                    // table.push(rules[i])
                 }
-                setTableLoading(false);
                 setTableData(rules);
+                setTableLoading(false);
             })
             .catch((error) => {
+                console.log("Word");
+                console.log(error);
                 setTableLoading(false);
                 props.showError("搜索规则失败！");
             });
@@ -293,14 +311,43 @@ export default function ManageRules(props) {
 
     const resetSearch = () => {
         // 初始化搜索
-        setCurrent(1);
+        setOriginData({});
+        setCurrent(0);
         getRules();
     };
 
-    const changePage = (page) => {
+    const changePage = (page, pageSize) => {
         // 换页时清空选择
         setSelectedRowKeys([]);
-        setCurrent(page);
+        setCurrent(page - 1);
+        setCurrPageSize(pageSize);
+
+        let totalData = originData;
+        totalData["page_num"] = page - 1;
+        totalData["page_size"] = pageSize;
+        
+        setTableLoading(true);
+        api.GetRules(totalData)
+            .then((response) => {
+                let rules = response.data.data.data;
+                // let table = []
+                // setCurrent(0);
+                for (let i = 0; i < rules.length; i++) {
+                    rules[i]["is_leaf"] = rules[i].children.length === 0;
+                    rules[i]["department_name"] =
+                        rules[i].creator.department_name;
+                    rules[i]["creator_name"] = rules[i].creator.name;
+                    // table.push(rules[i])
+                }
+                setTableData(rules);
+                setTableLoading(false);
+            })
+            .catch((error) => {
+                console.log("Hello")
+                console.log(error)
+                setTableLoading(false);
+                props.showError("搜索规则失败！");
+            });
     };
 
     useEffect(
@@ -317,7 +364,11 @@ export default function ManageRules(props) {
     return (
         <>
             <Space direction="vertical" size={12} style={{ width: "100%" }}>
-                <SelectForm getSearch={searchRules} reset={resetSearch} />
+                <SelectForm
+                    getSearch={searchRules}
+                    reset={resetSearch}
+                    setOriginData={setOriginData}
+                />
                 <Space
                     direction="horizontal"
                     size={12}
@@ -330,9 +381,7 @@ export default function ManageRules(props) {
                     >
                         创建规则
                     </Button>
-                    <Button 
-                        type="primary" 
-                        onClick={exportAllRules}>
+                    <Button type="primary" onClick={exportAllRules}>
                         全量导出
                     </Button>
                     <Button
@@ -348,7 +397,11 @@ export default function ManageRules(props) {
                     columns={tableColumns}
                     dataSource={tableData}
                     rowKey="rule_id"
-                    pagination={{ onChange: changePage, current: current }}
+                    pagination={{
+                        onChange: changePage,
+                        current: current + 1,
+                        total: totalSize, // zzt
+                    }}
                     loading={tableLoading}
                     expandable={{ childrenColumnName: "no" }}
                 />

@@ -78,7 +78,7 @@ export default function MobileLoginForm() {
             if(failTime >= 5)
                 setFailTime(0)
                 setVerificationCode("");
-            message.error("验证码输入错误,错5次就需要重新校验验证码，请重新输入")
+            message.error("验证码输入错误，错5次就需要重新发送验证码，请重新输入")
         }
     };
     const saveUserInfo = (response, values) => {
