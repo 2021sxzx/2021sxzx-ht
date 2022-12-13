@@ -1,10 +1,18 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {Suspense, lazy, useEffect, useRef, useState} from 'react'
 import {HashRouter, Route, Switch} from 'react-router-dom'
-import Login from '../views/login/Login'
-import PageContainer from '../views/PageContainer/PageContainer'
+// import Login from '../views/login/Login'
+// import PageContainer from '../views/PageContainer/PageContainer'
 import {message, Modal} from "antd";
 import api from '../api/login'
 import {ExclamationCircleOutlined} from "@ant-design/icons";
+
+// 懒加载
+const Login = lazy(() => {
+    return import('../views/login/Login')
+})
+const PageContainer = lazy(() => {
+    return import('../views/PageContainer/PageContainer')
+})
 
 const {confirm} = Modal
 
@@ -128,19 +136,21 @@ export default function indexRouter() {
         <HashRouter>
             <loginStateContext.Provider value={{setLoginState}}>
                 <Switch>
-                    <Route path='/login' component={Login} setLoginState={setLoginState}/>
-                    <Route path='/' render={() => {
-                        switch (loginState) {
-                            case 'login':// 登录状态
-                                return <PageContainer/>
-                            case 'logout':// 登出状态
-                                return <div>logout</div>
-                            case 'loading':// 初始化状态
-                                return <div>正在验证登录状态，请稍等...</div>
-                            default:
-                                return <div>error</div>
-                        }
-                    }}/>
+                    <Suspense fallback={<div>loading</div>}>
+                        <Route path='/login' component={Login} setLoginState={setLoginState}/>
+                        <Route path='/' render={() => {
+                            switch (loginState) {
+                                case 'login':// 登录状态
+                                    return <PageContainer/>
+                                case 'logout':// 登出状态
+                                    return <div>logout</div>
+                                case 'loading':// 初始化状态
+                                    return <div>正在验证登录状态，请稍等...</div>
+                                default:
+                                    return <div>error</div>
+                            }
+                        }}/>
+                    </Suspense>
                 </Switch>
             </loginStateContext.Provider>
         </HashRouter>
