@@ -119,9 +119,14 @@ export default function MetaData() {
             files.userManual = null
             apiMeta.uploadUserManual(data).then(() => {
                 message.success('上传用户手册成功')
-            }).catch(()=>{
+            }).catch(() => {
                 message.error('上传用户手册失败')
             })
+        }
+
+        // 如果没有更改就提示
+        if (empty && (!files.userManual)) {
+            message.warn('当前设置未更改，无需确认')
         }
     }
 
