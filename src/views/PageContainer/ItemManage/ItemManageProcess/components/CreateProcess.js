@@ -336,12 +336,13 @@ export default function CreateProcess(props) {
                     <Space className={style.chosenTags} direction='horizontal' size={[12, 4]} wrap>
                         {
                             chosenRules.map((tag, index) =>
-                                <div className={style.chosenRule} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')}
-                                     onClick={
-                                         () => {
-                                             getBack(index, 'rule')
-                                         }
-                                     }>
+                                <div
+                                    className={style.chosenRule} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')}
+                                    onClick={
+                                        () => {
+                                            getBack(index, 'rule')
+                                        }
+                                    }>
                                     <div className={style.tagContent}>
                                         {tag.nodeName}
                                     </div>
@@ -350,12 +351,13 @@ export default function CreateProcess(props) {
                         }
                         {
                             chosenRegions.map((tag, index) =>
-                                <div className={style.chosenRegion} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')}
-                                     onClick={
-                                         () => {
-                                             getBack(index, 'region')
-                                         }
-                                     }>
+                                <div
+                                    className={style.chosenRegion} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')}
+                                    onClick={
+                                        () => {
+                                            getBack(index, 'region')
+                                        }
+                                    }>
                                     <div className={style.tagContent}>
                                         {tag.nodeName}
                                     </div>

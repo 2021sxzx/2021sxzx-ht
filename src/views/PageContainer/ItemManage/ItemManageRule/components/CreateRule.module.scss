@@ -77,8 +77,6 @@
     display: flex;
     border: 1px solid rgba(170, 170, 170, 1);
     border-radius: 2px;
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
     width: 915px;
     left: 150px;
     margin-bottom: 20px;
@@ -120,7 +118,7 @@
     position: relative;
     top: 20px;
     left: 60px;
-    height: 0px;
+    height: 0;
     width: 360px;
 }
 
@@ -135,8 +133,7 @@
     color: #FFFFFF;
     margin-bottom: 5px;
     cursor: pointer;
-    position: 'absolute';
-    width: 90px;  
+    width: 90px;
     left: 60px;
     top: 20px;
 }

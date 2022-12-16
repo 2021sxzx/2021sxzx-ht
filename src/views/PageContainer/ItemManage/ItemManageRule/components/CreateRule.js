@@ -37,6 +37,11 @@ export default function CreateRule(props) {
     // 是否已经可以创建
     const [chooseEnd, setChooseEnd] = useState(false)
 
+    // 是否展示更多规则项
+    const [showMore, setShowMore] = useState(false)
+
+    const [isRuleLoading, setIsRuleLoading] = useState(false)
+
     useEffect(() => {
         // 初始化分类规则树的根节点
         let currChosen = []
@@ -61,6 +66,9 @@ export default function CreateRule(props) {
         // 正在修改的节点id需要被跳过
         let len = path.length
         let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
+
+        setIsRuleLoading(true)
+
         api.GetRules({
             parentId: [path[len - 2].nodeId]
         }).then(response => {
@@ -86,83 +94,165 @@ export default function CreateRule(props) {
             setOriginPath(tempPath + path[len - 1].nodeName + '\\')
         }).catch(error => {
             props.showError('初始化修改节点失败！' + error.message)
+        }).finally(() => {
+            setIsRuleLoading(false)
         })
     }
 
     const chooseTagApi = (tag) => {
-        // 正在修改的节点id需要被跳过
-        let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
-        // 点击某个节点
-        api.GetRules({
-            parentId: [tag.nodeId]
-        }).then(response => {
-            let data = response.data.data
-            // 子节点处理
-            let children = []
-            for (let i = 0; i < data.length; i++) {
-                if (data[i].rule_id === skip) continue
-                children.push({
-                    nodeId: data[i].rule_id,
-                    nodeName: data[i].rule_name
-                })
-            }
-            // 已选择节点处理
-            let chosen = []
-            for (let i = 0; i < chosenTags.length; i++) {
-                chosen.push(chosenTags[i])
-            }
-            chosen.push(tag)
-            // 规则名称处理
-            let path = pathName + tag.nodeName + '\\'
+        // 已选择节点处理
+        const chosen = [...chosenTags]
+        chosen.push(tag)
+        // 规则名称处理
+        let path = pathName + tag.nodeName + '\\'
+
+        setIsRuleLoading(true)
+
+        // 获取子规则项
+        getRulesWithPaging(tag).then((res) => {
             // 更新state
+            setEnabledTags(res)
             setChosenTags(chosen)
             setPathName(path)
-            setEnabledTags(children)
-        }).catch(error => {
-            props.showError('获取子节点失败！' + error.message)
+        }).catch(err => {
+            props.showError('获取子节点失败！' + err.message)
+        }).finally(() => {
+            setIsRuleLoading(false)
+        })
+    }
+
+    /**
+     * 使用分页的方式获取规则项
+     * @param tag
+     * @return {Promise<[]>} 规则项数组
+     */
+    const getRulesWithPaging = (tag) => {
+        // 正在修改的节点id需要被跳过
+        const skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
+
+        return new Promise(((resolve, reject) => {
+            // 点击某个节点
+            api.GetRules({
+                parentId: [tag.nodeId],
+                page_num: 0,
+                page_size: 10
+            }).then(response => {
+                const data = response.data.data.data
+
+                // 大于 10 条，说明还有一些规则项没展示出来，显示“更多”按钮
+                const total = response.data.data.total
+                setShowMore(total > 10)
+
+                // 子节点处理
+                let children = []
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].rule_id === skip) continue
+                    children.push({
+                        nodeId: data[i].rule_id,
+                        nodeName: data[i].rule_name
+                    })
+                }
+
+                resolve(children)
+            }).catch(error => {
+                reject(error)
+            })
+        }))
+    }
+
+    /**
+     * 不使用分页获取规则项，
+     * TODO(zzj):目前只获取第一页（前十条），后面重构的时候加形参可以控制获取的页数和页长
+     * @param tag
+     * @return {Promise<unknown>} 规则项数组
+     */
+    const getRulesWithoutPaging = (tag) => {
+        return new Promise((resolve, reject) => {
+            // 正在修改的节点id需要被跳过
+            const skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
+
+            // 获取最后选择的节点的全部规则项
+            api.GetRules({
+                parentId: [tag.nodeId],
+            }).then(response => {
+                const data = response.data.data
+
+                // 子节点处理
+                let children = []
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i].rule_id === skip) continue
+                    children.push({
+                        nodeId: data[i].rule_id,
+                        nodeName: data[i].rule_name
+                    })
+                }
+
+                // 更新展示的规则项内容
+                resolve(children)
+            }).catch(error => {
+                reject(error)
+            })
+        })
+    }
+
+    /**
+     * 隐藏“显示更多”的文字，并展示所有规则项
+     */
+    const showMoreRules = () => {
+        // 隐藏“显示更多”的文字
+        setShowMore(false)
+
+        setIsRuleLoading(true)
+
+        // 展示所有规则项
+        getRulesWithoutPaging(chosenTags[chosenTags.length - 1]).then((res) => {
+            setEnabledTags(res)
+        }).catch(err => {
+            setEnabledTags([])
+            props.showError('获取子节点失败！' + err.message)
+        }).finally(() => {
+            setIsRuleLoading(false)
         })
     }
 
     const getBackApi = (tag, index) => {
-        // 正在修改的节点id需要被跳过
-        let skip = props.updatePath.length === 0 ? 'noSkip' : props.updatePath[props.updatePath.length - 1].nodeId
-        // 点击回归某个节点
-        api.GetRules({
-            parentId: [tag.nodeId]
-        }).then(response => {
-            let data = response.data.data
-            // 子节点处理
-            let children = []
-            for (let i = 0; i < data.length; i++) {
-                if (data[i].rule_id === skip) continue
-                children.push({
-                    nodeId: data[i].rule_id,
-                    nodeName: data[i].rule_name
-                })
+        // 将已选择节点与规则名称回滚到所选的位置
+        const chosen = []
+        const tempNew = []
+        let newNodeIndex = 0
+        let end = false
+        let path = ''
+        for (let i = 0; i <= index; i++) {
+            chosen.push(chosenTags[i])
+            path += (chosenTags[i].nodeName + '\\')
+            if (chosenTags[i].nodeId[0] === 't') {
+                tempNew.push(newNodeList[newNodeIndex++])
+                end = true
             }
-            // 已选择节点与规则名称处理
-            let chosen = []
-            let tempNew = []
-            let newNodeIndex = 0
-            let end = false
-            let path = ''
-            for (let i = 0; i <= index; i++) {
-                chosen.push(chosenTags[i])
-                path += (chosenTags[i].nodeName + '\\')
-                if (chosenTags[i].nodeId[0] === 't') {
-                    tempNew.push(newNodeList[newNodeIndex++])
-                    end = true
-                }
-            }
-            // 更新state
-            setChosenTags(chosen)
-            setPathName(path)
-            setEnabledTags(children)
-            setNewNodeList(tempNew)
-            setChooseEnd(end)
-        }).catch(error => {
-            props.showError('获取子节点失败！' + error.message)
-        })
+        }
+
+        // 回滚状态
+        setChosenTags(chosen)
+        setPathName(path)
+        setNewNodeList(tempNew)
+        setChooseEnd(end)
+
+        // 获取对应的子规则
+        if (tag.nodeId[0] !== 't') {
+            setIsRuleLoading(true)
+            // 回滚到的位置不是新创建的规则，就正常请求规则内容
+            getRulesWithPaging(tag).then((res) => {
+                // 更新state
+                setEnabledTags(res)
+            }).catch(err => {
+                props.showError('获取子节点失败！' + err.message)
+            }).finally(() => {
+                setIsRuleLoading(false)
+            })
+        } else {
+            // 如果回滚到新节点，就不用请求了
+            setEnabledTags([])
+        }
     }
 
     const chooseTag = (index, type) => {
@@ -360,30 +450,34 @@ export default function CreateRule(props) {
 
     return (
         <Space className={style.mainSpace} direction='vertical' size={15}>
-            <Modal centered destroyOnClose={true}
-                   title='自定义节点'
-                   visible={isNodeCreating}
-                   onCancel={endNodeCreating}
-                   onOk={finishNodeCreating}>
-                <Input id='NodeCreatingInput'
-                       placeholder='请输入自定义节点名'
-                       size='middle'
-                       onChange={handleNodeCreatingInputChange}
-                       maxLength={64}
-                       showCount={true}
+            <Modal
+                centered destroyOnClose={true}
+                title='自定义节点'
+                visible={isNodeCreating}
+                onCancel={endNodeCreating}
+                onOk={finishNodeCreating}>
+                <Input
+                    id='NodeCreatingInput'
+                    placeholder='请输入自定义节点名'
+                    size='middle'
+                    onChange={handleNodeCreatingInputChange}
+                    maxLength={64}
+                    showCount={true}
                 />
             </Modal>
-            <Modal centered destroyOnClose={true}
-                   title='修改节点名称'
-                   visible={isUpdating}
-                   onCancel={endUpdating}
-                   onOk={finishUpdating}>
-                <Input id='updateingInput'
-                       placeholder='请输入新节点名'
-                       size='middle'
-                       onChange={handleUpdatingInputChange}
-                       maxLength={64}
-                       showCount={true}
+            <Modal
+                centered destroyOnClose={true}
+                title='修改节点名称'
+                visible={isUpdating}
+                onCancel={endUpdating}
+                onOk={finishUpdating}>
+                <Input
+                    id='updateingInput'
+                    placeholder='请输入新节点名'
+                    size='middle'
+                    onChange={handleUpdatingInputChange}
+                    maxLength={64}
+                    showCount={true}
                 />
             </Modal>
             {
@@ -421,23 +515,27 @@ export default function CreateRule(props) {
                     <Space className={style.chosenTags} direction='horizontal' size={[12, 4]} wrap>
                         {
                             chosenTags.map((tag, index) =>
-                                <div className={style.chosenTag} key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')}
-                                     onClick={
-                                         () => {
-                                             getBack(index)
-                                         }
-                                     }>
+                                <div
+                                    className={style.chosenTag}
+                                    key={'c' + tag.nodeId + (tag.isRegion ? 'r' : 'n')}
+                                    onClick={
+                                        () => {
+                                            getBack(index)
+                                        }
+                                    }>
                                     <div className={style.tagContent}>
                                         {tag.nodeName}
                                     </div>
                                 </div>
                             )
                         }
-                        <div className={style.chosenTag} onClick={startUpdating}
-                             style={{
-                                 backgroundColor: 'orange',
-                                 display: updatingNode.nodeId === 'none' ? 'none' : 'flex'
-                             }}>
+                        <div
+                            className={style.chosenTag}
+                            onClick={startUpdating}
+                            style={{
+                                backgroundColor: 'orange',
+                                display: updatingNode.nodeId === 'none' ? 'none' : 'flex'
+                            }}>
                             <div className={style.tagContent}>
                                 {updatingNode.nodeName}
                             </div>
@@ -450,7 +548,19 @@ export default function CreateRule(props) {
                         <div className={style.chooseBoxTitle1}>
                             可选业务规则项：
                         </div>
-                        <TagsArea tags={enabledTags} chooseTag={chooseTag} type={'1'}/>
+                        {
+                            isRuleLoading ?
+                                <div className={style.chooseBoxTitle1}>正在加载中...</div> :
+                                (<>
+                                    <TagsArea tags={enabledTags} chooseTag={chooseTag} type={'1'}/>
+                                    <div className={style.chooseBoxTitle1} onClick={showMoreRules} style={{
+                                        display: showMore ? "flex" : "none",
+                                    }}>
+                                        <a>显示更多...</a>
+                                    </div>
+                                </>)
+                        }
+                        <br/>
                     </div>
 
                     <div className={style.separator1}/>
@@ -459,8 +569,10 @@ export default function CreateRule(props) {
                         <div className={style.chooseBoxTitle3}>
                             新建事项规则项：
                         </div>
-                        <div className={style.createTag} style={{display: isUpdatingRoot ? 'none' : 'block'}}
-                             onClick={startNodeCreating}>
+                        <div
+                            className={style.createTag}
+                            style={{display: isUpdatingRoot ? 'none' : 'block'}}
+                            onClick={startNodeCreating}>
                             自定义标签+
                         </div>
                     </div>

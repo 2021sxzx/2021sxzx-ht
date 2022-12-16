@@ -50,7 +50,7 @@ instance.interceptors.response.use(
   },
   function (error) {
     // console.log("MISTAKE")
-    if (error.response.status === 401) {
+    if (error.response && error.response.status === 401) {
       api.clearStorageAndRedirect()
       notification.error({
         key: 'errorkey',
