@@ -104,7 +104,7 @@ export default function MetaData() {
                 empty = false
             }
         }
-        if (!empty) {
+        if (empty === false) {
             apiMeta.websiteSettings(data).then(() => {
                 message.success('图片上传成功')
             }).catch(() => {

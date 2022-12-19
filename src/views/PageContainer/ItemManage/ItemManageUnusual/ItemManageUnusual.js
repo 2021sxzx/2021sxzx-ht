@@ -3,7 +3,12 @@ import {Dropdown, Space, Menu, message, Button, Tabs, Table, Modal} from 'antd'
 import {getYMD, getYMDHMS} from "../../../../utils/TimeStamp"
 import api from '../../../../api/rule'
 import SelectForm from './components/SelectForm'
-import {getItemsDataOnTableFormat, itemStatusScheme} from "../../../../api/itemAdapter";
+import {
+    getItemGuideWithAuditOpinionsOnExportFormat,
+    getItemsDataOnTableFormat, itemDetailTitle,
+    itemStatusScheme
+} from "../../../../api/itemAdapter";
+import jsonToExcel from "../../../../utils/JsonToExcel";
 
 const {TabPane} = Tabs
 
@@ -297,7 +302,7 @@ export default function ItemManageUnusual(props) {
         api.DeleteItems(data).then(() => {
             getItems()
             showSuccess()
-        }).catch(error => {
+        }).catch(() => {
             // 删除报错时，弹出报错框并重新加载数据
             getItems()
             setCurrent(0)
@@ -317,7 +322,7 @@ export default function ItemManageUnusual(props) {
         }).then(() => {
             // 更新完毕后重新获取事项
             getItems()
-        }).catch(error => {
+        }).catch(() => {
             getItems()
             setCurrent(0)
             showError('更新事项状态失败！')
@@ -345,7 +350,7 @@ export default function ItemManageUnusual(props) {
             setTotalSize(response.data.data.total)
             setTableData(items)
             setTableLoading(false)
-        }).catch(error => {
+        }).catch(() => {
             showError('搜索事项失败！')
             setTableLoading(false)
         })
@@ -533,7 +538,7 @@ export default function ItemManageUnusual(props) {
             })
             setTableLoading(false)
             setGuideDetail(detailTable)
-        }).catch(error => {
+        }).catch(() => {
             showError('获取事项详情失败！')
         })
     }
@@ -576,23 +581,79 @@ export default function ItemManageUnusual(props) {
         }
     }, [statusId])
 
+    /**
+     * 根据所给的一组事项 _id 来导出带有审核意见的事项指南详情 csv 文件
+     * @param {string[]} itemIdArray 需要导出的事项指南的事项 _id 数组
+     * @return {Promise<void>}
+     */
+    const exportGuides = async (itemIdArray) => {
+        try {
+            let allDetails = []
+
+            for (let itemId of itemIdArray) {
+                // 获取符合导出格式的事项详情数据
+                let detail = await getItemGuideWithAuditOpinionsOnExportFormat(itemId)
+                allDetails.push(detail)
+            }
+
+            // 导出
+            jsonToExcel(Object.values(itemDetailTitle), allDetails, '未命名.csv')
+            message.info('正在导出...')
+        } catch (err) {
+            message.error('导出错误，请稍后重试')
+        }
+    }
+
     return (
         <>
             <Space direction='vertical' size={12} style={{width: '100%'}}>
-                <Modal width={800} title={guideDetail.task_name} visible={isDetailShown}
-                       destroyOnClose={true} onCancel={endShowing} footer={null}>
-                    <Table style={{whiteSpace: 'pre-wrap', wordWrap: 'break-word', wordBreak: 'break-all'}}
-                           columns={detailColumns} dataSource={guideDetail} rowKey='detailType'/>
+                <Modal
+                    width={800}
+                    title={guideDetail.task_name}
+                    visible={isDetailShown}
+                    destroyOnClose={true}
+                    onCancel={endShowing}
+                    footer={null}>
+                    <Table
+                        style={{
+                            whiteSpace: 'pre-wrap',
+                            wordWrap: 'break-word',
+                            wordBreak: 'break-all'
+                        }}
+                        columns={detailColumns}
+                        dataSource={guideDetail}
+                        rowKey='detailType'/>
                 </Modal>
-                <SelectForm getSearch={searchItems} reset={resetSearch} setOriginData={setOriginData}
-                            bindedData={props.bindedData} setBindedData={props.setBindedData}/>
+                <SelectForm
+                    getSearch={searchItems}
+                    reset={resetSearch}
+                    setOriginData={setOriginData}
+                    bindedData={props.bindedData}
+                    setBindedData={props.setBindedData}/>
                 <Space direction='horizontal' size={12} style={{marginLeft: '82%'}}>
-                    <Button type='primary' disabled={!isBatching}>批量导出</Button>
-                    <Button type='primary' disabled={!isBatching} onClick={handleBatchDelete}>批量解绑</Button>
+                    <Button
+                        type='primary'
+                        disabled={!isBatching}
+                        onClick={() => {
+                            exportGuides(selectedRowKeys)
+                        }}>批量导出</Button>
+                    <Button
+                        type='primary'
+                        disabled={!isBatching}
+                        onClick={handleBatchDelete}
+                    >批量解绑</Button>
                 </Space>
-                <Table rowSelection={rowSelection} columns={tableColumns} dataSource={tableData} rowKey='_id'
-                       pagination={{onChange: changePage, current: current + 1, total: totalSize}}
-                       loading={tableLoading}/>
+                <Table
+                    rowSelection={rowSelection}
+                    columns={tableColumns}
+                    dataSource={tableData}
+                    rowKey='_id'
+                    pagination={{
+                        onChange: changePage,
+                        current: current + 1,
+                        total: totalSize
+                    }}
+                    loading={tableLoading}/>
             </Space>
         </>
     )

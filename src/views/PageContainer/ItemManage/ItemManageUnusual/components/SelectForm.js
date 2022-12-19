@@ -109,13 +109,6 @@ export default function SelectForm(props) {
     }
 
     const clear = () => {
-        document.getElementById('taskCodeInput').value = ''
-        document.getElementById('itemNameInput').value = ''
-        document.getElementById('departmentInput').value = ''
-        document.getElementById('creatorInput').value = ''
-        document.getElementById('ruleIdInput').value = ''
-        document.getElementById('regionCodeInput').value = ''
-        document.getElementById('timeInput').value = [null, null]
         setTaskCode('')
         setItemRuleName('')
         setDepartment('')
@@ -148,61 +141,61 @@ export default function SelectForm(props) {
                 }}
             >
                 <Form.Item label='指南编码' style={{width: '25%'}}>
-                    <Input value={task_code}
-                           placeholder='请输入编码'
-                           size='middle'
-                           onChange={handleTaskCodeChange}
-                           maxLength={64}
-                           showCount
+                    <Input
+                        value={task_code}
+                        placeholder='请输入编码'
+                        size='middle'
+                        onChange={handleTaskCodeChange}
+                        maxLength={64}
+                        showCount
                     />
                 </Form.Item>
                 <Form.Item label='指南名称' style={{width: '25%'}}>
-                    <Input value={item_name}
-                           placeholder='请输入名称'
-                           size='middle'
-                           onChange={handleItemNameChange}
-                           maxLength={64}
-                           showCount
+                    <Input
+                        value={item_name}
+                        placeholder='请输入名称'
+                        size='middle'
+                        onChange={handleItemNameChange}
+                        maxLength={64}
+                        showCount
                     />
                 </Form.Item>
-                {/*<Form.Item label='机构' style={{width: '22%'}}>*/}
-                {/*    <Input value={department}*/}
-                {/*           placeholder='请输入机构'*/}
-                {/*           size='middle'*/}
-                {/*           onChange={handleDepartmentChange}/>*/}
-                {/*</Form.Item>*/}
                 <Form.Item label='创建人' style={{width: '22%'}}>
-                    <Input value={creator}
-                           placeholder='请输入创建人'
-                           size='middle'
-                           onChange={handleCreatorChange}
-                           maxLength={64}
-                           showCount
+                    <Input
+                        value={creator}
+                        placeholder='请输入创建人'
+                        size='middle'
+                        onChange={handleCreatorChange}
+                        maxLength={64}
+                        showCount
                     />
                 </Form.Item>
 
                 <Form.Item label='业务规则编码' style={{marginTop: 10, width: '25%'}}>
-                    <Input value={rule_id}
-                           placeholder='请输入业务规则编码'
-                           size='middle'
-                           onChange={handleRuleIdChange}
-                           maxLength={64}
-                           showCount
+                    <Input
+                        value={rule_id}
+                        placeholder='请输入业务规则编码'
+                        size='middle'
+                        onChange={handleRuleIdChange}
+                        maxLength={64}
+                        showCount
                     />
                 </Form.Item>
                 <Form.Item label='区划规则编码' style={{marginTop: 10, width: '25%'}}>
-                    <Input value={region_code}
-                           placeholder='请输入区划规则编码'
-                           size='middle'
-                           onChange={handleRegionCodeChange}
-                           maxLength={64}
-                           showCount
+                    <Input
+                        value={region_code}
+                        placeholder='请输入区划规则编码'
+                        size='middle'
+                        onChange={handleRegionCodeChange}
+                        maxLength={64}
+                        showCount
                     />
                 </Form.Item>
                 <Form.Item label='起始时间' style={{marginTop: 10, width: '32%'}}>
-                    <RangePicker value={time}
-                                 style={{width: '100%'}}
-                                 onChange={handleDateChange}/>
+                    <RangePicker
+                        value={time}
+                        style={{width: '100%'}}
+                        onChange={handleDateChange}/>
                 </Form.Item>
                 <Form.Item style={{marginTop: 10, width: '5%', minWidth: 62}}>
                     <Button type='default' onClick={reset} style={{width: '100%'}}>重置</Button>

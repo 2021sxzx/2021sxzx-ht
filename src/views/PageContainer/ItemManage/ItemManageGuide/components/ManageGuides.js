@@ -404,24 +404,26 @@ export default function ManageGuide(props) {
     return (
         <>
             <Space direction="vertical" size={12} style={{width: '100%'}}>
-                <Modal width={800}
-                       title={guideDetail.task_name}
-                       visible={isDetailShown}
-                       destroyOnClose={true}
-                       onCancel={endShowing}
-                       footer={null}
-                       style={{
-                           display: "flex",
-                           justifyContent: "center",
-                       }}>
-                    <Table columns={detailColumns}
-                           dataSource={guideDetail}
-                           rowKey="detailType"
-                           style={{
-                               whiteSpace: 'pre-wrap',
-                               wordWrap: 'break-word',
-                               wordBreak: 'break-all'
-                           }}/>
+                <Modal
+                    width={800}
+                    title={guideDetail.task_name}
+                    visible={isDetailShown}
+                    destroyOnClose={true}
+                    onCancel={endShowing}
+                    footer={null}
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                    }}>
+                    <Table
+                        columns={detailColumns}
+                        dataSource={guideDetail}
+                        rowKey="detailType"
+                        style={{
+                            whiteSpace: 'pre-wrap',
+                            wordWrap: 'break-word',
+                            wordBreak: 'break-all'
+                        }}/>
                 </Modal>
                 <SelectForm getSearch={searchItemGuide} reset={resetSearch}/>
                 <Space direction="horizontal" size={12} style={{marginLeft: '75%'}}>
@@ -431,16 +433,17 @@ export default function ManageGuide(props) {
                     }}>批量导出</Button>
                     <Button type="primary" disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>
                 </Space>
-                <Table rowSelection={rowSelection}
-                       columns={tableColumns}
-                       dataSource={tableData}
-                       rowKey="task_code"
-                       pagination={{
-                           onChange: changePage,
-                           current: current + 1,
-                           total: totalSize
-                       }}
-                       loading={tableLoading}/>
+                <Table
+                    rowSelection={rowSelection}
+                    columns={tableColumns}
+                    dataSource={tableData}
+                    rowKey="task_code"
+                    pagination={{
+                        onChange: changePage,
+                        current: current + 1,
+                        total: totalSize
+                    }}
+                    loading={tableLoading}/>
             </Space>
         </>
     )
