@@ -183,7 +183,7 @@ const api = {
         })
     },
     GetServerIP() {
-        return (service.defaults.baseURL === '/api' ? '/api' : 'http://8.134.73.52:5001')
+        return (service.defaults.baseURL === '/api' ? '/api' : 'http://10.196.133.5:5001')
     },
     // 绑定事项时根据选择的事项规则来推荐相关的事项规则
     GetRecommend(data) {
