@@ -141,7 +141,7 @@ export default function CreateRule(props) {
 
                 // 大于 10 条，说明还有一些规则项没展示出来，显示“更多”按钮
                 const total = response.data.data.total
-                setShowMore(total > 10)
+                setShowMore(total > 20)
 
                 // 子节点处理
                 let children = []
