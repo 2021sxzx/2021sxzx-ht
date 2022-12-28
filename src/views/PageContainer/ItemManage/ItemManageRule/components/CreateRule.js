@@ -135,7 +135,7 @@ export default function CreateRule(props) {
             api.GetRules({
                 parentId: [tag.nodeId],
                 page_num: 0,
-                page_size: 10
+                page_size: 20
             }).then(response => {
                 const data = response.data.data.data
 
