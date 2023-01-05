@@ -35,16 +35,15 @@ import api from "../../../../api/personal";
 function ChangePassword(props) {
     // 初始化新增用户弹窗的展示状态
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [nowPassword, setNowPassword] = useState("")
-    const [newPassword, setNewPassword] = useState("")
+
     // 创建表单实例
     const [form] = Form.useForm();
 
-
     // 表单初始化数据
     const initialValues = {
+        prePassword: "",
         password: "",
-        confirm_password: ""
+        confirmPassword: ""
     }
     // 查看详情按钮的触发函数，展示详情弹窗
     const showModal = () => {
@@ -62,12 +61,13 @@ function ChangePassword(props) {
         form.validateFields()
             // 通过校验
             .then(value => {
-                if (nowPassword !== newPassword)
+                if (form.getFieldValue('password') !== form.getFieldValue('confirmPassword'))
                     message.warn('新密码跟旧密码不一致,请重新填写')
                 else {
                     api.modifyPassword({
                         account: !!(props.detailData.account) ? props.detailData.account : value.account,
-                        pwd: newPassword
+                        pwd: form.getFieldValue('password'),
+                        prePwd: form.getFieldValue('prePassword'),
                     })
                         .then(res => {
                             console.log("修改密码成功", res)
@@ -146,6 +146,36 @@ function ChangePassword(props) {
                     initialValues={initialValues}
                     autoComplete="off"
                 >
+                    <Form.Item
+                        label="旧密码"
+                        name="prePassword"
+                        rules={[
+                            {
+                                required: true,
+                                message: '请输入旧密码验证身份！',
+                            },
+                            {
+                                min: 8,
+                                message: '密码长度要求不小于 8 位'
+                            },
+                            {
+                                max: 32,
+                                message: '密码长度要求不大于 32 位'
+                            },
+                            {
+                                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%&*_\-+=])[\w\d@#$%&*_\-+=]*$/,
+                                message: '要求同时使用大小写字母，数字和部分特殊字符(@#$%&*_+-=)，不支持空格'
+                            }
+                        ]}
+                    >
+                        {
+
+                            <Input.Password
+                                placeholder={'请输入旧密码验证身份'}
+                                allowClear={true}
+                            />
+                        }
+                    </Form.Item>
 
                     <Form.Item
                         label="新密码"
@@ -174,16 +204,13 @@ function ChangePassword(props) {
                             <Input.Password
                                 placeholder={'请输入新密码'}
                                 allowClear={true}
-                                onChange={(e) => {
-                                    setNowPassword(e.target.value)
-                                }}
                             />
                         }
                     </Form.Item>
 
                     <Form.Item
                         label="确认新密码"
-                        name="confirm_password"
+                        name="confirmPassword"
                         rules={[
                             {
                                 required: true,
@@ -207,9 +234,6 @@ function ChangePassword(props) {
                             <Input.Password
                                 placeholder={'请确认新密码'}
                                 allowClear={true}
-                                onChange={(e) => {
-                                    setNewPassword(e.target.value)
-                                }}
                             />
                         }
                     </Form.Item>
