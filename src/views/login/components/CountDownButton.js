@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
-import {Button} from "antd";
-import axios from "axios"
+import {Button, message} from "antd";
+import api from "../../../api/login";
+import { duration } from "moment";
 /**
  * 用于发送手机验证码的倒计时按钮
  *
@@ -11,10 +12,7 @@ export default function CountDownButton(props) {
     // 初始化倒计时的常数属性和设置倒计时状态
     const maxCount = 60
     const toSendText = '获取验证码'
-    const [verifycode,setVerifyCode] = useState(props.verificationCode)
-    useEffect(()=>{
-        setVerifyCode(props.verificationCode)
-    },[props.verificationCode])
+
     // console.log(props)
     const [countDownStatus, setCountDownStatus] = useState({
         count: maxCount,
@@ -59,18 +57,14 @@ export default function CountDownButton(props) {
     // 向服务器请求发送验证码
     const sendVerificationCode = () => {
         countDown()
-        // axios.get("https://10.147.25.152:8082/sms/v2/std/send_single",
-        // {
-        //     userid:"JU5098",
-        //     pwd:"918823",
-        //     mobile:"18420058402",
-        //     content:verifycode
-        // }).then((res)=>{
-        //     console.log("发送短信成功",res)
-        // }).catch((err)=>{
-        //     console.log("发送失败",err)
-        // })
-        props.getVC()
+        api.RequestVC({
+            account: props.account
+        }).then((res)=>{
+            message.success("请求发送短信成功")
+        }
+        ).catch((res)=>{
+            message.error("请求发送短信失败")
+        })
         //TODO 待 API 完善
         console.log("已发送验证码")
     }
