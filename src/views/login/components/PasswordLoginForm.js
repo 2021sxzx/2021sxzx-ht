@@ -116,7 +116,6 @@ export default function PasswordLoginForm() {
             >
                 <Input
                     placeholder={'手机号码'}
-                    defaultValue={account}
                     maxLength={32}
                     prefix={<UserOutlined className="site-form-item-icon"/>}
                     allowClear={true}
