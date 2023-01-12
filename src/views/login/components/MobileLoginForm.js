@@ -16,27 +16,24 @@ export default function MobileLoginForm() {
     const historyAccount = localStorage.getItem('account') ? localStorage.getItem('account') : '';
     const [account, setAccount] = useState(historyAccount)
     const {setLoginState} = useContext(loginStateContext)
-    // failTime 未使用？
-    const [failTime, setFailTime] = useState(0)
-
 
     const onFinish = (value) => {
         api.Login({
             account: account,
             verificationCode: value.verificationCode,
             state: 1
-        }).then(async response => {
+        }).then(async (response) => {
             // 保存用户信息：账号密码用户id
             saveUserInfo(response, value)
             setLoginState('login')
             // 展现 0.1s 的登录成功操作提示并自动跳转到首页
             message.success('登录成功', 0.1, () => {
-                setFailTime(0);
                 UrlJump.goto('#/home')
             })
         }).catch((error) => {
-            if (error.response.data !== undefined)
-                message.error(typeof error.response.data === 'string' ? error.response.data : '登录发生错误，请稍后重试')
+            if (error.response.data !== undefined){
+                message.error(typeof error.response.data.msg === 'string' ? error.response.data.msg : '登录发生错误，请稍后重试')
+            }
             else
                 message.error("登录错误")
         })

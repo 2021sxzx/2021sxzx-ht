@@ -59,14 +59,12 @@ export default function CountDownButton(props) {
         countDown()
         api.RequestVC({
             account: props.account
-        }).then((res)=>{
-            message.success("请求发送短信成功")
+        }).then((response)=>{
+            message.success(response.data.msg)
         }
-        ).catch((res)=>{
-            message.error("请求发送短信失败")
+        ).catch((error) => {
+            message.error("获取验证码错误")
         })
-        //TODO 待 API 完善
-        console.log("已发送验证码")
     }
 
     return (
