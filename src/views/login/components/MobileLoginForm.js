@@ -19,7 +19,7 @@ export default function MobileLoginForm() {
 
     const onFinish = (value) => {
         api.Login({
-            account: account,
+            account: value.account,
             verificationCode: value.verificationCode,
             state: 1
         }).then(async (response) => {
@@ -65,6 +65,7 @@ export default function MobileLoginForm() {
                 span: 8,
             }}
             initialValues={{
+                account: account,
                 remember: true,
             }}
             onFinish={onFinish}
@@ -74,7 +75,7 @@ export default function MobileLoginForm() {
             {/*手机号码*/}
             <Form.Item
                 // label="手机号码"
-                name="phoneNumber"
+                name="account"
                 rules={[
                     {
                         required: true,
