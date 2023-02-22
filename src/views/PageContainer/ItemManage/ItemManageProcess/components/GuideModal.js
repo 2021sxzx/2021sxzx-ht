@@ -11,6 +11,7 @@ export default function GuideModal(props) {
 
     const [task_code, setTaskCode] = useState('')
     const [task_name, setTaskName] = useState('')
+    const [service_agent_name, setServiceAgentName] = useState("");
 
     const guideTable = {
         whiteSpace: 'pre-wrap',
@@ -83,31 +84,37 @@ export default function GuideModal(props) {
         setTaskName(e.target.value)
     }
 
+    const handleTaskAgentChange = (e) => {
+        setServiceAgentName(e.target.value);
+    };
+
     const clear = () => {
         // 清空搜索框
         document.getElementById('taskCodeInput').value = ''
         document.getElementById('taskNameInput').value = ''
         setTaskCode('')
         setTaskName('')
+        setServiceAgentName("");
         // 重新初始化数据
         init()
     }
 
     const processData = () => {
         let data = {}
-        if (inj_judge(task_code) || inj_judge(task_name)) {
+        if (inj_judge(task_code) || inj_judge(task_name) || inj_judge(service_agent_name)) {
             Modal.warning({
                 centered: true,
-                title: '非法输入',
-                content: '输入信息中有非法输入内容，请检查输入！'
-            })
-            return
+                title: "非法输入",
+                content: "输入信息中有非法输入内容，请检查输入！",
+            });
+            return;
         }
         if (task_code !== '') {
             let code = splitIds(task_code)
             data['task_code'] = code[0]
         }
         if (task_name !== '') data['task_name'] = task_name
+        if (service_agent_name !== "") data["service_agent_name"] = service_agent_name;
         search(data)
     }
 
@@ -136,39 +143,49 @@ export default function GuideModal(props) {
         setEnabledGuides([])
         setTaskCode('')
         setTaskName('')
+        setServiceAgentName("");
         setOriginData({})
     }
 
     const guideColumns = [
         {
-            title: '指南编码',
-            dataIndex: 'task_code',
-            key: 'task_code',
-            width: 320
+            title: "指南编码",
+            dataIndex: "task_code",
+            key: "task_code",
+            width: 320,
         },
         {
-            title: '指南名称',
-            dataIndex: 'task_name',
-            key: 'task_name'
+            title: "指南名称",
+            dataIndex: "task_name",
+            key: "task_name",
         },
         {
-            title: '选择',
-            key: 'choose',
+            title: "实施主体名称",
+            dataIndex: "service_agent_name",
+            key: "service_agent_name",
+        },
+        {
+            title: "选择",
+            key: "choose",
             width: 100,
             render: (text, record) => (
-                <Button type='primary' onClick={function () {
-                    props.setTaskCode(record.task_code)
-                    props.setTaskName(record.task_name)
-                    endChoosingGuide()
-                }}>
+                <Button
+                    type="primary"
+                    onClick={function () {
+                        props.setTaskCode(record.task_code);
+                        props.setTaskName(record.task_name);
+                        // props.setServiceAgentName(record.service_agent_name);
+                        endChoosingGuide();
+                    }}
+                >
                     选择
                 </Button>
-            )
-        }
-    ]
+            ),
+        },
+    ];
 
     return (
-        <Modal width={800} centered destroyOnClose={true} title='选择指南' visible={props.choosingGuide} footer={false}
+        <Modal width={1000} centered destroyOnClose={true} title='选择指南' visible={props.choosingGuide} footer={false}
                onCancel={endChoosingGuide}>
             <Form
                 layout='inline'
@@ -177,7 +194,7 @@ export default function GuideModal(props) {
                 }}
                 style={{marginBottom: 10}}
             >
-                <Form.Item label='指南编码' style={{width: '37%'}}>
+                <Form.Item label='指南编码' style={{width: '24%'}}>
                     <Input id='taskCodeInput'
                            value={task_code}
                            placeholder='请输入指南编码'
@@ -186,7 +203,7 @@ export default function GuideModal(props) {
                            showCount
                     />
                 </Form.Item>
-                <Form.Item label='指南名称' style={{width: '37%'}}>
+                <Form.Item label='指南名称' style={{width: '24%'}}>
                     <Input id='taskNameInput'
                            value={task_name}
                            placeholder='请输入指南名称'
@@ -195,10 +212,19 @@ export default function GuideModal(props) {
                            showCount
                     />
                 </Form.Item>
-                <Form.Item style={{width: '8%'}}>
+                <Form.Item label='实施主体名称' style={{width: '24%'}}>
+                    <Input id='taskNameInput'
+                           value={service_agent_name}
+                           placeholder='请输入实施主体名称'
+                           onChange={handleTaskAgentChange}
+                           maxLength={64}
+                           showCount
+                    />
+                </Form.Item>
+                <Form.Item style={{width: '9%'}}>
                     <Button type='default' onClick={clear}>重置</Button>
                 </Form.Item>
-                <Form.Item style={{width: '8%'}}>
+                <Form.Item style={{width: '9%'}}>
                     <Button type='primary' onClick={processData}>搜索</Button>
                 </Form.Item>
             </Form>
