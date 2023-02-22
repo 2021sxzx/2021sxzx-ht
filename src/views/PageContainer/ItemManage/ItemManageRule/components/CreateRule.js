@@ -139,7 +139,7 @@ export default function CreateRule(props) {
             }).then(response => {
                 const data = response.data.data.data
 
-                // 大于 10 条，说明还有一些规则项没展示出来，显示“更多”按钮
+                // 大于 20 条，说明还有一些规则项没展示出来，显示“更多”按钮
                 const total = response.data.data.total
                 setShowMore(total > 20)
 
@@ -149,7 +149,8 @@ export default function CreateRule(props) {
                     if (data[i].rule_id === skip) continue
                     children.push({
                         nodeId: data[i].rule_id,
-                        nodeName: data[i].rule_name
+                        nodeName: data[i].rule_name,
+                        hasBindItem: data[i].hasBindItem
                     })
                 }
 
@@ -183,7 +184,8 @@ export default function CreateRule(props) {
                     if (data[i].rule_id === skip) continue
                     children.push({
                         nodeId: data[i].rule_id,
-                        nodeName: data[i].rule_name
+                        nodeName: data[i].rule_name,
+                        hasBindItem: data[i].hasBindItem
                     })
                 }
 
@@ -552,7 +554,9 @@ export default function CreateRule(props) {
                             isRuleLoading ?
                                 <div className={style.chooseBoxTitle1}>正在加载中...</div> :
                                 (<>
-                                    <TagsArea tags={enabledTags} chooseTag={chooseTag} type={'1'}/>
+                                    <TagsArea tags={enabledTags} chooseTag={chooseTag} type={'1'} isRuleCreating={
+                                        props.updatePath.length === 0
+                                    }/>
                                     <div className={style.chooseBoxTitle1} onClick={showMoreRules} style={{
                                         display: showMore ? "flex" : "none",
                                     }}>
