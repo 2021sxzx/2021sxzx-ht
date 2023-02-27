@@ -22,8 +22,8 @@ instance.interceptors.request.use(
   function (config) {
     let headers = config.headers
     //localStorage进行身份验证
-    headers.userId = localStorage.getItem('_id') ? localStorage.getItem('_id') : ''
-    console.log('请求拦截器', config)
+    headers.userId = localStorage.getItem('_id') ?? ''
+    // console.log('请求拦截器', config)
     return config
   },
   function (error) {
@@ -34,7 +34,7 @@ instance.interceptors.request.use(
 // 添加响应拦截器
 instance.interceptors.response.use(
   function (response) {
-    console.log('响应拦截器', response)
+    // console.log('响应拦截器', response)
     //如果用户状态突然被管理员切换至未激活
     // if(response.data.loginstate == "loginout")
     // {

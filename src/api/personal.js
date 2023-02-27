@@ -9,7 +9,7 @@ const api = {
     },
     //梦网科技的接口
     modifyPassword(data){
-        console.log(data)
+        // console.log(data)
         return axios.request({
             method: 'post',
             url: '/v2/modifyPwd',

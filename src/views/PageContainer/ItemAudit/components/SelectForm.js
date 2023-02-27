@@ -105,9 +105,9 @@ export default function SelectForm(props) {
     }
 
     const handleDateChange = (value, dataString) => {
-        console.log('time',time)
-        console.log('value',value)
-        console.log('dataStr',dataString)
+        // console.log('time',time)
+        // console.log('value',value)
+        // console.log('dataStr',dataString)
         if (value) {
             setStartTime(getTimeStamp(dataString[0]))
             setEndTime(getTimeStamp(dataString[1]))
@@ -117,8 +117,8 @@ export default function SelectForm(props) {
             setStartTime('')
             setTime([null, null])
         }
-        console.log('start time', start_time)
-        console.log('end time', end_time)
+        // console.log('start time', start_time)
+        // console.log('end time', end_time)
     }
 
     const clear = () => {

@@ -17,7 +17,6 @@ export default function RoleTable(props) {
     // const [tabledata,setTableData] = useState({})
 
     const UpdateRoleInfoAndRefresh = useCallback((data) => {
-        console.log("data:",data)
         // Promise.all([api.UpdateRole(data), api.UpdateRolePermission(data)])
         //     .then(() => {
         //         message.success('修改角色信息成功')

@@ -73,7 +73,6 @@ function PersonalDescription(props) {
 
                             }}
                             saveInfoFunction={(data) => {
-                                console.log('saveInfoFunction', data)
                                 api.UpdateUser(data).then(() => {
                                     message.success('修改个人信息成功')
                                 }).catch(() => {

@@ -31,7 +31,6 @@ export const getDetailOnExportFormat = async (regionData) => {
 
         return detailArray;
     } catch (e) {
-        console.log(e.message);
         return e.message
     }
 };

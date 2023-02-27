@@ -46,7 +46,7 @@ function Personal() {
                             unit_name: userInfo.unit_name,
                         }}
                         saveInfoFunction={(data) => {
-                            console.log('saveInfoFunction', data)
+                            // console.log('saveInfoFunction', data)
                             api.UpdateUser(data).then(() => {
                                 message.success('修改个人信息成功')
                             }).catch(() => {

@@ -33,7 +33,6 @@ export default function UserManageRole() {
     //     })
     // }, [])
     const getRole = () => {
-        console.log("getting role")
         setLoading(true)
         api.GetRole().then(response => {
             setTableData(response.data.data)

@@ -187,7 +187,7 @@ export default function ItemManageUnusual(props) {
                                 'cancel' in statusScheme[record.item_status].buttons &&
                                 <Menu.Item style={{display: 'flex'}} key='3'>
                                     <Button type='primary' onClick={function () {
-                                        console.log(statusScheme[record.item_status])
+                                        // console.log(statusScheme[record.item_status])
                                         changeItemStatus(record._id, statusScheme[record.item_status].next_status.cancel)
                                     }}>
                                         取消审核

@@ -54,7 +54,6 @@ const SimpleSelectForm = () => {
       })
       csvString += '\r\n'
     })
-    console.log(csvString)
     //解决中文乱码
     csvString = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(csvString)
     let link = document.createElement('a')

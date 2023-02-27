@@ -55,7 +55,6 @@ function RoleModal(props) {
                     role_describe: value.roleDescribe,
                     permission_identifier_array: value.permission,
                 })
-                console.log(value.permission)
             })
             // 校验不通过
             .catch(() => {

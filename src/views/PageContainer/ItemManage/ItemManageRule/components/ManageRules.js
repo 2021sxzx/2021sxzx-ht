@@ -130,7 +130,7 @@ export default function ManageRules(props) {
                 let detailArray = await getDetailOnExportFormat(ruleData);
 
                 // 导出
-                console.log(detailArray);
+                // console.log(detailArray);
                 jsonToExcel(Object.values(detailTitle), detailArray, "未命名.csv");
                 message.info("正在导出...");
             } catch (err) {
@@ -280,7 +280,7 @@ export default function ManageRules(props) {
         api.GetRules(totalData)
             .then((response) => {
                 let rules = response.data.data.data;
-                console.log(rules)
+                // console.log(rules)
                 // let table = []
                 setTotalSize(response.data.data.total);
                 setCurrent(0);
@@ -295,7 +295,7 @@ export default function ManageRules(props) {
                 setTableLoading(false);
             })
             .catch((error) => {
-                console.log("Word");
+                // console.log("Word");
                 console.log(error);
                 setTableLoading(false);
                 props.showError("搜索规则失败！");

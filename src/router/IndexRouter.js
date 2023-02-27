@@ -64,10 +64,10 @@ export default function indexRouter() {
             case 'login':// 登录状态
                 // 如果处于登录状态，并且本机中没有重复设置定时器，就使用定时器定期检查登录状态
                 if (timer === null && localStorage.getItem('login-timer') === '0') {
-                    console.log('timer', new Date())
+                    // console.log('timer', new Date())
                     // 设置定时器，定期检查登录状态
                     timer = setInterval(() => {
-                        console.log('timer', new Date())
+                        // console.log('timer', new Date())
                         // 如果此时仍然处于登录状态就去向服务器发起请求去判断是否登录过期
                         if (loginState === 'login' && localStorage.getItem('login-timer') === '1') {
                             checkLoginState()

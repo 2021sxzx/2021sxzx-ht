@@ -160,7 +160,7 @@ export const getItemGuideData = async (taskCode) => {
  */
 export const standardizingItemGuideData = (data) => {
     // TODO: 补充注释的数据类型
-    console.log('standardizingItemGuideData', data)
+    // console.log('standardizingItemGuideData', data)
 
     // 政策依据数组处理
     let legalBasis = ''

@@ -219,9 +219,9 @@ export default function CommentManageList() {
     }
     // 从服务器中获取搜索结果，保存到 tableData 中
     const getSearchComment = (data) => {
-        console.log(data)
+        // console.log(data)
         api.SearchComment(data).then(response => {
-            console.log('searchData=', response.data.data)
+            // console.log('searchData=', response.data.data)
             setTableData(response.data.data)
         }).catch(error => {
             message.error('搜索失败，请稍后尝试：' + error.message)

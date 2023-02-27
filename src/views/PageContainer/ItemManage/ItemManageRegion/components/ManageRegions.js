@@ -130,11 +130,11 @@ export default function ManageRegions(props) {
             let regionData = response.data.data;
 
             // 获取符合导出格式的事项详情数据
-            console.log(regionData)
+            // console.log(regionData)
             let detailArray = await getDetailOnExportFormat(regionData);
 
             // 导出
-            console.log(detailArray)
+            // console.log(detailArray)
             jsonToExcel(Object.values(detailTitle), detailArray, "未命名.csv");
             message.info("正在导出...");
         } catch (err) {
