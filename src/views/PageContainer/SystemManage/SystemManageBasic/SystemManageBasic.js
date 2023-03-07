@@ -45,6 +45,9 @@ const BusinessData = props => <>
         <Tag>审核通过</Tag>
         <Tag>撤回待审核</Tag>
     </p>
+    <a onClick={() => {
+            window.open('/public/xlsx/运维手册.pdf')
+        }}>点击下载运维手册</a>
     {/* 别震惊了，确实就是写死的，写这里的时候状态没有修改的需求 */}
 </>
 
