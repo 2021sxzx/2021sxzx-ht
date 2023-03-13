@@ -221,7 +221,7 @@ export default function ManageGuide(props) {
 
     const deleteSingleItem = (id) => {
         // 删除单个事项，将事项id设为deletingIds
-        let str = '确定删除该节点吗？'
+        let str = '确定删除该事项吗？'
         let nodes = [id]
         Modal.confirm({
             centered: true,
