@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import ManageRules from './components/ManageRules'
 import CreateRule from './components/CreateRule'
 import { Modal, message } from 'antd'
+import { useRef } from 'react'
 
 export default function ItemManageRule(props) {
     // 页面的基础数据
@@ -16,6 +17,8 @@ export default function ItemManageRule(props) {
             centered: true
         })
     }
+
+    const searchData = useRef({})
 
     const showSuccess = ()=>{
         message.success('操作成功！')
@@ -32,7 +35,7 @@ export default function ItemManageRule(props) {
                 pageType === 1 &&
                 <ManageRules bindedData={props.bindedData} setBindedData={props.setBindedData} jumpToProcess={props.jumpToProcess}
                     setPageType={setPageType} setUpdatePath={setUpdatePath} ruleRoot={props.ruleRoot}
-                    showError={showError} showSuccess={showSuccess}/>
+                    showError={showError} showSuccess={showSuccess} searchData={searchData}/>
             }
             {
                 pageType === 2 &&

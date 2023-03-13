@@ -3,11 +3,14 @@ import ManageProcess from './components/ManageProcess'
 import CreateProcess from './components/CreateProcess'
 import { Modal, message } from 'antd'
 import api from '../../../../api/rule'
+import { useRef } from 'react'
 
 export default function ItemManageProcess(props) {
     // 页面的基础数据
     const [pageType, setPageType] = useState(1)
     const [canOperate, setCanOperate] = useState([])
+
+    const searchData = useRef({})
 
     const showError = (info)=>{
         Modal.error({
@@ -40,7 +43,7 @@ export default function ItemManageProcess(props) {
                 <ManageProcess setPageType={setPageType} canOperate={canOperate}
                     ruleRoot={props.ruleRoot} regionRoot={props.regionRoot} userId={props.userId}
                     showError={showError} showSuccess={showSuccess} jumpCode={props.jumpCode} setJumpCode={props.setJumpCode}
-                    bindedData={props.bindedData} setBindedData={props.setBindedData}/>
+                    bindedData={props.bindedData} setBindedData={props.setBindedData} searchData={searchData}/>
             }
             {
                 pageType === 2 &&

@@ -1,6 +1,8 @@
 import React, {useState} from 'react'
 import {DatePicker, Form, Input, Button, Modal} from 'antd'
 import {getTimeStamp} from "../../../../../utils/TimeStamp"
+import { useEffect } from 'react'
+import returnString from '../../../../../utils/returnString'
 
 const {RangePicker} = DatePicker
 
@@ -29,6 +31,19 @@ export default function SelectForm(props) {
         return noEmpty.split(',')
     }
 
+    useEffect(()=>{
+        console.log(props.searchData.current)
+        let searchData = props.searchData.current
+        // 应用搜索参数
+        setRegionCode(returnString(searchData.region_code))
+        setRegionName(returnString(searchData.region_name))
+        setDepartment(returnString(searchData.department_name))
+        setCreator(returnString(searchData.creator_name))
+
+        // TODO
+        // setTime()
+    },[])
+
     const inj_judge = (str) => {
         let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
             'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
@@ -56,6 +71,8 @@ export default function SelectForm(props) {
             if (department !== '') data['department_name'] = department
             if (creator !== '') data['creator_name'] = creator
             props.getSearch(data)
+
+            props.searchData.current = data
         }
     }
 

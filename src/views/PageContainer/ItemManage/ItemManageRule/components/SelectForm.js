@@ -1,6 +1,8 @@
-import React, {useState} from 'react'
+import React, {useState,useEffect} from 'react'
 import {DatePicker, Form, Input, Button, Modal} from 'antd'
 import {getTimeStamp} from "../../../../../utils/TimeStamp"
+import returnString from '../../../../../utils/returnString'
+import moment, { Moment } from 'moment'
 
 const {RangePicker} = DatePicker
 
@@ -13,6 +15,24 @@ export default function SelectForm(props) {
     const [rule_name, setRuleName] = useState('')
     const [department, setDepartment] = useState('')
     const [creator, setCreator] = useState('')
+
+    useEffect(()=>{
+        console.log(props.searchData.current)
+        let searchData = props.searchData.current
+        // 应用搜索参数
+        setRuleId(returnString(searchData.rule_id))
+        setRuleName(returnString(searchData.rule_name))
+        setDepartment(returnString(searchData.department_name))
+        setCreator(returnString(searchData.creator_name))
+
+        // TODO
+        // setTime()
+
+        // setTime([
+        //   searchData.start_time !== undefined ? moment(returnString(start_time)) : null,
+        //   searchData.end_time !== undefined ? moment(returnString(end_time)) : null,
+        // ])
+    },[])
 
     const handleTaskCodeChange = (e) => {
         setRuleId(e.target.value)
@@ -55,6 +75,8 @@ export default function SelectForm(props) {
             if (department !== '') data['department_name'] = department
             if (creator !== '') data['creator_name'] = creator
             props.getSearch(data)
+
+            props.searchData.current = data
         }
     }
 

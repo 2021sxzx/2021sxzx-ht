@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import ManageGuides from './components/ManageGuides'
 import CreateGuide from './components/CreateGuide'
-import { useState } from 'react'
+import { useState,useRef } from 'react'
 import { Modal, message } from 'antd'
 
 export default function ItemManageGuide(props) {
@@ -9,6 +9,8 @@ export default function ItemManageGuide(props) {
     const [pageType, setPageType] = useState(1)
     const [modifyId, setModifyId] = useState('')
     const [modifyContent, setModifyContent] = useState({})
+
+    const searchData = useRef({})
 
     const showError = (info)=>{
         Modal.error({
@@ -34,7 +36,7 @@ export default function ItemManageGuide(props) {
             {
                 pageType === 1 &&
                 <ManageGuides setPageType={setPageType} setModifyId={setModifyId}
-                    setModifyContent={setModifyContent} showError={showError} showSuccess={showSuccess}/>
+                    setModifyContent={setModifyContent} showError={showError} showSuccess={showSuccess} searchData={searchData}/>
             }
             {
                 pageType === 2 &&
