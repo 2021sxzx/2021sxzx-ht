@@ -5,11 +5,11 @@ import api from '../../../../../api/itemGuide'
 import SelectForm from './SelectForm'
 import {
     detailTitle,
-    getItemGuideOnExportFormat,
     getItemGuideOnDetailFormat,
+    getItemGuideOnExportFormat,
     getItemGuideOnTableFormat
 } from '../../../../../api/itemGuideAdapter'
-import jsonToExcel from "../../../../../utils/JsonToExcel";
+import jsonToExcel from '../../../../../utils/JsonToExcel'
 
 const detailColumns = [
     {
@@ -174,6 +174,38 @@ export default function ManageGuide(props) {
             // 导出
             jsonToExcel(Object.values(detailTitle), allDetails, '未命名.csv')
             message.info('正在导出...')
+        } catch (err) {
+            message.error('导出错误，请稍后重试')
+        }
+    }
+
+    /**
+     * 导出所有事项
+     * @return {Promise<void>}
+     */
+    const exportAllGuides = async () => {
+        try {
+            message.info('正在导出...')
+            let allDetails = []
+            let data = originData
+            data['page_num'] = 0
+            data['page_size'] = 999999999999999999999999
+            var temp = (await getItemGuideOnTableFormat(data)).guides
+            for (let i = 0; i < temp.length; ++i) {
+                delete temp[i]['create_time']
+                delete temp[i]['creator']
+                delete temp[i]['department_name']
+                delete temp[i]['task_status']
+                delete temp[i]['_id']
+            }
+            console.log(temp)
+            jsonToExcel(Object.values({
+                task_code: '事项指南编码',
+                task_name: '事项指南',
+                service_agent_name: '实施主体名称',
+                creator_name: '负责人',
+                status: '状态'
+            }), temp, '未命名.csv')
         } catch (err) {
             message.error('导出错误，请稍后重试')
         }
@@ -412,8 +444,8 @@ export default function ManageGuide(props) {
                     onCancel={endShowing}
                     footer={null}
                     style={{
-                        display: "flex",
-                        justifyContent: "center",
+                        display: 'flex',
+                        justifyContent: 'center',
                     }}>
                     <Table
                         columns={detailColumns}
@@ -425,9 +457,10 @@ export default function ManageGuide(props) {
                             wordBreak: 'break-all'
                         }}/>
                 </Modal>
-                <SelectForm getSearch={searchItemGuide} reset={resetSearch} searchData={props.searchData}/>
-                <Space direction="horizontal" size={12} style={{marginLeft: '75%'}}>
+                <SelectForm getSearch={searchItemGuide} reset={resetSearch}/>
+                <Space direction="horizontal" size={12} style={{marginLeft: '65%'}}>
                     <Button type="primary" onClick={handleCreate}>创建指南</Button>
+                    <Button type="primary" onClick={exportAllGuides}>全量导出</Button>
                     <Button type="primary" disabled={!isBatching} onClick={() => {
                         exportGuides(selectedRowKeys)
                     }}>批量导出</Button>
