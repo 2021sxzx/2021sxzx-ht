@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {DatePicker, Checkbox, Form, Input, Button, Modal} from 'antd'
 import {getTimeStamp} from "../../../../../utils/TimeStamp"
+import returnString from '../../../../../utils/returnString'
 
 const {RangePicker} = DatePicker
 
@@ -16,6 +17,23 @@ export default function SelectForm(props) {
     const [rule_id, setRuleId] = useState('')
     const [region_code, setRegionCode] = useState('')
     const [item_status, setItemStatus] = useState([])
+
+    useEffect(()=>{
+        console.log(props.searchData.current)
+        let searchData = props.searchData.current
+        // 应用搜索参数
+        setTaskCode(returnString(searchData.task_code))
+        setItemRuleName(returnString(searchData.item_name))
+        setServiceAgent(returnString(searchData.service_agent_name))
+
+        // TODO
+        // setTime()
+
+        setCreator(returnString(searchData.creator_name))
+        setRuleId(returnString(searchData.rule_id))
+        setRegionCode(returnString(searchData.region_code))
+        setItemStatus((searchData.item_status!==undefined)? searchData.item_status: [])
+    },[])
 
     const handleTaskCodeChange = (e) => {
         setTaskCode(e.target.value)
@@ -108,6 +126,9 @@ export default function SelectForm(props) {
             data['item_status'] = item_status
             props.setOriginData(data)
             props.getSearch(data)
+
+            props.searchData.current = data
+            // window.localStorage.setItem('searchData', JSON.stringify(data))
         }
     }
 

@@ -9,6 +9,7 @@ import {
     itemStatusScheme
 } from "../../../../api/itemAdapter";
 import jsonToExcel from "../../../../utils/JsonToExcel";
+import { useRef } from 'react'
 
 const {TabPane} = Tabs
 
@@ -39,6 +40,8 @@ export default function ItemManageUnusual(props) {
     const [current, setCurrent] = useState(0)
     const [currPageSize, setCurrPageSize] = useState(10)
     const [totalSize, setTotalSize] = useState(0)
+
+    const searchData = useRef({})
 
     const showError = (info) => {
         Modal.error({
@@ -629,7 +632,8 @@ export default function ItemManageUnusual(props) {
                     reset={resetSearch}
                     setOriginData={setOriginData}
                     bindedData={props.bindedData}
-                    setBindedData={props.setBindedData}/>
+                    setBindedData={props.setBindedData}
+                    searchData={searchData}/>
                 <Space direction='horizontal' size={12} style={{marginLeft: '82%'}}>
                     <Button
                         type='primary'

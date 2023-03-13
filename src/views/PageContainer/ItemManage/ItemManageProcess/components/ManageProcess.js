@@ -541,6 +541,7 @@ export default function ManageProcess(props) {
                 </Modal>
                 <SelectForm getSearch={searchItems}
                             reset={resetSearch}
+                            searchData={props.searchData}
                             setOriginData={setOriginData}
                             fullType={fullType}
                             jumpCode={props.jumpCode}

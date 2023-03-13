@@ -401,6 +401,7 @@ export default function ManageRegions(props) {
                     getSearch={searchRegions}
                     reset={resetSearch}
                     setOriginData={setOriginData}
+                    searchData={props.searchData}
                 />
                 <Space
                     direction="horizontal"

@@ -1,6 +1,7 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {DatePicker, Form, Input, Button, Modal} from 'antd'
 import {getTimeStamp} from "../../../../../utils/TimeStamp"
+import returnString from '../../../../../utils/returnString'
 
 const {RangePicker} = DatePicker
 
@@ -13,6 +14,19 @@ export default function SelectForm(props) {
     const [task_name, setTaskName] = useState('')
     const [serviceAgent, setServiceAgent] = useState('')
     const [creator, setCreator] = useState('')
+
+    useEffect(()=>{
+        console.log(props.searchData.current)
+        let searchData = props.searchData.current
+        // 应用搜索参数
+        setTaskCode(returnString(searchData.task_code))
+        setTaskName(returnString(searchData.task_name))
+        setServiceAgent(returnString(searchData.service_agent_name))
+        setCreator(returnString(searchData.creator_name))
+
+        // TODO
+        // setTime()
+    },[])
 
     const handleTaskCodeChange = (e) => {
         setTaskCode(e.target.value)
@@ -53,6 +67,8 @@ export default function SelectForm(props) {
             if (serviceAgent !== '') data['service_agent_name'] = serviceAgent
             if (creator !== '') data['creator_name'] = creator
             props.getSearch(data)
+
+            props.searchData.current = data
         }
     }
 

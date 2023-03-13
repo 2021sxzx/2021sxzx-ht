@@ -367,6 +367,7 @@ export default function ManageRules(props) {
                     getSearch={searchRules}
                     reset={resetSearch}
                     setOriginData={setOriginData}
+                    searchData={props.searchData}
                 />
                 <Space
                     direction="horizontal"

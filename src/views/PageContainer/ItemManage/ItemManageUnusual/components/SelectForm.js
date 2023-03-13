@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {Button, DatePicker, Form, Input, Modal} from 'antd'
 import {getTimeStamp} from "../../../../../utils/TimeStamp"
+import returnString from '../../../../../utils/returnString'
 
 const {RangePicker} = DatePicker
 
@@ -32,6 +33,24 @@ export default function SelectForm(props) {
         setRegionCode(e.target.value)
     }
 
+    useEffect(()=>{
+        console.log(props.searchData.current)
+        let searchData = props.searchData.current
+        // 应用搜索参数
+        setTaskCode(returnString(searchData.task_code))
+        setItemRuleName(returnString(searchData.item_name))
+        setDepartment(returnString(searchData.department_name))
+        setCreator(returnString(searchData.creator_name))
+        setRuleId(returnString(searchData.rule_id))
+        setRegionCode(returnString(searchData.region_code))
+        // setTime([
+        //   searchData.start_time !== undefined ? moment(start_time) : null,
+        //   searchData.end_time !== undefined ? moment(end_time) : null,
+        // ])
+
+        // TODO
+        // setTime()
+    },[])
     useEffect(function () {
         // 初始化搜索栏中的信息
         for (let key in props.bindedData) {
@@ -93,6 +112,8 @@ export default function SelectForm(props) {
             if (region_code !== '') data['region_code'] = splitIds(region_code)
             props.setOriginData(data)
             props.getSearch(data)
+
+            props.searchData.current = data
         }
     }
 
@@ -126,84 +147,95 @@ export default function SelectForm(props) {
     }
 
     return (
-        <>
-            <Form
-                layout='inline'
-                form={form}
-                initialValues={{
-                    layout: 'inline'
-                }}
-                onKeyDown={(e) => {
-                    // 当按下enter时，触发搜索功能
-                    if (e.key === 'Enter') {
-                        Search()
-                    }
-                }}
-            >
-                <Form.Item label='指南编码' style={{width: '25%'}}>
-                    <Input
-                        value={task_code}
-                        placeholder='请输入编码'
-                        size='middle'
-                        onChange={handleTaskCodeChange}
-                        maxLength={64}
-                        showCount
-                    />
-                </Form.Item>
-                <Form.Item label='指南名称' style={{width: '25%'}}>
-                    <Input
-                        value={item_name}
-                        placeholder='请输入名称'
-                        size='middle'
-                        onChange={handleItemNameChange}
-                        maxLength={64}
-                        showCount
-                    />
-                </Form.Item>
-                <Form.Item label='创建人' style={{width: '22%'}}>
-                    <Input
-                        value={creator}
-                        placeholder='请输入创建人'
-                        size='middle'
-                        onChange={handleCreatorChange}
-                        maxLength={64}
-                        showCount
-                    />
-                </Form.Item>
+      <>
+        <Form
+          layout="inline"
+          form={form}
+          initialValues={{
+            layout: 'inline',
+          }}
+          onKeyDown={(e) => {
+            // 当按下enter时，触发搜索功能
+            if (e.key === 'Enter') {
+              Search()
+            }
+          }}
+        >
+          <Form.Item label="指南编码" style={{ width: '25%' }}>
+            <Input
+              value={task_code}
+              placeholder="请输入编码"
+              size="middle"
+              onChange={handleTaskCodeChange}
+              maxLength={64}
+              showCount
+            />
+          </Form.Item>
+          <Form.Item label="指南名称" style={{ width: '25%' }}>
+            <Input
+              value={item_name}
+              placeholder="请输入名称"
+              size="middle"
+              onChange={handleItemNameChange}
+              maxLength={64}
+              showCount
+            />
+          </Form.Item>
+          <Form.Item label="创建人" style={{ width: '22%' }}>
+            <Input
+              value={creator}
+              placeholder="请输入创建人"
+              size="middle"
+              onChange={handleCreatorChange}
+              maxLength={64}
+              showCount
+            />
+          </Form.Item>
 
-                <Form.Item label='业务规则编码' style={{marginTop: 10, width: '25%'}}>
-                    <Input
-                        value={rule_id}
-                        placeholder='请输入业务规则编码'
-                        size='middle'
-                        onChange={handleRuleIdChange}
-                        maxLength={64}
-                        showCount
-                    />
-                </Form.Item>
-                <Form.Item label='区划规则编码' style={{marginTop: 10, width: '25%'}}>
-                    <Input
-                        value={region_code}
-                        placeholder='请输入区划规则编码'
-                        size='middle'
-                        onChange={handleRegionCodeChange}
-                        maxLength={64}
-                        showCount
-                    />
-                </Form.Item>
-                <Form.Item label='起始时间' style={{marginTop: 10, width: '32%'}}>
-                    <RangePicker
-                        value={time}
-                        style={{width: '100%'}}
-                        onChange={handleDateChange}/>
-                </Form.Item>
-                <Form.Item style={{marginTop: 10, width: '5%', minWidth: 62}}>
-                    <Button type='default' onClick={reset} style={{width: '100%'}}>重置</Button>
-                </Form.Item>
-                <Form.Item style={{marginTop: 10, width: '5%', minWidth: 62}}>
-                    <Button type='primary' onClick={Search} style={{width: '100%'}}>查询</Button>
-                </Form.Item>
-            </Form>
-        </>
+          <Form.Item
+            label="业务规则编码"
+            style={{ marginTop: 10, width: '25%' }}
+          >
+            <Input
+              value={rule_id}
+              placeholder="请输入业务规则编码"
+              size="middle"
+              onChange={handleRuleIdChange}
+              maxLength={64}
+              showCount
+            />
+          </Form.Item>
+          <Form.Item
+            label="区划规则编码"
+            style={{ marginTop: 10, width: '25%' }}
+          >
+            <Input
+              value={region_code}
+              placeholder="请输入区划规则编码"
+              size="middle"
+              onChange={handleRegionCodeChange}
+              maxLength={64}
+              showCount
+            />
+          </Form.Item>
+          <Form.Item label="起始时间" style={{ marginTop: 10, width: '32%' }}>
+            <RangePicker
+              value={time}
+              style={{ width: '100%' }}
+              onChange={handleDateChange}
+            />
+          </Form.Item>
+          <Form.Item style={{ marginTop: 10, width: '5%', minWidth: 62 }}>
+            <Button type="default" onClick={reset} style={{ width: '100%' }}>
+              重置
+            </Button>
+          </Form.Item>
+          <Form.Item style={{ marginTop: 10, width: '5%', minWidth: 62 }}>
+            <Button type="primary" onClick={Search} style={{ width: '100%' }}>
+              查询
+            </Button>
+          </Form.Item>
+        </Form>
+      </>
     )
 }
