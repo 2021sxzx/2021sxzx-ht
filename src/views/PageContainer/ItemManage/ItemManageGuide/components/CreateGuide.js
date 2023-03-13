@@ -170,7 +170,7 @@ export default function CreateGuide(props) {
                               formName='实施主体名称'
                               value={serviceAgentName}
                               required={true}
-                              maxLength={64}
+                              maxLength={128}
                     />
                     <FormArea handleChange={handleServiceAgentCode}
                               formName='实施主体编码'
@@ -181,7 +181,7 @@ export default function CreateGuide(props) {
                     <FormArea handleChange={handleGuideContentChange}
                               formName='事项内容'
                               value={guideContent}
-                              maxLength={2048}
+                              maxLength={4096}
                     />
                     <FormList setData={setGuideAccord}
                               addBtn='添加政策依据'
@@ -198,7 +198,7 @@ export default function CreateGuide(props) {
                     <FormArea handleChange={handleGuideConditionChange}
                               formName='申办所需审核条件'
                               value={guideCondition}
-                              maxLength={1024}
+                              maxLength={2048}
                     />
                     <FormListMaterial addBtn='添加申办所需材料'
                                       formName='申办所需材料'
@@ -267,7 +267,7 @@ export default function CreateGuide(props) {
                                   data={guideWindows}
                                   setData={setGuideWindows}
                                   required={true}
-                                  maxLength={256}
+                                  maxLength={512}
                     />
                     {/*<FormImage setImageUpdated={setImageUpdated} setData={setGuideQRCode} handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>*/}
                     <FormCheckbox setData={setGuideServiceType}
@@ -435,13 +435,16 @@ export default function CreateGuide(props) {
     }
 
     const inj_judge = (str) => {
-        let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
-            'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
-        for (let i = 0; i < inj_str.length; i++) {
-            if (str.indexOf(inj_str[i]) >= 0) {
-                return true
-            }
-        }
+        // let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
+        //     'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
+        // for (let i = 0; i < inj_str.length; i++) {
+        //     if (str.indexOf(inj_str[i]) >= 0) {
+        //         return true
+        //     }
+        // }
+        // return false
+
+        // TODO: 需要选择合适的方式去处理屏蔽词，有屏蔽词不符合安全审计，有屏蔽词有些指南的内容通不过。目前不处理屏蔽词。
         return false
     }
 
