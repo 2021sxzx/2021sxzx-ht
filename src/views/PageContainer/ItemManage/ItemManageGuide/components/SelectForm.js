@@ -24,6 +24,7 @@ export default function SelectForm(props) {
         setServiceAgent(returnString(searchData.service_agent_name))
         setCreator(returnString(searchData.creator_name))
 
+        props.setOriginData(searchData)
         // TODO
         // setTime()
     },[])

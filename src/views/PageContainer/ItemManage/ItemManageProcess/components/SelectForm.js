@@ -33,6 +33,8 @@ export default function SelectForm(props) {
         setRuleId(returnString(searchData.rule_id))
         setRegionCode(returnString(searchData.region_code))
         setItemStatus((searchData.item_status!==undefined)? searchData.item_status: [])
+
+        props.setOriginData(searchData)
     },[])
 
     const handleTaskCodeChange = (e) => {

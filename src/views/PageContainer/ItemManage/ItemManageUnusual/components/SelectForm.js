@@ -50,6 +50,8 @@ export default function SelectForm(props) {
 
         // TODO
         // setTime()
+
+        props.setOriginData(searchData)
     },[])
     useEffect(function () {
         // 初始化搜索栏中的信息

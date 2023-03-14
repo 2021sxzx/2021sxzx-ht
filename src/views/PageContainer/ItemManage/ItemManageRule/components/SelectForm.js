@@ -32,6 +32,8 @@ export default function SelectForm(props) {
         //   searchData.start_time !== undefined ? moment(returnString(start_time)) : null,
         //   searchData.end_time !== undefined ? moment(returnString(end_time)) : null,
         // ])
+
+        props.setOriginData(searchData)
     },[])
 
     const handleTaskCodeChange = (e) => {

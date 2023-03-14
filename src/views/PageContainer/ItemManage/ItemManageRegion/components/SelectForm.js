@@ -42,6 +42,8 @@ export default function SelectForm(props) {
 
         // TODO
         // setTime()
+
+        props.setOriginData(searchData)
     },[])
 
     const inj_judge = (str) => {

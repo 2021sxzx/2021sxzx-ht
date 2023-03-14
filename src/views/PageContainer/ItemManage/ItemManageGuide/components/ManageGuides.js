@@ -425,7 +425,7 @@ export default function ManageGuide(props) {
                             wordBreak: 'break-all'
                         }}/>
                 </Modal>
-                <SelectForm getSearch={searchItemGuide} reset={resetSearch} searchData={props.searchData}/>
+                <SelectForm getSearch={searchItemGuide} reset={resetSearch} searchData={props.searchData} setOriginData={setOriginData}/>
                 <Space direction="horizontal" size={12} style={{marginLeft: '75%'}}>
                     <Button type="primary" onClick={handleCreate}>创建指南</Button>
                     <Button type="primary" disabled={!isBatching} onClick={() => {
