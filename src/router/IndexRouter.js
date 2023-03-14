@@ -137,19 +137,35 @@ export default function indexRouter() {
             <loginStateContext.Provider value={{setLoginState}}>
                 <Switch>
                     <Suspense fallback={<div>loading</div>}>
-                        <Route path='/login' component={Login} setLoginState={setLoginState}/>
-                        <Route path='/' render={() => {
-                            switch (loginState) {
-                                case 'login':// 登录状态
-                                    return <PageContainer/>
-                                case 'logout':// 登出状态
-                                    return <div>logout</div>
-                                case 'loading':// 初始化状态
-                                    return <div>正在验证登录状态，请稍等...</div>
-                                default:
-                                    return <div>error</div>
+                        {/*<Route path='/login' component={Login} setLoginState={setLoginState}/>*/}
+                        {/*<Route path='/' render={() => {*/}
+                        {/*    switch (loginState) {*/}
+                        {/*        case 'login':// 登录状态*/}
+                        {/*            return <PageContainer/>*/}
+                        {/*        case 'logout':// 登出状态*/}
+                        {/*            return <div>logout</div>*/}
+                        {/*        case 'loading':// 初始化状态*/}
+                        {/*            return <div>正在验证登录状态，请稍等...</div>*/}
+                        {/*        default:*/}
+                        {/*            return <div>error</div>*/}
+                        {/*    }*/}
+                        {/*}}/>*/}
+                        <Switch>
+                            <Route path='/login' component={Login} setLoginState={setLoginState}/>
+                            <Route path='/' render={() => {
+                                switch (loginState) {
+                                    case 'login':// 登录状态
+                                        return <PageContainer/>
+                                    case 'logout':// 登出状态
+                                        return <div>logout</div>
+                                    case 'loading':// 初始化状态
+                                        return <div>正在验证登录状态，请稍等...</div>
+                                    default:
+                                        return <div>error</div>
+                                }
                             }
-                        }}/>
+                            }/>
+                        </Switch>
                     </Suspense>
                 </Switch>
             </loginStateContext.Provider>
