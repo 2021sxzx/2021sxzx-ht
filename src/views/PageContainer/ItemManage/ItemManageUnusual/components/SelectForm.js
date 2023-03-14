@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {Button, DatePicker, Form, Input, Modal} from 'antd'
 import {getTimeStamp} from "../../../../../utils/TimeStamp"
 import returnString from '../../../../../utils/returnString'
+import moment from 'moment'
 
 const {RangePicker} = DatePicker
 
@@ -34,7 +35,6 @@ export default function SelectForm(props) {
     }
 
     useEffect(()=>{
-        console.log(props.searchData.current)
         let searchData = props.searchData.current
         // 应用搜索参数
         setTaskCode(returnString(searchData.task_code))
@@ -43,14 +43,16 @@ export default function SelectForm(props) {
         setCreator(returnString(searchData.creator_name))
         setRuleId(returnString(searchData.rule_id))
         setRegionCode(returnString(searchData.region_code))
-        // setTime([
-        //   searchData.start_time !== undefined ? moment(start_time) : null,
-        //   searchData.end_time !== undefined ? moment(end_time) : null,
-        // ])
-
-        // TODO
-        // setTime()
-
+        setTime(
+          searchData.start_time && searchData.end_time
+            ? [
+                moment(searchData.start_time),
+                moment(searchData.end_time),
+              ]
+            : [null, null]
+        )
+        setStartTime((searchData.start_time!==undefined)? searchData.start_time: '')
+        setEndTime((searchData.end_time!==undefined)? searchData.end_time: '')
         props.setOriginData(searchData)
     },[])
     useEffect(function () {
@@ -104,8 +106,8 @@ export default function SelectForm(props) {
                 content: '输入信息中有非法输入内容，请检查输入！'
             })
         } else {
-            if (start_time !== '') data['create_start_time'] = start_time
-            if (end_time !== '') data['create_end_time'] = end_time
+            if (start_time !== '') data['start_time'] = start_time
+            if (end_time !== '') data['end_time'] = end_time
             if (task_code !== '') data['task_code'] = splitIds(task_code)
             if (item_name !== '') data['item_name'] = item_name
             if (department !== '') data['department_name'] = department

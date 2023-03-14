@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import {DatePicker, Checkbox, Form, Input, Button, Modal} from 'antd'
 import {getTimeStamp} from "../../../../../utils/TimeStamp"
 import returnString from '../../../../../utils/returnString'
+import moment from 'moment'
 
 const {RangePicker} = DatePicker
 
@@ -19,19 +20,24 @@ export default function SelectForm(props) {
     const [item_status, setItemStatus] = useState([])
 
     useEffect(()=>{
-        console.log(props.searchData.current)
         let searchData = props.searchData.current
         // 应用搜索参数
         setTaskCode(returnString(searchData.task_code))
         setItemRuleName(returnString(searchData.item_name))
         setServiceAgent(returnString(searchData.service_agent_name))
-
-        // TODO
-        // setTime()
-
+        // 不知为何不能把create去掉
+        setTime(
+            searchData.create_start_time && searchData.create_end_time
+            ? [moment(searchData.create_start_time), moment(searchData.create_end_time)]
+            : [null, null]
+        )
+        setStartTime((searchData.create_start_time!==undefined)? searchData.create_start_time: '')
+        setEndTime((searchData.create_end_time!==undefined)? searchData.create_end_time: '')
         setCreator(returnString(searchData.creator_name))
         setRuleId(returnString(searchData.rule_id))
         setRegionCode(returnString(searchData.region_code))
+
+        // TODO: ItemStatus没记录
         setItemStatus((searchData.item_status!==undefined)? searchData.item_status: [])
 
         props.setOriginData(searchData)
