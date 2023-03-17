@@ -186,11 +186,10 @@ export default function ManageGuide(props) {
     const exportAllGuides = async () => {
         try {
             message.info('正在导出...')
-            let allDetails = []
             let data = originData
             data['page_num'] = 0
             data['page_size'] = 999999999999999999999999
-            var temp = (await getItemGuideOnTableFormat(data)).guides
+            const temp = (await getItemGuideOnTableFormat(data)).guides
             for (let i = 0; i < temp.length; ++i) {
                 delete temp[i]['create_time']
                 delete temp[i]['creator']
@@ -198,7 +197,6 @@ export default function ManageGuide(props) {
                 delete temp[i]['task_status']
                 delete temp[i]['_id']
             }
-            console.log(temp)
             jsonToExcel(Object.values({
                 task_code: '事项指南编码',
                 task_name: '事项指南',
@@ -207,6 +205,7 @@ export default function ManageGuide(props) {
                 status: '状态'
             }), temp, '未命名.csv')
         } catch (err) {
+            console.log(err)
             message.error('导出错误，请稍后重试')
         }
     }
@@ -457,7 +456,8 @@ export default function ManageGuide(props) {
                             wordBreak: 'break-all'
                         }}/>
                 </Modal>
-                <SelectForm getSearch={searchItemGuide} reset={resetSearch} searchData={props.searchData} setOriginData={setOriginData}/>
+                <SelectForm getSearch={searchItemGuide} reset={resetSearch} searchData={props.searchData}
+                            setOriginData={setOriginData}/>
                 <Space direction="horizontal" size={12} style={{marginLeft: '65%'}}>
                     <Button type="primary" onClick={handleCreate}>创建指南</Button>
                     <Button type="primary" onClick={exportAllGuides}>全量导出</Button>

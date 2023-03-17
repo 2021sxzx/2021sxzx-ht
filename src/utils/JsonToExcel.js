@@ -31,8 +31,8 @@ const jsonToExcel = (titles = ['标题1', '标题2', '标题3'],
     // e.g. csvStr = '"标题1","标题2","标题3"\n"1"\t,"2"\t,"3"\t,\n"4"\t,"5"\t,"6"\t,\n'
     for (let col of data) {
         for (let value of Object.values(col)) {
-            // console.log(col)
-            csvStr += `"${value.replace(/["]/g, '\"\"')}"\t,`
+            if (typeof value !== 'string') value = '' // 屎山
+            csvStr += `"${value.replace(/"/g, '\"\"')}"\t,`
         }
         // 一个数据结束后需要换行
         csvStr += '\n'
@@ -47,7 +47,7 @@ const jsonToExcel = (titles = ['标题1', '标题2', '标题3'],
     const uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(csvStr)
 
     // 创建一个隐藏的 <a> 标签
-    const link = document.createElement("a")
+    const link = document.createElement('a')
 
     // a 标签的 download 属性是 HTML5 的标准，下面这个判断是为预防兼容性问题
     if (typeof link.download === 'string') {
