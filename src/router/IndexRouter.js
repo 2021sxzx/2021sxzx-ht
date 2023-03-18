@@ -25,7 +25,8 @@ export default function indexRouter() {
     const shouldCheckLoginState = useRef(false)
 
     // 15 分钟自动检查一次登录状态。这个自动检查时间要比自动登出的时间要长，因为每次检查都会刷新一次服务器的登录过期时间。
-    const interval = 15 * 60 * 1000 // TODO(zzj): 不能动态维护登出时间。如果后端自动登出的时间改了，前端也要记得改。
+    // const interval = 15 * 60 * 1000 // TODO(zzj): 不能动态维护登出时间。如果后端自动登出的时间改了，前端也要记得改。
+    const interval = 15 * 60 * 1000 * 10;
 
     // 定时检查登录状态的定时器
     let timer = null
