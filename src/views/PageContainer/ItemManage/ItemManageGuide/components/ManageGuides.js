@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {Button, Dropdown, Menu, message, Modal, Space, Table} from 'antd'
+import {Button, Dropdown, Menu, message, Modal, Space, Table, Tooltip} from 'antd'
 import {getYMD} from '../../../../../utils/TimeStamp'
 import api from '../../../../../api/itemGuide'
 import SelectForm from './SelectForm'
@@ -110,11 +110,26 @@ export default function ManageGuide(props) {
                     overlay={
                         <Menu>
                             <Menu.Item key="0">
-                                <Button type="primary" style={{width: 88}} onClick={function () {
-                                    modifyItemGuide(record.task_code)
-                                }}>
-                                    编辑
-                                </Button>
+                                {
+                                    // 只有未绑定的事项指南可以编辑
+                                    record.status === '未绑定' ?
+                                        <Button type="primary" style={{width: 88}}
+                                                onClick={function () {
+                                                    modifyItemGuide(record.task_code)
+                                                }}>
+                                            编辑
+                                        </Button>
+                                        :
+                                        <Tooltip title={'该事项指南已绑定，不允许编辑。如需编辑请先到事项过程管理页面解绑对应的事项（如果该事项提交或通过审核，需要先撤回）。'}>
+                                            <Button type="primary" style={{width: 88}} disabled={true}
+                                                    onClick={function () {
+                                                        modifyItemGuide(record.task_code)
+                                                    }}>
+                                                编辑
+                                            </Button>
+                                        </Tooltip>
+                                }
+
                             </Menu.Item>
                             <Menu.Item key="1">
                                 <Button type="primary" onClick={async () => {
