@@ -361,7 +361,7 @@ export default function ManageGuide(props) {
             tempGuideContent['principle'] = data.creator.name
             tempGuideContent['principleId'] = data.creator.id
             let tempServiceType = []
-            if (data.service_object_type && data.service_object_type instanceof Array) {
+            if (data.service_object_type) { // typeof data.service_object_type === string, e.g. "1,3"
                 let type = data.service_object_type.split(',')
                 for (let i = 0; i < type.length; i++) {
                     tempServiceType.push(parseInt(type[i]))

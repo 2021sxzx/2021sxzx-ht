@@ -595,7 +595,8 @@ export default function CreateGuide(props) {
     }
 
     const updateItemGuide = (data) => {
-        guideApi.updateItemGuide(data).then(() => {
+        guideApi.updateItemGuide(data).then((res) => {
+            console.log('updateItemGuide', res)
             props.showSuccess()
             props.setPageType(1)
         }).catch(error => {
