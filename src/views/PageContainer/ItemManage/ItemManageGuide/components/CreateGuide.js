@@ -555,10 +555,11 @@ export default function CreateGuide(props) {
                             content: '该指南编码已存在，请重新输入！',
                             centered: true
                         })
-                        setButtonLoading(false)
                     }
                 }).catch(error => {
                     message.error('获取事项指南详情信息失败，请稍后重试。' + error.message)
+                }).finally(() => {
+                    setButtonLoading(false)
                 })
             } else {
                 updateItemGuide(data)
@@ -576,10 +577,11 @@ export default function CreateGuide(props) {
                         content: '该指南编码已存在，请重新输入！',
                         centered: true
                     })
-                    setButtonLoading(false)
                 }
             }).catch(error => {
                 message.error('获取事项指南详情信息失败，请稍后重试。' + error.message)
+            }).finally(() => {
+                setButtonLoading(false)
             })
         }
     }
@@ -590,7 +592,15 @@ export default function CreateGuide(props) {
             props.showSuccess()
             props.setPageType(1)
         }).catch(error => {
-            props.showError('创建指南失败，请稍后尝试。' + error.message)
+            let errorMessage = '创建指南失败，请稍后尝试。'
+            if (error.response && error.response.data && error.response.data.msg) {
+                const errorData = error.response.data
+                errorMessage = errorData.msg
+                if (errorData.data) {
+                    errorMessage += '：' + errorData.data
+                }
+            }
+            props.showError(errorMessage)
         })
     }
 
