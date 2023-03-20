@@ -193,6 +193,7 @@ export default function SelectForm(props) {
                            onChange={handleTaskCodeChange}
                            maxLength={64}
                            showCount
+                           allowClear
                     />
                 </Form.Item>
                 <Form.Item label='指南名称' style={{width: '25%'}}>
@@ -202,6 +203,7 @@ export default function SelectForm(props) {
                            onChange={handleItemNameChange}
                            maxLength={64}
                            showCount
+                           allowClear
                     />
                 </Form.Item>
                 <Form.Item label='实施主体名称' style={{width: '22%'}}>
@@ -211,6 +213,7 @@ export default function SelectForm(props) {
                            onChange={handleServiceAgentChange}
                            maxLength={64}
                            showCount
+                           allowClear
                     />
                 </Form.Item>
                 {/*            <Form.Item label='机构' style={{width: '22%'}}>*/}
@@ -224,6 +227,7 @@ export default function SelectForm(props) {
                            onChange={handleCreatorChange}
                            maxLength={64}
                            showCount
+                           allowClear
                     />
                 </Form.Item>
 
@@ -234,6 +238,7 @@ export default function SelectForm(props) {
                            onChange={handleRuleIdChange}
                            maxLength={64}
                            showCount
+                           allowClear
                     />
                 </Form.Item>
                 <Form.Item label='区划规则编码' style={{marginTop: 10, width: '25%'}}>
@@ -243,6 +248,7 @@ export default function SelectForm(props) {
                            onChange={handleRegionCodeChange}
                            maxLength={64}
                            showCount
+                           allowClear
                     />
                 </Form.Item>
                 <Form.Item label='起始时间' style={{marginTop: 10, width: '45%'}}>

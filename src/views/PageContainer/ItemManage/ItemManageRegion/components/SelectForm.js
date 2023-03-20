@@ -130,6 +130,7 @@ export default function SelectForm(props) {
                            onChange={handleTaskCodeChange}
                            maxLength={64}
                            showCount
+                           allowClear
                     />
                 </Form.Item>
                 <Form.Item label='规则名称' style={{width: '25%'}}>
@@ -139,6 +140,7 @@ export default function SelectForm(props) {
                            onChange={handleTaskregionChange}
                            maxLength={64}
                            showCount
+                           allowClear
                     />
                 </Form.Item>
                 {/*<Form.Item label='机构' style={{width: '22%'}}>*/}
@@ -152,6 +154,7 @@ export default function SelectForm(props) {
                            onChange={handleCreatorChange}
                            maxLength={64}
                            showCount
+                           allowClear
                     />
                 </Form.Item>
 
