@@ -266,7 +266,6 @@ export default function CreateGuide(props) {
                                   formName='办理点信息'
                                   data={guideWindows}
                                   setData={setGuideWindows}
-                                  required={true}
                                   maxLength={512}
                     />
                     {/*<FormImage setImageUpdated={setImageUpdated} setData={setGuideQRCode} handleChange={handleGuideQRCodeChange} formName='二维码' value={guideQRCode}/>*/}
@@ -666,15 +665,15 @@ export default function CreateGuide(props) {
         //     tempStatus[2] = 'wait'
         // }
         // 业务办理信息
-        if (guideWindows && guideServiceType && guideWindows.length !== 0 && guideServiceType.length !== 0) {
+        if (guideServiceType && guideServiceType.length !== 0) {
             tempStatus[3] = 'finish'
-            for (let i = 0; i < guideWindows.length; i++) {
-                for (let key in guideWindows[i]) {
-                    if (guideWindows[i].key === '') {
-                        tempStatus[3] = 'wait'
-                    }
-                }
-            }
+            // for (let i = 0; i < guideWindows.length; i++) {
+            //     for (let key in guideWindows[i]) {
+            //         if (guideWindows[i].key === '') {
+            //             tempStatus[3] = 'wait'
+            //         }
+            //     }
+            // }
         } else {
             tempStatus[3] = 'wait'
         }
