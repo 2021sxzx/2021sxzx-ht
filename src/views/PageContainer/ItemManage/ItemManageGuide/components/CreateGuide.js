@@ -362,25 +362,26 @@ export default function CreateGuide(props) {
         // if (guidePCAddress === '') emptyArea.push('网办PC端')
         // if (guidePEAddress === '') emptyArea.push('网办移动端')
         // if (guideSelfmadeAddress === '') emptyArea.push('自助终端')
-        if (guideWindows.length === 0) {
-            emptyArea.push('办理点信息')
-        } else {
-            let empty = false
-            for (let i = 0; i < guideWindows.length; i++) {
-                for (let key in guideWindows[i]) {
-                    if (guideWindows[i][key] === '') {
-                        empty = true
-                        break
-                    }
-                }
 
-
-            }
-            // console.log("empty:",empty)
-            if (empty) {
-                emptyArea.push('办理点信息')
-            }
-        }
+        // if (guideWindows.length === 0) {
+        //     emptyArea.push('办理点信息')
+        // } else {
+        //     let empty = false
+        //     for (let i = 0; i < guideWindows.length; i++) {
+        //         for (let key in guideWindows[i]) {
+        //             if (guideWindows[i][key] === '') {
+        //                 empty = true
+        //                 break
+        //             }
+        //         }
+        //
+        //
+        //     }
+        //     // console.log("empty:",empty)
+        //     if (empty) {
+        //         emptyArea.push('办理点信息')
+        //     }
+        // }
         // if (guideOnlineProcess === '') emptyArea.push('网上办理流程')
         // if (guideOfflineProcess === '') emptyArea.push('线下办理流程')
         // if (guideQRCode === '') emptyArea.push('二维码')
