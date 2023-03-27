@@ -287,8 +287,8 @@ export default function CreateGuide(props) {
     // 判断处理是否有未输入的内容
     const handleChange = () => {
         let emptyArea = []
-        let notNum = false
-        let notGood = false
+        // let notNum = false
+        // let notGood = false
         if (guideName === '') emptyArea.push('事项名称')
         if (guideCode === '') emptyArea.push('事项编码')
         if (serviceAgentName === '') emptyArea.push('实施主体名称')
@@ -386,10 +386,10 @@ export default function CreateGuide(props) {
         // if (guideOfflineProcess === '') emptyArea.push('线下办理流程')
         // if (guideQRCode === '') emptyArea.push('二维码')
         if (guideServiceType.length === 0) emptyArea.push('服务对象类型')
-        if (emptyArea.length === 0 && !notNum && !notGood) {
+        if (emptyArea.length === 0) {
             showConfirm()
         } else {
-            showEnterFull(emptyArea, notNum, notGood)
+            showEnterFull(emptyArea)
         }
     }
 
