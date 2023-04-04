@@ -133,7 +133,7 @@ export default function SelectForm(props) {
                 </Form.Item>
                 <Form.Item label='规则名称' style={{width: '25%'}}>
                     <Input value={rule_name}
-                           placeholder='请输入名称'
+                           placeholder='请输入规则路径末尾的规则名称进行查询'
                            size='middle'
                            onChange={handleTaskRuleChange}
                            maxLength={64}

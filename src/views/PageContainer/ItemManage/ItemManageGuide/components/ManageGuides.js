@@ -63,7 +63,7 @@ export default function ManageGuide(props) {
             width: 320
         },
         {
-            title: '事项指南',
+            title: '事项指南名称',
             dataIndex: 'task_name',
             key: 'task_name'
         },

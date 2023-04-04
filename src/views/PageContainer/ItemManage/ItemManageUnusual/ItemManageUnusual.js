@@ -111,7 +111,7 @@ export default function ItemManageUnusual(props) {
             width: 270
         },
         {
-            title: '事项指南',
+            title: '事项指南名称',
             dataIndex: 'item_name',
             key: 'item_name'
         },
@@ -127,7 +127,7 @@ export default function ItemManageUnusual(props) {
         //     width: 100
         // },
         {
-            title: '创建人',
+            title: '负责人',
             dataIndex: 'creator_name',
             key: 'creator_name',
             width: 100

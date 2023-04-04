@@ -165,7 +165,7 @@ export default function SelectForm(props) {
                     }
                 }}
             >
-                <Form.Item label="指南编码" style={{width: '25%'}}>
+                <Form.Item label="事项指南编码" style={{width: '25%'}}>
                     <Input
                         value={task_code}
                         placeholder="请输入编码"
@@ -176,7 +176,7 @@ export default function SelectForm(props) {
                         allowClear
                     />
                 </Form.Item>
-                <Form.Item label="指南名称" style={{width: '25%'}}>
+                <Form.Item label="事项指南名称" style={{width: '25%'}}>
                     <Input
                         value={item_name}
                         placeholder="请输入名称"
@@ -187,10 +187,10 @@ export default function SelectForm(props) {
                         allowClear
                     />
                 </Form.Item>
-                <Form.Item label="创建人" style={{width: '22%'}}>
+                <Form.Item label="负责人" style={{width: '22%'}}>
                     <Input
                         value={creator}
-                        placeholder="请输入创建人"
+                        placeholder="请输入负责人"
                         size="middle"
                         onChange={handleCreatorChange}
                         maxLength={64}

@@ -69,7 +69,7 @@ export default function ManageProcess(props) {
             width: 270
         },
         {
-            title: '事项指南',
+            title: '事项指南名称',
             dataIndex: 'item_name',
             key: 'item_name'
         },
@@ -97,7 +97,7 @@ export default function ManageProcess(props) {
             width: 100
         },
         {
-            title: '状态',
+            title: '事项状态',
             dataIndex: 'status',
             key: 'status',
             width: 100

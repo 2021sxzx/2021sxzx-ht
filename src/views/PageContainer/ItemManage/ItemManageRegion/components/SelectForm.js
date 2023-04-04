@@ -123,7 +123,7 @@ export default function SelectForm(props) {
                     }
                 }}
             >
-                <Form.Item label='规则编码' style={{width: '25%'}}>
+                <Form.Item label='区划编码' style={{width: '25%'}}>
                     <Input value={region_code}
                            placeholder='请输入编码'
                            size='middle'
@@ -133,9 +133,9 @@ export default function SelectForm(props) {
                            allowClear
                     />
                 </Form.Item>
-                <Form.Item label='规则名称' style={{width: '25%'}}>
+                <Form.Item label='区划名称' style={{width: '25%'}}>
                     <Input value={region_name}
-                           placeholder='请输入名称'
+                           placeholder='请输入区划路径末尾区划的名称'
                            size='middle'
                            onChange={handleTaskregionChange}
                            maxLength={64}
