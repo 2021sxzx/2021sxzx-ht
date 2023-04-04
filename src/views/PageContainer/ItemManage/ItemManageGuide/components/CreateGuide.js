@@ -173,7 +173,7 @@ export default function CreateGuide(props) {
                               maxLength={128}
                     />
                     <FormArea handleChange={handleServiceAgentCode}
-                              formName='实施主体编码'
+                              formName='组织编码'
                               value={serviceAgentCode}
                               required={true}
                               maxLength={64}
@@ -292,7 +292,7 @@ export default function CreateGuide(props) {
         if (guideName === '') emptyArea.push('事项名称')
         if (guideCode === '') emptyArea.push('事项编码')
         if (serviceAgentName === '') emptyArea.push('实施主体名称')
-        if (serviceAgentCode === '') emptyArea.push('实施主体编码')
+        if (serviceAgentCode === '') emptyArea.push('组织编码')
         // if (guideContent === '') emptyArea.push('事项内容')
         // 政策依据数组处理
         // if (guideAccord.length === 0) {

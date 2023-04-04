@@ -71,7 +71,7 @@ export const detailTitle = {
     taskName: '事项名称', // 0（索引，下标）
     taskCode: '事项代码', // 1
     serviceAgentName: '实施主体名称', // 2
-    serviceAgentCode: '实施主体编码', // 3
+    serviceAgentCode: '组织编码', // 3
     applyContent: '事项内容', // 4
     legalBasis: '政策依据', // 5
     conditions: '申办所需审核条件', // 6
