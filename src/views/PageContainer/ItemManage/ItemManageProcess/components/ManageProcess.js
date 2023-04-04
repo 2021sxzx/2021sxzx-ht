@@ -322,10 +322,38 @@ export default function ManageProcess(props) {
             title: '解绑确认',
             content: str,
             onOk: function () {
-                finishDeleting(selectedRowKeys)
+                withDrawItems(selectedRowKeys)
             },
             style: {whiteSpace: 'pre-wrap'}
         })
+    }
+
+    /**
+     * 批量解绑事项
+     * @param selectedIDs {*[]} 勾选的的事项 id 数组
+     */
+    const withDrawItems = (selectedIDs) => {
+        if(selectedIDs instanceof Array && selectedIDs.length > 0) {
+            // 让表格加载中
+            setTableLoading(true)
+
+            const data = {
+                items: selectedIDs
+            }
+
+            // 根据事项规则 id 解绑事项，删除完之后重新载入事项
+            api.WithDrawItems(data).then(() => {
+                props.showSuccess()
+            }).catch(error => {
+                // 删除报错时，弹出报错框并重新加载数据
+                props.showError('解绑事项失败！', error.message)
+            }).finally(()=>{
+                getItems()
+                setTableLoading(false)
+            })
+        } else {
+            message.warn('请先选择要批量解绑的事项。')
+        }
     }
 
     const finishDeleting = (id) => {

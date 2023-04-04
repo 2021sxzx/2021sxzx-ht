@@ -16,6 +16,13 @@ const api = {
             data
         })
     },
+    WithDrawItems(data) {
+        return service.request({
+            method: "post",
+            url: "/v1/withdrawItems",
+            data
+        })
+    },
     UpdateItems(data) {
         return service.request({
             method: "post",

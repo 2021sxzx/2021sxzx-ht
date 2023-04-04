@@ -495,16 +495,25 @@ export default function CreateGuide(props) {
         // }
         // 办理点信息处理
         let tempWindows = []
-        for (let i = 0; i < guideWindows.length; i++) {
-            let tempWindow = {}
-            for (let key in guideWindows[i]) {
-                if (inj_judge(guideWindows[i][key])) {
-                    showInlegal()
-                    return
+        if (guideWindows instanceof Array){
+            for (let i = 0; i < guideWindows.length; i++) {
+                let tempWindow = {}
+                for (let key in guideWindows[i]) {
+                    if (inj_judge(guideWindows[i][key])) {
+                        showInlegal()
+                        return
+                    }
+                    tempWindow[key] = guideWindows[i][key]
                 }
-                tempWindow[key] = guideWindows[i][key]
+                tempWindows.push(tempWindow)
             }
-            tempWindows.push(tempWindow)
+        } else {
+            tempWindows = [{
+                'name': '',
+                'phone': '',
+                'address': '',
+                'office_hour': ''
+            }]
         }
         data['windows'] = tempWindows
         // 政策依据处理
@@ -563,6 +572,7 @@ export default function CreateGuide(props) {
                 })
             } else {
                 updateItemGuide(data)
+                setButtonLoading(false)
             }
         } else {
             data['task_code'] = guideCode
