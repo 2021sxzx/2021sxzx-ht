@@ -575,7 +575,7 @@ export default function CreateRule(props) {
                         </div>
                         <div
                             className={style.createTag}
-                            style={{display: isUpdatingRoot ? 'none' : 'block'}}
+                            style={{display: isUpdatingRoot || chosenTags.length <= 1 ? 'none' : 'block'}}
                             onClick={startNodeCreating}>
                             自定义标签+
                         </div>
