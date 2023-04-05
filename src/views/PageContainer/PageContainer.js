@@ -105,37 +105,37 @@ export default withRouter(function PageContainer(props) {
         return mid
     }
 
-    // 心跳
+    // 心跳（定时自动登出）
     // 避免多用户同时心跳，在一个合适区间内随机化心跳时间
-    const [shouldHeartbeat, setHeartbeat] = useState(true)
-    const heartbeatRef = useRef(shouldHeartbeat)
+    // 一旦进入心跳时间区间，每秒均有概率进行判断
+    // 若已经可以进行心跳，则执行一次心跳
+    // 否则待到超过服务器时间后，直接执行登出
+    let shouldHeartbeat = true
     const heartbeatIntervalTime = 1000 // 每 1 秒检查一次是否要心跳
+    const checkTime = 600 // 服务器验证时间
+    let start = new Date()
+    const timeInterval = [checkTime - 60, checkTime - 5] // 心跳时间区间
     useEffect(() => {
-        heartbeatRef.current = shouldHeartbeat
-    })
-    useEffect(() => {
-        let start = new Date()
-        const timeInterval = [590, 595] // 心跳时间区间
-        let heartbeat = setInterval(() => {
+        const heartbeat = setInterval(() => {
             const count = (new Date() - start).valueOf() / 1000
             const threshold = 1 / (timeInterval[1] - count) // 检测阈值
             const checker = Math.random()
             if (count >= timeInterval[1] || count >= timeInterval[0] && checker < threshold) {
-                start = new Date()
-                if (heartbeatRef.current) {
-                    setHeartbeat(false)
+                if (shouldHeartbeat) {
+                    start = new Date()
+                    shouldHeartbeat = false
                     api.IsLogin().then(res => {
                         if (!res) api.logout()
                     })
-                } else api.logout()
+                } else if (count >= checkTime) api.logout()
             }
         }, heartbeatIntervalTime)
-        return () => clearInterval(heartbeat)
-    }, [])
-    useEffect(() => {
         const body = document.body
-        body.onmousedown = body.onkeydown = () => setHeartbeat(true)
-        return () => body.onmousedown = body.onkeydown = null
+        body.onmousemove = body.onmousewheel = body.onmousedown = body.onkeydown = () => shouldHeartbeat = true
+        return () => {
+            clearInterval(heartbeat)
+            body.onmousemove = body.onmousewheel = body.onmousedown = body.onkeydown = null
+        }
     }, [])
     // end 心跳
 
