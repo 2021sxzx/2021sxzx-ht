@@ -556,7 +556,7 @@ export default function CreateGuide(props) {
                 guideApi.GetItemGuides({
                     task_code: guideCode
                 }).then(response => {
-                    if (response.data.data.length === 0) {
+                    if (response.data.data.total === 0) {
                         updateItemGuide(data)
                     } else {
                         Modal.warning({
@@ -579,7 +579,7 @@ export default function CreateGuide(props) {
             guideApi.GetItemGuides({
                 task_code: guideCode
             }).then(response => {
-                if (response.data.data.length === 0) {
+                if (response.data.data.total === 0) {
                     createItemGuide(data)
                 } else {
                     Modal.warning({
