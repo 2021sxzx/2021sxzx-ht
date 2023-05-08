@@ -172,13 +172,13 @@ export default function MetaData() {
                         <Col span={6}>
                             {' '}
                             <Card size="small">
-                                <LineChart type="pv"/>
+                                <LineChart type="daily_item_read"/>
                             </Card>
                         </Col>
                         <Col span={6}>
                             {' '}
                             <Card size="small">
-                                <LineChart type="uv"/>
+                                <LineChart type="total_item_read"/>
                             </Card>
                         </Col>
                         <Col span={6}>

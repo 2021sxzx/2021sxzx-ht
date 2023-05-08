@@ -4,8 +4,8 @@ import api from "../../../../../../api/systemMetadata";
 
 const LineChart = (props) => {
     const map = {
-        pv: '今日事项浏览数',
-        uv: '累计用户访问量',
+        daily_item_read: '今日事项浏览数',
+        total_item_read: '累计事项浏览数',
         item_num: '已有事项数量',
         user_num: '已注册用户数量'
     }  //标题映射关系
