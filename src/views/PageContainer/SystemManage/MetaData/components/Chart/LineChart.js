@@ -53,7 +53,19 @@ const LineChart = (props) => {
                 yAxis: {
                     boundaryGap: [0, "100%"],
                     show: false,
-                    min: (props.type === 'total_item_read') ? Math.min(data.map((val)=>val[props.type])) : 0
+                    //解决因数据值范围相差太大或是太小曲线显示不美观问题
+                    max:function(obj){
+                        var ma=obj.max;
+                        var mi=obj.min;
+                        var val=Math.ceil((ma+(ma-mi)/2))
+                        return val
+                    },
+                    min:function(obj){
+                        var ma=obj.max;
+                        var mi=obj.min;
+                        var val=Math.ceil((mi-(ma-mi)/2))
+                        return mi==0?0:val
+                    }
                 },
                 series: [
                     {
