@@ -53,6 +53,7 @@ const LineChart = (props) => {
                 yAxis: {
                     boundaryGap: [0, "100%"],
                     show: false,
+                    min: (props.type === 'total_item_read') ? Math.min(data.map((val)=>val[props.type])) : 0
                 },
                 series: [
                     {
