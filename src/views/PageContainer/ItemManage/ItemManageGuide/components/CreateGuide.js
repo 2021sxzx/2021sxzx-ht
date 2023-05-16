@@ -625,7 +625,7 @@ export default function CreateGuide(props) {
 
     // 翻页时进行每个步骤的输入是否完成
     useEffect(function () {
-        let tempStatus = ['', '', '', '']
+        let tempStatus = ['', stepStatus[1], stepStatus[2], '']
         // 事项基本信息
         if (guideName !== '' && guideCode !== '' && serviceAgentName !== '' && serviceAgentCode !== '') {
             tempStatus[0] = 'finish'
@@ -638,68 +638,24 @@ export default function CreateGuide(props) {
         } else {
             tempStatus[0] = 'wait'
         }
-        // 资格审核信息
-        tempStatus[1] = 'finish'
-        for (let i = 0; i < guideMaterial.length; i++) {
-            for (let key in guideMaterial[i]) {
-                if (guideMaterial[i][key] === '' && !(key === 'page_format' && guideMaterial[i].material_form === '2')) {
-                    tempStatus[1] = 'wait'
-                }
-            }
+
+        // 资格审核信息<!目前没有必填项>
+        if(tempStatus[1] == 'process'){
+            tempStatus[1] = 'finish'
         }
-        // if (guideCondition !== '' && guideMaterial !== '') {
-        //     if (legalType === '0' && legalType === '0') {
-        //         tempStatus[1] = 'wait'
-        //     } else {
-        //         if ((legalType !== '0' && legalPeriod === '') || (promisedType !== '0' && promisedPeriod === '')) {
-        //             tempStatus[1] = 'wait'
-        //         } else {
-        //             tempStatus[1] = 'finish'
-        //             for (let i = 0; i < guideMaterial.length; i++) {
-        //                 for (let key in guideMaterial[i]) {
-        //                     if (guideMaterial[i][key] === '') {
-        //                         if (key === 'page_format' && guideMaterial[i].material_form === '2') continue
-        //                         else tempStatus[1] = 'wait'
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // } else {
-        //     tempStatus[1] = 'wait'
-        // }
-        // 业务咨询信息
-        tempStatus[2] = 'finish'
-        // if (guidePlatform !== '' && guidePCAddress !== '' && guidePEAddress !== '') {
-        //     tempStatus[2] = 'finish'
-        // } else {
-        //     tempStatus[2] = 'wait'
-        // }
+
+        // 业务咨询信息<!目前没有必填项>
+        if(tempStatus[2] == 'process'){
+            tempStatus[2] = 'finish'
+        }
+        
         // 业务办理信息
         if (guideServiceType && guideServiceType.length !== 0) {
             tempStatus[3] = 'finish'
-            // for (let i = 0; i < guideWindows.length; i++) {
-            //     for (let key in guideWindows[i]) {
-            //         if (guideWindows[i].key === '') {
-            //             tempStatus[3] = 'wait'
-            //         }
-            //     }
-            // }
         } else {
             tempStatus[3] = 'wait'
         }
-        // if (guideSelfmadeAddress !== '' && guideOnlineProcess !== '' && guideOfflineProcess !== '' && guideWindows.length !== 0/* && guideQRCode !== ''*/) {
-        //     tempStatus[3] = 'finish'
-        //     for (let i = 0; i < guideWindows.length; i++) {
-        //         for (let key in guideWindows[i]) {
-        //             if (guideWindows[i].key === '') {
-        //                 tempStatus[3] = 'wait'
-        //             }
-        //         }
-        //     }
-        // } else {
-        //     tempStatus[3] = 'wait'
-        // }
+        
         tempStatus[current] = 'process'
         setStepStatus(tempStatus)
     }, [current])
