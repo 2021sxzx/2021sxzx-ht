@@ -4,8 +4,11 @@ import {Button, Menu, Tooltip} from 'antd'
 import style from './SideMenu.module.scss'
 import {
     DesktopOutlined,
-    FileOutlined,
     UserOutlined,
+    AuditOutlined,
+    FileDoneOutlined,
+    SolutionOutlined,
+    ProjectOutlined,
     SettingOutlined, MenuUnfoldOutlined, MenuFoldOutlined,
 } from '@ant-design/icons';
 import MenuList from "../../../utils/MenuList";
@@ -15,11 +18,11 @@ const {SubMenu} = Menu;
 const menuTitleIcon = new Map([
     ['首页', <DesktopOutlined/>],
     ['个人中心', <UserOutlined/>],
-    ['事项审核', <UserOutlined/>],
-    ['事项管理', <FileOutlined/>],
+    ['事项审核', <AuditOutlined />],
+    ['事项管理', <FileDoneOutlined />],
     ['系统管理', <SettingOutlined/>],
-    ['用户评价管理', <FileOutlined/>],
-    ['用户管理', <FileOutlined/>]
+    ['用户评价管理', <ProjectOutlined />],
+    ['用户管理', <SolutionOutlined />]
 ])
 
 /**
