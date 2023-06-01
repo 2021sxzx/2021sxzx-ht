@@ -161,7 +161,7 @@ export const getItemGuideData = async (taskCode) => {
 export const standardizingItemGuideData = (data) => {
     // TODO: 补充注释的数据类型
     // console.log('standardizingItemGuideData', data)
-
+    if(!date) return
     // 政策依据数组处理
     let legalBasis = ''
     if (data.legal_basis) {
@@ -219,7 +219,7 @@ export const standardizingItemGuideData = (data) => {
     }
 
     // 服务对象类型数组处理
-    const type = data.service_object_type.split(',')
+    const type = data.service_object_type? data.service_object_type.split(',') : []
     let serviceObjectType = ''
     for (let i = 0; i < type.length; i++) {
         if (serviceObjectType !== '') serviceObjectType += '、'
