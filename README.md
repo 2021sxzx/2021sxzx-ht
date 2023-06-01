@@ -58,6 +58,11 @@ npm install
 1. 把项目跑起来。
 
 ```shell
+# 本地开发，需要本地开启后端
+npm start
+
+# 已上线开发环境，连接阿里云后端
+# 修改/src/setupProxy.js 的 target
 npm start
 ```
 
