@@ -1,9 +1,11 @@
 import {useEffect, useState} from 'react'
-import {Button, Card, Col, Divider, Form, Input, message, Row, Tabs, Typography, Upload} from 'antd'
+import {Button, Card, Col, Divider, Form, Input, message, Row, Tabs, Typography, Upload, Image} from 'antd'
 import {UploadOutlined} from '@ant-design/icons'
-import apiMeta from '../../../../api/systemMetadata'
-import './MetaData.css'
 import LineChart from './components/Chart/LineChart'
+import apiMeta from '../../../../api/systemMetadata'
+import Images from '../../../../config/Images'
+import './MetaData.css'
+
 
 const {Title} = Typography
 const {TabPane} = Tabs
@@ -28,6 +30,11 @@ export default function MetaData() {
 
     // LogPath
     const [logPath, setLogPath] = useState({})
+
+    // 图片预览
+    let [imageSrc, setImageSrc] = useState()
+    let [imageVisible,  setImageVisible] = useState(false)
+    let [scaleStep,] = useState(0.5)
 
     // 组件初始化
     useEffect(() => {
@@ -197,7 +204,7 @@ export default function MetaData() {
                 </div>
                 <Divider/>
             </TabPane>
-            <TabPane tab="网站设置" key="2">
+            <TabPane tab="资源设置" key="2">
                 <Form
                     labelCol={{span: 4}}
                     onFinish={onFinish}
@@ -205,8 +212,22 @@ export default function MetaData() {
                     form={websiteSettingsForm}
                     name="websiteSettings"
                 >
+                    <Image
+                        style={{
+                        display: 'none',
+                        }}
+                        preview={{
+                        visible: imageVisible,
+                        scaleStep,
+                        src: imageSrc,
+                        onVisibleChange: (value) => {
+                            setImageVisible(value);
+                        },
+                        }}
+                    />
                     <Form.Item label="网站简称" name="WebsiteAbbreviation"
-                               rules={[{message: 'Please input your username!'}]}> 智能咨询平台 </Form.Item>
+                               rules={[{message: 'Please input your username!'}]}> 智能咨询平台 
+                    </Form.Item>
                     <Form.Item label="网站logo" name="WebsiteLogo" layout="inline">
                         <Upload
                             listType="picture"
@@ -223,7 +244,16 @@ export default function MetaData() {
                             onRemove={() => files.websiteLogoFile = null}
                         >
                             <Button icon={<UploadOutlined/>}>Upload</Button>
-                        </Upload>
+                            <Button 
+                                className='preview-button'
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setImageSrc(Images.common.icLogo)
+                                    setImageVisible(true)
+                                }}>
+                                预览
+                            </Button>
+                        </Upload>   
                     </Form.Item>
                     <Form.Item label="首页轮播图" name="BackstageLogo">
                         <Upload
@@ -240,6 +270,16 @@ export default function MetaData() {
                             onRemove={() => files.backstageLogoFile = null}
                         >
                             <Button icon={<UploadOutlined/>}>Upload</Button>
+                            <Button 
+                                className='preview-button'
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setImageSrc(Images.home.bannerPC)
+                                    setImageVisible(true)
+                                }}
+                            >
+                                预览
+                            </Button>
                         </Upload>
                     </Form.Item>
                     <Form.Item label="地址栏图标" name="AddressBarIcon" layout="inline">
@@ -257,9 +297,19 @@ export default function MetaData() {
                             onRemove={() => files.addressBarIconFile = null}
                         >
                             <Button icon={<UploadOutlined/>}>Upload</Button>
+                            <Button 
+                                className='preview-button'
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setImageSrc(Images.common.icIcon)
+                                    setImageVisible(true)
+                                }}
+                            >
+                                预览
+                            </Button>
                         </Upload>
                     </Form.Item>
-                    <Form.Item label="广州市人设局官网" name="QRCode" layout="inline">
+                    <Form.Item label="广州市人设局官网二维码" name="QRCode" layout="inline">
                         <Upload
                             listType="picture"
                             className="upload-list-inline"
@@ -274,9 +324,19 @@ export default function MetaData() {
                             onRemove={() => files.officialQRCode = null}
                         >
                             <Button icon={<UploadOutlined/>}>Upload</Button>
+                            <Button 
+                                className='preview-button'
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setImageSrc(Images.common.qrcodeWeb)
+                                    setImageVisible(true)
+                                }}
+                            >
+                                预览
+                            </Button>
                         </Upload>
                     </Form.Item>
-                    <Form.Item label="广州市人设局公众号" name="QRCode" layout="inline">
+                    <Form.Item label="广州市人设局公众号二维码" name="QRCode" layout="inline">
                         <Upload
                             listType="picture"
                             className="upload-list-inline"
@@ -291,9 +351,19 @@ export default function MetaData() {
                             onRemove={() => files.wechatQRCodeFile = null}
                         >
                             <Button icon={<UploadOutlined/>}>Upload</Button>
+                            <Button 
+                                className='preview-button'
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setImageSrc(Images.common.qrcodeWechat)
+                                    setImageVisible(true)
+                                }}
+                            >
+                                预览
+                            </Button>
                         </Upload>
                     </Form.Item>
-                    <Form.Item label="穗好办APP" name="QRCode" layout="inline">
+                    <Form.Item label="穗好办APP二维码" name="QRCode" layout="inline">
                         <Upload
                             listType="picture"
                             className="upload-list-inline"
@@ -308,6 +378,16 @@ export default function MetaData() {
                             onRemove={() => files.appQRCodeFile = null}
                         >
                             <Button icon={<UploadOutlined/>}>Upload</Button>
+                            <Button
+                                className='preview-button' 
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setImageSrc(Images.common.qrcodeApp)
+                                    setImageVisible(true)
+                                }}
+                            >
+                                预览
+                            </Button>
                         </Upload>
                     </Form.Item>
                     <Form.Item label="用户手册" name="userManual" layout="inline">
@@ -336,6 +416,15 @@ export default function MetaData() {
                             }}
                         >
                             <Button icon={<UploadOutlined/>}>Upload</Button>
+                            <Button 
+                                className='preview-button'
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.open('/public/xlsx/用户手册.pdf')
+                                }}
+                            >
+                                下载
+                            </Button>
                         </Upload>
                     </Form.Item>
                     <Form.Item wrapperCol={{offset: 10, span: 16}}>
