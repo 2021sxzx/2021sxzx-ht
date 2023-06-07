@@ -38,17 +38,31 @@ export default function ManageGuide(props) {
     // 用于获取批量处理的事项规则id
     const [selectedRowKeys, setSelectedRowKeys] = useState([])
     const [isBatching, setIsBatching] = useState(false)
-    const onSelectionChange = keys => {
+    const [selectedRows, setSelectedRows] = useState([])
+    const onSelectionChange = (keys,row) => {
         setIsBatching(keys.length > 0)
         setSelectedRowKeys(keys)
+        setSelectedRows(row)
+        console.log('selectedRows', row)
     }
     const rowSelection = {
         selectedRowKeys,
         onChange: onSelectionChange,
-        getCheckboxProps: (record) => ({
-            // 不允许删除中间节点
-            disabled: (record.task_status === 1)
-        })
+        // getCheckboxProps: (record) => ({
+        //     // 不允许删除中间节点
+        //     disabled: (record.task_status === 1)
+        // })
+    }
+    //如果选中的事项中有已绑定的，则不能删除
+    const okToDeleteBatch=()=>{
+        let ok=true
+        for(let row in selectedRows){
+            if(row.task_status===1){
+                ok=flase
+                break
+            }
+        }
+        return ok
     }
     // 当前展示的页数，用于重置时归零
     const [current, setCurrent] = useState(0)
@@ -479,7 +493,7 @@ export default function ManageGuide(props) {
                     <Button type="primary" disabled={!isBatching} onClick={() => {
                         exportGuides(selectedRowKeys)
                     }}>批量导出</Button>
-                    <Button type="primary" disabled={!isBatching} onClick={handleBatchDelete}>批量删除</Button>
+                    <Button type="primary" disabled={okToDeleteBatch()} onClick={handleBatchDelete}>批量删除</Button>
                 </Space>
                 <Table
                     rowSelection={rowSelection}
