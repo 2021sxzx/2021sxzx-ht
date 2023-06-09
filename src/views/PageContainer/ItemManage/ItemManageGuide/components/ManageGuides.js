@@ -201,7 +201,7 @@ export default function ManageGuide(props) {
             }
 
             // 导出
-            jsonToExcel(Object.values(detailTitle), allDetails, '未命名.csv')
+            jsonToExcel(Object.values(detailTitle), allDetails, '批量导出.csv')
             message.info('正在导出...')
         } catch (err) {
             message.error('导出错误，请稍后重试')
@@ -218,6 +218,7 @@ export default function ManageGuide(props) {
             let data = originData
             data['page_num'] = 0
             data['page_size'] = 999999999999999999999999
+            data['isDetail'] = true //标识全量导出
             const temp = (await getItemGuideOnTableFormat(data)).guides
             for (let i = 0; i < temp.length; ++i) {
                 delete temp[i]['create_time']
@@ -226,13 +227,35 @@ export default function ManageGuide(props) {
                 delete temp[i]['task_status']
                 delete temp[i]['_id']
             }
-            jsonToExcel(Object.values({
-                task_code: '事项指南编码',
-                task_name: '事项指南',
-                service_agent_name: '实施主体名称',
-                creator_name: '负责人',
-                status: '状态'
-            }), temp, '未命名.csv')
+            const exportWorker = new Worker('webworker.js')
+            exportWorker.postMessage({
+                titles: Object.values(detailTitle),
+                data: temp, 
+                filename: '全量导出.csv'
+            })
+            exportWorker.addEventListener("message", async (e) => {
+                const uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(e.data)
+                // 创建一个隐藏的 <a> 标签
+                const link = document.createElement('a')
+
+                // a 标签的 download 属性是 HTML5 的标准，下面这个判断是为预防兼容性问题
+                if (typeof link.download === 'string') {
+                    // a 标签下载源
+                    link.href = uri
+                    // 对下载的文件默认命名。
+                    link.download = '全量导出.csv'
+                    // 触发这个 a 标签的 click 事件
+                    link.click()
+                    // 移除 a 标签
+                    link.remove()
+                    url =null
+                } else {
+                    // 如果浏览器不支持 download 属性，可以使用 Windows.open 直接打开 data url 下载
+                    // 缺点是没法指定默认的文件名。
+                    window.open(uri)
+                }
+                exportWorker.terminate();
+            })
         } catch (err) {
             console.log(err)
             message.error('导出错误，请稍后重试')
