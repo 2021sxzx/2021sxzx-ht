@@ -165,9 +165,9 @@ export default function MetaData() {
 
     // 检查图片格式和大小
     function imageBeforeUpload(file) {
-        const isPng = file.type === 'image/png', isLt20M = file.size <= 20 * 1024 ** 2
+        const isPng = file.type === 'image/png', isLt10M = file.size <= 10 * 1024 ** 2
         if (!isPng) message.error('只能上传 PNG 图片。').then()
-        if (!isLt20M) message.error('文件大小须小于 20MB。').then()
+        if (!isLt10M) message.error('文件大小须小于 10MB。').then()
         return isPng && isLt20M
     }
 
