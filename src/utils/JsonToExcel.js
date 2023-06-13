@@ -50,7 +50,7 @@ const jsonToExcel = (titles = ['标题1', '标题2', '标题3'],
     // 首行出现的 "\ufeff" 叫 BOM (Byte Order Mark，字节顺序标记), 用来声明该文件的编码信息。
     // utf-8 编码的文件时开头会有一个多余的字符 \ufeff。
     
-    csvStr = csvArr.join()
+    csvStr = csvArr.join('')
     const uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(csvStr)
 
     // 创建一个隐藏的 <a> 标签

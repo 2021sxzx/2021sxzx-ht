@@ -168,7 +168,7 @@ export default function MetaData() {
         const isPng = file.type === 'image/png', isLt10M = file.size <= 10 * 1024 ** 2
         if (!isPng) message.error('只能上传 PNG 图片。').then()
         if (!isLt10M) message.error('文件大小须小于 10MB。').then()
-        return isPng && isLt20M
+        return isPng && isLt10M
     }
 
     return <div className="card-container">
