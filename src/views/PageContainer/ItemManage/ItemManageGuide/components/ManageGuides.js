@@ -7,7 +7,9 @@ import {
     detailTitle,
     getItemGuideOnDetailFormat,
     getItemGuideOnExportFormat,
-    getItemGuideOnTableFormat
+    getItemGuideOnTableFormat,
+    standardItemGuideToExportFormat,
+    standardizingItemGuideData
 } from '../../../../../api/itemGuideAdapter'
 import jsonToExcel from '../../../../../utils/JsonToExcel'
 
@@ -186,6 +188,51 @@ export default function ManageGuide(props) {
     ]
 
     /**
+     * 开启子进程处理json数据
+     * @param postData {titles, data}
+     * titles excel列标头
+     * data json数据 
+     * @param filename 文件名
+     */
+    const workerJsonToExcel = (postData, filename) => {
+        // webWorker是H5新增的特性
+        const exportWorker = new Worker('webWorker/jsonToExcel.js')
+        exportWorker.postMessage(postData)
+        exportWorker.addEventListener("message", async (e) => {
+            //console.log(e.data.length)
+            let uri = ''
+            // String受到js长度限制，使用try/catch防止页面崩溃
+            try{
+                uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(e.data)
+            }
+            catch(e){
+                console.log(Promise.resolve(e))
+            }
+            
+            // 创建一个隐藏的 <a> 标签
+            const link = document.createElement('a')
+
+            // a 标签的 download 属性是 HTML5 的标准，下面这个判断是为预防兼容性问题
+            if (typeof link.download === 'string') {
+                // a 标签下载源
+                link.href = uri
+                // 对下载的文件默认命名。
+                link.download = filename
+                // 触发这个 a 标签的 click 事件
+                link.click()
+                uri = null
+                // 移除 a 标签
+                link.remove()
+            } else {
+                // 如果浏览器不支持 download 属性，可以使用 Windows.open 直接打开 data url 下载
+                // 缺点是没法指定默认的文件名。
+                window.open(uri)
+            }
+            exportWorker.terminate();
+        })
+    }
+
+    /**
      * 根据所给的一组事项指南编码来导出事项指南详情 csv 文件
      * @param {string[]} taskCodeArray 需要导出的事项指南的事项编码数组
      * @return {Promise<void>}
@@ -201,7 +248,15 @@ export default function ManageGuide(props) {
             }
 
             // 导出
-            jsonToExcel(Object.values(detailTitle), allDetails, '批量导出.csv')
+            // 使用webWorker处理数据
+            workerJsonToExcel(
+                {
+                    titles: Object.values(detailTitle),
+                    data: allDetails, 
+                },
+                '批量导出.csv'
+            )
+            // jsonToExcel(Object.values(detailTitle), allDetails, '批量导出.csv')
             message.info('正在导出...')
         } catch (err) {
             message.error('导出错误，请稍后重试')
@@ -212,50 +267,29 @@ export default function ManageGuide(props) {
      * 导出所有事项
      * @return {Promise<void>}
      */
+    // TODO: 把全量导出放到后端做, 前端有性能问题以及encodeurlcomponent参数长度限制
     const exportAllGuides = async () => {
         try {
             message.info('正在导出...')
             let data = originData
             data['page_num'] = 0
-            data['page_size'] = 999999999999999999999999
+            data['page_size'] = 20000
             data['isDetail'] = true //标识全量导出
             const temp = (await getItemGuideOnTableFormat(data)).guides
+            //console.log(temp)
             for (let i = 0; i < temp.length; ++i) {
-                delete temp[i]['create_time']
-                delete temp[i]['creator']
-                delete temp[i]['department_name']
-                delete temp[i]['task_status']
-                delete temp[i]['_id']
+                temp[i] = standardizingItemGuideData(temp[i])
+                temp[i] = standardItemGuideToExportFormat(temp[i])
             }
-            const exportWorker = new Worker('webworker.js')
-            exportWorker.postMessage({
-                titles: Object.values(detailTitle),
-                data: temp, 
-                filename: '全量导出.csv'
-            })
-            exportWorker.addEventListener("message", async (e) => {
-                const uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(e.data)
-                // 创建一个隐藏的 <a> 标签
-                const link = document.createElement('a')
+            
+            workerJsonToExcel(
+                {
+                    titles: Object.values(detailTitle),
+                    data: temp, 
+                },
+                '全量导出.csv'
+            )
 
-                // a 标签的 download 属性是 HTML5 的标准，下面这个判断是为预防兼容性问题
-                if (typeof link.download === 'string') {
-                    // a 标签下载源
-                    link.href = uri
-                    // 对下载的文件默认命名。
-                    link.download = '全量导出.csv'
-                    // 触发这个 a 标签的 click 事件
-                    link.click()
-                    // 移除 a 标签
-                    link.remove()
-                    url =null
-                } else {
-                    // 如果浏览器不支持 download 属性，可以使用 Windows.open 直接打开 data url 下载
-                    // 缺点是没法指定默认的文件名。
-                    window.open(uri)
-                }
-                exportWorker.terminate();
-            })
         } catch (err) {
             console.log(err)
             message.error('导出错误，请稍后重试')

@@ -6,12 +6,11 @@ self.addEventListener("message",async (event)=>{
     let data = event.data
     let result = await processData(data)
     self.postMessage(result)
-    result = null
     self.close()
 })
 
 async function processData (datas) {
-    const {titles, data, filename} = datas
+    let {titles, data} = datas
     if (!(titles instanceof Array && data instanceof Array)) {
         console.log('data error in jsonToExcel')
         return
@@ -19,7 +18,7 @@ async function processData (datas) {
 
     // 满足 csv 规范的字符串，用于生成 csv/excel 文件
     let csvStr = ''
-    const csvArr = []
+    let csvArr = []
 
     // 将数据标题转化为 csv 字符串
     // e.g. csvStr = '"标题1","标题2","标题3"\n'
@@ -51,8 +50,7 @@ async function processData (datas) {
     // 首行出现的 "\ufeff" 叫 BOM (Byte Order Mark，字节顺序标记), 用来声明该文件的编码信息。
     // utf-8 编码的文件时开头会有一个多余的字符 \ufeff。
     
-    csvStr = csvArr.join()
-    csvArr = []
+    csvStr = csvArr.join('')
 
     return csvStr;
 }
