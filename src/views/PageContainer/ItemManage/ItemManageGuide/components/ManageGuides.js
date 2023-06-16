@@ -8,8 +8,6 @@ import {
     getItemGuideOnDetailFormat,
     getItemGuideOnExportFormat,
     getItemGuideOnTableFormat,
-    standardItemGuideToExportFormat,
-    standardizingItemGuideData
 } from '../../../../../api/itemGuideAdapter'
 import jsonToExcel from '../../../../../utils/JsonToExcel'
 
@@ -267,29 +265,24 @@ export default function ManageGuide(props) {
      * 导出所有事项
      * @return {Promise<void>}
      */
-    // TODO: 把全量导出放到后端做, 前端有性能问题以及encodeurlcomponent参数长度限制
+    // TODO: 把全量导出放到后端做, 前端有性能问题以及encodeurlcomponent参数长度限制（已完成）
+    // TODO: 这里可以实现批量导出, 根据用户筛选进行大批量的带出, 现在的批量导出是发起多个请求, 请求数量过多可能会被反爬虫
     const exportAllGuides = async () => {
         try {
             message.info('正在导出...')
             let data = originData
-            data['page_num'] = 0
-            data['page_size'] = 20000
-            data['isDetail'] = true //标识全量导出
-            const temp = (await getItemGuideOnTableFormat(data)).guides
-            //console.log(temp)
-            for (let i = 0; i < temp.length; ++i) {
-                temp[i] = standardizingItemGuideData(temp[i])
-                temp[i] = standardItemGuideToExportFormat(temp[i])
-            }
-            
-            workerJsonToExcel(
-                {
-                    titles: Object.values(detailTitle),
-                    data: temp, 
-                },
-                '全量导出.csv'
-            )
-
+            const excelData = await api.GetExportGides(data)
+            // console.log('res', excelData)
+            // 使用a标签的href进行下载
+            // Blob第一个参数要加一个\ufeff特殊字符串，不然utf-8编码的文件会乱码
+            const url = URL.createObjectURL(new Blob(["\ufeff", excelData.data], { type: 'text/csv;charset=utf-8'}))
+            const download = document.createElement('a')
+            download.href = url
+            download.download = '全量导出.csv'
+            download.click()
+            // 移除a标签和blob对象
+            download.remove()
+            URL.revokeObjectURL(url)
         } catch (err) {
             console.log(err)
             message.error('导出错误，请稍后重试')

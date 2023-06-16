@@ -18,6 +18,15 @@ const api = {
             data: dataPlus
         })
     },
+    GetExportGides(data) {
+        let dataPlus = data
+        dataPlus['user_id'] = localStorage.getItem('_id')
+        return service.request({
+            method: "post",
+            url: "/v1/getExportGides",
+            data: dataPlus
+        })
+    },
     CreateItemGuide(data) {
         return service.request({
             method: "post",
