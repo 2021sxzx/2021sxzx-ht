@@ -178,7 +178,7 @@ export default function SelectForm(props) {
                 <Form.Item label='状态' style={{marginTop: 10, width: '85%'}}>
                     <Checkbox.Group options={props.statusType} value={task_status} onChange={handleTaskStatusChange}/>
                 </Form.Item>
-                <Form.Item style={{marginLeft: '50%', marginTop: 10, width: '5%', minWidth: 62}}>
+                <Form.Item style={{ marginTop: 10, width: '5%', minWidth: 62}}>
                     <Button type='default' onClick={reset} style={{width: '100%'}}>重置</Button>
                 </Form.Item>
                 <Form.Item style={{marginTop: 10, width: '5%', minWidth: 62}}>
