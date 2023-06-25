@@ -10,6 +10,7 @@ import {
     getItemGuideOnTableFormat,
 } from '../../../../../api/itemGuideAdapter'
 import jsonToExcel from '../../../../../utils/JsonToExcel'
+import {itemStatusScheme} from "../../../../../api/itemAdapter";
 
 const detailColumns = [
     {
@@ -39,6 +40,10 @@ export default function ManageGuide(props) {
     const [selectedRowKeys, setSelectedRowKeys] = useState([])
     const [isBatching, setIsBatching] = useState(false)
     const [selectedRows, setSelectedRows] = useState([])
+    // 状态映射表
+    const [statusType, setStatusType] = useState([])
+    // 该身份可处理的事项状态类型
+    const [fullType, setFullType] = useState([])
     const onSelectionChange = (keys,row) => {
         setIsBatching(keys.length > 0)
         setSelectedRowKeys(keys)
@@ -189,7 +194,7 @@ export default function ManageGuide(props) {
      * 开启子进程处理json数据
      * @param postData {titles, data}
      * titles excel列标头
-     * data json数据 
+     * data json数据
      * @param filename 文件名
      */
     const workerJsonToExcel = (postData, filename) => {
@@ -206,7 +211,7 @@ export default function ManageGuide(props) {
             catch(e){
                 console.log(Promise.resolve(e))
             }
-            
+
             // 创建一个隐藏的 <a> 标签
             const link = document.createElement('a')
 
@@ -250,7 +255,7 @@ export default function ManageGuide(props) {
             workerJsonToExcel(
                 {
                     titles: Object.values(detailTitle),
-                    data: allDetails, 
+                    data: allDetails,
                 },
                 '批量导出.csv'
             )
@@ -403,6 +408,32 @@ export default function ManageGuide(props) {
         })
     }
 
+    const getItemStatusScheme = async () => {
+        try {
+            let type=[
+                {
+                    label:'未绑定',
+                    value:0
+                },
+                {
+                    label:'已绑定',
+                    value:1
+                }
+            ]
+            let fullType=[0,1]
+
+            setStatusType(type)
+            setFullType(fullType)
+        } catch (err) {
+            props.showError('初始化状态表失败，请刷新重试！', err.message)
+            console.dir(err)
+        }
+    }
+
+    useEffect(async () => {
+        await getItemStatusScheme()
+    }, [])
+
     const modifyItemGuide = (id) => {
         setTableLoading(true)
         api.GetItemGuide({
@@ -536,7 +567,7 @@ export default function ManageGuide(props) {
                         }}/>
                 </Modal>
                 <SelectForm getSearch={searchItemGuide} reset={resetSearch} searchData={props.searchData}
-                            setOriginData={setOriginData}/>
+                            setOriginData={setOriginData} fullType={fullType} statusType={statusType}/>
                 <Space direction="horizontal" size={12} style={{marginLeft: '65%'}}>
                     <Button type="primary" onClick={handleCreate}>创建指南</Button>
                     <Button type="primary" onClick={exportAllGuides}>全量导出</Button>

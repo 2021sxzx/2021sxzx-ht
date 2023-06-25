@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import {DatePicker, Form, Input, Button, Modal} from 'antd'
+import {DatePicker, Form, Input, Button, Modal, Checkbox} from 'antd'
 import {getTimeStamp} from "../../../../../utils/TimeStamp"
 import returnString from '../../../../../utils/returnString'
 import moment from 'moment'
@@ -15,6 +15,7 @@ export default function SelectForm(props) {
     const [task_name, setTaskName] = useState('')
     const [serviceAgent, setServiceAgent] = useState('')
     const [creator, setCreator] = useState('')
+    const [task_status, setTaskStatus] = useState([])
 
     useEffect(()=>{
         let searchData = props.searchData.current
@@ -45,6 +46,9 @@ export default function SelectForm(props) {
     const handleCreatorChange = (e) => {
         setCreator(e.target.value)
     }
+    const handleTaskStatusChange = (value) => {
+        setTaskStatus(value)
+    }
     const inj_judge = (str) => {
         let inj_str = ['delete', 'and', 'exec', 'insert', 'update', 'count', 'master', 'select',
             'char', 'declare', 'or', '|', 'delete', 'not', '/*', '*/', 'find']
@@ -71,6 +75,8 @@ export default function SelectForm(props) {
             if (task_name !== '') data['task_name'] = task_name
             if (serviceAgent !== '') data['service_agent_name'] = serviceAgent
             if (creator !== '') data['creator_name'] = creator
+            data['task_status'] = task_status
+            props.setOriginData(data)
             props.getSearch(data)
 
             props.searchData.current = data
@@ -168,6 +174,9 @@ export default function SelectForm(props) {
                     <RangePicker value={time}
                                  style={{width: '100%'}}
                                  onChange={handleDateChange}/>
+                </Form.Item>
+                <Form.Item label='状态' style={{marginTop: 10, width: '85%'}}>
+                    <Checkbox.Group options={props.statusType} value={task_status} onChange={handleTaskStatusChange}/>
                 </Form.Item>
                 <Form.Item style={{marginLeft: '50%', marginTop: 10, width: '5%', minWidth: 62}}>
                     <Button type='default' onClick={reset} style={{width: '100%'}}>重置</Button>
