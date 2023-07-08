@@ -38,7 +38,7 @@ export default function GuideModal(props) {
         if (!props.choosingGuide) return
         setTableLoading(true)
         api.GetItemGuides({
-            task_status: 0,
+            task_status: [0],
             page_size: 8,
             page_num: 0
         }).then(response => {
