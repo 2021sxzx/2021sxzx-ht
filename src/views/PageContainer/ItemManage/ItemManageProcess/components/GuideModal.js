@@ -60,7 +60,7 @@ export default function GuideModal(props) {
     const handleGuideTableChange = (page) => {
         setTableLoading(true)
         let totalData = originData
-        totalData['task_status'] = 0
+        totalData['task_status'] = [0]
         totalData['page_num'] = page - 1
         totalData['page_size'] = 8
         // 换页的指南获取
@@ -122,7 +122,7 @@ export default function GuideModal(props) {
         setTableLoading(true)
         setOriginData(data)
         let totalData = data
-        totalData['task_status'] = 0
+        totalData['task_status'] = [0]
         totalData['page_num'] = 0
         totalData['page_size'] = 8
         // 搜索
