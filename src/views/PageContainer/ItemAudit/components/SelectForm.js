@@ -4,8 +4,7 @@ import {getTimeStamp} from "../../../../utils/TimeStamp";
 
 const {RangePicker} = DatePicker
 
-export default class SelectForm extends React.Component {
-    render() {
+export default function SelectForm(props) {
         const [form] = Form.useForm()
         const [start_time, setStartTime] = useState('')
         const [end_time, setEndTime] = useState('')
@@ -39,22 +38,22 @@ export default class SelectForm extends React.Component {
 
         useEffect(function () {
             // 初始化搜索栏中的信息
-            for (let key in this.props.bindedData) {
-                if ('rule_id' in this.props.bindedData) {
-                    let rule_id = parseIds(this.props.bindedData.rule_id)
+            for (let key in props.bindedData) {
+                if ('rule_id' in props.bindedData) {
+                    let rule_id = parseIds(props.bindedData.rule_id)
                     setRuleId(rule_id)
                 }
-                if ('region_code' in this.props.bindedData) {
-                    let region_code = parseIds(this.props.bindedData.region_code)
+                if ('region_code' in props.bindedData) {
+                    let region_code = parseIds(props.bindedData.region_code)
                     setRegionCode(region_code)
                 }
                 break
             }
-        }, [this.props.bindedData])
+        }, [props.bindedData])
 
         useEffect(function () {
-            setItemStatus(this.props.fullType)
-        }, [this.props.fullType])
+            setItemStatus(props.fullType)
+        }, [props.fullType])
 
         const splitIds = (id) => {
             let noEmpty = id.replace(/\s*/g, '')
@@ -100,8 +99,8 @@ export default class SelectForm extends React.Component {
                 if (rule_id !== '') data['rule_id'] = splitIds(rule_id)
                 if (region_code !== '') data['region_code'] = splitIds(region_code)
                 data['item_status'] = item_status
-                this.props.setOriginData(data)
-                this.props.getSearch(data)
+                props.setOriginData(data)
+                props.getSearch(data)
             }
         }
 
@@ -132,12 +131,12 @@ export default class SelectForm extends React.Component {
             setStartTime('')
             setEndTime('')
             setTime([null, null])
-            setItemStatus(this.props.fullType)
+            setItemStatus(props.fullType)
         }
 
         const reset = () => {
             clear()
-            this.props.reset()
+            props.reset()
         }
 
         return (
@@ -222,7 +221,7 @@ export default class SelectForm extends React.Component {
                             onChange={handleDateChange}/>
                     </Form.Item>
                     <Form.Item label='事项状态' style={{marginTop: 10, width: '85%'}}>
-                        <Checkbox.Group options={this.props.statusType} value={item_status}
+                        <Checkbox.Group options={props.statusType} value={item_status}
                                         onChange={handleItemStatusChange}/>
                     </Form.Item>
                     <Form.Item style={{marginTop: 10, width: '5%', minWidth: 62}}>
@@ -234,5 +233,4 @@ export default class SelectForm extends React.Component {
                 </Form>
             </>
         )
-    }
 }
