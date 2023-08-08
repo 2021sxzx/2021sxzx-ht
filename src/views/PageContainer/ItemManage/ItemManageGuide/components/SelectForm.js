@@ -34,6 +34,14 @@ export default function SelectForm(props) {
         props.setOriginData(searchData)
     },[])
 
+    // useEffect(function () {
+    //     setItemStatus(props.fullType)
+    // }, [props.fullType])
+    //初始化状态信息，设置为默认勾选
+    useEffect(function(){
+        setTaskStatus(props.fullType)
+    },[props.fullType])
+
     const handleTaskCodeChange = (e) => {
         setTaskCode(e.target.value)
     }
